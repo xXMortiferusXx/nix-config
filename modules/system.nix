@@ -5,21 +5,22 @@
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
 
-  # Systemweite Umgebungsvariablen
   environment.variables = {
-    # Nvidia Shader Cache auf ca. 12GB festlegen (CachyOS Optimierung)
     "__GL_SHADER_DISK_CACHE_SIZE" = "12000000000";
   };
   
-  # Ermöglicht Standardpfade wie /bin/bash für deine alten Scripte
-  services.envfs.enable = true;
+  # ────────────── DER SAUBERE WEG FÜR SCRIPTE ──────────────
+  # Wir schalten envfs AUS, um den Boot-Fehler zu killen.
+  services.envfs.enable = false;
 
-  # Verhindert den "/usr/bin" Mount-Fehler (erzeugt Symlink für Kompatibilität)
+  # Stattdessen verlinken wir NUR die bash dorthin, wo Scripte sie suchen.
+  # Das erzeugt keinen Mount-Konflikt!
   systemd.tmpfiles.rules = [
-    "L+ /usr/bin - - - - /bin"
+    "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
+    "L+ /usr/bin/env - - - - ${pkgs.coreutils}/bin/env"
   ];
+  # ─────────────────────────────────────────────────────────
 
-  # ────────────── Kernel & Hardware-Tweaks ──────────────
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "tcp_bbr" ];
   boot.kernelParams = [ 
@@ -27,7 +28,6 @@
     "nvidia.NVreg_EnableResizableBar=1"
   ];
 
-  # ────────────── NVIDIA & Dynamic Boost ──────────────
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
@@ -36,14 +36,12 @@
     package = config.boot.kernelPackages.nvidia_x11;
   };
 
-  # ────────────── Scheduler (SCX) ──────────────
   services.scx = {
     enable = true;
     scheduler = "scx_cake";
     extraArgs = [ "--profile" "gaming" ];
   };
 
-  # ────────────── Bootloader ──────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.enable = false;
@@ -53,7 +51,6 @@
   console.keyMap = "de";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # ────────────── Sudo & Berechtigungen ──────────────
   security.sudo.extraRules = [{
     users = [ "mortiferus" ];
     commands = [{
@@ -62,7 +59,6 @@
     }];
   }];
 
-  # Korrigierte Udev-Regeln
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
     ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="kyber"
@@ -79,7 +75,6 @@
     "kernel.sched_itmt_enabled" = 1;
   };
 
-  # ────────────── Optimierungen & Software ──────────────
   zramSwap = {
     enable = true;
     algorithm = "zstd";

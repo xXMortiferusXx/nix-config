@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  # ────────────── Grafiktreiber (Hybrid AMD/NVIDIA) ──────────────
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -23,12 +22,8 @@
     };
   };
 
-  # ────────────── LENOVO LEGION PERFORMANCE ──────────────
-  # Paket stellt das Modul bereit. Wir lassen den manuellen 'kernelModules' 
-  # Eintrag weg, da dieser beim Boot oft zu Fehlmeldungen führt, 
-  # wenn das Modul erst später vom Kernel erkannt wird.
+  # LENOVO LEGION PERFORMANCE
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  
   services.power-profiles-daemon.enable = true;
 
   environment.systemPackages = with pkgs; [
