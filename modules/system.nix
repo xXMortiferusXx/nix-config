@@ -4,18 +4,19 @@
   networking.hostName = "Mortiferus-PC";
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
- 
+
   # Systemweite Umgebungsvariablen
   environment.variables = {
     # Nvidia Shader Cache auf ca. 12GB festlegen (CachyOS Optimierung)
     "__GL_SHADER_DISK_CACHE_SIZE" = "12000000000";
   };
-
+  
+  # Ermöglicht Standardpfade wie /bin/bash für deine alten Scripte
+  services.envfs.enable = true;
 
   # ────────────── Kernel & Hardware-Tweaks ──────────────
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "tcp_bbr" ];
-  
   boot.kernelParams = [ 
     "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PerfLevelSrc=0x3322;PowerMizerDefaultAC=0x1" 
     "nvidia.NVreg_EnableResizableBar=1"
@@ -56,10 +57,10 @@
     }];
   }];
 
-  # Udev Regeln
+  # Korrigierte Udev-Regeln (Zielt nur auf die Drive-Nodes, nicht Partitionen)
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
-    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme*", ATTR{queue/scheduler}="kyber"
+    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="kyber"
     SUBSYSTEM=="platform", RUN+="${pkgs.coreutils}/bin/chmod -R 666 /sys/firmware/acpi/platform_profile"
   '';
 
@@ -96,7 +97,6 @@
 
   environment.systemPackages = with pkgs; [
     wget git fastfetch htop nvtopPackages.full pciutils usbutils mesa-demos lenovo-legion
-    # Wir nehmen das Paket vom Service, das hat laut deinem 'ls' alles was wir brauchen
     config.services.scx.package
   ];
 }

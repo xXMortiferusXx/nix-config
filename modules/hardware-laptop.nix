@@ -26,7 +26,7 @@
   # ────────────── LENOVO LEGION PERFORMANCE ──────────────
   # Kernel-Modul für Lüftersteuerung & Power-Profile (Rote LED / Fn+Q)
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  boot.kernelModules = [ "lenovo-legion-module" ];
+  boot.kernelModules = [ "lenovo_legion" ];
   
   # Ermöglicht das Umschalten zwischen Power-Profilen (Gaming/Eco)
   services.power-profiles-daemon.enable = true;
