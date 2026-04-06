@@ -4,6 +4,13 @@
   networking.hostName = "Mortiferus-PC";
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
+ 
+  # Systemweite Umgebungsvariablen
+  environment.variables = {
+    # Nvidia Shader Cache auf ca. 12GB festlegen (CachyOS Optimierung)
+    "__GL_SHADER_DISK_CACHE_SIZE" = "12000000000";
+  };
+
 
   # ────────────── Kernel & Hardware-Tweaks ──────────────
   boot.kernelPackages = pkgs.linuxPackages_zen;
