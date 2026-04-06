@@ -26,6 +26,9 @@
   boot.kernelParams = [ 
     "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PerfLevelSrc=0x3322;PowerMizerDefaultAC=0x1" 
     "nvidia.NVreg_EnableResizableBar=1"
+    "split_lock_detect=off"
+    "transparent_hugepage=madvise"
+    "amd_pstate=active"
   ];
 
   hardware.nvidia = {
@@ -80,13 +83,14 @@
   '';
 
   boot.kernel.sysctl = {
-    "net.core.default_qdisc" = "cake"; 
+    "net.core.default_qdisc" = "fq_codel"; 
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.ipv4.tcp_fastopen" = 3;
     "fs.file-max" = 2097152;
     "vm.swappiness" = 10;
     "vm.max_map_count" = 2147483647;
     "kernel.sched_itmt_enabled" = 1;
+    "net.ipv4.igmp_max_memberships" = 1024;
   };
 
   zramSwap = {
