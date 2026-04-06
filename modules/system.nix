@@ -49,7 +49,21 @@
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
   console.keyMap = "de";
+  
+  # ────────────── NIX SETTINGS & OPTIMIERUNG ──────────────
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true; # Spart Platz durch Hardlinks
+
+  # ────────────── HARDWARE FEINSCHLIFF ──────────────
+  hardware.cpu.amd.updateMicrocode = true; # Wichtig für AMD Stabilität
+  services.fstrim = {
+    enable = true;
+    interval = "weekly"; # Das ist der Standard, kannst du auch weglassen
+  };
+  # ────────────────────────────────────────────────────────
+
+
+
 
   security.sudo.extraRules = [{
     users = [ "mortiferus" ];
