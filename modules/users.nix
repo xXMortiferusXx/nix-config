@@ -5,6 +5,7 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
     packages = with pkgs; [
+      bitwarden-desktop
       cartridges
       kitty
       nautilus
