@@ -14,6 +14,11 @@
   # Ermöglicht Standardpfade wie /bin/bash für deine alten Scripte
   services.envfs.enable = true;
 
+  # Verhindert den "/usr/bin" Mount-Fehler (erzeugt Symlink für Kompatibilität)
+  systemd.tmpfiles.rules = [
+    "L+ /usr/bin - - - - /bin"
+  ];
+
   # ────────────── Kernel & Hardware-Tweaks ──────────────
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "tcp_bbr" ];
@@ -57,7 +62,7 @@
     }];
   }];
 
-  # Korrigierte Udev-Regeln (Zielt nur auf die Drive-Nodes, nicht Partitionen)
+  # Korrigierte Udev-Regeln
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
     ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="kyber"
