@@ -96,11 +96,11 @@
     priority = 100;
   };
 
-  services.ananicy = {
-    enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos;
-  };
+  #services.ananicy = {
+  #  enable = true;
+  #  package = pkgs.ananicy-cpp;
+  #  rulesProvider = pkgs.ananicy-rules-cachyos;
+  #};
 
   programs.neovim = {
     enable = true;
