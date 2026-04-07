@@ -1,7 +1,13 @@
 { config, pkgs, lib, ... }:
 
 {
- 
+
+  # Controller & Eingabegeräte
+  hardware.uinput.enable = true; 
+  hardware.xone.enable = true;
+  hardware.xpadneo.enable = true;
+
+
 hardware.graphics = {
   enable = true;
   enable32Bit = true;

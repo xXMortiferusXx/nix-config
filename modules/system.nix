@@ -59,8 +59,24 @@
   console.keyMap = "de";
   
   # ────────────── NIX SETTINGS & OPTIMIERUNG ──────────────
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.auto-optimise-store = true; # Spart Platz durch Hardlinks
+  #nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  #nix.settings.auto-optimise-store = true; # Spart Platz durch Hardlinks
+
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+
+    # Caches für schnelleres Gaming-Setup
+    substituters = [
+      "https://cache.nixos.org/"
+      "https://nix-gaming.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+    ];
+   };
+
 
   # ────────────── HARDWARE FEINSCHLIFF ──────────────
   hardware.cpu.amd.updateMicrocode = true; # Wichtig für AMD Stabilität

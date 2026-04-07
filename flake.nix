@@ -6,6 +6,8 @@
     # JETZT RICHTIG: Laut deiner Quelle
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell"; 
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    #Gaming
+    nix-gaming.url = "github:fufexan/nix-gaming";
   };
 
   outputs = { self, nixpkgs, ... }@inputs: 
