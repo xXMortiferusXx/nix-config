@@ -41,8 +41,8 @@
 
   services.scx = {
     enable = true;
-    scheduler = "scx_cake";
-    extraArgs = [ "--profile" "gaming" ];
+    scheduler = "scx_lavd";
+    extraArgs = [ "--performance"];
   };
 
   boot.loader.systemd-boot.enable = true;
