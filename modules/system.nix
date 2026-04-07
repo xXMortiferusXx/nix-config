@@ -7,6 +7,10 @@
 
   environment.variables = {
     "__GL_SHADER_DISK_CACHE_SIZE" = "12000000000";
+    "XCURSOR_THEME" = "Bibata-Modern-Classic";
+    "XCURSOR_SIZE" = "24";
+    "VDPAU_DRIVER" = "va_gl";
+    "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
   };
   
   # ────────────── DER SAUBERE WEG FÜR SCRIPTE ──────────────
@@ -29,6 +33,7 @@
     "split_lock_detect=off"
     "transparent_hugepage=madvise"
     "amd_pstate=active"
+    "amdgpu.sg_display=0" # Hilft bei manchen AMD/Nvidia-Laptops gegen leichtes Stottern im Bild
   ];
 
   hardware.nvidia = {
