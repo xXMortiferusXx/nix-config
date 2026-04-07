@@ -40,7 +40,14 @@ in
   };
 
   programs.gamemode.enable = true;
-
+ 
+  # Sunshine um mal auf dem TV zocken zu können
+  services.sunshine = {
+  enable = true;
+  autoStart = true; # Startet Sunshine direkt beim Booten
+  capSysAdmin = true; # Erleichtert den Zugriff auf die GPU-Buffer
+  };
+  
   # Optimierung für Prioritäten
   security.pam.loginLimits = [
     { domain = "@wheel"; item = "nice"; type = "-"; value = "-20"; }
