@@ -1,29 +1,27 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Home-Manager Konfiguration für Mortiferus
   home-manager.users.mortiferus = { config, ... }: {
 
-    # Home-Manager aktivieren
     programs.home-manager.enable = true;
 
-    # XDG-Config-Ordner verlinken (Live-Editierbar & im Git gesichert)
+    # XDG-Config-Links (Live-Editierbar & Git-Safe)
     xdg.configFile = {
-      # 1. Fenstermanager & Regeln
+      # Fenster-Manager
       "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
       
-      # 2. Design-System & UI-Elemente
+      # Design-System
       "noctalia".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/noctalia";
       
-      # 3. Gaming-Overlay (FPS, Sensoren, CPU/GPU Last)
+      # Gaming-Overlay
       "MangoHud".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/MangoHud";
+
+      # Audio-Routing & Mixer (für deine chatmixer.conf)
+      "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
     };
 
-    # User-Informationen
     home.username = "mortiferus";
     home.homeDirectory = "/home/mortiferus";
-
-    # Versionierung (Beibehalten)
     home.stateVersion = "25.11";
   };
 }
