@@ -1,0 +1,81 @@
+// ────────────── Globale Fenster-Optik ──────────────
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    opacity 1.0
+    draw-border-with-background false 
+}
+
+// ────────────── Hintergrund / Wallpaper Fix ──────────────
+layer-rule {
+    match namespace="^noctalia.*$"
+    match namespace="noctalia-wallpaper"
+    place-within-backdrop true
+}
+
+
+// ─── Workspace 1: Zen-Beta (Der "Schwebende" Look) ───
+window-rule {
+    match app-id="^zen.*$"
+    match app-id="zen-beta"
+    match app-id="io.github.zen_browser.zen"
+    
+    open-on-workspace "1"
+    open-floating false
+    default-column-width { proportion 1.0; }
+
+    // Fix gegen das Durchscheinen der Rahmenfarbe
+    //draw-border-with-background false 
+
+    // DEAKTIVIERT DEN RAHMEN KOMPLETT
+    // Nur für den Browser, damit er nahtlos transparent wirkt
+    focus-ring {
+        width 0
+    }
+    border {
+        width 0
+    }
+}
+
+// ─── Workspace 2: Steam & Gaming (Mit Rahmen zur Orientierung) ───
+window-rule {
+    match title="^Steam$"
+    match app-id="lutris"
+    match app-id="heroic"
+    match app-id="net.lutris.Lutris"
+    match app-id="com.heroicgameslauncher.hgl"
+
+    open-on-workspace "2"
+    open-floating false
+    default-column-width { proportion 0.5; }
+}
+
+// ─── Workspace 2: Vesktop (Soll maximiert starten) ───
+window-rule {
+    match app-id="^vesktop$"
+    match app-id="^discord$"
+    
+    open-on-workspace "2"
+    open-floating false
+    
+    // Das hier sorgt dafür, dass Vesktop (wie in deiner alten Config) 
+    // sofort den ganzen Platz einnimmt.
+    default-column-width { proportion 1.0; }
+}
+
+// ─── Workspace 3: Dateimanager ───
+window-rule {
+    match app-id="^org.gnome.Nautilus$"
+    match app-id="^thunar$"
+    
+    open-on-workspace "3"
+    open-floating false
+}
+
+// ─── Tools (Floating) ───
+window-rule {
+    match app-id="pavucontrol"
+    match app-id="qt6ct"
+    match app-id="qt5ct"
+    open-floating true
+}

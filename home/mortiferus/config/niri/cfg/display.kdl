@@ -1,0 +1,34 @@
+// ────────────── Output Configuration ──────────────
+// You can run `niri msg outputs` to get the correct name for your displays.
+// You will have to remove "/-" and edit it before it takes effect.
+// https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
+
+//- output "DP-1" {
+//    mode "2560x1440@359.979" // Set resolution and refresh rate
+//    scale 1 // No scaling (use 2 for HiDPI)
+//}
+
+    output "eDP-1" {
+        // Auflösung und Bildwiederholrate festlegen
+        mode "1920x1080@165.010"
+
+        // VRR nur aktivieren, wenn es von einer App (z.B. Spiel) angefordert wird
+        variable-refresh-rate on-demand=true
+
+        // Optional: Falls die Skalierung auf dem Laptop zu klein ist, 
+        // kannst du hier eine 1 (Standard) oder 1.25 setzen.
+        scale 1.0
+    }
+
+    output "eDP-2" {
+        // Auflösung und Bildwiederholrate festlegen
+        mode "1920x1080@165.010"
+
+        // VRR nur aktivieren, wenn es von einer App (z.B. Spiel) angefordert wird
+        variable-refresh-rate on-demand=true
+
+        // Optional: Falls die Skalierung auf dem Laptop zu klein ist, 
+        // kannst du hier eine 1 (Standard) oder 1.25 setzen.
+        scale 1.0
+    }
+

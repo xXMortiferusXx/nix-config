@@ -1,0 +1,34 @@
+    prefer-no-csd
+    screenshot-path null
+
+    environment {
+        ELECTRON_OZONE_PLATFORM_HINT "auto"
+        QT_QPA_PLATFORM "wayland"
+	QT_QPA_PLATFORMTHEME "qt6ct"
+        QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+        XDG_CURRENT_DESKTOP "niri"
+        XDG_SESSION_TYPE "wayland"
+        
+	// XDG_DATA_DIRS "/usr/local/share:/usr/share"
+	XCURSOR_THEME "Bibata-Modern-Classic"
+        XCURSOR_SIZE "24"
+
+        // --- NVIDIA Optimierungen ---
+        // Verhindert, dass der Mauszeiger unsichtbar wird oder laggt
+        //WLR_NO_HARDWARE_CURSORS "1"
+        
+        // Sichert korrekte Hardware-Beschleunigung für Video/Grafik
+        //LIBVA_DRIVER_NAME "nvidia"
+        //__GLX_VENDOR_LIBRARY_NAME "nvidia"
+        
+        // Verbessert Shader-Ladezeiten (weniger Ruckler in Apps/Games)
+        __GL_SHADER_DISK_CACHE_SKIP_CLEANUP "1"
+    }
+    debug {
+        // Allows notification actions and window activation from Noctalia.
+        honor-xdg-activation-with-invalid-serial
+    }
+
+    hotkey-overlay {
+       skip-at-startup
+    }

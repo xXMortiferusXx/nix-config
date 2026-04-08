@@ -12,6 +12,7 @@
     ./modules/fish.nix
     ./modules/kitty.nix
     ./modules/services/noctalia.nix
+    ./modules/home.nix
   ];
 
   system.stateVersion = "25.11";

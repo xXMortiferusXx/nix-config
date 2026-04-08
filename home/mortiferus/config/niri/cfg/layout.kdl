@@ -1,0 +1,37 @@
+layout {
+    gaps 8 
+    center-focused-column "never"
+    background-color "transparent"
+
+    focus-ring {
+    width 4
+    active-gradient from="#7aa89f" to="#223249" angle=135
+    inactive-color "#1a1a1a"
+    }
+
+    // Neu: Schatten für den modernen Look
+    shadow {
+        on
+        softness 15
+        color "rgba(0, 0, 0, 0.5)"
+    }
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    struts {}
+}
+
+    cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 24
+    }
+
+// Deine Workspaces (nach wie vor AUSSERHALB des Layout-Blocks)
+    workspace "1"
+    workspace "2"
+    workspace "3"
+    workspace "4"
