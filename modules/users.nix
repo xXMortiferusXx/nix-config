@@ -9,7 +9,9 @@
       libreoffice
       hunspellDicts.de_DE
       hyphenDicts.de-de
-      easyeffects
+      # AUDIO SETUP
+      jamesdsp      # Ersetzt/Ergänzt EasyEffects für echtes DTS
+      ###############
       yazi
       btop
       goverlay
@@ -23,7 +25,7 @@
       bibata-cursors
       qt6Packages.qt6ct
       libsForQt5.qt5ct
-      wireplumber 
+      #wireplumber 
       brightnessctl
       # Dokumente & Bilder
       zathura
