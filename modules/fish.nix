@@ -44,7 +44,7 @@
     # Abkürzungen (Tippe den Buchstaben + Leertaste zum Erweitern)
     shellAbbrs = {
       n  = "nix";
-      ns = "nix search nixpkgs";
+      ns = "nix-env -qaP";
       gs = "git status";
       ga = "git add";
       gc = "git commit";

@@ -5,6 +5,13 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
     packages = with pkgs; [
+      jq
+      libreoffice
+      hunspellDicts.de_DE
+      hyphenDicts.de-de
+      easyeffects
+      yazi
+      btop
       goverlay
       vesktop
       bitwarden-desktop

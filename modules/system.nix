@@ -76,10 +76,22 @@
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
    };
-
+ 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    fuse3
+    icu
+    nss
+    openssl
+    curl
+    expat
+  ];
 
   # ────────────── HARDWARE FEINSCHLIFF ──────────────
   hardware.cpu.amd.updateMicrocode = true; # Wichtig für AMD Stabilität
+  
   services.fstrim = {
     enable = true;
     interval = "weekly"; # Das ist der Standard, kannst du auch weglassen
