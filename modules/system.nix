@@ -12,7 +12,7 @@
     "VDPAU_DRIVER" = "va_gl";
     "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
   };
-  
+
   # ────────────── DER SAUBERE WEG FÜR SCRIPTE ──────────────
   # Wir schalten envfs AUS, um den Boot-Fehler zu killen.
   services.envfs.enable = false;
@@ -40,7 +40,7 @@
     modesetting.enable = true;
     powerManagement.enable = true;
     powerManagement.finegrained = false;
-    dynamicBoost.enable = true; 
+    dynamicBoost.enable = true;
     package = config.boot.kernelPackages.nvidia_x11;
   };
 
@@ -57,10 +57,11 @@
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
   console.keyMap = "de";
-  
+
   # ────────────── NIX SETTINGS & OPTIMIERUNG ──────────────
   #nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  #nix.settings.auto-optimise-store = true; # Spart Platz durch Hardlinks
+  #nix.settings.auto-optimise-store = true;
+  # Spart Platz durch Hardlinks
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
@@ -76,7 +77,7 @@
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
    };
- 
+
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
     stdenv.cc.cc
@@ -97,9 +98,6 @@
     interval = "weekly"; # Das ist der Standard, kannst du auch weglassen
   };
   # ────────────────────────────────────────────────────────
-
-
-
 
   security.sudo.extraRules = [{
     users = [ "mortiferus" ];
@@ -150,4 +148,22 @@
     wget git fastfetch htop nvtopPackages.full pciutils usbutils mesa-demos lenovo-legion
     config.services.scx.package
   ];
+
+  # ────────────── NEU: BROWSER POLICIES ──────────────
+  environment.etc."zen/policies/policies.json".text = builtins.toJSON {
+    policies = {
+      Preferences = {
+        "ui.context_menus.after_remote_menus" = {
+          Value = true;
+          Status = "locked";
+        };
+        "privacy.resistFingerprinting.letterboxing" = {
+          Value = false;
+          Status = "locked";
+        };
+      };
+    };
+  };
+
+  system.stateVersion = "25.11"; 
 }
