@@ -29,6 +29,7 @@
       brightnessctl
       # Dokumente & Bilder
       zathura
+      zathura-dfp-mudpf
       loupe 
       gimp
       #Scanner Software
