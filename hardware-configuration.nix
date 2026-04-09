@@ -23,9 +23,22 @@
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
-
+   
+  fileSystems."/mnt/gaming" = {
+      device = "/dev/disk/by-uuid/f094da54-c59f-40c5-9862-a8d3f560b6c5";
+      fsType = "ext4";
+      options = [ 
+                 "defaults"
+                 "noatime"  # Deaktiviert Schreibvorgänge für Zugriffszeiten (spart IO)
+                 "nofail"   # Bootet auch ohne die Platte (wichtig, falls sie mal spinnt)
+                 "user"     # Erlaubt das Mounten durch User (hilfreich für Steam)
+                ];
+              }; 
+  
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/e368c4bd-7749-4c65-84be-bc58754e0a27"; }
+    [ { device = "/dev/disk/by-uuid/e368c4bd-7749-4c65-84be-bc58754e0a27"; 
+        priority = 0; # Niedrige Priorität: Nur nutzen, wenn zRAM voll ist
+      }
     ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
