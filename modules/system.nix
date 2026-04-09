@@ -155,8 +155,18 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wget git fastfetch htop nvtopPackages.full pciutils usbutils mesa-demos lenovo-legion
+    wget
+    git
+    fastfetch
+    htop
+    nvtopPackages.full
+    pciutils
+    usbutils
+    mesa-demos
+    lenovo-legion
     config.services.scx.package
+    vulkan-loader
+    #vkmark  #lässt sich aktuell nicht compilen
   ];
 
   # ────────────── NEU: BROWSER POLICIES ──────────────

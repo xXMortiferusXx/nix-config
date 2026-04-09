@@ -28,7 +28,8 @@
             "gimp",
             "com.naps2.Naps2",
             "io.github.benjamimgois.goverlay",
-            "bitwarden"
+            "bitwarden",
+            "gay.pancake.lsfg-vk-ui"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",

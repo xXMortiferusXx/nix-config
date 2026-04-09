@@ -9,15 +9,23 @@
 
 
 hardware.graphics = {
-  enable = true;
-  enable32Bit = true;
-  extraPackages = with pkgs; [
-    libvdpau-va-gl      # Brücke für Video-Beschleunigung
-    libva-vdpau-driver   # Der neue Name für vaapiVdpau
-    libva-utils          # Sehr nützlich: ermöglicht den Befehl 'vainfo' zum Testen
-  ];
-};
+    enable = true; 
+    enable32Bit = true; 
+    extraPackages = with pkgs; [
+      # --- DEINE BESTEHENDEN PAKETE (Video-Beschleunigung) ---
+      libvdpau-va-gl       # Brücke für Video-Beschleunigung 
+      libva-vdpau-driver   # VA-API zu VDPAU Treiber 
+      libva-utils          # Ermöglicht 'vainfo' 
 
+      # --- NEU: VULKAN & DIAGNOSE (CachyOS-Style) ---
+      vulkan-loader
+      vulkan-tools         # Für vkcube und vulkaninfo
+      vulkan-validation-layers
+      vulkan-extension-layer
+    ];
+  };
+
+  
  services.xserver.videoDrivers = [ "nvidia" ];
 
 hardware.nvidia = {

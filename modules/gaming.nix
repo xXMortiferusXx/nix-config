@@ -39,7 +39,6 @@ in
     ];
   };
 
-  programs.gamemode.enable = true;
  
   # Sunshine um mal auf dem TV zocken zu können
   services.sunshine = {
@@ -58,22 +57,22 @@ in
     lutris 
     heroic 
     bottles 
-    mangohud 
     gamescope
-    game-performance 
-    nvidia-offload 
-    mesa-demos
     
     # Die offiziellen Pakete laut deiner Suche:
     lsfg-vk     # Die Engine
     lsfg-vk-ui  # Die GUI
   ];
 
+ # Das hier sorgt dafür, dass Mangohud & Gamemode perfekt ins System integriert werden
+  programs.gamemode.enable = true;
+
   environment.systemPackages = [ 
-    pkgs.mangohud 
-    pkgs.gamemode 
+    pkgs.mangohud
     game-performance 
     nvidia-offload 
     pkgs.mesa-demos
+    pkgs.vulkan-tools # Damit du 'vkcube' hast
   ];
+
 }
