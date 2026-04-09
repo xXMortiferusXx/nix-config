@@ -700,7 +700,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/mortiferus/Bilder/Wallpaper-NSFW",
+        "directory": "/home/mortiferus/Pictures/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
