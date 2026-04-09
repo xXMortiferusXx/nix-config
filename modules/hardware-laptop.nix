@@ -20,20 +20,36 @@ hardware.graphics = {
 
  services.xserver.videoDrivers = [ "nvidia" ];
 
-  hardware.nvidia = {
+hardware.nvidia = {
+    # Modesetting ist für Wayland/Niri zwingend erforderlich [cite: 59, 76]
     modesetting.enable = true;
-    open = true; 
+
+    # Nutzt die Open-Source Kernel-Module von NVIDIA (empfohlen für moderne Karten) [cite: 59, 76]
+    open = true;
+
+    # Nutzt das stabile Treiber-Paket passend zu deinem Zen-Kernel [cite: 60]
     package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+    # --- ENERGIE-OPTIMIERUNG FÜR ~9W IDLE ---
+    # Fine-grained Power Management erlaubt der GPU den Deep Sleep (D3Cold) 
+    powerManagement.enable = false; 
+    powerManagement.finegrained = true; 
+
+    # Ermöglicht Dynamic Boost zur intelligenten TDP-Verteilung zwischen CPU und GPU 
+    dynamicBoost.enable = true;
+
     prime = {
+      # Deine spezifischen Bus-IDs für das Legion Laptop [cite: 60]
       amdgpuBusId = "PCI:6:0:0";
       nvidiaBusId = "PCI:1:0:0";
+      
+      # Offload-Modus: Die NVIDIA-Karte schläft, bis sie explizit gerufen wird [cite: 61]
       offload = {
         enable = true;
         enableOffloadCmd = true;
       };
     };
   };
-
   # LENOVO LEGION PERFORMANCE
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
   services.power-profiles-daemon.enable = true;

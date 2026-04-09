@@ -28,21 +28,30 @@
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "tcp_bbr" ];
   boot.kernelParams = [ 
-    "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PerfLevelSrc=0x3322;PowerMizerDefaultAC=0x1" 
+    # --- DEINE GAMING PERFORMANCE (Behalten!) ---
+    "split_lock_detect=off"        # Verhindert Performance-Einbrüche bei alten Engines
+    "transparent_hugepage=madvise" # Optimiert Speichernutzung für Gaming
+    "amd_pstate=active"           # Volle Kontrolle über die AMD-Kerne
+    "amdgpu.sg_display=0"          # Verhindert Stottern (Hybrid-Graphics Fix)
+
+    # --- NVIDIA SETUP (Optimiert für 9W Idle) ---
+    # PerfLevelSrc=0x3322 wurde hier entfernt, damit die Karte schlafen darf
+    "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PowerMizerDefaultAC=0x1"
     "nvidia.NVreg_EnableResizableBar=1"
-    "split_lock_detect=off"
-    "transparent_hugepage=madvise"
-    "amd_pstate=active"
-    "amdgpu.sg_display=0" # Hilft bei manchen AMD/Nvidia-Laptops gegen leichtes Stottern im Bild
+    
+    # Neu für den Tiefschlaf (VRAM Management & PCIe Power)
+    "nvidia.NVreg_DynamicPowerManagementVideoMemoryThreshold=200"
+    #"pcie_aspm=force"
   ];
 
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    powerManagement.finegrained = false;
-    dynamicBoost.enable = true;
-    package = config.boot.kernelPackages.nvidia_x11;
-  };
+
+  #hardware.nvidia = {
+  #  modesetting.enable = true;
+  #  powerManagement.enable = true;
+  #  powerManagement.finegrained = false;
+  #  dynamicBoost.enable = true;
+  #  package = config.boot.kernelPackages.nvidia_x11;
+  #};
 
   services.scx = {
     enable = true;
@@ -114,7 +123,7 @@
   '';
 
   boot.kernel.sysctl = {
-    "net.core.default_qdisc" = "fq_codel"; 
+    "net.core.default_qdisc" = "cake"; 
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.ipv4.tcp_fastopen" = 3;
     "fs.file-max" = 2097152;
@@ -122,6 +131,7 @@
     "vm.max_map_count" = 2147483647;
     "kernel.sched_itmt_enabled" = 1;
     "net.ipv4.igmp_max_memberships" = 1024;
+    "kernel.sched_migration_cost_ns" = 500000;
   };
 
   zramSwap = {

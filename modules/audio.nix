@@ -16,6 +16,15 @@
       };
     };
   };
+  services.pipewire.extraConfig.pipewire."99-lowlatency" = {
+    "context.properties" = {
+      # CachyOS-typische Latenz-Optimierung
+      "default.clock.rate" = 48000;
+      "default.clock.quantum" = 1024;
+      "default.clock.min-quantum" = 32;
+      "default.clock.max-quantum" = 2048;
+    };
+  };
 
   environment.systemPackages = with pkgs; [ 
     pavucontrol 

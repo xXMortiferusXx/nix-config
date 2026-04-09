@@ -44,7 +44,7 @@ in
   # Sunshine um mal auf dem TV zocken zu können
   services.sunshine = {
   enable = true;
-  autoStart = true; # Startet Sunshine direkt beim Booten
+  autoStart = false; # Startet Sunshine direkt beim Booten
   capSysAdmin = true; # Erleichtert den Zugriff auf die GPU-Buffer
   };
   
