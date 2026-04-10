@@ -54,8 +54,6 @@
 
   # ────────────── System-weite Pakete (Optik & Tools) ──────────────
   environment.systemPackages = with pkgs; [
-    adwaita-icon-theme
-    bibata-cursors
     gnome-themes-extra
     
     # XWayland Brücke für Steam
