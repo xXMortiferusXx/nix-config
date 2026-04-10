@@ -5,54 +5,46 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
     packages = with pkgs; [
-      jq
+      # Browser
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      
+      # Gaming & Launcher
+      cartridges
+      goverlay
+
+      # Kommunikation & Office
+      vesktop
+      bitwarden-desktop
       libreoffice
       hunspellDicts.de_DE
       hyphenDicts.de-de
-      # AUDIO SETUP
-      jamesdsp      # Ersetzt/Ergänzt EasyEffects für echtes DTS
-      ###############
+
+      # Medien & Grafik
+      gimp
+      loupe
+      naps2
+
+      # PDF-Sektion (MuPDF Fix)
+      zathura
+      zathuraPkgs.zathura_pdf_mupdf
+
+      # System-Tools & Utilities
+      jq
       yazi
       btop
-      goverlay
-      vesktop
-      bitwarden-desktop
-      cartridges
-      kitty
       nautilus
-      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      brightnessctl
+      jamesdsp
+      kdePackages.qt6ct
+      libsForQt5.qt5ct
+
+      # Optik & Design
       adwaita-icon-theme
       bibata-cursors
-      qt6Packages.qt6ct
-      libsForQt5.qt5ct
-      #wireplumber 
-      brightnessctl
-      # Dokumente & Bilder
-      zathura
-      loupe 
-      gimp
-      #Scanner Software
-      naps2
-      kdePackages.skanpage
     ];
   };
 
-  # DIESER TEIL HAT GERADE GEFEHLT:
-  # ──────────────────────────────────────────────────
   services.printing.enable = true;
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
-  hardware.sane = {
-    enable = true;
-    extraBackends = [ pkgs.sane-airscan ];
-  };
-  # ──────────────────────────────────────────────────
-
-  services.gvfs.enable = true; 
+  services.gvfs.enable = true;
   services.udisks2.enable = true;
-  programs.fish.enable = true;
 }

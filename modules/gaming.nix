@@ -1,7 +1,8 @@
-{ config, pkgs, ... }: # "inputs" kann hier jetzt raus, wenn du es nicht für anderes brauchst
+{ config, pkgs, ... }: 
 
 let
-  # Deine Beast-Mode & Offload Skripte bleiben gleich
+ 
+ # Deine Beast-Mode & Offload Skripte bleiben gleich
   game-performance = pkgs.writeShellScriptBin "game-performance" ''
     SMI="/run/current-system/sw/bin/nvidia-smi"
     LEGION="/run/current-system/sw/bin/legion_cli"

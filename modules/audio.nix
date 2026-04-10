@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
+
 {
   security.rtkit.enable = true;
+  
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -9,22 +11,17 @@
     jack.enable = true;
     wireplumber.enable = true;
 
-    # 1. PLUGIN PFADE SETZEN
-    extraConfig.pipewire."99-ladspa-path" = {
+    extraConfig.pipewire."99-lowlatency" = {
       "context.properties" = {
-        "spa.plugin.dir" = "${pkgs.pipewire}/lib/spa-0.2";
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 512;      # Ein sicherer Mittelwert (vorher 1024)
+        "default.clock.min-quantum" = 64;   # Etwas entspannter (vorher 32)
+        "default.clock.max-quantum" = 2048; # Genug Puffer für Hintergrundmusik
       };
     };
   };
-  services.pipewire.extraConfig.pipewire."99-lowlatency" = {
-    "context.properties" = {
-      # CachyOS-typische Latenz-Optimierung
-      "default.clock.rate" = 48000;
-      "default.clock.quantum" = 1024;
-      "default.clock.min-quantum" = 32;
-      "default.clock.max-quantum" = 2048;
-    };
-  };
+  
+  environment.variables.LADSPA_PATH = "/run/current-system/sw/lib/ladspa";
 
   environment.systemPackages = with pkgs; [ 
     pavucontrol 
@@ -32,7 +29,6 @@
     ladspa-sdk
     ladspaPlugins
     alsa-utils
+    # jamesdsp ist bereits in deiner users.nix, das reicht!
   ];
-
-  environment.variables.LADSPA_PATH = "/run/current-system/sw/lib/ladspa";
 }
