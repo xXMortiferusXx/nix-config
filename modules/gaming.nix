@@ -27,20 +27,30 @@ let
   '';
 in
 {
+  
+# 1. Die Variable global setzen (Steam zieht sich die beim Start)
+  environment.sessionVariables = {
+    MANGOHUD_CONFIG = "legacy_layout=0,table_columns=3,gpu_stats,gpu_temp,gpu_core_clock,gpu_mem_temp,vram,gpu_color=2E9762,cpu_stats,cpu_temp,cpu_mhz,cpu_color=2E97CB,ram,fps,fps_metrics=avg+0.01,frame_timing,background_alpha=0.4,font_size=20";  
+  };
+
+  # 2. Dein Steam Block bleibt sauber
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
-    gamescopeSession.enable = true;
-    
-    # Offizieller Weg für Proton-GE
+    gamescopeSession.enable = false;
+
+    package = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        mangohud
+      ];
+    };
+
     extraCompatPackages = [
       pkgs.proton-ge-bin
     ];
   };
-
- 
-  # Sunshine um mal auf dem TV zocken zu können
+# Sunshine um mal auf dem TV zocken zu können
   services.sunshine = {
   enable = true;
   autoStart = false; # Startet Sunshine direkt beim Booten
@@ -58,7 +68,8 @@ in
     heroic 
     bottles 
     gamescope
-    
+    mangohud
+
     # Die offiziellen Pakete laut deiner Suche:
     lsfg-vk     # Die Engine
     lsfg-vk-ui  # Die GUI
@@ -68,8 +79,7 @@ in
   programs.gamemode.enable = true;
 
   environment.systemPackages = [ 
-    pkgs.mangohud
     game-performance 
-    nvidia-offload 
+    #nvidia-offload 
   ];
 }

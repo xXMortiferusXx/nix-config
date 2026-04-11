@@ -11,6 +11,7 @@
     "XCURSOR_SIZE" = "24";
     "VDPAU_DRIVER" = "va_gl";
     "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
+    MANGOHUD_CONFIGFILE = "/home/mortiferus/.config/MangoHud/MangoHud.conf";
   };
 
   # ────────────── DER SAUBERE WEG FÜR SCRIPTE ──────────────
@@ -26,7 +27,7 @@
   # ─────────────────────────────────────────────────────────
 
   boot.kernelPackages = pkgs.linuxPackages_xanmod;
-  boot.kernelModules = [ "tcp_bbr" ];
+  boot.kernelModules = [ "tcp_bbr" "ntsync" ];
   boot.kernelParams = [ 
     # --- DEINE GAMING PERFORMANCE (Behalten!) ---
     "split_lock_detect=off"        # Verhindert Performance-Einbrüche bei alten Engines
@@ -44,10 +45,6 @@
     #"pcie_aspm=force"
   ];
   
-  environment.variables = {
-  PROTON_WINE_NTSYNC = "1";
-  };
-
   #hardware.nvidia = {
   #  modesetting.enable = true;
   #  powerManagement.enable = true;
