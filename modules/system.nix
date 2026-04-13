@@ -55,10 +55,16 @@
 
   services.scx = {
     enable = true;
-    scheduler = "scx_lavd";
-    extraArgs = [ "--performance"];
+    scheduler = "scx_rusty";
+    extraArgs = [ 
+      "-f"           # Force: Ignoriert Warnungen bei der Kern-Zuweisung
+      "-u" "2000"    # Slice-Time: 2ms für ruhigere CPU-Last
+      "-o" "2000"    # Overload-Interval: Hält Threads stabil auf Kernen
+      "-g" "1"       # Greed-Faktor: Wie aggressiv Kerne Aufgaben "klauen"
+      "-c" "3"       # Cache-Fokus: Bleibt strikt innerhalb des L3-Caches
+      "-k"           # Kill-All: Beendet BPF-Reste sauber beim Stoppen
+    ];
   };
-
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.enable = false;
