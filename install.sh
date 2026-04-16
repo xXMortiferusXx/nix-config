@@ -6,6 +6,53 @@ REPO_URL="https://github.com/xXMortiferusXx/nix-config.git"
 HOSTNAME="Mortiferus-PC"
 # ---------------------
 
+echo "--- SCHRITT 1: Vorbereitung der Umgebung ---"
+# Falls Disko schon gemountet hat, nutzen wir das.
+if ! findmnt /mnt > /dev/null; then
+    echo "Partitionen nicht gemountet. Starte Disko..."
+    sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$REPO_URL#$HOSTNAME"
+fi
+
+echo "--- SCHRITT 2: Config abholen & Lock-File fixen ---"
+# Wir arbeiten im RAM (/tmp), um Konflikte mit dem Git-Status zu vermeiden
+sudo rm -rf /tmp/nixos-config
+git clone "$REPO_URL" /tmp/nixos-config
+cd /tmp/nixos-config
+
+# Hier passiert die Magie: Wir erzwingen ein Update der Lockfile, 
+# damit die Hashes garantiert zum aktuellen Live-System passen.
+echo "Aktualisiere Abhängigkeiten (flake.lock)..."
+sudo nix --experimental-features "nix-command flakes" flake update
+
+echo "--- SCHRITT 3: Kopieren der Config nach /mnt ---"
+sudo mkdir -p /mnt/etc/nixos
+sudo cp -r . /mnt/etc/nixos/
+sudo rm -rf /mnt/etc/nixos/.git
+
+echo "--- SCHRITT 4: Installation ---"
+# Wir nutzen --no-write-lock-file, damit Nix nicht versucht, 
+# während der Installation auf dem Read-Only Medium zu schreiben.
+sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" --no-root-passwd
+
+echo "--- SCHRITT 5: Benutzer-Passwörter ---"
+# Da wir vollautomatisch sein wollen, setzen wir ein temporäres Passwort "nixos"
+# Das kannst du nach dem ersten Boot sofort mit 'passwd' ändern.
+echo "Setze temporäre Passwörter (User: nixos, Root: nixos)..."
+echo "root:nixos" | sudo nixos-enter --root /mnt -- chpasswd
+echo "mortiferus:nixos" | sudo nixos-enter --root /mnt -- chpasswd
+
+echo "-----------------------------------------------------------"
+echo "INSTALLATION ABGESCHLOSSEN!"
+echo "Du kannst jetzt 'reboot' tippen."
+echo "WICHTIG: Deine Passwörter sind aktuell beide 'nixos'."
+echo "-----------------------------------------------------------"#!/usr/bin/env bash
+set -e
+
+# --- KONFIGURATION ---
+REPO_URL="https://github.com/xXMortiferusXx/nix-config.git"
+HOSTNAME="Mortiferus-PC"
+# ---------------------
+
 # 1. Git für den Klon-Vorgang sicherstellen
 if ! command -v git &> /dev/null; then
     echo "Git fehlt. Lade temporäre Nix-Shell..."
