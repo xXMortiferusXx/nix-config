@@ -13,6 +13,7 @@ layer-rule {
     place-within-backdrop true
 }
 
+
 // ─── Workspace 1: Zen-Beta (Der "Schwebende" Look) ───
 window-rule {
     match app-id="^zen.*$"
@@ -24,7 +25,7 @@ window-rule {
     default-column-width { proportion 1.0; }
 
     // Fix gegen das Durchscheinen der Rahmenfarbe
-    draw-border-with-background false
+    //draw-border-with-background false 
 
     // DEAKTIVIERT DEN RAHMEN KOMPLETT
     // Nur für den Browser, damit er nahtlos transparent wirkt

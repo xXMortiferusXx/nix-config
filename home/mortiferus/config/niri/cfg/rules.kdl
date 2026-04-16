@@ -1,81 +1,64 @@
-// ────────────── Globale Fenster-Optik ──────────────
-window-rule {
-    geometry-corner-radius 12
-    clip-to-geometry true
-    opacity 1.0
-    draw-border-with-background false 
-}
-
-// ────────────── Hintergrund / Wallpaper Fix ──────────────
-layer-rule {
-    match namespace="^noctalia.*$"
-    match namespace="noctalia-wallpaper"
-    place-within-backdrop true
-}
-
-
-// ─── Workspace 1: Zen-Beta (Der "Schwebende" Look) ───
-window-rule {
-    match app-id="^zen.*$"
-    match app-id="zen-beta"
-    match app-id="io.github.zen_browser.zen"
-    
-    open-on-workspace "1"
-    open-floating false
-    default-column-width { proportion 1.0; }
-
-    // Fix gegen das Durchscheinen der Rahmenfarbe
-    //draw-border-with-background false 
-
-    // DEAKTIVIERT DEN RAHMEN KOMPLETT
-    // Nur für den Browser, damit er nahtlos transparent wirkt
-    focus-ring {
-        width 0
+   window-rule {
+        geometry-corner-radius 20 // Set every window radius to 20
+        clip-to-geometry true
     }
-    border {
-        width 0
-    }
-}
 
-// ─── Workspace 2: Steam & Gaming (Mit Rahmen zur Orientierung) ───
+    layer-rule {
+        match namespace="^noctalia-wallpaper*"
+        place-within-backdrop true
+    }
+
 window-rule {
+    // Wir ignorieren die App-ID und gehen rein auf den Fensternamen
     match title="^Steam$"
-    match app-id="lutris"
-    match app-id="heroic"
-    match app-id="net.lutris.Lutris"
-    match app-id="com.heroicgameslauncher.hgl"
-
     open-on-workspace "2"
-    open-floating false
-    default-column-width { proportion 0.5; }
-}
+    open-fullscreen false
 
-// ─── Workspace 2: Vesktop (Soll maximiert starten) ───
+    // Das hier ist wichtig: Es zwingt Niri, das Fenster
+    // auch dann zu verschieben, wenn es eigentlich schon "platziert" ist.
+
+    block-out-from "screen-capture" // Nur ein Beispiel-Property zum Triggern
+} 
+
 window-rule {
-    match app-id="^vesktop$"
-    match app-id="^discord$"
+    // Vesktop erkennt man meist am App-ID oder Titel
+    match app-id="vesktop"
     
+    // Schiebe es auf Workspace 2
     open-on-workspace "2"
-    open-floating false
     
-    // Das hier sorgt dafür, dass Vesktop (wie in deiner alten Config) 
-    // sofort den ganzen Platz einnimmt.
+    // Optional: Automatisch maximieren, damit es den Platz nutzt
     default-column-width { proportion 1.0; }
 }
 
-// ─── Workspace 3: Dateimanager ───
 window-rule {
-    match app-id="^org.gnome.Nautilus$"
-    match app-id="^thunar$"
-    
-    open-on-workspace "3"
-    open-floating false
+    // Lutris (deckt beide IDs ab)
+    match app-id="net.lutris.Lutris"
+    match app-id="lutris"
+    open-on-workspace "2"
 }
 
-// ─── Tools (Floating) ───
 window-rule {
-    match app-id="pavucontrol"
-    match app-id="qt6ct"
-    match app-id="qt5ct"
+    // Heroic Games Launcher
+    match app-id="com.heroicgameslauncher.hgl"
+    match app-id="heroic"
+    open-on-workspace "2"
+}
+
+window-rule {
+    // Firefox erkennt man am besten über die app-id
+    match app-id="firefox"
+    open-on-workspace "1"
+}
+window-rule {
+    // Firefox erkennt man am besten über die app-id
+    match app-id="brave"
+    open-on-workspace "1"
+}
+window-rule {
+    match app-id=r#"^zen$"#
+
+    open-on-workspace "1"
     open-floating true
 }
+
