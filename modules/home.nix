@@ -4,9 +4,6 @@
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true; # [cite: 87]
 
-    # MangoHud Block wurde entfernt, da er nun über die gaming.nix 
-    # und die globale Config in system.nix gesteuert wird. [cite: 88]
-
     # mpv Konfiguration [cite: 89]
     programs.mpv = {
       enable = true; # [cite: 89]
