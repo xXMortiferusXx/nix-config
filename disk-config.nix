@@ -1,8 +1,9 @@
-{ device ? "/dev/nvme0n1", ... }: {
+{ ... }: {
   disko.devices = {
     disk = {
       main = {
-        inherit device;
+        # Hier wird das Device fest definiert, damit der Fehler 'attribute device missing' verschwindet
+        device = "/dev/nvme0n1"; 
         type = "disk";
         content = {
           type = "gpt";
@@ -22,7 +23,7 @@
               content = {
                 type = "swap";
                 discardPolicy = "both";
-                # resumeDevice entfernt -> reiner Backup-Arbeitsspeicher
+                # resumeDevice ist entfernt für reinen RAM-Backup-Swap
               };
             };
             root = {
@@ -31,9 +32,18 @@
                 type = "btrfs";
                 extraArgs = [ "-f" ]; 
                 subvolumes = {
-                  "/root" = { mountpoint = "/"; mountOptions = [ "compress=zstd" "noatime" ]; };
-                  "/home" = { mountpoint = "/home"; mountOptions = [ "compress=zstd" "noatime" ]; };
-                  "/nix" = { mountpoint = "/nix"; mountOptions = [ "compress=zstd" "noatime" ]; };
+                  "/root" = { 
+                    mountpoint = "/"; 
+                    mountOptions = [ "compress=zstd" "noatime" ]; 
+                  };
+                  "/home" = { 
+                    mountpoint = "/home"; 
+                    mountOptions = [ "compress=zstd" "noatime" ]; 
+                  };
+                  "/nix" = { 
+                    mountpoint = "/nix"; 
+                    mountOptions = [ "compress=zstd" "noatime" ]; 
+                  };
                 };
               };
             };
