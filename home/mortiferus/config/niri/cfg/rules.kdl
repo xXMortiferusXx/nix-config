@@ -1,7 +1,10 @@
-   window-rule {
-        geometry-corner-radius 20 // Set every window radius to 20
-        clip-to-geometry true
-    }
+// ────────────── Globale Fenster-Optik ──────────────
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    opacity 1.0
+    draw-border-with-background false 
+}
 
     layer-rule {
         match namespace="^noctalia-wallpaper*"
@@ -56,7 +59,7 @@ window-rule {
     open-on-workspace "1"
 }
 window-rule {
-    match app-id=r#"^zen$"#
+    match app-id="zen-beta"
 
     open-on-workspace "1"
     open-floating true

@@ -28,31 +28,7 @@
 
   boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
-  boot.kernelParams = [ 
-    # --- DEINE GAMING PERFORMANCE (Behalten!) ---
-    "split_lock_detect=off"        # Verhindert Performance-Einbrüche bei alten Engines
-    "transparent_hugepage=madvise" # Optimiert Speichernutzung für Gaming
-    "amd_pstate=active"           # Volle Kontrolle über die AMD-Kerne
-    "amdgpu.sg_display=0"          # Verhindert Stottern (Hybrid-Graphics Fix)
-
-    # --- NVIDIA SETUP (Optimiert für 9W Idle) ---
-    # PerfLevelSrc=0x3322 wurde hier entfernt, damit die Karte schlafen darf
-    "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PowerMizerDefaultAC=0x1"
-    "nvidia.NVreg_EnableResizableBar=1"
-    
-    # Neu für den Tiefschlaf (VRAM Management & PCIe Power)
-    "nvidia.NVreg_DynamicPowerManagementVideoMemoryThreshold=200"
-    #"pcie_aspm=force"
-  ];
   
-  #hardware.nvidia = {
-  #  modesetting.enable = true;
-  #  powerManagement.enable = true;
-  #  powerManagement.finegrained = false;
-  #  dynamicBoost.enable = true;
-  #  package = config.boot.kernelPackages.nvidia_x11;
-  #};
-
   services.scx = {
     enable = true;
     scheduler = "scx_rusty";

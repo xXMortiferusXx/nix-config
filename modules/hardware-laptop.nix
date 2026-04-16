@@ -1,67 +1,71 @@
 { config, pkgs, lib, ... }:
 
 {
-
   # Controller & Eingabegeräte
   hardware.uinput.enable = true; 
   hardware.xone.enable = true;
   hardware.xpadneo.enable = true;
 
-
-hardware.graphics = {
+  hardware.graphics = {
     enable = true; 
     enable32Bit = true; 
     extraPackages = with pkgs; [
-      # --- DEINE BESTEHENDEN PAKETE (Video-Beschleunigung) ---
-      libvdpau-va-gl       # Brücke für Video-Beschleunigung 
-      libva-vdpau-driver   # VA-API zu VDPAU Treiber 
-      libva-utils          # Ermöglicht 'vainfo' 
-
-      # --- NEU: VULKAN & DIAGNOSE (CachyOS-Style) ---
+      libvdpau-va-gl
+      libva-vdpau-driver
+      libva-utils
       vulkan-loader
-      vulkan-tools         # Für vkcube und vulkaninfo
+      vulkan-tools
       vulkan-validation-layers
       vulkan-extension-layer
     ];
   };
 
- services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
-hardware.nvidia = {
-    # Modesetting ist für Wayland/Niri zwingend erforderlich
+  # --- DEIN AKTUELLER KERNEL-BLOCK (Eins zu Eins) ---
+  boot.kernelParams = [ 
+    # --- DEINE GAMING PERFORMANCE (Behalten!) ---
+    "split_lock_detect=off"        # Verhindert Performance-Einbrüche bei alten Engines
+    "transparent_hugepage=madvise" # Optimiert Speichernutzung für Gaming
+    "amd_pstate=active"            # Volle Kontrolle über die AMD-Kerne
+    "amdgpu.sg_display=0"          # Verhindert Stottern (Hybrid-Graphics Fix)
+
+    # --- NVIDIA SETUP (Optimiert für 9W Idle) ---
+    # PerfLevelSrc=0x3322 wurde hier entfernt, damit die Karte schlafen darf
+    "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PowerMizerDefaultAC=0x1"
+    "nvidia.NVreg_EnableResizableBar=1"
+    
+    # Neu für den Tiefschlaf (VRAM Management & PCIe Power)
+    "nvidia.NVreg_DynamicPowerManagementVideoMemoryThreshold=500"
+  ];
+
+  hardware.nvidia = {
     modesetting.enable = true;
-    nvidiaSettings = true; # Korrigiert: Aktiviert Management-Tools & Bibliotheken
-
-    # Nutzt die Open-Source Kernel-Module von NVIDIA (empfohlen für moderne Karten)
+    nvidiaSettings = true;
     open = true;
-
-    # Nutzt das stabile Treiber-Paket passend zu deinem Zen-Kernel
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
-    # --- ENERGIE-OPTIMIERUNG FÜR ~9W IDLE ---
-    # Fine-grained Power Management erlaubt der GPU den Deep Sleep (D3Cold) 
-    powerManagement.enable = true; # Korrigiert: Muss auf true für finegrained
-    powerManagement.finegrained = true; #
+    # Energie-Optimierung für Deep Sleep (D3Cold)
+    powerManagement.enable = true;
+    powerManagement.finegrained = true;
 
-    # Ermöglicht Dynamic Boost zur intelligenten TDP-Verteilung zwischen CPU und GPU
     dynamicBoost.enable = true;
 
     prime = {
-      # Deine spezifischen Bus-IDs für das Legion Laptop
       amdgpuBusId = "PCI:6:0:0";
       nvidiaBusId = "PCI:1:0:0";
       
-      # Offload-Modus: Die NVIDIA-Karte schläft, bis sie explizit gerufen wird
       offload = {
         enable = true;
-        enableOffloadCmd = true; #
+        enableOffloadCmd = true;
       };
     };
   };
-  # LENOVO LEGION PERFORMANCE
-  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ]; #
-  services.power-profiles-daemon.enable = true; #
+
+  # Lenovo Legion Performance
+  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
+  services.power-profiles-daemon.enable = true;
   environment.systemPackages = with pkgs; [
-    lenovo-legion #
+    lenovo-legion 
   ];
 }
