@@ -25,44 +25,43 @@ hardware.graphics = {
     ];
   };
 
-  
  services.xserver.videoDrivers = [ "nvidia" ];
 
 hardware.nvidia = {
-    # Modesetting ist für Wayland/Niri zwingend erforderlich [cite: 59, 76]
+    # Modesetting ist für Wayland/Niri zwingend erforderlich
     modesetting.enable = true;
+    nvidiaSettings = true; # Korrigiert: Aktiviert Management-Tools & Bibliotheken
 
-    # Nutzt die Open-Source Kernel-Module von NVIDIA (empfohlen für moderne Karten) [cite: 59, 76]
+    # Nutzt die Open-Source Kernel-Module von NVIDIA (empfohlen für moderne Karten)
     open = true;
 
-    # Nutzt das stabile Treiber-Paket passend zu deinem Zen-Kernel [cite: 60]
+    # Nutzt das stabile Treiber-Paket passend zu deinem Zen-Kernel
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     # --- ENERGIE-OPTIMIERUNG FÜR ~9W IDLE ---
     # Fine-grained Power Management erlaubt der GPU den Deep Sleep (D3Cold) 
-    powerManagement.enable = false; 
-    powerManagement.finegrained = true; 
+    powerManagement.enable = true; # Korrigiert: Muss auf true für finegrained
+    powerManagement.finegrained = true; #
 
-    # Ermöglicht Dynamic Boost zur intelligenten TDP-Verteilung zwischen CPU und GPU 
+    # Ermöglicht Dynamic Boost zur intelligenten TDP-Verteilung zwischen CPU und GPU
     dynamicBoost.enable = true;
 
     prime = {
-      # Deine spezifischen Bus-IDs für das Legion Laptop [cite: 60]
+      # Deine spezifischen Bus-IDs für das Legion Laptop
       amdgpuBusId = "PCI:6:0:0";
       nvidiaBusId = "PCI:1:0:0";
       
-      # Offload-Modus: Die NVIDIA-Karte schläft, bis sie explizit gerufen wird [cite: 61]
+      # Offload-Modus: Die NVIDIA-Karte schläft, bis sie explizit gerufen wird
       offload = {
         enable = true;
-        enableOffloadCmd = true;
+        enableOffloadCmd = true; #
       };
     };
   };
   # LENOVO LEGION PERFORMANCE
-  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  services.power-profiles-daemon.enable = true;
-
+  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ]; #
+  services.power-profiles-daemon.enable = true; #
   environment.systemPackages = with pkgs; [
-    lenovo-legion 
+    lenovo-legion #
   ];
 }
