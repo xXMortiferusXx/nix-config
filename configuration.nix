@@ -1,6 +1,7 @@
 { config, pkgs, inputs, ... }:
 {
   imports = [
+    ./disk-config.nix
     ./hardware-configuration.nix
     ./modules/system.nix
     ./modules/hardware-laptop.nix
