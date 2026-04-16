@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    #Disko
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
     # Home‑Manager einbinden
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -25,6 +29,7 @@
         specialArgs = { inherit inputs; };
 
         modules = [
+          disko.nixosModules.disko
           ./configuration.nix
 
           # Home‑Manager als NixOS‑Modul aktivieren
