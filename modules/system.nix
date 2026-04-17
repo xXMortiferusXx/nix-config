@@ -11,15 +11,10 @@
     "XCURSOR_SIZE" = "24";
     "VDPAU_DRIVER" = "va_gl";
     "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
-    MANGOHUD_CONFIGFILE = "/home/mortiferus/.config/MangoHud/MangoHud.conf";
   };
 
-  # ────────────── DER SAUBERE WEG FÜR SCRIPTE ──────────────
-  # Wir schalten envfs AUS, um den Boot-Fehler zu killen.
   services.envfs.enable = false;
 
-  # Stattdessen verlinken wir NUR die bash dorthin, wo Scripte sie suchen.
-  # Das erzeugt keinen Mount-Konflikt!
   systemd.tmpfiles.rules = [
     "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
     "L+ /usr/bin/env - - - - ${pkgs.coreutils}/bin/env"
@@ -50,10 +45,6 @@
   console.keyMap = "de";
 
   # ────────────── NIX SETTINGS & OPTIMIERUNG ──────────────
-  #nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  #nix.settings.auto-optimise-store = true;
-  # Spart Platz durch Hardlinks
-
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
@@ -123,11 +114,11 @@
     priority = 100;
   };
 
-  #services.ananicy = {
-  #  enable = true;
-  #  package = pkgs.ananicy-cpp;
-  #  rulesProvider = pkgs.ananicy-rules-cachyos;
-  #};
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
 
   programs.neovim = {
     enable = true;

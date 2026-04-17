@@ -9,12 +9,8 @@
       libreoffice
       hunspellDicts.de_DE
       hyphenDicts.de-de
-      # AUDIO SETUP
-      jamesdsp      # Ersetzt/Ergänzt EasyEffects für echtes DTS
-      ###############
       yazi
       btop
-      goverlay
       vesktop
       bitwarden-desktop
       cartridges

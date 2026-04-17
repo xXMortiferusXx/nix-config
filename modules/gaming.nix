@@ -46,13 +46,12 @@ in
   
 # 1. Die Variable global setzen (Steam zieht sich die beim Start)
   environment.sessionVariables = {
-    # Korrigiert: Als Liste definiert und mkForce genutzt
     LD_LIBRARY_PATH = lib.mkForce [ 
       "/run/opengl-driver/lib" 
       "/run/opengl-driver-32/lib" 
     ];
     # Zurück zur alten MangoHud Version, die bei dir funktioniert hat
-    MANGOHUD_CONFIG = "legacy_layout=0,table_columns=3,gpu_stats,gpu_temp,gpu_core_clock,gpu_mem_temp,vram,gpu_color=2E9762,cpu_stats,cpu_temp,cpu_mhz,cpu_color=2E97CB,ram,fps,fps_metrics=avg+0.01,frame_timing,background_alpha=0.4,font_size=20";
+    MANGOHUD_CONFIG = "legacy_layout=0,table_columns=3,gpu_stats,gpu_temp,gpu_core_clock,vram,gpu_color=2E9762,cpu_stats,cpu_temp,cpu_mhz,cpu_color=2E97CB,ram,fps,fps_metrics=avg+0.01,frame_timing,background_alpha=0.4,font_size=20";
   };
 
   # 2. Dein Steam Block bleibt sauber
@@ -73,7 +72,7 @@ in
     ];
   };
 
-# Sunshine um mal auf dem TV zocken zu können
+  # Sunshine um mal auf dem TV zocken zu können
   services.sunshine = {
     enable = true;
     autoStart = false;
@@ -97,8 +96,7 @@ in
     brightnessctl
   ];
 
-  # Das hier sorgt dafür, dass Mangohud & Gamemode perfekt ins System integriert werden
-  programs.gamemode.enable = true;
+  programs.gamemode.enable = false;
   environment.systemPackages = [ 
     game-performance 
     #nvidia-offload 
