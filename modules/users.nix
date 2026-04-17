@@ -5,6 +5,10 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
     packages = with pkgs; [
+      #3d Printing
+      prusa-slicer
+      orca-slicer
+      ############
       jq
       libreoffice
       hunspellDicts.de_DE
