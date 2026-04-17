@@ -28,7 +28,7 @@
       ls = "eza --icons --group-directories-first";
       ll = lib.mkForce "eza -lha --icons --group-directories-first";
       tree = "eza --tree --icons";
-
+      ideamaker = "QT_QPA_PLATFORM=xcb LD_LIBRARY_PATH=\"\" ~/Apps/ideaMaker.AppImage";
       # Sicherheit & Navigation
       ".."    = "cd ..";
       "..."   = "cd ../..";

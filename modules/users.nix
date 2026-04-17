@@ -2,10 +2,21 @@
 {
   users.users.mortiferus = {
     isNormalUser = true;
+    description = "Mortiferus";
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
     packages = with pkgs; [
       #3d Printing
+      (makeDesktopItem {
+        name = "ideamaker";
+        desktopName = "ideaMaker";
+        exec = "env QT_QPA_PLATFORM=xcb LD_LIBRARY_PATH=\"\" /home/mortiferus/Apps/ideaMaker.AppImage";
+        icon = "/home/mortiferus/Apps/ideamaker.png"; # Hier jetzt den Pfad zum Bild rein
+        comment = "Raise3D Slicing Software";
+        categories = [ "Graphics" "3DGraphics" ];
+        terminal = false;
+        type = "Application";
+      })
       prusa-slicer
       orca-slicer
       ############

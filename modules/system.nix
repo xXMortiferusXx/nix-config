@@ -13,15 +13,16 @@
     "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
   };
 
-  services.envfs.enable = false;
-
-  systemd.tmpfiles.rules = [
-    "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
-    "L+ /usr/bin/env - - - - ${pkgs.coreutils}/bin/env"
-  ];
+  services.envfs.enable = true;
+  networking.firewall.enable = true;
+  
+  #systemd.tmpfiles.rules = [
+  #  "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
+  #  "L+ /usr/bin/env - - - - ${pkgs.coreutils}/bin/env"
+  #];
   # ─────────────────────────────────────────────────────────
 
-  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
   
   services.scx = {
@@ -60,18 +61,96 @@
     ];
    };
 
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    zlib
-    fuse3
-    icu
-    nss
-    openssl
-    curl
-    expat
-  ];
-
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      # Basis & System
+      stdenv.cc.cc
+      zlib
+      fuse3
+      icu
+      nss
+      openssl
+      curl
+      expat
+      glib
+      dbus
+      alsa-lib
+      at-spi2-core
+      libuuid
+      libusb1
+      
+      # Grafik & Fonts (Hier war freetype!)
+      libGL
+      libGLU
+      mesa
+      freetype
+      fontconfig
+      pango
+      cairo
+      atk
+      gdk-pixbuf
+      gtk3
+      
+      # X11 & XCB (Modernisierte Namen ohne xorg-Präfix)
+      libx11
+      libxcursor
+      libxdamage
+      libxext
+      libxfixes
+      libxi
+      libxrender
+      libxtst
+      libxcomposite
+      libxrandr
+      libxinerama
+      libsm
+      libice
+      libxcb
+      libxshmfence
+      libxkbcommon
+      libxmu
+      libxft
+      
+      # XCB Utilities (Zusammengeschrieben für Nix-Syntax)
+      xcbutil
+      xcbutilwm
+      xcbutilimage
+      xcbutilkeysyms
+      xcbutilrenderutil
+      xcbutilcursor
+      
+      # Netzwerk & Security
+      libnghttp2
+      libidn2
+      libssh2
+      libssh
+      openldap
+      libpsl
+      libkrb5
+      keyutils
+      p11-kit
+      libtasn1
+      
+      # Mathe & Kompression
+      gmp
+      libmpc
+      mpfr
+      lz4
+      zstd
+      bzip2
+      libgcrypt
+      libgpg-error
+      libxml2
+      
+      # Datenbanken & Kern-Libs
+      sqlite
+      libunwind
+      libelf
+      e2fsprogs
+      libxcrypt-legacy
+    ];
+  };
   # ────────────── HARDWARE FEINSCHLIFF ──────────────
   hardware.cpu.amd.updateMicrocode = true; # Wichtig für AMD Stabilität
   
@@ -135,6 +214,10 @@
     pciutils
     usbutils
     mesa-demos
+    ntfs3g
+    unzip
+    unrar
+    p7zip
   ];
 
   # ────────────── NEU: BROWSER POLICIES ──────────────

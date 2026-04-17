@@ -29,7 +29,10 @@
             "com.naps2.Naps2",
             "io.github.benjamimgois.goverlay",
             "bitwarden",
-            "gay.pancake.lsfg-vk-ui"
+            "gay.pancake.lsfg-vk-ui",
+            "OrcaSlicer",
+            "PrusaSlicer",
+            "ideamaker"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",

@@ -19,9 +19,12 @@
       vulkan-extension-layer
     ];
   };
-
+  
+  services.fwupd.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
-
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = false;
+  
   # --- DEIN AKTUELLER KERNEL-BLOCK (Eins zu Eins) ---
   boot.kernelParams = [ 
     # --- DEINE GAMING PERFORMANCE (Behalten!) ---
