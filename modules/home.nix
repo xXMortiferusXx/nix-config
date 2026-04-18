@@ -4,6 +4,43 @@
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true; # [cite: 87]
 
+    #MangoHud Configuration
+    programs.mangohud = {
+      enable = true;
+      # Wir lassen das auf false, damit es nicht global (Desktop/Browser) nervt
+      enableSessionWide = false; 
+        
+	settings = {
+        # --- Hardware Filter ---
+        pci_dev = "0000:01:00.0";
+        
+        # --- Layout-Fix ---
+        legacy_layout = 1;         # WICHTIG: Auf 1 setzen für manuelle Sortierung
+        # table_columns fällt bei legacy_layout=1 weg
+        
+        font_size = 20;
+        background_alpha = "0.4";
+
+        # Die Reihenfolge hier bestimmt jetzt das Overlay:
+        cpu_stats = true;
+        cpu_temp = true;
+        cpu_mhz = true;
+        cpu_color = "2E97CB";
+
+        gpu_stats = true;
+        gpu_temp = true;
+        gpu_core_clock = true;
+        vram = true;
+        gpu_color = "2E9762";
+
+        ram = true;
+
+        fps = true;
+        fps_metrics = "avg+0.01";
+        frame_timing = true;
+      };
+    };
+
     # mpv Konfiguration [cite: 89]
     programs.mpv = {
       enable = true; # [cite: 89]

@@ -14,10 +14,22 @@
     extraConfig.pipewire."99-lowlatency" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        "default.clock.quantum" = 512;      # Ein sicherer Mittelwert (vorher 1024)
-        "default.clock.min-quantum" = 64;   # Etwas entspannter (vorher 32)
-        "default.clock.max-quantum" = 2048; # Genug Puffer für Hintergrundmusik
+        "default.clock.quantum" = 512;      # Deine bewährte Latenz für die Ortung
+        "default.clock.min-quantum" = 128;   # Ein kleiner Sicherheitsanker für CPU-Stress
+        "default.clock.max-quantum" = 2048;
       };
+      
+      # Das ist der entscheidende Teil für die Prio:
+      "context.modules" = [
+        {
+          name = "libpipewire-module-rt";
+          args = {
+            "nice.level" = -15;
+            "rt.prio" = 88;
+          };
+          flags = [ "ifexists" "nofail" ];
+        }
+      ];
     };
   };
   
@@ -29,6 +41,5 @@
     ladspa-sdk
     ladspaPlugins
     alsa-utils
-    # jamesdsp ist bereits in deiner users.nix, das reicht!
   ];
 }
