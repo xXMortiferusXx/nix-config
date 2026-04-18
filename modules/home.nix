@@ -3,6 +3,46 @@
 {
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true; # [cite: 87]
+    #Einstellung für Themes und Icons
+
+    qt = {
+      enable = true;
+      platformTheme.name = "gtk3"; # Der CachyOS-Weg, den wir besprochen haben
+      style.name = "adwaita-dark"; # Grund-Stil für Qt-Apps
+    };
+
+    xdg.configFile = {
+      "qt5ct/qt5ct.conf".text = ''
+        [Appearance]
+        icon_theme=Tela-circle
+        cursor_theme=Bibata-Modern-Classic
+	custom_palette=false
+        style=fusion
+      '';
+      "qt6ct/qt6ct.conf".text = ''
+        [Appearance]
+        icon_theme=Tela-circle
+	cursor_theme=Bibata-Modern-Classic
+        custom_palette=false
+        style=fusion
+      '';
+    };
+
+    gtk = {
+      enable = true;
+      iconTheme = {
+        name = "Tela-circle";
+        package = pkgs.tela-circle-icon-theme;
+      };
+      cursorTheme = {
+        name = "Bibata-Modern-Classic";
+        package = pkgs.bibata-cursors;
+      };
+      
+      gtk4.extraConfig.gtk-icon-theme-name = "Tela-circle";
+      gtk4.theme = null; 
+    }; 
+    
 
     #MangoHud Configuration
     programs.mangohud = {

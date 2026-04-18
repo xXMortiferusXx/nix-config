@@ -19,7 +19,9 @@
       })
       prusa-slicer
       orca-slicer
-      ############
+      #####Icons
+      tela-circle-icon-theme
+      ##################
       jq
       libreoffice
       hunspellDicts.de_DE
