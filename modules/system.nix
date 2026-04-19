@@ -17,6 +17,7 @@
   networking.firewall.enable = true;
 
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
+  
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ 
     "tcp_bbr" 
@@ -54,8 +55,10 @@
     substituters = [ 
       "https://cache.nixos.org/" 
       "https://nix-gaming.cachix.org"
+      #"https://attic.xuyh0120.win/lantian" #Für CachyOS Kernel
     ];
     trusted-public-keys = [
+      #"lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" #Für CachyOS Kernel
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
@@ -195,10 +198,21 @@
     "net.ipv4.tcp_fastopen" = 3;
     "fs.file-max" = 2097152;
     "vm.swappiness" = 10;
-    "vm.max_map_count" = 2147483647;
-    "kernel.sched_itmt_enabled" = 1;
+    "vm.max_map_count" = 2147483642;
+    #"kernel.sched_itmt_enabled" = 1;        #Für Intel CPU's
     "net.ipv4.igmp_max_memberships" = 1024;
     "kernel.sched_migration_cost_ns" = 500000;
+    "kernel.sched_cfs_bandwidth_slice_u" = 3000;
+    "kernel.sched_latency_ns" = 3000000;
+    "kernel.sched_min_granularity_ns" = 300000;
+    "kernel.sched_wakeup_granularity_ns" = 500000;
+    "kernel.sched_nr_migrate" = 128;
+    "kernel.split_lock_mitigate" = 0;
+    "net.ipv4.tcp_mtu_probing" = true;
+    "net.ipv4.tcp_fin_timeout" = 5;
+    "kernel.sched_rt_runtime_us" = -1;
+    "vm.dirty_ratio" = 10;            #Optional
+    "vm.dirty_background_ratio" = 5;  #Optional
   };
 
   zramSwap = {

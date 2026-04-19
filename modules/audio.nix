@@ -14,7 +14,7 @@
     extraConfig.pipewire."99-lowlatency" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        "default.clock.quantum" = 512;      # Ein sicherer Mittelwert (vorher 1024)
+        "default.clock.quantum" = 1024;      # Ein sicherer Mittelwert (vorher 1024)
         "default.clock.min-quantum" = 64;   # Etwas entspannter (vorher 32)
         "default.clock.max-quantum" = 2048; # Genug Puffer für Hintergrundmusik
       };
