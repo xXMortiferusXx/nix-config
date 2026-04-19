@@ -53,11 +53,13 @@ in
     # Zurück zur alten MangoHud Version, die bei dir funktioniert hat
     MANGOHUD_CONFIGFILE = "/home/mortiferus/.config/MangoHud/MangoHud.conf";
     #MANGOHUD_CONFIG = "legacy_layout=0,table_columns=3,gpu_stats,gpu_temp,gpu_core_clock,vram,gpu_color=2E9762,cpu_stats,cpu_temp,cpu_mhz,cpu_color=2E97CB,ram,fps,fps_metrics=avg+0.01,frame_timing,background_alpha=0.4,font_size=20";
+    PROTON_ENABLE_WAYLAND = "1";
   };
 
   # 2. Dein Steam Block bleibt sauber
   programs.steam = {
     enable = true;
+    protontricks.enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     gamescopeSession.enable = false;
@@ -66,13 +68,16 @@ in
       extraPkgs = pkgs: with pkgs; [
         mangohud
       ];
+      extraEnv = {
+        #PROTON_ENABLE_WAYLAND = "1";
+        #PROTON_ENABLE_HDR = "1";
+      };
     };
 
-    extraCompatPackages = [
-      pkgs.proton-ge-bin
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
     ];
   };
-
   # Sunshine um mal auf dem TV zocken zu können
   services.sunshine = {
     enable = true;
@@ -95,6 +100,7 @@ in
     lsfg-vk
     lsfg-vk-ui
     brightnessctl
+    umu-launcher
   ];
 
   programs.gamemode.enable = false;

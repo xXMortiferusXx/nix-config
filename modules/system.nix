@@ -15,28 +15,27 @@
 
   services.envfs.enable = true;
   networking.firewall.enable = true;
-  
-  #systemd.tmpfiles.rules = [
-  #  "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
-  #  "L+ /usr/bin/env - - - - ${pkgs.coreutils}/bin/env"
-  #];
-  # ─────────────────────────────────────────────────────────
 
+  # ────────────────── KERNEL & PERFORMANCE ──────────────────
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelModules = [ "tcp_bbr" "ntsync" ];
-  
+  boot.kernelModules = [ 
+    "tcp_bbr" 
+    "ntsync" 
+  ];
+
   services.scx = {
     enable = true;
     scheduler = "scx_rusty";
     extraArgs = [ 
-      "-f"           # Force: Ignoriert Warnungen bei der Kern-Zuweisung
-      "-u" "2000"    # Slice-Time: 2ms für ruhigere CPU-Last
-      "-o" "2000"    # Overload-Interval: Hält Threads stabil auf Kernen
-      "-g" "1"       # Greed-Faktor: Wie aggressiv Kerne Aufgaben "klauen"
-      "-c" "3"       # Cache-Fokus: Bleibt strikt innerhalb des L3-Caches
-      "-k"           # Kill-All: Beendet BPF-Reste sauber beim Stoppen
+      "-f"           # Force
+      "-u" "2000"    # Slice-Time
+      "-o" "2000"    # Overload-Interval
+      "-g" "1"       # Greed-Faktor
+      "-c" "3"       # Cache-Fokus
+      "-k"           # Kill-All
     ];
   };
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.enable = false;
@@ -45,26 +44,28 @@
   i18n.defaultLocale = "de_DE.UTF-8";
   console.keyMap = "de";
 
-  # ────────────── NIX SETTINGS & OPTIMIERUNG ──────────────
+  # ────────────────── NIX SETTINGS ──────────────────
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [ 
+      "nix-command" 
+      "flakes" 
+    ];
     auto-optimise-store = true;
-
-    # Caches für schnelleres Gaming-Setup
-    substituters = [
-      "https://cache.nixos.org/"
+    substituters = [ 
+      "https://cache.nixos.org/" 
       "https://nix-gaming.cachix.org"
     ];
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
-   };
+  };
 
+  # ────────────────── NIX-LD & GAMING LIBS ──────────────────
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
-      # Basis & System
+      # --- System & Core ---
       stdenv.cc.cc
       zlib
       fuse3
@@ -75,12 +76,20 @@
       expat
       glib
       dbus
-      alsa-lib
-      at-spi2-core
       libuuid
       libusb1
+      libnghttp2
+      libidn2
+      libssh2
+      libssh
+      openldap
+      libpsl
+      libkrb5
+      keyutils
+      p11-kit
+      libtasn1
       
-      # Grafik & Fonts (Hier war freetype!)
+      # --- Grafik, Fonts & UI ---
       libGL
       libGLU
       mesa
@@ -91,8 +100,10 @@
       atk
       gdk-pixbuf
       gtk3
-      
-      # X11 & XCB (Modernisierte Namen ohne xorg-Präfix)
+      alsa-lib
+      at-spi2-core
+
+      # --- X11 & XCB ---
       libx11
       libxcursor
       libxdamage
@@ -111,28 +122,14 @@
       libxkbcommon
       libxmu
       libxft
-      
-      # XCB Utilities (Zusammengeschrieben für Nix-Syntax)
       xcbutil
       xcbutilwm
       xcbutilimage
       xcbutilkeysyms
       xcbutilrenderutil
       xcbutilcursor
-      
-      # Netzwerk & Security
-      libnghttp2
-      libidn2
-      libssh2
-      libssh
-      openldap
-      libpsl
-      libkrb5
-      keyutils
-      p11-kit
-      libtasn1
-      
-      # Mathe & Kompression
+
+      # --- Kompression & Math ---
       gmp
       libmpc
       mpfr
@@ -142,23 +139,41 @@
       libgcrypt
       libgpg-error
       libxml2
-      
-      # Datenbanken & Kern-Libs
       sqlite
       libunwind
       libelf
       e2fsprogs
       libxcrypt-legacy
-    ];
+
+      # --- Media & Ergänzungen ---
+      libtool
+      libao
+      libidn
+      libunistring
+      libedit
+      libvdpau
+      libva
+      libdrm
+      freeglut
+      libtheora
+      libogg
+      libvorbis
+      libvpx
+      wayland
+      gtk2
+      util-linux
+    ] 
+    ++ (pkgs.steam-run.args.multiPkgs pkgs)
+    ++ (pkgs.heroic.args.multiPkgs pkgs)
+    ++ (pkgs.lutris.args.multiPkgs pkgs);
   };
-  # ────────────── HARDWARE FEINSCHLIFF ──────────────
-  hardware.cpu.amd.updateMicrocode = true; # Wichtig für AMD Stabilität
-  
+
+  # ────────────── HARDWARE & OPTIMIERUNG ──────────────
+  hardware.cpu.amd.updateMicrocode = true;
   services.fstrim = {
     enable = true;
-    interval = "weekly"; # Das ist der Standard, kannst du auch weglassen
+    interval = "weekly";
   };
-  # ────────────────────────────────────────────────────────
 
   security.sudo.extraRules = [{
     users = [ "mortiferus" ];
@@ -175,7 +190,7 @@
   '';
 
   boot.kernel.sysctl = {
-    "net.core.default_qdisc" = "cake"; 
+    "net.core.default_qdisc" = "cake";
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.ipv4.tcp_fastopen" = 3;
     "fs.file-max" = 2097152;
@@ -189,9 +204,20 @@
   zramSwap = {
     enable = true;
     algorithm = "zstd";
-    memoryPercent = 100; 
+    memoryPercent = 100;
     priority = 100;
   };
+  
+
+  services.btrfs.autoScrub = {
+  enable = true;
+  interval = "monthly";
+  fileSystems = [ 
+    "/" 
+    "/gaming" 
+   ]; 
+  };
+
 
   services.ananicy = {
     enable = true;
@@ -212,7 +238,7 @@
     htop
     nvtopPackages.full
     pciutils
-    usbutils
+    usbutils 
     mesa-demos
     ntfs3g
     unzip
@@ -220,7 +246,7 @@
     p7zip
   ];
 
-  # ────────────── NEU: BROWSER POLICIES ──────────────
+  # ────────────── BROWSER POLICIES ──────────────
   environment.etc."zen/policies/policies.json".text = builtins.toJSON {
     policies = {
       Preferences = {
@@ -236,5 +262,5 @@
     };
   };
 
-  system.stateVersion = "25.11"; 
+  system.stateVersion = "25.11";
 }

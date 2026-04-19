@@ -53,6 +53,7 @@
   };
 
   # ────────────── System-weite Pakete (Optik & Tools) ──────────────
+  services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     

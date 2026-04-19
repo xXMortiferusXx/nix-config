@@ -21,6 +21,7 @@
       orca-slicer
       #####Icons
       tela-circle-icon-theme
+      papirus-icon-theme
       ##################
       jq
       libreoffice
