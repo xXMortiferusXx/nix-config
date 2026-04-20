@@ -115,6 +115,13 @@
                     "useDistroLogo": false
                 },
                 {
+                    "defaultSettings": {
+                        "precision": 8,
+                        "showBarValue": true
+                    },
+                    "id": "plugin:noctalia-calculator"
+                },
+                {
                     "characterCount": 2,
                     "colorizeIcons": false,
                     "emptyColor": "secondary",

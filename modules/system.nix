@@ -15,7 +15,9 @@
 
   services.envfs.enable = true;
   networking.firewall.enable = true;
-
+  # Check hydra for the build status of a package.
+  # e.g. `hydra-check --channel unstable galculator`.
+  
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
   
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -258,6 +260,8 @@
     unzip
     unrar
     p7zip
+    hydra-check
+    nvd
   ];
 
   # ────────────── BROWSER POLICIES ──────────────
