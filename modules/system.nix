@@ -10,14 +10,12 @@
     "XCURSOR_THEME" = "Bibata-Modern-Classic";
     "XCURSOR_SIZE" = "24";
     "VDPAU_DRIVER" = "va_gl";
-    "LIBVA_DRIVER_NAME" = "radeonsi"; # Erzwingt Video-Dekodierung auf AMD
+    "LIBVA_DRIVER_NAME" = "radeonsi";
   };
 
   services.envfs.enable = true;
   networking.firewall.enable = true;
-  # Check hydra for the build status of a package.
-  # e.g. `hydra-check --channel unstable galculator`.
-  
+
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ 
@@ -29,12 +27,12 @@
     enable = true;
     scheduler = "scx_rusty";
     extraArgs = [ 
-      "-f"           # Force
-      "-u" "2000"    # Slice-Time
-      "-o" "2000"    # Overload-Interval
-      "-g" "1"       # Greed-Faktor
-      "-c" "3"       # Cache-Fokus
-      "-k"           # Kill-All
+      "-f"
+      "-u" "2000"
+      "-o" "2000"
+      "-g" "1"
+      "-c" "3"
+      "-k"
     ];
   };
 
@@ -165,9 +163,8 @@
       gtk2
       util-linux
     ] 
-    ++ (pkgs.steam-run.args.multiPkgs pkgs)
-    ++ (pkgs.heroic.args.multiPkgs pkgs)
-    ++ (pkgs.lutris.args.multiPkgs pkgs);
+    # Nur steam-run hat eine garantierte multiPkgs-Schnittstelle
+    ++ (pkgs.steam-run.args.multiPkgs pkgs);
   };
 
   # ────────────── HARDWARE & OPTIMIERUNG ──────────────
@@ -177,13 +174,22 @@
     interval = "weekly";
   };
 
-  security.sudo.extraRules = [{
-    users = [ "mortiferus" ];
-    commands = [{
-      command = "/run/current-system/sw/bin/nvidia-smi";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
+  security.sudo.extraRules = [
+    {
+      users = [ "mortiferus" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nvidia-smi";
+          options = [ "NOPASSWD" ];
+        }
+        # Erlaubt passwordloses tee auf CPU-Energieprofil (für game-performance Skript)
+        {
+          command = "/run/current-system/sw/bin/tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
@@ -198,10 +204,10 @@
     "fs.file-max" = 2097152;
     "vm.swappiness" = 10;
     "vm.max_map_count" = 2147483642;
-    #"kernel.sched_itmt_enabled" = 1;        #Für Intel CPU's
     "net.ipv4.igmp_max_memberships" = 1024;
     "kernel.sched_migration_cost_ns" = 500000;
-    "kernel.sched_cfs_bandwidth_slice_u" = 3000;
+    # Korrigierter Key-Name (war: sched_cfs_bandwidth_slice_u)
+    "kernel.sched_cfs_bandwidth_slice_us" = 3000;
     "kernel.sched_latency_ns" = 3000000;
     "kernel.sched_min_granularity_ns" = 300000;
     "kernel.sched_wakeup_granularity_ns" = 500000;
@@ -210,8 +216,8 @@
     "net.ipv4.tcp_mtu_probing" = true;
     "net.ipv4.tcp_fin_timeout" = 5;
     "kernel.sched_rt_runtime_us" = -1;
-    "vm.dirty_ratio" = 10;            #Optional
-    "vm.dirty_background_ratio" = 5;  #Optional
+    "vm.dirty_ratio" = 10;
+    "vm.dirty_background_ratio" = 5;
   };
 
   zramSwap = {
@@ -220,17 +226,15 @@
     memoryPercent = 100;
     priority = 100;
   };
-  
 
   services.btrfs.autoScrub = {
-  enable = true;
-  interval = "monthly";
-  fileSystems = [ 
-    "/" 
-    "/gaming" 
-   ]; 
+    enable = true;
+    interval = "monthly";
+    fileSystems = [ 
+      "/" 
+      "/gaming" 
+    ]; 
   };
-
 
   services.ananicy = {
     enable = true;
@@ -276,6 +280,4 @@
       };
     };
   };
-
-  system.stateVersion = "25.11";
 }

@@ -16,5 +16,6 @@
     ./modules/home.nix
   ];
 
+  # stateVersion nur einmal hier definieren (wurde aus system.nix entfernt)
   system.stateVersion = "25.11";
 }

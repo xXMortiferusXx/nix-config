@@ -6,9 +6,8 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
 
-
     packages = with pkgs; [
-      # 3d Printing
+      # 3D Printing
       (makeDesktopItem {
         name = "ideamaker";
         desktopName = "ideaMaker";
@@ -41,6 +40,8 @@
       cartridges
       kitty
       nautilus
+      # brightnessctl wird bereits in gaming.nix über game-performance genutzt
+      # und ist dort als systemPackage verfügbar – hier nicht doppelt nötig
       brightnessctl
       
       # Browser & System
@@ -49,8 +50,8 @@
       libsForQt5.qt5ct
       
       # Dokumente & Bilder
+      # zathura enthält das MuPDF-Backend standardmäßig – zathuraPkgs existiert nicht
       zathura
-      zathuraPkgs.zathura_pdf_mupdf
       loupe 
       gimp
       naps2
@@ -74,5 +75,4 @@
   services.udisks2.enable = true;
   programs.fish.enable = true;
   security.sudo.wheelNeedsPassword = false;
-
 }

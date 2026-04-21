@@ -4,7 +4,6 @@
   # ────────────── Desktop-Umgebung (Niri) ──────────────
   programs.niri = {
     enable = true;
-    # XWayland Support für Steam & Co
     package = pkgs.niri; 
   };
   
@@ -18,12 +17,11 @@
     wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
     theme = "sddm-astronaut-theme";
-   settings = {
+    settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
       };
     }; 
-    # Notwendige Bibliotheken für moderne Themes (SVG/Multimedia)
     extraPackages = with pkgs.kdePackages; [
       qtmultimedia
       qtsvg
@@ -31,10 +29,9 @@
     ];
   };
 
-  # SDDM Sprach-Umgebung (Versuch, Deutsch zu erzwingen)
   systemd.services.display-manager.environment = {
-     LANG = "de_DE.UTF-8";
-     LC_ALL = "de_DE.UTF-8";
+    LANG = "de_DE.UTF-8";
+    LC_ALL = "de_DE.UTF-8";
   };
 
   i18n.extraLocaleSettings = {
@@ -42,30 +39,33 @@
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
+  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
+  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
+  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
       pkgs.xdg-desktop-portal-gnome 
-      pkgs.xdg-desktop-portal-gtk 
-      pkgs.xdg-desktop-portal-wlr
+      pkgs.xdg-desktop-portal-gtk
     ];
-    config.common.default = lib.mkForce "gnome";
+    config = {
+      common = {
+        default = [ "gnome" ];
+        # Screenshot-Portal explizit auf gnome setzen
+        "org.freedesktop.portal.Screenshot" = [ "gnome" ];
+        "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
+      };
+    };
   };
 
-  # ────────────── System-weite Pakete (Optik & Tools) ──────────────
   services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
-    
-    # XWayland Brücke für Steam
     xwayland 
     xwayland-satellite
-    
-    # Das Theme Paket
     sddm-astronaut
   ];
 
-  # SDDM Theme Verlinkung (Damit SDDM den Ordner findet)
   environment.etc."sddm/themes/sddm-astronaut-theme".source = "${pkgs.sddm-astronaut}/share/sddm/themes/sddm-astronaut-theme";
 
   # ────────────── Schriftarten ──────────────

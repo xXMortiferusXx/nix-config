@@ -4,44 +4,38 @@
   programs.fish = {
     enable = true;
     
-    # Der interaktive Teil (wird bei jedem Start ausgeführt)
     interactiveShellInit = ''
       # Schaltet die Standard-Begrüßung von Fish aus
       set -g fish_greeting ""
 
-      # Starte Fastfetch (wie du es in deiner alten config.fish hattest)
+      # Starte Fastfetch
       ${pkgs.fastfetch}/bin/fastfetch
 
-      # Initialisiert Zoxide (das smarte 'cd')
+      # Initialisiert Zoxide
       ${pkgs.zoxide}/bin/zoxide init fish | source
 
-      # CachyOS-Style Farben für die Syntax-Hervorhebung
+      # CachyOS-Style Farben
       set -g fish_color_command green --bold
       set -g fish_color_param cyan
       set -g fish_color_autosuggestion 555
     '';
 
-    # Hier nutzen wir shellAliases für echte Befehlsersetzungen
-    # Wir nutzen lib.mkForce, um Konflikte mit der alias.nix zu vermeiden
     shellAliases = {
-      # Der CachyOS/Modern-Look für Verzeichnisse
-      ls = "eza --icons --group-directories-first";
-      ll = lib.mkForce "eza -lha --icons --group-directories-first";
-      tree = "eza --tree --icons";
+      ls       = "eza --icons --group-directories-first";
+      # mkForce nicht nötig, da ll nirgendwo sonst definiert ist
+      ll       = "eza -lha --icons --group-directories-first";
+      tree     = "eza --tree --icons";
       ideamaker = "QT_QPA_PLATFORM=xcb LD_LIBRARY_PATH=\"\" ~/Apps/ideaMaker.AppImage";
-      # Sicherheit & Navigation
-      ".."    = "cd ..";
-      "..."   = "cd ../..";
-      "...."  = "cd ../../..";
-      "grep"  = "grep --color=auto";
-      "cat"   = "bat";
-      
-      # Deine bestehenden Aliase (hier zentralisiert)
-      "nix-search" = lib.mkForce "nix search nixpkgs";
+      ".."     = "cd ..";
+      "..."    = "cd ../..";
+      "...."   = "cd ../../..";
+      "grep"   = "grep --color=auto";
+      "cat"    = "bat";
+      # mkForce nicht nötig, da nix-search nirgendwo sonst definiert ist
+      "nix-search" = "nix search nixpkgs";
       "fetch"      = "fastfetch";
     };
 
-    # Abkürzungen (Tippe den Buchstaben + Leertaste zum Erweitern)
     shellAbbrs = {
       n  = "nix";
       ns = "nix-env -qaP";
@@ -51,7 +45,6 @@
     };
   };
 
-  # Der moderne Starship-Prompt (CachyOS-Style)
   programs.starship = {
     enable = true;
     settings = {
@@ -65,13 +58,12 @@
     };
   };
 
-  # Pakete, die Fish für diese Features benötigt
   environment.systemPackages = with pkgs; [
-    eza      # ls-Ersatz mit Icons
-    zoxide   # Schneller Verzeichniswechsel (z statt cd)
-    bat      # cat-Ersatz mit Syntax-Highlighting
-    fzf      # Fuzzy Finder für die History-Suche (Strg+R)
-    starship # Der schicke Prompt
-    fastfetch # System-Informationen
+    eza
+    zoxide
+    bat
+    fzf
+    starship
+    fastfetch
   ];
 }

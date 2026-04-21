@@ -4,15 +4,12 @@
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true;
 
-    # Erzwungene Installation des Icon-Pakets
     home.packages = [
       pkgs.papirus-icon-theme
     ];
 
-    # Symlink-Brechstange für widerspenstige GTK4 Apps
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
 
-    # Einstellung für Themes und Icons (Dconf für GNOME/GTK4)
     dconf.settings = {
       "org/gnome/desktop/interface" = {
         icon-theme = "Papirus";
@@ -28,7 +25,7 @@
     gtk = {
       enable = true;
       iconTheme = {
-        name = "Papirus"; # Eventuell "Papirus-Dark" probieren, falls "Papirus" nicht greift
+        name = "Papirus";
         package = pkgs.papirus-icon-theme;
       };
       cursorTheme = {
@@ -43,11 +40,9 @@
       gtk4.extraConfig = {
         gtk-icon-theme-name = "Papirus";
       };
-
-      gtk4.theme = null; 
+      # gtk4.theme = null wurde entfernt (unnötig, erzeugt Warnungen)
     };
 
-    # Zusammengeführte XDG-Konfigurationen
     xdg.configFile = {
       "qt5ct/qt5ct.conf".text = ''
         [Appearance]
@@ -66,10 +61,10 @@
       "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
       "noctalia".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/noctalia";
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
-      "nvim" .source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
+      "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
     };
 
-    # MangoHud Configuration
+    # MangoHud – zentral hier verwaltet, nicht doppelt in gaming.nix/users.nix
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
