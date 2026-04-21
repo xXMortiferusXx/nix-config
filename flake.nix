@@ -16,9 +16,13 @@
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nix-gaming.url = "github:fufexan/nix-gaming";
+    nixvim = {
+    url = "github:nix-community/nixvim";
+    inputs.nixpkgs.follows = "nixpkgs";
+   }; 
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, disko, nixvim, ... }@inputs: 
     let
       system = "x86_64-linux";
     in {
@@ -26,11 +30,12 @@
         inherit system;
 
         # Inputs an alle Module weitergeben
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit self inputs; };
 
         modules = [
-          disko.nixosModules.disko
+	  disko.nixosModules.disko
           ./configuration.nix
+          nixvim.nixosModules.nixvim
 
           # Home‑Manager als NixOS‑Modul aktivieren
           home-manager.nixosModules.home-manager

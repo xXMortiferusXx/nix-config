@@ -10,6 +10,8 @@ let
 
     # --- START-PHASE ---
     $PCTL set performance
+    echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
+
     $LEGION set-feature PlatformProfileFeature performance 2>/dev/null
     sudo $SMI -pm 1 2>/dev/null
     sudo $SMI -pl 130 2>/dev/null
@@ -24,6 +26,8 @@ let
 
     # --- END-PHASE (nach Beenden des Spiels) ---
     $PCTL set balanced
+    echo "balance_performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
+    
     $LEGION set-feature PlatformProfileFeature balanced 2>/dev/null
     sudo $SMI -pm 0 2>/dev/null
     

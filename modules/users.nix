@@ -5,13 +5,15 @@
     description = "Mortiferus";
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
+
+
     packages = with pkgs; [
-      #3d Printing
+      # 3d Printing
       (makeDesktopItem {
         name = "ideamaker";
         desktopName = "ideaMaker";
         exec = "env QT_QPA_PLATFORM=xcb LD_LIBRARY_PATH=\"\" /home/mortiferus/Apps/ideaMaker.AppImage";
-        icon = "/home/mortiferus/Apps/ideamaker.png"; # Hier jetzt den Pfad zum Bild rein
+        icon = "/home/mortiferus/Apps/ideamaker.png";
         comment = "Raise3D Slicing Software";
         categories = [ "Graphics" "3DGraphics" ];
         terminal = false;
@@ -19,10 +21,15 @@
       })
       prusa-slicer
       orca-slicer
-      #####Icons
+      
+      # Icons
       tela-circle-icon-theme
       papirus-icon-theme
-      ##################
+      adwaita-icon-theme
+      bibata-cursors
+      
+      # Tools
+      helix
       jq
       libreoffice
       hunspellDicts.de_DE
@@ -34,27 +41,23 @@
       cartridges
       kitty
       nautilus
+      brightnessctl
+      
+      # Browser & System
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      adwaita-icon-theme
-      bibata-cursors
       qt6Packages.qt6ct
       libsForQt5.qt5ct
-      #wireplumber 
-      brightnessctl
+      
       # Dokumente & Bilder
-       # PDF-Sektion (MuPDF Fix)
       zathura
       zathuraPkgs.zathura_pdf_mupdf
       loupe 
       gimp
-      #Scanner Software
       naps2
-      kdePackages.skanpage
     ];
   };
 
-  # DIESER TEIL HAT GERADE GEFEHLT:
-  # ──────────────────────────────────────────────────
+  # System-Dienste
   services.printing.enable = true;
   services.avahi = {
     enable = true;
@@ -66,9 +69,10 @@
     enable = true;
     extraBackends = [ pkgs.sane-airscan ];
   };
-  # ──────────────────────────────────────────────────
 
-  services.gvfs.enable = true; 
+  services.gvfs.enable = true;
   services.udisks2.enable = true;
   programs.fish.enable = true;
+  security.sudo.wheelNeedsPassword = false;
+
 }

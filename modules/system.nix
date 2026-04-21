@@ -19,7 +19,6 @@
   # e.g. `hydra-check --channel unstable galculator`.
   
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
-  
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ 
     "tcp_bbr" 
@@ -57,10 +56,8 @@
     substituters = [ 
       "https://cache.nixos.org/" 
       "https://nix-gaming.cachix.org"
-      #"https://attic.xuyh0120.win/lantian" #Für CachyOS Kernel
     ];
     trusted-public-keys = [
-      #"lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" #Für CachyOS Kernel
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
     ];
@@ -190,8 +187,8 @@
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
-    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="kyber"
     SUBSYSTEM=="platform", RUN+="${pkgs.coreutils}/bin/chmod -R 666 /sys/firmware/acpi/platform_profile"
+    ACTION=="add|change", KERNEL=="nvme[0-9]n[0-9]", ATTR{queue/scheduler}="kyber"
   '';
 
   boot.kernel.sysctl = {
@@ -208,7 +205,7 @@
     "kernel.sched_latency_ns" = 3000000;
     "kernel.sched_min_granularity_ns" = 300000;
     "kernel.sched_wakeup_granularity_ns" = 500000;
-    "kernel.sched_nr_migrate" = 128;
+    "kernel.sched_nr_migrate" = 32;
     "kernel.split_lock_mitigate" = 0;
     "net.ipv4.tcp_mtu_probing" = true;
     "net.ipv4.tcp_fin_timeout" = 5;
@@ -245,10 +242,10 @@
     enable = true;
     defaultEditor = true;
     viAlias = true;
-    vimAlias = true;
   };
 
   environment.systemPackages = with pkgs; [
+    gcc
     wget
     git
     htop

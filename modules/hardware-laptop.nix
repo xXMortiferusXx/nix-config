@@ -21,7 +21,9 @@
   };
   
   services.fwupd.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  hardware.enableRedistributableFirmware = true;
+  services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
   
