@@ -28,7 +28,7 @@
       qtsvg
       qt5compat
       qtvirtualkeyboard
-    ] ++ [ pkgs.bibata-cursor-theme ];
+    ] ++ [ pkgs.bibata-cursors ];
   };
 
   systemd.services.display-manager.environment = {
