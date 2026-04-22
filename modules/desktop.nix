@@ -34,6 +34,8 @@
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
     LC_ALL = "de_DE.UTF-8";
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
   };
 
   i18n.extraLocaleSettings = {
