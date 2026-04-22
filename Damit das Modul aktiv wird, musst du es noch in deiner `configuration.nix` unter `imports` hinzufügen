@@ -1,4 +1,0 @@
-  imports = [
-    # ... bestehende imports ...
-    ./modules/speedtest.nix
-  ];
