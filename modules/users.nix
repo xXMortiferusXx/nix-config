@@ -21,12 +21,6 @@
       prusa-slicer
       orca-slicer
       
-      # Icons
-      tela-circle-icon-theme
-      papirus-icon-theme
-      adwaita-icon-theme
-      bibata-cursors
-      
       # Tools
       helix
       jq

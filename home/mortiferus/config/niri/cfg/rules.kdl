@@ -58,10 +58,23 @@ window-rule {
     match app-id="brave"
     open-on-workspace "1"
 }
+
 window-rule {
     match app-id="zen-beta"
 
     open-on-workspace "1"
-    open-floating true
-}
+    open-floating false
+    
+    // Entfernt den aktiven Fokus-Rahmen (die Markierung)
+    focus-ring {
+        off
+    }
 
+    // Entfernt den statischen Fensterrahmen
+    border {
+        off
+    }
+    
+    // Maximiert das Fenster auf die volle Breite
+    default-column-width { proportion 1.0; }
+}

@@ -6,6 +6,7 @@
 
     home.packages = [
       pkgs.papirus-icon-theme
+      pkgs.bibata-cursors
     ];
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
