@@ -90,13 +90,14 @@ in
     heroic 
     bottles 
     gamescope
-    # mangohud wird über home-manager verwaltet (siehe home.nix)
-    # lsfg-vk        # Nicht in nixpkgs verfügbar – ggf. eigenes Overlay nötig
-    # lsfg-vk-ui     # Nicht in nixpkgs verfügbar – ggf. eigenes Overlay nötig
+    lsfg-vk
+    lsfg-vk-ui
     umu-launcher
+    # mangohud wird über home-manager verwaltet (siehe home.nix)
   ];
 
   environment.systemPackages = [ 
-    game-performance 
+    game-performance
+    nvidia-offload
   ];
 }
