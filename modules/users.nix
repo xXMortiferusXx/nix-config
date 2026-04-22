@@ -40,17 +40,17 @@
       cartridges
       kitty
       nautilus
-      # brightnessctl wird bereits in gaming.nix über game-performance genutzt
-      # und ist dort als systemPackage verfügbar – hier nicht doppelt nötig
       brightnessctl
       
+      # KI
+      aider-chat
+
       # Browser & System
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       qt6Packages.qt6ct
       libsForQt5.qt5ct
       
       # Dokumente & Bilder
-      # zathura enthält das MuPDF-Backend standardmäßig – zathuraPkgs existiert nicht
       zathura
       loupe 
       gimp
