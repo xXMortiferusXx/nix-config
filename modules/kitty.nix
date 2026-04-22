@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  # 1. Sicherstellen, dass Kitty installiert ist
-  environment.systemPackages = [ pkgs.kitty ];
-
-  # 2. Die Konfigurationsdatei direkt schreiben
   environment.etc."xdg/kitty/kitty.conf".text = ''
     # TRANSPARENZ
     background_opacity 0.85
