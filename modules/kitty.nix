@@ -2,7 +2,11 @@
 
 {
   environment.etc."xdg/kitty/kitty.conf".text = ''
+    # WAYLAND
+    linux_display_server wayland
+
     # TRANSPARENZ
+    # Funktioniert da Niri background-color "transparent" gesetzt hat
     background_opacity 0.85
     dynamic_background_opacity yes
 
@@ -16,6 +20,10 @@
     cursor_blink_interval 0.5
     cursor_stop_blinking_after 15.0
     window_padding_width 8
+
+    # CURSOR (konsistent mit home.nix GTK/Qt Einstellungen)
+    linux_cursor_theme Bibata-Modern-Classic
+    linux_cursor_theme_size 24
 
     # SCHRIFT-RENDERING
     adjust_line_height  0
@@ -51,9 +59,11 @@
     inactive_tab_font_style   normal
 
     # WINDOW
+    # remember_window_size deaktiviert - Niri verwaltet Fenstergrößen selbst (Tiling)
     confirm_os_window_close 0
-    remember_window_size    yes
-    resize_draw_strategy    static
+    remember_window_size    no
+    # scale ist unter Wayland/Niri besser als static
+    resize_draw_strategy    scale
 
     # TASTENKÜRZEL
     # Tabs
