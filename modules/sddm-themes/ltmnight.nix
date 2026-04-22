@@ -8,7 +8,7 @@ pkgs.stdenv.mkDerivation {
     owner = "hyprltm";
     repo = "ltmnight-sddm-theme";
     rev = "v1.2.4";
-    sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Placeholder - wird automatisch aktualisiert
+    sha256 = "sha256-QyCTVclRDqUtYJJwe3Gphrh9BgxMpOl+svEQCaNR+Iw=";
   };
 
   nativeBuildInputs = with pkgs; [
