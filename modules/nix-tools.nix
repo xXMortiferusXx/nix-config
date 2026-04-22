@@ -7,7 +7,7 @@
   ];
 
   programs.fish.interactiveShellInit = ''
-    function ns
+    function nsearch
         set query (if test (count $argv) -gt 0; echo $argv[1]; else; echo "."; end)
         nix search nixpkgs# $query --json 2>/dev/null | \
           jq -r 'to_entries[] | "\(.key)\t\(.value.version // "unbekannt")\t\(.value.description // "keine Beschreibung")" | gsub("\n"; " ")' | \
