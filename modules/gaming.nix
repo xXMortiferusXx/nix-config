@@ -90,8 +90,8 @@ in
     heroic 
     bottles 
     gamescope
-    # lsfg-vk    – nicht in nixpkgs verfügbar, Overlay wird noch benötigt
-    # lsfg-vk-ui – nicht in nixpkgs verfügbar, Overlay wird noch benötigt
+    lsfg-vk
+    lsfg-vk-ui
     umu-launcher
     # mangohud wird über home-manager verwaltet (siehe home.nix)
   ];
