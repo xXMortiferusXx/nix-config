@@ -20,6 +20,7 @@
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
+        CursorSize = 24;
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -27,7 +28,7 @@
       qtsvg
       qt5compat
       qtvirtualkeyboard
-    ];
+    ] ++ [ pkgs.bibata-cursor-theme ];
   };
 
   systemd.services.display-manager.environment = {
