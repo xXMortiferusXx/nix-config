@@ -13,7 +13,10 @@ pkgs.stdenv.mkDerivation {
 
   nativeBuildInputs = with pkgs; [
     qt6.qttools
+    qt6.wrapQtAppsHook
   ];
+
+  dontWrapQtApps = true;
   
   installPhase = ''
     mkdir -p $out/share/sddm/themes/ltmnight
