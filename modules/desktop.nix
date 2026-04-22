@@ -69,7 +69,7 @@
 
   # ────────────── Schriftarten ──────────────
   fonts.packages = with pkgs; [
-    (nerd-fonts.override { fonts = [ "JetBrainsMono" ]; })
+    nerd-fonts.jetbrains-mono
     noto-fonts
     noto-fonts-color-emoji
     corefonts
