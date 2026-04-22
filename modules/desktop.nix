@@ -16,7 +16,7 @@
     enable = true;
     wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
-    theme = "sddm-astronaut-theme";
+    theme = "ltmnight";
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
@@ -26,6 +26,7 @@
       qtmultimedia
       qtsvg
       qt5compat
+      qtvirtualkeyboard
     ];
   };
 
@@ -64,6 +65,7 @@
     xwayland 
     xwayland-satellite
     sddm-astronaut
+    (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
 
   environment.etc."sddm/themes/sddm-astronaut-theme".source = "${pkgs.sddm-astronaut}/share/sddm/themes/sddm-astronaut-theme";
