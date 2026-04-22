@@ -9,7 +9,6 @@
     ./modules/desktop.nix
     ./modules/audio.nix
     ./modules/gaming.nix
-    ./modules/alias.nix
     ./modules/fish.nix
     ./modules/kitty.nix
     ./modules/services/noctalia.nix

@@ -6,6 +6,20 @@
     wl-clipboard
   ];
 
+  programs.fish.shellAliases = {
+    # System & Update
+    nix-check  = "nix flake update && nixos-rebuild build --flake . && nvd diff /run/current-system ./result";
+    nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#Mortiferus-PC";
+    nix-update = "pushd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#Mortiferus-PC && popd";
+    nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#Mortiferus-PC";
+    conf-sync  = "cd /etc/nixos && git add . && git commit -m \"Update: $(date +'%Y-%m-%d %H:%M')\" && git push origin main || echo 'Git push fehlgeschlagen – bitte manuell prüfen'";
+    conf       = "cd /etc/nixos";
+
+    # Tools & Gaming
+    nv-prime   = "nvidia-offload";
+    scx-status = "scxtop";
+  };
+
   programs.fish.interactiveShellInit = ''
     function nsearch
         set query (if test (count $argv) -gt 0; echo $argv[1]; else; echo "."; end)
