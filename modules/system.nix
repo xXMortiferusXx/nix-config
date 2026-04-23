@@ -49,9 +49,11 @@
   # ────────────────── CONSOLE / TTY ──────────────────
   # Stellt sicher, dass Umlaute im TTY korrekt dargestellt werden und das
   # deutsche Tastaturlayout auch ohne grafische Oberfläche funktioniert.
+  # Hinweis: "de-latin1" ist die korrekte Keymap für Umlaute im TTY. 
+  # "de_DE.UTF-8" ist eine Locale-Einstellung (für i18n), keine Tastaturbelegung.
   console = {
     font = "Lat2-Terminus16";
-    keyMap = "de";
+    keyMap = "de-latin1";
     useXkbConfig = true;
   };
 
