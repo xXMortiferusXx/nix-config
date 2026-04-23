@@ -14,7 +14,7 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
+    wayland.enable = false; # X11 verwenden, um Mauszeiger-Bugs zu vermeiden
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
     settings = {
