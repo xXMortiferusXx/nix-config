@@ -1,0 +1,2 @@
+journalctl -u greetd.service -b --no-pager > ~/greetd.log
+cat ~/greetd.log
