@@ -21,12 +21,6 @@
   
   programs.regreet = {
     enable = true;
-    # Setzt einen soliden Hintergrund, damit der TTY-Text (blau) nicht durchscheint
-    css = ''
-      window {
-        background-color: #1e1e2e;
-      }
-    '';
   };
 
   # ────────────── Boot & Login Optimierung ──────────────
