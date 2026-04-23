@@ -32,8 +32,11 @@
     ];
   };
 
-  # Systemweites Cursor-Theme für X11 setzen
-  services.xserver.cursorTheme = "Bibata-Modern-Classic";
+  # Systemweite Cursor-Einstellungen über Umgebungsvariablen
+  environment.variables = {
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
+  };
 
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
