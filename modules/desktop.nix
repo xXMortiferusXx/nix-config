@@ -11,29 +11,20 @@
   programs.dconf.enable = true;
   services.xserver.xkb.layout = "de";
 
-  # ────────────── Login Manager (SDDM) ──────────────
-  services.displayManager.sddm = {
+  # ────────────── Login Manager (greetd + nwg-hello) ──────────────
+  services.greetd = {
     enable = true;
-    wayland.enable = true;
-    package = pkgs.kdePackages.sddm; 
-    theme = "ltmnight";
+    vt = 1;
     settings = {
-      Theme = {
-        CursorTheme = "Bibata-Modern-Classic";
-        size = 24;
+      default_session = {
+        command = "${pkgs.nwg-hello}/bin/nwg-hello";
+        user = "nwg-hello";
       };
-    }; 
-    extraPackages = with pkgs.kdePackages; [
-      qtmultimedia
-      qtsvg
-      qt5compat
-      qtvirtualkeyboard
-    ];
+    };
   };
-  
-  systemd.services.display-manager.environment = {
-    LANG = "de_DE.UTF-8";
-    LC_ALL = "de_DE.UTF-8";
+
+  programs.nwg-hello = {
+    enable = true;
   };
 
   i18n.extraLocaleSettings = {
@@ -41,9 +32,6 @@
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
-  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
-  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
-  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
@@ -53,20 +41,25 @@
     config = {
       common = {
         default = [ "gnome" ];
-        # Screenshot-Portal explizit auf gnome setzen
         "org.freedesktop.portal.Screenshot" = [ "gnome" ];
         "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
       };
     };
   };
 
-  #services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     bibata-cursors
     gnome-themes-extra
     xwayland 
     xwayland-satellite
-    (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
+    # nwg-shell Komponenten
+    nwg-hello
+    nwg-panel
+    nwg-drawer
+    nwg-bar
+    nwg-displays
+    nwg-look
+    nwg-menu
   ];
 
   # ────────────── Schriftarten ──────────────
