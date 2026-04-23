@@ -18,15 +18,10 @@
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
 
   # ────────────── Login Manager (greetd + ReGreet) ──────────────
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.regreet}/bin/regreet";
-        user = "regreet";
-      };
-    };
-  };
+  # services.greetd.enable wird automatisch durch programs.regreet gesetzt.
+  # Der manuelle settings-Block wurde entfernt, da er die automatische 
+  # User-Erstellung von ReGreet stört und zur Assertion führt.
+  services.greetd.enable = true;
   
   programs.regreet = {
     enable = true;
