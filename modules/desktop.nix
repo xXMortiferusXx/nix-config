@@ -9,27 +9,23 @@
   
   security.polkit.enable = true;
   programs.dconf.enable = true;
+
+  # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
+  i18n.console.keyMap = "de";
   services.xserver.xkb.layout = "de";
+  # Wayland nutzt diese Umgebungsvariable für das Tastaturlayout
+  environment.variables.XKB_DEFAULT_LAYOUT = "de";
 
   # ────────────── Login Manager (greetd + ReGreet) ──────────────
   services.greetd.enable = true;
   
-  # ReGreet benötigt einen Wayland-Compositor. NixOS kümmert sich darum automatisch,
-  # wenn programs.regreet aktiviert wird. Es ersetzt die manuelle command-Zuweisung.
+  # ReGreet kümmert sich automatisch um die korrekte Integration mit greetd.
+  # Manuelle command-Overrides sind meist nicht nötig und können brechen.
   programs.regreet = {
     enable = true;
-    # Optional: Hier können später Theme/Icon-Einstellungen vorgenommen werden
-    # settings = { ... };
   };
 
-  # Unterdrücke die TTY-Ausgabe von Cage/ReGreet, um den blauen Text zu vermeiden.
-  # Die Logs bleiben über journalctl vollständig zugänglich.
-  services.greetd.settings.default_session.command = lib.mkForce "${pkgs.cage}/bin/cage -ds -- ${pkgs.regreet}/bin/regreet 2>/dev/null";
-
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
-  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
-  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
-  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
@@ -39,7 +35,6 @@
     config = {
       common = {
         default = [ "gnome" ];
-        # Screenshot-Portal explizit auf gnome setzen
         "org.freedesktop.portal.Screenshot" = [ "gnome" ];
         "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
       };
