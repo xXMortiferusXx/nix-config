@@ -11,7 +11,7 @@
   programs.dconf.enable = true;
 
   # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
-  i18n.console.keyMap = "de";
+  i18n.consoleKeyMap = "de";
   services.xserver.xkb.layout = "de";
   # Wayland nutzt diese Umgebungsvariable für das Tastaturlayout
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
