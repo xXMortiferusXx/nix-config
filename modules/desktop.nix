@@ -34,7 +34,6 @@
 
   # Systemweites Cursor-Theme für X11 setzen
   services.xserver.cursorTheme = "Bibata-Modern-Classic";
-  services.xserver.cursorSize = 24;
 
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
