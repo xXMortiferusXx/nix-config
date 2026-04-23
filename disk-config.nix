@@ -22,6 +22,7 @@
               size = "16G";
               content = {
                 type = "swap";
+                priority = 10;
                 discardPolicy = "both";
                 # resumeDevice ist entfernt für reinen RAM-Backup-Swap
               };
