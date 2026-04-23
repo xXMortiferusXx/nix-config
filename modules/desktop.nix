@@ -11,39 +11,38 @@
   programs.dconf.enable = true;
   services.xserver.xkb.layout = "de";
 
-  # ────────────── Login Manager (greetd + nwg-hello) ──────────────
-  # Expliziten Greeter-User anlegen, um Berechtigungs- und Cache-Probleme zu vermeiden
-  users.users.greeter = {
-    isSystemUser = true;
-    group = "greeter";
-    home = "/var/lib/greeter";
-    createHome = true;
-  };
-  users.groups.greeter = {};
-
-  services.greetd = {
+  # ────────────── Login Manager (SDDM) ──────────────
+  services.displayManager.sddm = {
     enable = true;
+    wayland.enable = true;
+    package = pkgs.kdePackages.sddm; 
+    theme = "ltmnight";
     settings = {
-      default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd niri-session";
-        user = "greeter";
+      Theme = {
+        CursorTheme = "Bibata-Modern-Classic";
       };
-    };
+    }; 
+    extraPackages = with pkgs.kdePackages; [
+      qtmultimedia
+      qtsvg
+      qt5compat
+      qtvirtualkeyboard
+    ];
   };
 
-  # Basis-Verzeichnisse für greeter user
-  systemd.tmpfiles.rules = [
-    "d /var/lib/greeter/.cache 0755 greeter greeter -"
-    "d /var/lib/greeter/.local 0755 greeter greeter -"
-    "d /var/lib/greeter/.local/share 0755 greeter greeter -"
-    "d /var/lib/greeter/.config 0755 greeter greeter -"
-  ];
+  systemd.services.display-manager.environment = {
+    LANG = "de_DE.UTF-8";
+    LC_ALL = "de_DE.UTF-8";
+  };
 
   i18n.extraLocaleSettings = {
     LC_TIME = "de_DE.UTF-8";
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
+  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
+  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
+  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
@@ -53,20 +52,19 @@
     config = {
       common = {
         default = [ "gnome" ];
+        # Screenshot-Portal explizit auf gnome setzen
         "org.freedesktop.portal.Screenshot" = [ "gnome" ];
         "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
       };
     };
   };
 
+  services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
-    bibata-cursors
     gnome-themes-extra
     xwayland 
     xwayland-satellite
-    nwg-hello
-    gtk3
-    adwaita-icon-theme
+    (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
 
   # ────────────── Schriftarten ──────────────
