@@ -46,6 +46,15 @@
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
 
+  # ────────────────── CONSOLE / TTY ──────────────────
+  # Stellt sicher, dass Umlaute im TTY korrekt dargestellt werden und das
+  # deutsche Tastaturlayout auch ohne grafische Oberfläche funktioniert.
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "de";
+    useXkbConfig = true;
+  };
+
   # ────────────────── NIX SETTINGS ──────────────────
   nix.settings = {
     experimental-features = [ 
