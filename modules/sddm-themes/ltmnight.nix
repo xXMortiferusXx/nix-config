@@ -2,13 +2,13 @@
                                                                                                       
 pkgs.stdenv.mkDerivation {                                                                            
   pname = "sddm-ltmnight-theme";                                                                      
-  version = "1.2.4";                                                                                  
+  version = "main";                                                                                  
                                                                                                       
   src = pkgs.fetchFromGitHub {                                                                        
     owner = "xXMortiferusXx";                                                                         
     repo = "ltmnight-sddm-theme";                                                                     
-    rev = "v1.2.4";                                                                                   
-    sha256 = "sha256-QyCTVclRDqUtYJJwe3Gphrh9BgxMpOl+svEQCaNR+Iw=";                                   
+    rev = "main";                                                                                   
+    sha256 = "";                                                                                   
   };                                                                                                  
                                                                                                       
   nativeBuildInputs = with pkgs; [                                                                    
@@ -41,4 +41,3 @@ VirtualKeyboardAutoShow="false"
 EOF                                                                                                   
   '';                                                                                                 
 }                                                                                                     
-                                                         
