@@ -38,9 +38,10 @@
   };
 
   # Verzeichnis für ReGreet Wallpapers erstellen
-  # Der 'greeter'-User kann hier lesen, deine User-Gruppe kann schreiben (zum Hinzufügen neuer Bilder)
+  # Owner: root, Group: users (rwx), Others: r-x (greeter kann lesen)
+  # /var/lib ist persistent, der Ordner bleibt also nach einem Reboot erhalten.
   systemd.tmpfiles.rules = [
-    "d /var/lib/regreet/wallpapers 0755 greeter users -"
+    "d /var/lib/regreet/wallpapers 0775 root users -"
   ];
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
