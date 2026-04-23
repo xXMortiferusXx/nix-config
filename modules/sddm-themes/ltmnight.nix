@@ -8,7 +8,7 @@ pkgs.stdenv.mkDerivation {
     owner = "xXMortiferusXx";                                                                         
     repo = "ltmnight-sddm-theme";                                                                     
     rev = "main";                                                                                   
-    sha256 = "";                                                                                   
+    sha256 = "sha256-to8+o0DgtrwR+pXUQy7+Fk+T3Zh8kKYqI552NAjVz/k=";                                                                                   
   };                                                                                                  
                                                                                                       
   nativeBuildInputs = with pkgs; [                                                                    
