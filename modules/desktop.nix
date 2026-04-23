@@ -31,8 +31,8 @@
       };
       GTK = {
         application_prefer_dark_theme = true;
-        font_name = "Gentium 12";
-        icon_theme_name = "Adwaita";
+        font_name = lib.mkForce "Gentium 12";
+        icon_theme_name = lib.mkForce "Adwaita";
         cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
         cursor_size = 24;
       };
