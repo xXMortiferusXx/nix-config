@@ -23,12 +23,7 @@
         CursorSize = "24";
       };
       General = {
-        # Cursor explizit für SDDM aktivieren
         EnableHiDPI = "true";
-      };
-      Wayland = {
-        # Wayland-spezifische Cursor-Einstellungen
-        CompositorCommand = "kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -44,10 +39,7 @@
     LC_ALL = "de_DE.UTF-8";
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
-    # SDDM unter Wayland sucht oft nur in explizit gesetzten Pfaden
     XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons";
-    # Zusätzliche Wayland-spezifische Cursor-Einstellungen
-    WLR_NO_HARDWARE_CURSORS = "1";
   };
 
   i18n.extraLocaleSettings = {
