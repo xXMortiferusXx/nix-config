@@ -291,7 +291,4 @@
       };
     };
   };
-
-  # ────────────── SEATD FÜR WAYLAND/NIRI ──────────────
-  services.seatd.enable = true;
 }
