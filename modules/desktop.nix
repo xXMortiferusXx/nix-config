@@ -17,9 +17,12 @@
     wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
-    # Cursor-Settings für SDDM wurden entfernt, da sie aufgrund bekannter Bugs 
-    # in der Kombination mit Wayland/SDDM oft ignoriert werden.
-    settings = {}; 
+    settings = {
+      Theme = {
+        CursorTheme = "Bibata-Modern-Classic";
+        size = 24;
+      };
+    }; 
     extraPackages = with pkgs.kdePackages; [
       qtmultimedia
       qtsvg
@@ -27,7 +30,7 @@
       qtvirtualkeyboard
     ];
   };
-
+  
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
     LC_ALL = "de_DE.UTF-8";
@@ -57,7 +60,7 @@
     };
   };
 
-  services.xserver.enable = false;
+  #services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     bibata-cursors
     gnome-themes-extra
@@ -65,12 +68,6 @@
     xwayland-satellite
     (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
-
-  # Globale Cursor-Variablen für Wayland & X11 (greifen in der Session)
-  environment.variables = {
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "24";
-  };
 
   # ────────────── Schriftarten ──────────────
   fonts.packages = with pkgs; [
