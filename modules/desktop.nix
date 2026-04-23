@@ -29,6 +29,11 @@
     '';
   };
 
+  # ────────────── Boot & Login Optimierung ──────────────
+  # Unterdrückt Kernel-Logs und TTY-Ausgabe für einen sauberen Übergang zum Login
+  boot.consoleLogLevel = 0;
+  boot.kernelParams = [ "quiet" "vt.global_cursor_default=0" ];
+
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
   xdg.portal = {
     enable = true;
