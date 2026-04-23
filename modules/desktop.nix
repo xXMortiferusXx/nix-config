@@ -72,7 +72,12 @@
     };
   };
 
-  services.xserver.enable = false;
+  # X11-Server nur für SDDM aktivieren (minimal)
+  services.xserver = {
+    enable = true;
+    displayManager.startx.enable = false;
+    autorun = false;  # Verhindert automatischen Start
+  };
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     xwayland 
@@ -85,8 +90,6 @@
     kdePackages.qtwayland
     # Cursor-Fix für Wayland
     adwaita-icon-theme
-    # X11-Server für SDDM
-    xorg.xorgserver
   ];
 
   # Cursor-Theme systemweit setzen
