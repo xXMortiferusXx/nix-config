@@ -12,6 +12,8 @@
 
   # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
   console.keyMap = "de";
+  # Terminus Font unterstützt UTF-8/Umlaute im TTY zuverlässig
+  console.font = "${pkgs.terminus_font}/share/consolefonts/ter-v16n.psf.gz";
   services.xserver.xkb.layout = "de";
   # Wayland nutzt diese Umgebungsvariable für das Tastaturlayout
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
@@ -22,11 +24,6 @@
   programs.regreet = {
     enable = true;
   };
-
-  # ────────────── Boot & Login Optimierung ──────────────
-  # Unterdrückt Kernel-Logs und TTY-Ausgabe für einen sauberen Übergang zum Login
-  boot.consoleLogLevel = 0;
-  boot.kernelParams = [ "quiet" "vt.global_cursor_default=0" ];
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
   xdg.portal = {
@@ -49,6 +46,7 @@
     gnome-themes-extra
     xwayland 
     xwayland-satellite
+    terminus_font
   ];
 
   # ────────────── Schriftarten ──────────────
