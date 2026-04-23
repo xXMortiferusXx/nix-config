@@ -25,15 +25,16 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.nwg-hello}/bin/nwg-hello";
+        command = "XDG_CACHE_HOME=/var/lib/greeter/.cache ${pkgs.nwg-hello}/bin/nwg-hello";
         user = "greeter";
       };
     };
   };
 
-  # Cache-Verzeichnis für nwg-hello erstellen
+  # Cache-Verzeichnis für nwg-hello im greeter Home erstellen
   systemd.tmpfiles.rules = [
-    "d /var/cache/nwg-hello 0755 greeter greeter -"
+    "d /var/lib/greeter/.cache 0755 greeter greeter -"
+    "d /var/lib/greeter/.cache/nwg-hello 0755 greeter greeter -"
   ];
 
   i18n.extraLocaleSettings = {
