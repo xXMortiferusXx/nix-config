@@ -25,30 +25,18 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.writeShellScript "nwg-hello-wrapper" ''
-          # Cache-Datei erstellen falls sie nicht existiert
-          mkdir -p /var/cache/nwg-hello
-          if [ ! -f /var/cache/nwg-hello/cache.json ]; then
-            echo '{}' > /var/cache/nwg-hello/cache.json
-          fi
-          
-          # nwg-hello starten
-          exec ${pkgs.nwg-hello}/bin/nwg-hello
-        ''}";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd niri-session";
         user = "greeter";
       };
     };
   };
 
-  # Cache-Verzeichnis für nwg-hello erstellen (sowohl im System als auch im greeter Home)
+  # Basis-Verzeichnisse für greeter user
   systemd.tmpfiles.rules = [
-    "d /var/cache/nwg-hello 0755 greeter greeter -"
     "d /var/lib/greeter/.cache 0755 greeter greeter -"
-    "d /var/lib/greeter/.cache/nwg-hello 0755 greeter greeter -"
     "d /var/lib/greeter/.local 0755 greeter greeter -"
     "d /var/lib/greeter/.local/share 0755 greeter greeter -"
     "d /var/lib/greeter/.config 0755 greeter greeter -"
-    "d /var/lib/greeter/.config/nwg-hello 0755 greeter greeter -"
   ];
 
   i18n.extraLocaleSettings = {
