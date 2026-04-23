@@ -31,6 +31,11 @@
     };
   };
 
+  # Cache-Verzeichnis für nwg-hello erstellen
+  systemd.tmpfiles.rules = [
+    "d /var/cache/nwg-hello 0755 greeter greeter -"
+  ];
+
   i18n.extraLocaleSettings = {
     LC_TIME = "de_DE.UTF-8";
   };
