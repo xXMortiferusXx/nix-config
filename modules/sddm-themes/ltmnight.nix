@@ -22,12 +22,14 @@ pkgs.stdenv.mkDerivation {
     mkdir -p $out/share/sddm/themes/ltmnight                                                          
     cp -aR . $out/share/sddm/themes/ltmnight/                                                         
                                                                                                       
-    # Offizielle SDDM theme.conf mit expliziter Cursor-Definition                                     
+    # Offizielle SDDM theme.conf mit expliziter Cursor-Definition und GLSL Shader Aktivierung
     cat > $out/share/sddm/themes/ltmnight/theme.conf << EOF                                           
 [SddmGreeterTheme]                                                                                    
 Name=LTMNight                                                                                         
 CursorTheme=Bibata-Modern-Classic                                                                     
-CursorSize=24                                                                                         
+CursorSize=24
+BackgroundType=shader
+Shader=background.qml
 EOF                                                                                                   
                                                                                                       
     # Deine bestehende Theme-Konfiguration                                                            
@@ -40,4 +42,4 @@ HideVirtualKeyboard="false"
 VirtualKeyboardAutoShow="false"                                                                       
 EOF                                                                                                   
   '';                                                                                                 
-}                                                                                                     
+}
