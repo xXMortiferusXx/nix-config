@@ -24,10 +24,9 @@
     enable = true;
     settings = {
       background = {
-        # ReGreet lädt dieses Bild. Da ReGreet als separater User ('greeter') läuft,
-        # muss das Bild an einem global lesbaren Ort liegen.
-        # Noctalia kann über den 'wallpaperChange' Hook das aktuelle Bild hierhin kopieren.
-        path = "/etc/nixos/wallpaper.jpg";
+        # Beschreibbarer Pfad für dynamische Wallpapers
+        # Noctalia kann hier über den 'wallpaperChange' Hook das Bild ablegen.
+        path = "/var/lib/regreet/wallpaper.jpg";
       };
       GTK = {
         font_name = lib.mkForce "Gentium 12";
@@ -37,6 +36,12 @@
       };
     };
   };
+
+  # Verzeichnis für ReGreet Wallpaper erstellen & Berechtigungen setzen
+  # greeter-User kann lesen, deine User-Gruppe (z.B. users) kann schreiben
+  systemd.tmpfiles.rules = [
+    "d /var/lib/regreet 0755 greeter users -"
+  ];
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
   xdg.portal = {
