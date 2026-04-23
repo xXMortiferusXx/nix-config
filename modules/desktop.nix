@@ -14,20 +14,12 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;  # Native Wayland-Unterstützung
+    wayland.enable = false;
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
-        CursorSize = "24";
-      };
-      General = {
-        EnableHiDPI = "true";
-        InputMethod = "";
-      };
-      Wayland = {
-        CompositorCommand = "kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -35,18 +27,12 @@
       qtsvg
       qt5compat
       qtvirtualkeyboard
-      qtwayland
-      kwin
     ];
   };
 
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
     LC_ALL = "de_DE.UTF-8";
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "24";
-    XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons";
-    QT_WAYLAND_FORCE_DPI = "physical";
   };
 
   i18n.extraLocaleSettings = {
@@ -73,27 +59,13 @@
     };
   };
 
-  # Kein X11-Server mehr nötig - SDDM läuft nativ auf Wayland
-  services.xserver.enable = false;
+  services.xserver.enable = true;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     xwayland 
     xwayland-satellite
     (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
-    # Cursor-Theme systemweit verfügbar machen, damit SDDM & Apps es finden
-    bibata-cursors
-    # Zusätzliche Cursor-Unterstützung
-    libsForQt5.qt5.qtwayland
-    kdePackages.qtwayland
-    # Cursor-Fix für Wayland
-    adwaita-icon-theme
   ];
-
-  # Cursor-Theme systemweit setzen
-  environment.variables = {
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "24";
-  };
 
   # ────────────── Schriftarten ──────────────
   fonts.packages = with pkgs; [
