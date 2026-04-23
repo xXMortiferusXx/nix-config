@@ -52,10 +52,8 @@
   # useXkbConfig muss false sein, da es sonst mit der manuellen keyMap kollidiert
   # und eine Ableitung (derivation) erwartet, was den Build-Fehler verursacht.
   console = {
-    font = "Lat2-Terminus16";
     keyMap = "de-latin1";
     useXkbConfig = false;
-    packages = [ pkgs.terminus_font ];
   };
 
   # ────────────────── NIX SETTINGS ──────────────────
