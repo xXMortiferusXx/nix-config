@@ -20,7 +20,7 @@
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
-        CursorSize = 24;
+        CursorSize = "24";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -34,6 +34,12 @@
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
     LC_ALL = "de_DE.UTF-8";
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
+  };
+
+  # Setzt den Cursor systemweit, damit auch Qt/Wayland-Apps (wie SDDM) ihn finden
+  environment.variables = {
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
   };
