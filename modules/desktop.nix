@@ -25,7 +25,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "XDG_CACHE_HOME=/var/lib/greeter/.cache ${pkgs.nwg-hello}/bin/nwg-hello";
+        command = "${pkgs.bash}/bin/bash -c 'export XDG_CACHE_HOME=/var/lib/greeter/.cache && export XDG_DATA_HOME=/var/lib/greeter/.local/share && ${pkgs.nwg-hello}/bin/nwg-hello'";
         user = "greeter";
       };
     };
@@ -35,6 +35,8 @@
   systemd.tmpfiles.rules = [
     "d /var/lib/greeter/.cache 0755 greeter greeter -"
     "d /var/lib/greeter/.cache/nwg-hello 0755 greeter greeter -"
+    "d /var/lib/greeter/.local 0755 greeter greeter -"
+    "d /var/lib/greeter/.local/share 0755 greeter greeter -"
   ];
 
   i18n.extraLocaleSettings = {
