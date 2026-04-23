@@ -33,7 +33,7 @@
         application_prefer_dark_theme = true;
         font_name = "Gentium 12";
         icon_theme_name = "Adwaita";
-        cursor_theme_name = "Bibata-Modern-Classic";
+        cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
         cursor_size = 24;
       };
     };
