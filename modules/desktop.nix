@@ -21,6 +21,10 @@
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
       };
+      General = {
+        # Stellt sicher, dass der Greeter die Cursor-Variablen kennt
+        GreeterEnvironment = "XCURSOR_THEME=Bibata-Modern-Classic,XCURSOR_SIZE=24";
+      };
     }; 
     extraPackages = with pkgs.kdePackages; [
       qtmultimedia
@@ -61,11 +65,18 @@
 
   services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
+    bibata-cursors
     gnome-themes-extra
     xwayland 
     xwayland-satellite
     (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
+
+  # Globale Cursor-Variablen für Wayland & X11
+  environment.variables = {
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
+  };
 
   # ────────────── Schriftarten ──────────────
   fonts.packages = with pkgs; [
