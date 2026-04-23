@@ -11,9 +11,8 @@
   programs.dconf.enable = true;
 
   # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
-  console.keyMap = "de";
-  # Terminus Font unterstützt UTF-8/Umlaute im TTY zuverlässig
-  console.font = "${pkgs.terminus_font}/share/consolefonts/ter-v16n.psf.gz";
+  # "de-latin1" stellt sicher, dass Umlaute im TTY korrekt funktionieren
+  console.keyMap = "de-latin1";
   services.xserver.xkb.layout = "de";
   # Wayland nutzt diese Umgebungsvariable für das Tastaturlayout
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
