@@ -14,7 +14,6 @@
   # ────────────── Login Manager (greetd + nwg-hello) ──────────────
   services.greetd = {
     enable = true;
-    vt = 1;
     settings = {
       default_session = {
         command = "${pkgs.nwg-hello}/bin/nwg-hello";
