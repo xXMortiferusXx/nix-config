@@ -26,7 +26,6 @@
     enable = true;
     settings = {
       background = {
-        # Hinweis: Lege mindestens ein Bild (jpg/png) in diesen Ordner, sonst bleibt der Hintergrund grau.
         path = "/var/lib/regreet/wallpapers";
         draw_mode = "cover";
       };
@@ -40,9 +39,9 @@
     };
   };
 
-  # Verzeichnis für ReGreet Wallpapers erstellen
+  # Verzeichnis für ReGreet Wallpapers erstellen & Berechtigungen setzen
   systemd.tmpfiles.rules = [
-    "d /var/lib/regreet/wallpapers 0755 root users -"
+    "d /var/lib/regreet/wallpapers 0755 root root -"
   ];
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
