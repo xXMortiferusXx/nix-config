@@ -20,15 +20,21 @@
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
+        CursorSize = 24;
       };
     }; 
-    extraPackages = with pkgs.kdePackages; [
-      qtmultimedia
-      qtsvg
-      qt5compat
-      qtvirtualkeyboard
+    extraPackages = with pkgs; [
+      kdePackages.qtmultimedia
+      kdePackages.qtsvg
+      kdePackages.qt5compat
+      kdePackages.qtvirtualkeyboard
+      bibata-cursors # Mauszeiger-Theme für SDDM bereitstellen
     ];
   };
+
+  # Systemweites Cursor-Theme für X11 setzen
+  services.xserver.cursorTheme = "Bibata-Modern-Classic";
+  services.xserver.cursorSize = 24;
 
   systemd.services.display-manager.environment = {
     LANG = "de_DE.UTF-8";
