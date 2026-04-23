@@ -22,6 +22,7 @@
     "tcp_bbr" 
     "ntsync" 
   ];
+  boot.consoleLogLevel = 0;
 
   services.scx = {
     enable = true;
