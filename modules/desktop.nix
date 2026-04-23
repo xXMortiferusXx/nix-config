@@ -12,14 +12,14 @@
   services.xserver.xkb.layout = "de";
 
   # ────────────── Login Manager (greetd + ReGreet) ──────────────
-  services.greetd = {
+  services.greetd.enable = true;
+  
+  # ReGreet benötigt einen Wayland-Compositor. NixOS kümmert sich darum automatisch,
+  # wenn programs.regreet aktiviert wird. Es ersetzt die manuelle command-Zuweisung.
+  programs.regreet = {
     enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.regreet}/bin/regreet";
-        user = "regreet";
-      };
-    };
+    # Optional: Hier können später Theme/Icon-Einstellungen vorgenommen werden
+    # settings = { ... };
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
