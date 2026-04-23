@@ -12,8 +12,15 @@
   services.xserver.xkb.layout = "de";
 
   # ────────────── Login Manager (greetd + nwg-hello) ──────────────
-  # Da 'programs.nwg-hello' in deiner aktuellen NixOS-Version (26.05) noch nicht als Option existiert,
-  # konfigurieren wir greetd manuell. Das ist der offiziell empfohlene Fallback.
+  # Expliziten Greeter-User anlegen, um Berechtigungs- und Cache-Probleme zu vermeiden
+  users.users.greeter = {
+    isSystemUser = true;
+    group = "greeter";
+    home = "/var/lib/greeter";
+    createHome = true;
+  };
+  users.groups.greeter = {};
+
   services.greetd = {
     enable = true;
     settings = {
