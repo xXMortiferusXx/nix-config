@@ -12,15 +12,10 @@
   services.xserver.xkb.layout = "de";
 
   # ────────────── Login Manager (greetd + nwg-hello) ──────────────
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.nwg-hello}/bin/nwg-hello";
-        user = "nwg-hello";
-      };
-    };
-  };
+  # Das offizielle NixOS-Modul konfiguriert greetd automatisch korrekt
+  # und stellt sicher, dass nwg-hello mit allen nötigen Wrappern startet.
+  programs.nwg-hello.enable = true;
+  services.greetd.enable = true;
 
   i18n.extraLocaleSettings = {
     LC_TIME = "de_DE.UTF-8";
@@ -48,6 +43,8 @@
     xwayland 
     xwayland-satellite
     nwg-hello
+    gtk3
+    adwaita-icon-theme
   ];
 
   # ────────────── Schriftarten ──────────────
