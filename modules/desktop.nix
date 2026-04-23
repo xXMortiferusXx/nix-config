@@ -64,7 +64,7 @@
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     adwaita-icon-theme
-    bibata-cursor-theme
+    bibata-cursors
     xwayland 
     xwayland-satellite
     terminus_font
