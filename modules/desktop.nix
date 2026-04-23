@@ -52,14 +52,7 @@
     gnome-themes-extra
     xwayland 
     xwayland-satellite
-    # nwg-shell Komponenten
     nwg-hello
-    nwg-panel
-    nwg-drawer
-    nwg-bar
-    nwg-displays
-    nwg-look
-    nwg-menu
   ];
 
   # ────────────── Schriftarten ──────────────
