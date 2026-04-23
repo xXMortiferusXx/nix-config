@@ -55,6 +55,7 @@
     font = "Lat2-Terminus16";
     keyMap = "de-latin1";
     useXkbConfig = false;
+    packages = [ pkgs.terminus_font ];
   };
 
   # ────────────────── NIX SETTINGS ──────────────────
@@ -206,7 +207,6 @@
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
-    SUBSYSTEM=="platform", RUN+="${pkgs.coreutils}/bin/chmod -R 666 /sys/firmware/acpi/platform_profile"
     ACTION=="add|change", KERNEL=="nvme[0-9]n[0-9]", ATTR{queue/scheduler}="kyber"
   '';
 
@@ -293,4 +293,7 @@
       };
     };
   };
+
+  # ────────────── SEATD FÜR WAYLAND/NIRI ──────────────
+  services.seatd.enable = true;
 }
