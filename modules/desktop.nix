@@ -11,41 +11,38 @@
   programs.dconf.enable = true;
 
   # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
-  # "de-latin1" stellt sicher, dass Umlaute im TTY korrekt funktionieren
   console.keyMap = "de-latin1";
   services.xserver.xkb.layout = "de";
-  # Wayland nutzt diese Umgebungsvariable für das Tastaturlayout
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
 
+  # ────────────── Sprache & Lokalisierung (Fix für englische Datumsanzeige) ──────────────
+  environment.variables.LANG = "de_DE.UTF-8";
+  environment.variables.LC_TIME = "de_DE.UTF-8";
+
   # ────────────── Login Manager (greetd + ReGreet) ──────────────
-  # services.greetd.enable wird automatisch durch programs.regreet gesetzt.
-  # Der manuelle settings-Block wurde entfernt, da er die automatische 
-  # User-Erstellung von ReGreet stört und zur Assertion führt.
   services.greetd.enable = true;
   
   programs.regreet = {
     enable = true;
     settings = {
       background = {
-        # Wenn 'path' ein Verzeichnis ist, wählt ReGreet beim Start ZUFÄLLIG ein Bild daraus.
+        # Hinweis: Lege mindestens ein Bild (jpg/png) in diesen Ordner, sonst bleibt der Hintergrund grau.
         path = "/var/lib/regreet/wallpapers";
-        draw_mode = "fill"; # Wichtig: Skaliert das Bild korrekt auf den Monitor
+        draw_mode = "cover";
       };
       GTK = {
-        application_prefer_dark_theme = lib.mkForce true;
-        font_name = lib.mkForce "Gentium 12";
-        icon_theme_name = lib.mkForce "Adwaita";
-        cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
-        cursor_size = lib.mkForce 24;
+        application_prefer_dark_theme = true;
+        font_name = "Gentium 12";
+        icon_theme_name = "Adwaita";
+        cursor_theme_name = "Bibata-Modern-Classic";
+        cursor_size = 24;
       };
     };
   };
 
   # Verzeichnis für ReGreet Wallpapers erstellen
-  # Owner: root, Group: users (rwx), Others: r-x (greeter kann lesen)
-  # /var/lib ist persistent, der Ordner bleibt also nach einem Reboot erhalten.
   systemd.tmpfiles.rules = [
-    "d /var/lib/regreet/wallpapers 0775 root users -"
+    "d /var/lib/regreet/wallpapers 0755 root users -"
   ];
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
@@ -67,6 +64,8 @@
   services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
+    adwaita-icon-theme
+    bibata-cursor-theme
     xwayland 
     xwayland-satellite
     terminus_font
