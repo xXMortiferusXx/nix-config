@@ -23,10 +23,6 @@
     };
   };
 
-  programs.nwg-hello = {
-    enable = true;
-  };
-
   i18n.extraLocaleSettings = {
     LC_TIME = "de_DE.UTF-8";
   };
