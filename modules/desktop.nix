@@ -14,7 +14,7 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = false;  # Erstmal X11 verwenden für Stabilität
+    wayland.enable = true;  # Native Wayland-Unterstützung
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
     settings = {
@@ -26,8 +26,8 @@
         EnableHiDPI = "true";
         InputMethod = "";
       };
-      X11 = {
-        ServerArguments = "-dpi 96";
+      Wayland = {
+        CompositorCommand = "kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -36,6 +36,7 @@
       qt5compat
       qtvirtualkeyboard
       qtwayland
+      kwin
     ];
   };
 
@@ -72,12 +73,8 @@
     };
   };
 
-  # X11-Server nur für SDDM aktivieren (minimal)
-  services.xserver = {
-    enable = true;
-    displayManager.startx.enable = false;
-    autorun = false;  # Verhindert automatischen Start
-  };
+  # Kein X11-Server mehr nötig - SDDM läuft nativ auf Wayland
+  services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     xwayland 
