@@ -11,36 +11,15 @@
   programs.dconf.enable = true;
   services.xserver.xkb.layout = "de";
 
-  # ────────────── Login Manager (SDDM) ──────────────
-  services.displayManager.sddm = {
+  # ────────────── Login Manager (greetd + ReGreet) ──────────────
+  services.greetd = {
     enable = true;
-    wayland.enable = true;
-    package = pkgs.kdePackages.sddm; 
-    theme = "ltmnight";
-    autoNumlock = true;
     settings = {
-      Theme = {
-        CursorTheme = "Bibata-Modern-Classic";
+      default_session = {
+        command = "${pkgs.greetd.regreet}/bin/regreet";
+        user = "regreet";
       };
-      General = {
-        Numlock = "on";
-      };
-    }; 
-    extraPackages = with pkgs.kdePackages; [
-      qtmultimedia
-      qtsvg
-      qt5compat
-      qtvirtualkeyboard
-    ];
-  };
-
-  systemd.services.display-manager.environment = {
-    LANG = "de_DE.UTF-8";
-    LC_ALL = "de_DE.UTF-8";
-  };
-
-  i18n.extraLocaleSettings = {
-    LC_TIME = "de_DE.UTF-8";
+    };
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
@@ -68,7 +47,6 @@
     gnome-themes-extra
     xwayland 
     xwayland-satellite
-    (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
 
   # ────────────── Schriftarten ──────────────
