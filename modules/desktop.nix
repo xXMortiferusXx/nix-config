@@ -14,7 +14,6 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    # Wayland-Greeter ist deutlich stabiler und verhindert den "Process crashed" Fehler
     wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
@@ -64,7 +63,7 @@
     };
   };
 
-  services.xserver.enable = true;
+  services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     xwayland 
