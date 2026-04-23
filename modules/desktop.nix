@@ -18,21 +18,30 @@
   environment.variables.XKB_DEFAULT_LAYOUT = "de";
 
   # ────────────── Login Manager (greetd + ReGreet) ──────────────
-  services.greetd.enable = true;
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.regreet}/bin/regreet";
+        user = "regreet";
+      };
+    };
+  };
   
   programs.regreet = {
     enable = true;
     settings = {
       background = {
         # Wenn 'path' ein Verzeichnis ist, wählt ReGreet beim Start ZUFÄLLIG ein Bild daraus.
-        # Das umgeht das Berechtigungsproblem mit deinem Home-Verzeichnis komplett.
         path = "/var/lib/regreet/wallpapers";
+        draw_mode = "fill"; # Wichtig: Skaliert das Bild korrekt auf den Monitor
       };
       GTK = {
-        font_name = lib.mkForce "Gentium 12";
-        icon_theme_name = lib.mkForce "Adwaita";
-        cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
-        cursor_size = lib.mkForce 24;
+        application_prefer_dark_theme = true;
+        font_name = "Gentium 12";
+        icon_theme_name = "Adwaita";
+        cursor_theme_name = "Bibata-Modern-Classic";
+        cursor_size = 24;
       };
     };
   };
