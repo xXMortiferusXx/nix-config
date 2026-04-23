@@ -22,7 +22,9 @@
     "tcp_bbr" 
     "ntsync" 
   ];
-  boot.consoleLogLevel = 0;
+  # Level 3 zeigt nur Fehler & Warnungen an. Unterdrückt normales Rauschen,
+  # lässt aber kritische Boot-Meldungen sichtbar, falls etwas schiefgeht.
+  boot.consoleLogLevel = 3;
 
   services.scx = {
     enable = true;
