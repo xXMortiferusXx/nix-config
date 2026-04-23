@@ -12,10 +12,17 @@
   services.xserver.xkb.layout = "de";
 
   # ────────────── Login Manager (greetd + nwg-hello) ──────────────
-  # Das offizielle NixOS-Modul konfiguriert greetd automatisch korrekt
-  # und stellt sicher, dass nwg-hello mit allen nötigen Wrappern startet.
-  programs.nwg-hello.enable = true;
-  services.greetd.enable = true;
+  # Da 'programs.nwg-hello' in deiner aktuellen NixOS-Version (26.05) noch nicht als Option existiert,
+  # konfigurieren wir greetd manuell. Das ist der offiziell empfohlene Fallback.
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.nwg-hello}/bin/nwg-hello";
+        user = "greeter";
+      };
+    };
+  };
 
   i18n.extraLocaleSettings = {
     LC_TIME = "de_DE.UTF-8";
