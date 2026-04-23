@@ -4,12 +4,6 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
   boot.kernelModules = [ "kvm-amd" ];
 
-  # Physischer Swap von Disko (mit niedriger Priorität)
-  swapDevices = [ {
-    device = "/dev/disk/by-partlabel/disk-main-swap";
-    priority = 0; 
-  } ];
-
   # Gaming-Platte via Label
   fileSystems."/gaming" = {
     device = "/dev/disk/by-label/GamingDrive";
