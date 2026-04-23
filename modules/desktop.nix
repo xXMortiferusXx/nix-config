@@ -40,9 +40,6 @@
   };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
-  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
-  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
-  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
@@ -52,14 +49,15 @@
     config = {
       common = {
         default = [ "gnome" ];
-        # Screenshot-Portal explizit auf gnome setzen
         "org.freedesktop.portal.Screenshot" = [ "gnome" ];
         "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
       };
     };
   };
 
-  services.xserver.enable = false;
+  # X11-Unterstützung aktivieren, damit SDDM im X11-Modus stabil läuft
+  services.xserver.enable = true;
+  
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
     xwayland 
