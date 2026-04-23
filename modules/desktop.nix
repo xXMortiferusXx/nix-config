@@ -25,7 +25,16 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.bash}/bin/bash -c 'export XDG_CACHE_HOME=/var/cache && export XDG_DATA_HOME=/var/lib/greeter/.local/share && export XDG_CONFIG_HOME=/var/lib/greeter/.config && ${pkgs.nwg-hello}/bin/nwg-hello'";
+        command = "${pkgs.writeShellScript "nwg-hello-wrapper" ''
+          # Cache-Datei erstellen falls sie nicht existiert
+          mkdir -p /var/cache/nwg-hello
+          if [ ! -f /var/cache/nwg-hello/cache.json ]; then
+            echo '{}' > /var/cache/nwg-hello/cache.json
+          fi
+          
+          # nwg-hello starten
+          exec ${pkgs.nwg-hello}/bin/nwg-hello
+        ''}";
         user = "greeter";
       };
     };
