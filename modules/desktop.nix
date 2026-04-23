@@ -14,7 +14,7 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
+    wayland.enable = false;  # Erstmal X11 verwenden für Stabilität
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
     settings = {
@@ -29,15 +29,13 @@
       X11 = {
         ServerArguments = "-dpi 96";
       };
-      Wayland = {
-        CompositorCommand = "kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1";
-      };
     }; 
     extraPackages = with pkgs.kdePackages; [
       qtmultimedia
       qtsvg
       qt5compat
       qtvirtualkeyboard
+      qtwayland
     ];
   };
 
@@ -87,6 +85,8 @@
     kdePackages.qtwayland
     # Cursor-Fix für Wayland
     adwaita-icon-theme
+    # X11-Server für SDDM
+    xorg.xorgserver
   ];
 
   # Cursor-Theme systemweit setzen
