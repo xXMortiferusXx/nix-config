@@ -22,6 +22,10 @@
     # settings = { ... };
   };
 
+  # Unterdrücke die TTY-Ausgabe von Cage/ReGreet, um den blauen Text zu vermeiden.
+  # Die Logs bleiben über journalctl vollständig zugänglich.
+  services.greetd.settings.default_session.command = lib.mkForce "${pkgs.cage}/bin/cage -ds -- ${pkgs.regreet}/bin/regreet 2>/dev/null";
+
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
   # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
   # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
