@@ -17,15 +17,9 @@
     wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
-    settings = {
-      Theme = {
-        CursorTheme = "Bibata-Modern-Classic";
-      };
-      General = {
-        # Stellt sicher, dass der Greeter die Cursor-Variablen kennt
-        GreeterEnvironment = "XCURSOR_THEME=Bibata-Modern-Classic,XCURSOR_SIZE=24";
-      };
-    }; 
+    # Cursor-Settings für SDDM wurden entfernt, da sie aufgrund bekannter Bugs 
+    # in der Kombination mit Wayland/SDDM oft ignoriert werden.
+    settings = {}; 
     extraPackages = with pkgs.kdePackages; [
       qtmultimedia
       qtsvg
@@ -72,7 +66,7 @@
     (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
 
-  # Globale Cursor-Variablen für Wayland & X11
+  # Globale Cursor-Variablen für Wayland & X11 (greifen in der Session)
   environment.variables = {
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
