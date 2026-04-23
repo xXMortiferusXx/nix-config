@@ -24,6 +24,13 @@
       };
       General = {
         EnableHiDPI = "true";
+        InputMethod = "";
+      };
+      X11 = {
+        ServerArguments = "-dpi 96";
+      };
+      Wayland = {
+        CompositorCommand = "kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
@@ -40,6 +47,7 @@
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
     XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons";
+    QT_WAYLAND_FORCE_DPI = "physical";
   };
 
   i18n.extraLocaleSettings = {
@@ -77,7 +85,15 @@
     # Zusätzliche Cursor-Unterstützung
     libsForQt5.qt5.qtwayland
     kdePackages.qtwayland
+    # Cursor-Fix für Wayland
+    adwaita-icon-theme
   ];
+
+  # Cursor-Theme systemweit setzen
+  environment.variables = {
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
+  };
 
   # ────────────── Schriftarten ──────────────
   fonts.packages = with pkgs; [
