@@ -14,12 +14,17 @@
   # ────────────── Login Manager (SDDM) ──────────────
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = false;
+    # Wayland-Greeter ist deutlich stabiler und verhindert den "Process crashed" Fehler
+    wayland.enable = true;
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
+    autoNumlock = true;
     settings = {
       Theme = {
         CursorTheme = "Bibata-Modern-Classic";
+      };
+      General = {
+        Numlock = "on";
       };
     }; 
     extraPackages = with pkgs.kdePackages; [
