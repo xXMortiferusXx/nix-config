@@ -28,7 +28,7 @@
       qtsvg
       qt5compat
       qtvirtualkeyboard
-    ] ++ [ pkgs.bibata-cursors ];
+    ];
   };
 
   systemd.services.display-manager.environment = {
@@ -36,14 +36,8 @@
     LC_ALL = "de_DE.UTF-8";
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
-    # Expliziter Pfad zu den Cursor-Themes, damit SDDM sie unter Wayland korrekt findet
-    XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons:/usr/share/icons:/run/current-system/sw/share/icons";
-  };
-
-  # Setzt den Cursor systemweit, damit auch Qt/Wayland-Apps (wie SDDM) ihn finden
-  environment.variables = {
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "24";
+    # SDDM unter Wayland sucht oft nur in explizit gesetzten Pfaden
+    XCURSOR_PATH = "${pkgs.bibata-cursors}/share/icons";
   };
 
   i18n.extraLocaleSettings = {
@@ -76,6 +70,8 @@
     xwayland 
     xwayland-satellite
     (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
+    # Cursor-Theme systemweit verfügbar machen, damit SDDM & Apps es finden
+    bibata-cursors
   ];
 
   # ────────────── Schriftarten ──────────────
