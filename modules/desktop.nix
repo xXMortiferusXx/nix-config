@@ -9,42 +9,40 @@
   
   security.polkit.enable = true;
   programs.dconf.enable = true;
-
-  # ────────────── Tastaturlayout (Systemweit, TTY & Wayland) ──────────────
-  console.keyMap = "de-latin1";
   services.xserver.xkb.layout = "de";
-  environment.variables.XKB_DEFAULT_LAYOUT = "de";
 
-  # ────────────── Sprache & Lokalisierung (Fix für englische Datumsanzeige) ──────────────
-  environment.variables.LANG = "de_DE.UTF-8";
-  environment.variables.LC_TIME = "de_DE.UTF-8";
-
-  # ────────────── Login Manager (greetd + ReGreet) ──────────────
-  services.greetd.enable = true;
-  
-  programs.regreet = {
+  # ────────────── Login Manager (SDDM) ──────────────
+  services.displayManager.sddm = {
     enable = true;
+    wayland.enable = true;
+    package = pkgs.kdePackages.sddm; 
+    theme = "ltmnight";
     settings = {
-      background = {
-        path = "/var/lib/regreet/wallpapers";
-        draw_mode = "cover";
+      Theme = {
+        CursorTheme = "Bibata-Modern-Classic";
       };
-      GTK = {
-        application_prefer_dark_theme = true;
-        font_name = lib.mkForce "Gentium 12";
-        icon_theme_name = lib.mkForce "Adwaita";
-        cursor_theme_name = lib.mkForce "Bibata-Modern-Classic";
-        cursor_size = 24;
-      };
-    };
+    }; 
+    extraPackages = with pkgs.kdePackages; [
+      qtmultimedia
+      qtsvg
+      qt5compat
+      qtvirtualkeyboard
+    ];
   };
 
-  # Verzeichnis für ReGreet Wallpapers erstellen & Berechtigungen setzen
-  systemd.tmpfiles.rules = [
-    "d /var/lib/regreet/wallpapers 0755 root root -"
-  ];
+  systemd.services.display-manager.environment = {
+    LANG = "de_DE.UTF-8";
+    LC_ALL = "de_DE.UTF-8";
+  };
+
+  i18n.extraLocaleSettings = {
+    LC_TIME = "de_DE.UTF-8";
+  };
 
   # ────────────── Portale (Screenshots & Fenster-Sharing) ──────────────
+  # Hinweis: xdg-desktop-portal-wlr wurde entfernt, da es für wlroots-Compositors
+  # (Sway etc.) gedacht ist und bei Niri Konflikte verursachen kann.
+  # xdg-desktop-portal-gnome übernimmt alle nötigen Funktionen für Niri.
   xdg.portal = {
     enable = true;
     extraPortals = [ 
@@ -54,6 +52,7 @@
     config = {
       common = {
         default = [ "gnome" ];
+        # Screenshot-Portal explizit auf gnome setzen
         "org.freedesktop.portal.Screenshot" = [ "gnome" ];
         "org.freedesktop.portal.ScreenCast" = [ "gnome" ];
       };
@@ -63,11 +62,9 @@
   services.xserver.enable = false;
   environment.systemPackages = with pkgs; [
     gnome-themes-extra
-    adwaita-icon-theme
-    bibata-cursors
     xwayland 
     xwayland-satellite
-    terminus_font
+    (pkgs.callPackage ./sddm-themes/ltmnight.nix {})
   ];
 
   # ────────────── Schriftarten ──────────────
