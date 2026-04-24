@@ -13,8 +13,8 @@
     ./modules/kitty.nix
     ./modules/services/noctalia.nix
     ./modules/home.nix
-    ./modules/speedtest.nix
-    ./modules/nix-tools.nix
+    ./modules/tools/speedtest.nix
+    ./modules/tools/nix-tools.nix
   ];
 
   # stateVersion nur einmal hier definieren (wurde aus system.nix entfernt)
