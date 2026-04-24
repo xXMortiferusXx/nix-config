@@ -17,6 +17,7 @@
       vulkan-tools
       vulkan-validation-layers
       vulkan-extension-layer
+      nvidia-vaapi-driver
     ];
   };
   
