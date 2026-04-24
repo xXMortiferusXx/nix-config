@@ -7,13 +7,11 @@
 
   environment.variables = {
     "__GL_SHADER_DISK_CACHE_SIZE" = "12000000000";
-    "XCURSOR_THEME" = "Bibata-Modern-Classic";
-    "XCURSOR_SIZE" = "24";
     "VDPAU_DRIVER" = "va_gl";
     "LIBVA_DRIVER_NAME" = "radeonsi";
   };
 
-  services.envfs.enable = true;
+  services.envfs.enable = false;
   networking.firewall.enable = true;
 
   # ────────────────── KERNEL & PERFORMANCE ──────────────────

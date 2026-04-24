@@ -17,18 +17,25 @@
     wayland.enable = false; # X11 verwenden, um Mauszeiger-Bugs zu vermeiden
     package = pkgs.kdePackages.sddm; 
     theme = "ltmnight";
-    settings = {
-      Theme = {
-        CursorTheme = "Bibata-Modern-Classic";
-        CursorSize = 24;
-      };
-    }; 
+    setupScript = ''
+    ${pkgs.xrdb}/bin/xrdb -merge <<EOF
+    Xcursor.theme: Bibata-Modern-Classic
+    Xcursor.size: 24
+    EOF
+    '';
+    #settings Deaktiviert da momentan über setupScript und xrdb gelöst!
+    #settings = {
+    #  Theme = {
+    #    CursorTheme = "Bibata-Modern-Classic";
+    #    CursorSize = 24;
+    #  };
+    #}; 
     extraPackages = with pkgs; [
       kdePackages.qtmultimedia
       kdePackages.qtsvg
       kdePackages.qt5compat
       kdePackages.qtvirtualkeyboard
-      bibata-cursors # Mauszeiger-Theme für SDDM bereitstellen
+      bibata-cursors #Nötig ? Sicher ist Sicher :-)
     ];
   };
 
@@ -67,6 +74,7 @@
   services.xserver.enable = true;
   
   environment.systemPackages = with pkgs; [
+    bibata-cursors
     gnome-themes-extra
     xwayland 
     xwayland-satellite
