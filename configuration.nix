@@ -17,6 +17,6 @@
     ./modules/tools/nix-tools.nix
   ];
 
-  # stateVersion nur einmal hier definieren (wurde aus system.nix entfernt)
+  # stateVersion nur einmal hier definieren
   system.stateVersion = "25.11";
 }
