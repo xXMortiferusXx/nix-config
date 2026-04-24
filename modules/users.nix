@@ -6,8 +6,9 @@
     extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
     shell = pkgs.fish;
 
+    # Hier bleiben nur Pakete, die systemnah sind oder spezielle Wrapper benötigen
     packages = with pkgs; [
-      # 3D Printing
+      # 3D Printing Wrapper
       (makeDesktopItem {
         name = "ideamaker";
         desktopName = "ideaMaker";
@@ -18,37 +19,12 @@
         terminal = false;
         type = "Application";
       })
-      prusa-slicer
-      orca-slicer
       
-      # Tools
-      helix
-      jq
-      libreoffice
-      hunspellDicts.de_DE
-      hyphenDicts.de-de
-      yazi
-      btop
-      vesktop
-      bitwarden-desktop
-      cartridges
-      kitty
-      nautilus
-      brightnessctl
-
-      # KI
-      aider-chat
-      
-      # Browser & System
+      # Browser & System-Tools (bleiben hier wegen Flake-Integration oder System-Relevanz)
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       qt6Packages.qt6ct
       libsForQt5.qt5ct
-      
-      # Dokumente & Bilder
-      zathura
-      loupe 
-      gimp
-      naps2
+      brightnessctl
     ];
   };
 

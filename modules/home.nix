@@ -4,9 +4,37 @@
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true;
 
-    home.packages = [
-      pkgs.papirus-icon-theme
-      pkgs.bibata-cursors
+    home.packages = with pkgs; [
+      # Icons & Cursors
+      papirus-icon-theme
+      bibata-cursors
+
+      # 3D Printing
+      prusa-slicer
+      orca-slicer
+
+      # Tools & Office
+      helix
+      jq
+      libreoffice
+      hunspellDicts.de_DE
+      hyphenDicts.de-de
+      yazi
+      btop
+      vesktop
+      bitwarden-desktop
+      cartridges
+      kitty
+      nautilus
+
+      # KI
+      aider-chat
+
+      # Dokumente & Bilder
+      zathura
+      loupe 
+      gimp
+      naps2
     ];
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
@@ -41,7 +69,6 @@
       gtk4.extraConfig = {
         gtk-icon-theme-name = "Papirus";
       };
-      # gtk4.theme = null wurde entfernt (unnötig, erzeugt Warnungen)
     };
 
     xdg.configFile = {
@@ -65,7 +92,7 @@
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
     };
 
-    # MangoHud – zentral hier verwaltet, nicht doppelt in gaming.nix/users.nix
+    # MangoHud – zentral hier verwaltet
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
