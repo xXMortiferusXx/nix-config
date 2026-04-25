@@ -2,9 +2,10 @@
   description = "Mortiferus-PC NixOS Ultimate Config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Wir nutzen einen festen Commit-Stand (22.04.2024), der stabil im Cache ist
+    nixpkgs.url = "github:nixos/nixpkgs/ae294f930830540344e02b3971c3098567e41188";
     
-    #Disko
+    # Disko
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -17,9 +18,9 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nix-gaming.url = "github:fufexan/nix-gaming";
     nixvim = {
-    url = "github:nix-community/nixvim";
-    inputs.nixpkgs.follows = "nixpkgs";
-   }; 
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    }; 
   };
 
   outputs = { self, nixpkgs, home-manager, disko, nixvim, ... }@inputs: 
@@ -33,7 +34,7 @@
         specialArgs = { inherit self inputs; };
 
         modules = [
-	  disko.nixosModules.disko
+          disko.nixosModules.disko
           ./configuration.nix
           nixvim.nixosModules.nixvim
 
@@ -49,4 +50,3 @@
       };
     };
 }
-
