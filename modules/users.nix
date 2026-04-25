@@ -24,7 +24,6 @@
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       qt6Packages.qt6ct
       libsForQt5.qt5ct
-      brightnessctl
     ];
   };
 
