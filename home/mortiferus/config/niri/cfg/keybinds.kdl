@@ -8,6 +8,7 @@ binds {
     Mod+Return { spawn "kitty"; }
     Mod+B      { spawn "zen-beta"; }
     Mod+E      { spawn "nautilus"; }
+    Mod+S      { spawn "pavucontrol"; }
 
     // ─── Noctalia UI (NixOS Pfade) ───
     Mod+CTRL+Return  { spawn "sh" "-c" "noctalia ipc launcher toggle"; }
