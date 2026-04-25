@@ -12,69 +12,60 @@ window-rule {
     }
 
 window-rule {
-    // Wir ignorieren die App-ID und gehen rein auf den Fensternamen
-    match title="^Steam$"
-    open-on-workspace "2"
-    open-fullscreen false
-
-    // Das hier ist wichtig: Es zwingt Niri, das Fenster
-    // auch dann zu verschieben, wenn es eigentlich schon "platziert" ist.
-
-    block-out-from "screen-capture" // Nur ein Beispiel-Property zum Triggern
-} 
+    match app-id="xdg-desktop-portal-gnome"
+    match app-id="xdg-desktop-portal-kde"
+    match app-id="xdg-desktop-portal-gtk"
+    match app-id="xdg-desktop-portal-wlr"
+    match app-id="zenity"
+    
+    open-floating true
+}
 
 window-rule {
-    // Vesktop erkennt man meist am App-ID oder Titel
     match app-id="vesktop"
-    
-    // Schiebe es auf Workspace 2
     open-on-workspace "2"
-    
-    // Optional: Automatisch maximieren, damit es den Platz nutzt
     default-column-width { proportion 1.0; }
-}
-
-window-rule {
-    // Lutris (deckt beide IDs ab)
-    match app-id="net.lutris.Lutris"
-    match app-id="lutris"
-    open-on-workspace "2"
-}
-
-window-rule {
-    // Heroic Games Launcher
-    match app-id="com.heroicgameslauncher.hgl"
-    match app-id="heroic"
-    open-on-workspace "2"
-}
-
-window-rule {
-    // Firefox erkennt man am besten über die app-id
-    match app-id="firefox"
-    open-on-workspace "1"
-}
-window-rule {
-    // Firefox erkennt man am besten über die app-id
-    match app-id="brave"
-    open-on-workspace "1"
+    focus-ring { off; }
 }
 
 window-rule {
     match app-id="zen-beta"
-
     open-on-workspace "1"
-    open-floating false
-    
-    // Entfernt den aktiven Fokus-Rahmen (die Markierung)
-    focus-ring {
-        off
-    }
-
-    // Entfernt den statischen Fensterrahmen
-    border {
-        off
-    }
-    
-    // Maximiert das Fenster auf die volle Breite
+    focus-ring { off; }
+    border { off; }
     default-column-width { proportion 1.0; }
+}
+
+window-rule {
+    match app-id=r#"zen-beta$"# title="^Picture-in-Picture$" 
+    open-floating true
+}
+
+window-rule {
+    // Steam
+    match app-id="steam"
+    match title="^Steam$"
+
+    // Lutris
+    match app-id="net.lutris.Lutris"
+    match app-id="lutris"
+
+    // Heroic Games Launcher
+    match app-id="com.heroicgameslauncher.hgl"
+    match app-id="heroic"
+
+    // Cartridges
+    match app-id="io.github.krawek.cartridges"
+    match app-id="cartridges"
+
+    // Gemeinsame Einstellungen
+    open-on-workspace "2"
+    open-fullscreen false
+    focus-ring { off; }
+}
+
+window-rule {
+    match app-id="pavucontrol" // Lautstärkemixer
+    match app-id="blueman-manager" // Bluetooth
+    open-floating true
 }
