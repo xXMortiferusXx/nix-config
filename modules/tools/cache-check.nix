@@ -7,7 +7,12 @@ let
     # Wir nutzen nix build --dry-run, um zu sehen, was gebaut werden müsste.
     echo "📦 Analysiere Abhängigkeiten (das kann einen Moment dauern)..."
     
-    OUT=$(nix build .#nixosConfigurations."Mortiferus-PC".config.system.build.toplevel --dry-run 2>&1)
+    # Wir fangen Fehler hier ab, falls nix build selbst fehlschlägt
+    if ! OUT=$(nix build .#nixosConfigurations."Mortiferus-PC".config.system.build.toplevel --dry-run 2>&1); then
+      echo "❌ FEHLER: Nix konnte die Abhängigkeiten nicht analysieren."
+      echo "$OUT" | tail -n 10
+      exit 1
+    fi
     
     # Extrahiere die Anzahl der Pakete aus der Ausgabe
     FETCH=$(echo "$OUT" | grep "will be fetched" | wc -l || echo "0")
@@ -21,8 +26,7 @@ let
     echo "🔨 Pakete zum Kompilieren: $BUILD"
     echo "---------------------------------------"
     
-    # Wenn mehr als 5 Pakete gebaut werden sollen, prüfen wir genauer.
-    # Ein paar kleine Ableitungen (wie die System-Konfiguration selbst) werden immer gebaut.
+    # Wenn mehr als 10 Pakete gebaut werden sollen, bricht das Skript ab.
     if [ "$BUILD" -gt 10 ]; then
       echo "⚠️ KRITISCHE WARNUNG: $BUILD Pakete fehlen im Cache!"
       echo "Folgende Pakete müssten lokal kompiliert werden:"
@@ -30,8 +34,7 @@ let
       echo "..."
       echo "---------------------------------------"
       echo "❌ ABBRUCH: Da du keine langen Kompilierzeiten möchtest,"
-      echo "wurde der Vorgang gestoppt. Bitte versuche es später erneut,"
-      echo "wenn die Cache-Server (Hydra/Cachix) fertig sind."
+      echo "wurde der Vorgang gestoppt. Bitte versuche es später erneut."
       exit 1
     fi
 
@@ -47,9 +50,14 @@ let
     
     # Wir sichern die aktuelle flake.lock
     cp flake.lock flake.lock.bak
+    echo "💾 Backup der flake.lock erstellt."
 
     echo "🔄 Aktualisiere Flake Inputs..."
-    sudo nix flake update
+    if ! sudo nix flake update; then
+      echo "❌ Fehler beim Flake Update."
+      sudo mv flake.lock.bak flake.lock
+      exit 1
+    fi
     
     # Jetzt prüfen wir den Cache mit den NEUEN Inputs
     if ${cache-check}/bin/cache-check; then
@@ -63,7 +71,7 @@ let
         exit 1
       fi
     else
-      echo "↩️ Cache unvollständig. Setze flake.lock zurück..."
+      echo "↩️ Cache-Check fehlgeschlagen oder unvollständig. Setze flake.lock zurück..."
       sudo mv flake.lock.bak flake.lock
       exit 1
     fi
