@@ -6,28 +6,28 @@ window-rule {
     draw-border-with-background false 
 }
 
-    layer-rule {
-        match namespace="^noctalia-wallpaper*"
-        place-within-backdrop true
-    }
+// ────────────── Layer Rules ──────────────
+layer-rule {
+    match namespace="^noctalia-wallpaper*"
+    place-within-backdrop true
+}
 
+// ────────────── Window Rules ──────────────
+
+// Dialoge und System-Tools (Floating)
 window-rule {
     match app-id="xdg-desktop-portal-gnome"
     match app-id="xdg-desktop-portal-kde"
     match app-id="xdg-desktop-portal-gtk"
     match app-id="xdg-desktop-portal-wlr"
     match app-id="zenity"
+    match app-id="pavucontrol"
+    match app-id="blueman-manager"
     
     open-floating true
 }
 
-window-rule {
-    match app-id="vesktop"
-    open-on-workspace "2"
-    default-column-width { proportion 1.0; }
-    focus-ring { off; }
-}
-
+// Browser (Zen)
 window-rule {
     match app-id="zen-beta"
     open-on-workspace "1"
@@ -36,36 +36,38 @@ window-rule {
     default-column-width { proportion 1.0; }
 }
 
+// Zen Picture-in-Picture
 window-rule {
     match app-id=r#"zen-beta$"# title="^Picture-in-Picture$" 
     open-floating true
 }
 
+// Chat (Vesktop)
 window-rule {
-    // Steam
+    match app-id="vesktop"
+    open-on-workspace "2"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+}
+
+// Gaming (Steam, Lutris, Heroic, etc.)
+window-rule {
     match app-id="steam"
-    match title="^Steam$"
-
-    // Lutris
     match app-id="net.lutris.Lutris"
-    match app-id="lutris"
-
-    // Heroic Games Launcher
     match app-id="com.heroicgameslauncher.hgl"
-    match app-id="heroic"
-
-    // Cartridges
     match app-id="io.github.krawek.cartridges"
-    match app-id="cartridges"
 
-    // Gemeinsame Einstellungen
     open-on-workspace "2"
     open-fullscreen false
     focus-ring { off; }
 }
 
+// Spezielle Steam-Fenster (Floating verhindern Kachelung von Popups)
 window-rule {
-    match app-id="pavucontrol" // Lautstärkemixer
-    match app-id="blueman-manager" // Bluetooth
+    match app-id="steam" title="^Settings$"
+    match app-id="steam" title="^Friends List$"
+    match app-id="steam" title="^Steam - News$"
+    match app-id="steam" title=".* - Chat$"
+    
     open-floating true
 }
