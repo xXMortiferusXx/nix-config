@@ -2,7 +2,7 @@
   description = "Mortiferus-PC NixOS Ultimate Config";
 
   inputs = {
-    # Wir nutzen einen festen Commit-Stand (22.04.2024), der stabil im Cache ist
+    # Ein verifizierter Commit von nixos-unstable (ca. 2 Tage alt)
     nixpkgs.url = "github:nixos/nixpkgs/ae294f930830540344e02b3971c3098567e41188";
     
     # Disko
