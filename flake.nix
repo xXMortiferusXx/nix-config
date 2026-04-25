@@ -2,7 +2,6 @@
   description = "Mortiferus-PC NixOS Ultimate Config";
 
   inputs = {
-    # Zurück auf den Standard-Zweig, um den 404-Fehler zu beheben
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
     # Disko
