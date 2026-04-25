@@ -4,16 +4,13 @@ let
   cache-check = pkgs.writeShellScriptBin "cache-check" ''
     echo "🔍 Prüfe Cache-Verfügbarkeit für das aktuelle System..."
     
-    # Hole alle Build-Abhängigkeiten für die aktuelle Flake-Konfiguration
-    # Wir filtern nach .drv Pfaden
-    DRVS=$(nix path-info --derivation .#nixosConfigurations."Mortiferus-PC".config.system.build.toplevel)
-    
+    # Wir nutzen nix build --dry-run, um zu sehen, was gebaut werden müsste.
+    # Das funktioniert zuverlässig mit Flakes.
     echo "📦 Analysiere Abhängigkeiten (das kann einen Moment dauern)..."
     
-    # Nutze hydra-check oder eine einfache Abfrage, um zu sehen, was gebaut werden muss
-    # --dry-run zeigt an, was heruntergeladen vs. gebaut wird
-    OUT=$(nix-build --dry-run -E "with import <nixpkgs> {}; (builtins.getFlake (toString ./.)).nixosConfigurations.\"Mortiferus-PC\".config.system.build.toplevel" 2>&1)
+    OUT=$(nix build .#nixosConfigurations."Mortiferus-PC".config.system.build.toplevel --dry-run 2>&1)
     
+    # Extrahiere die Anzahl der Pakete aus der Ausgabe
     FETCH=$(echo "$OUT" | grep "will be fetched" | wc -l || echo "0")
     BUILD=$(echo "$OUT" | grep "will be built" | wc -l || echo "0")
     
@@ -31,21 +28,30 @@ let
           exit 1
       fi
     else
-      echo "✅ Cache-Status sieht gut aus."
+      if [ "$BUILD" -eq 0 ] && [ "$FETCH" -eq 0 ]; then
+          echo "✨ System ist bereits auf dem neuesten Stand (keine Änderungen)."
+      else
+          echo "✅ Cache-Status sieht gut aus."
+      fi
     fi
   '';
 
   nix-update-safe = pkgs.writeShellScriptBin "nix-update-safe" ''
-    pushd /etc/nixos
+    pushd /etc/nixos > /dev/null
+    
+    echo "🔄 Aktualisiere Flake Inputs..."
+    sudo nix flake update
+    
     ${cache-check}/bin/cache-check
     if [ $? -eq 0 ]; then
-      echo "🚀 Starte Update..."
-      sudo nix flake update
+      echo "🚀 Starte System-Rebuild..."
       sudo nixos-rebuild switch --flake .#Mortiferus-PC
     else
-      echo "❌ Update abgebrochen."
+      echo "❌ Update abgebrochen. Rollback der flake.lock..."
+      git checkout flake.lock 2>/dev/null || echo "Hinweis: Konnte flake.lock nicht automatisch zurücksetzen."
     fi
-    popd
+    
+    popd > /dev/null
   '';
 in
 {
