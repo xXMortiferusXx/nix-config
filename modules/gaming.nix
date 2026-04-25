@@ -86,9 +86,9 @@ in
   ];
 
   users.users.mortiferus.packages = with pkgs; [
-    lutris 
+    #lutris 
     heroic 
-    bottles 
+    #bottles 
     gamescope
     lsfg-vk
     lsfg-vk-ui

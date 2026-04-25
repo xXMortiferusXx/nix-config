@@ -15,7 +15,6 @@
     ./modules/home.nix
     ./modules/tools/speedtest.nix
     ./modules/tools/nix-tools.nix
-    ./modules/tools/cache-check.nix
   ];
 
   # stateVersion nur einmal hier definieren
