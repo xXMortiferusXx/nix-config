@@ -56,18 +56,12 @@ window-rule {
     match app-id="net.lutris.Lutris"
     match app-id="com.heroicgameslauncher.hgl"
     match app-id="io.github.krawek.cartridges"
+    match app-id="org.gnome.Nautilus" title="faugus"
+    match app-id="faugus-launcher"
+    match app-id="heroic"
 
     open-on-workspace "2"
     open-fullscreen false
     focus-ring { off; }
-}
-
-// Spezielle Steam-Fenster (Floating verhindern Kachelung von Popups)
-window-rule {
-    match app-id="steam" title="^Settings$"
-    match app-id="steam" title="^Friends List$"
-    match app-id="steam" title="^Steam - News$"
-    match app-id="steam" title=".* - Chat$"
-    
-    open-floating true
+    open-floating false
 }

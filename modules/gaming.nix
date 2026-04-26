@@ -86,6 +86,8 @@ in
   ];
 
   users.users.mortiferus.packages = with pkgs; [
+    faugus-launcher
+    umu-launcher
     #lutris 
     heroic 
     #bottles 
@@ -93,6 +95,7 @@ in
     lsfg-vk
     lsfg-vk-ui
     umu-launcher
+    protonplus
     # mangohud wird über home-manager verwaltet (siehe home.nix)
   ];
 

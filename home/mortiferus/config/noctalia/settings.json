@@ -32,7 +32,8 @@
             "gay.pancake.lsfg-vk-ui",
             "OrcaSlicer",
             "PrusaSlicer",
-            "ideamaker"
+            "ideamaker",
+            "faugus-launcher"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",

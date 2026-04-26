@@ -15,11 +15,6 @@
     # Deine zusätzlichen Inputs
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
-    nix-gaming.url = "github:fufexan/nix-gaming";
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    }; 
   };
 
   outputs = { self, nixpkgs, home-manager, disko, nixvim, ... }@inputs: 
