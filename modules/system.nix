@@ -257,6 +257,7 @@
   };
 
   environment.systemPackages = with pkgs; [
+    nix-tree
     gcc
     wget
     git

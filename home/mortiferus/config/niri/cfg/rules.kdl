@@ -4,6 +4,7 @@ window-rule {
     clip-to-geometry true
     opacity 1.0
     draw-border-with-background false 
+   
 }
 
 // ────────────── Layer Rules ──────────────
@@ -44,10 +45,15 @@ window-rule {
 
 // Chat (Vesktop)
 window-rule {
-    match app-id="vesktop"
+    match app-id="legcord"
+    match title="^Discord - Legcord$"
+    match title="Legcord"
     open-on-workspace "2"
     default-column-width { proportion 1.0; }
     focus-ring { off; }
+    opacity 0.9
+    geometry-corner-radius 10
+    clip-to-geometry true
 }
 
 // Gaming (Steam, Lutris, Heroic, etc.)
@@ -64,4 +70,14 @@ window-rule {
     open-fullscreen false
     focus-ring { off; }
     open-floating false
+}
+window-rule {
+    match app-id="kitty"
+
+    // Sorgt dafür, dass die Ecken sauber abgerundet sind
+    geometry-corner-radius 10
+    clip-to-geometry true
+    
+    // Die Deckkraft (falls du sie nicht schon in der kitty.conf hast)
+    opacity 0.9
 }

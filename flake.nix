@@ -2,7 +2,7 @@
   description = "Mortiferus-PC NixOS Ultimate Config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
     
     # Disko
     disko.url = "github:nix-community/disko";
@@ -17,7 +17,7 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, nixvim, ... }@inputs: 
+  outputs = { self, nixpkgs, home-manager, disko, ... }@inputs: 
     let
       system = "x86_64-linux";
     in {
@@ -30,7 +30,6 @@
         modules = [
           disko.nixosModules.disko
           ./configuration.nix
-          nixvim.nixosModules.nixvim
 
           # Home‑Manager als NixOS‑Modul aktivieren
           home-manager.nixosModules.home-manager
