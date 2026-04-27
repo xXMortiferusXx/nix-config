@@ -65,7 +65,7 @@ window-rule {
     match app-id="org.gnome.Nautilus" title="faugus"
     match app-id="faugus-launcher"
     match app-id="heroic"
-
+    match title="Heroic"
     open-on-workspace "2"
     open-fullscreen false
     focus-ring { off; }

@@ -7,12 +7,20 @@
   ];
 
   programs.fish.shellAliases = {
-    # System & Update
+    # System & Update (check)
     nix-check  = "nix flake update && nixos-rebuild build --flake . && nvd diff /run/current-system ./result";
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#Mortiferus-PC";
+    
     #nix-update = "nix-update-safe";
     nix-update = "pushd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#Mortiferus-PC && popd";
+    
+    #Nächtliches update wenn er bauen muss
+    night-update = "niri msg action power-off-monitors && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#Mortiferus-PC; popd";
+
+    #einmal alles aufräumen
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#Mortiferus-PC";
+    
+    #Config nach github schuppsen
     conf-sync  = "cd /etc/nixos && git add . && git commit -m \"Update: $(date +'%Y-%m-%d %H:%M')\" && git push origin main || echo 'Git push fehlgeschlagen – bitte manuell prüfen'";
     conf       = "cd /etc/nixos";
 

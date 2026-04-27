@@ -286,6 +286,10 @@
           Value = false;
           Status = "locked";
         };
+        "zen.window-sync.enabled" = {
+        Value = false;
+        Status = "locked";
+        };
       };
     };
   };

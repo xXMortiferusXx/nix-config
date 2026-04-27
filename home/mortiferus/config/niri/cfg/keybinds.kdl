@@ -22,6 +22,9 @@ binds {
     
     XF86MonBrightnessUp   allow-when-locked=true { spawn "sh" "-c" "noctalia ipc brightness increase || brightnessctl set 5%+"; }
     XF86MonBrightnessDown allow-when-locked=true { spawn "sh" "-c" "noctalia ipc brightness decrease || brightnessctl set 5%-"; }
+    
+    // Mod + Alt + U für "Update Dislay aus"
+    Mod+Alt+U { spawn "sh" "-c" "niri msg action power-off-monitors"; }
 
     // ─── Navigation (Fokus) ───
     Mod+Left  { focus-column-left; }
