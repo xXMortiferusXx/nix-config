@@ -66,6 +66,7 @@ window-rule {
     match app-id="faugus-launcher"
     match app-id="heroic"
     match title="Heroic"
+    match title="Cartridges"
     open-on-workspace "2"
     open-fullscreen false
     focus-ring { off; }

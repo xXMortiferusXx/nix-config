@@ -91,7 +91,7 @@
       libidn2
       libssh2
       libssh
-      #openldap
+      openldap
       libpsl
       libkrb5
       keyutils
@@ -257,6 +257,8 @@
   };
 
   environment.systemPackages = with pkgs; [
+    libnotify
+    openldap
     nix-tree
     gcc
     wget
