@@ -14,7 +14,7 @@
   networking.firewall.enable = true;
 
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
   boot.kernelModules = [ 
     "tcp_bbr" 
     "ntsync" 
