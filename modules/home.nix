@@ -5,6 +5,9 @@
     programs.home-manager.enable = true;
 
     home.packages = with pkgs; [
+      #GUI Openrazer
+      polychromatic
+
       # Icons & Cursors
       papirus-icon-theme
       bibata-cursors

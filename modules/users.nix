@@ -3,7 +3,7 @@
   users.users.mortiferus = {
     isNormalUser = true;
     description = "Mortiferus";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "scanner" "lp" "openrazer" ];
     shell = pkgs.fish;
 
     # Hier bleiben nur Pakete, die systemnah sind oder spezielle Wrapper benötigen

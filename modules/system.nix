@@ -14,7 +14,7 @@
   networking.firewall.enable = true;
 
   # ────────────────── KERNEL & PERFORMANCE ──────────────────
-  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ 
     "tcp_bbr" 
     "ntsync" 
@@ -23,18 +23,32 @@
   # lässt aber kritische Boot-Meldungen sichtbar, falls etwas schiefgeht.
   boot.consoleLogLevel = 3;
 
+  hardware.openrazer.enable = true;
+  services.fwupd.enable = true;
+
   services.scx = {
-    enable = true;
-    scheduler = "scx_rusty";
-    extraArgs = [ 
-      "-f"
-      "-u" "2000"
-      "-o" "2000"
-      "-g" "1"
-      "-c" "3"
-      "-k"
-    ];
-  };
+      enable = true;
+      scheduler = "scx_p2dq";
+      extraArgs = [
+        "--task-slice" "true"
+        "--sched-mode" "performance"
+     #   "--autoslice"
+        "--freq-control"
+     ];
+   };
+#  services.scx = {
+#    enable = true;
+#    scheduler = "scx_rusty";
+#    extraArgs = [ 
+#      "-f"
+#      "-u" "2000"
+#      "-o" "2000"
+#      "-g" "1"
+#      "-c" "3"
+#      "-k"
+#    ];
+#  };
+
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
