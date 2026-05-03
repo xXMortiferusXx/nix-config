@@ -383,6 +383,7 @@
         "onlySameOutput": true,
         "pinnedApps": [
             "zen-beta",
+            "electron",
             "page.kramo.Cartridges"
         ],
         "pinnedStatic": true,

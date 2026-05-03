@@ -26,16 +26,17 @@
   hardware.openrazer.enable = true;
   services.fwupd.enable = true;
 
-  services.scx = {
-      enable = true;
-      scheduler = "scx_p2dq";
-      extraArgs = [
-        "--task-slice" "true"
-        "--sched-mode" "performance"
+#  services.scx = {
+#      enable = true;
+#      scheduler = "scx_lavd";
+#      extraArgs = [
+ #       "--autopower"
+	#--task-slice" "true"
+        #"--sched-mode" "performance"
      #   "--autoslice"
-        "--freq-control"
-     ];
-   };
+        #"--freq-control"
+#     ];
+#   };
 #  services.scx = {
 #    enable = true;
 #    scheduler = "scx_rusty";
@@ -258,11 +259,11 @@
     ]; 
   };
 
-  services.ananicy = {
-    enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos;
-  };
+#  services.ananicy = {
+#    enable = true;
+#    package = pkgs.ananicy-cpp;
+#    rulesProvider = pkgs.ananicy-rules-cachyos;
+#  };
 
   programs.neovim = {
     enable = true;
