@@ -27,22 +27,16 @@
   services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
-  
+
   # --- DEIN AKTUELLER KERNEL-BLOCK (Eins zu Eins) ---
   boot.kernelParams = [ 
     # --- DEINE GAMING PERFORMANCE (Behalten!) ---
+    "preempt=full" 
     "split_lock_detect=off"        # Verhindert Performance-Einbrüche bei alten Engines
     "transparent_hugepage=madvise" # Optimiert Speichernutzung für Gaming
     "amd_pstate=active"            # Volle Kontrolle über die AMD-Kerne
     "amdgpu.sg_display=0"          # Verhindert Stottern (Hybrid-Graphics Fix)
-
-    # --- NVIDIA SETUP (Optimiert für 9W Idle) ---
-    # PerfLevelSrc=0x3322 wurde hier entfernt, damit die Karte schlafen darf
-    "nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1;PowerMizerDefaultAC=0x1"
-    "nvidia.NVreg_EnableResizableBar=1"
-    
-    # Neu für den Tiefschlaf (VRAM Management & PCIe Power)
-    "nvidia.NVreg_DynamicPowerManagementVideoMemoryThreshold=500"
+    "nvidia.NVreg_DynamicPowerManagement=0x02"  # Besseres Powermanagement
   ];
 
   hardware.nvidia = {
@@ -69,8 +63,12 @@
   };
 
   # Lenovo Legion Performance
-  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  services.power-profiles-daemon.enable = true;
+  boot.extraModulePackages = [ 
+    config.boot.kernelPackages.lenovo-legion-module
+    config.boot.kernelPackages.zenergy  # Hier lag der Fehler
+  ];
+ 
+ services.power-profiles-daemon.enable = true;
   environment.systemPackages = with pkgs; [
     lenovo-legion 
   ];

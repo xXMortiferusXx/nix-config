@@ -18,37 +18,28 @@
   boot.kernelModules = [ 
     "tcp_bbr" 
     "ntsync" 
+    "zenergy"
   ];
   # Level 3 zeigt nur Fehler & Warnungen an. Unterdrückt normales Rauschen,
   # lässt aber kritische Boot-Meldungen sichtbar, falls etwas schiefgeht.
   boot.consoleLogLevel = 3;
 
   hardware.openrazer.enable = true;
-  services.fwupd.enable = true;
 
-#  services.scx = {
-#      enable = true;
-#      scheduler = "scx_lavd";
-#      extraArgs = [
- #       "--autopower"
-	#--task-slice" "true"
-        #"--sched-mode" "performance"
-     #   "--autoslice"
-        #"--freq-control"
-#     ];
-#   };
-#  services.scx = {
-#    enable = true;
-#    scheduler = "scx_rusty";
-#    extraArgs = [ 
+
+services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+    extraArgs = [ 
+       "--autopower"
 #      "-f"
 #      "-u" "2000"
 #      "-o" "2000"
 #      "-g" "1"
 #      "-c" "3"
 #      "-k"
-#    ];
-#  };
+    ];
+  };
 
 
   boot.loader.systemd-boot.enable = true;
@@ -224,23 +215,16 @@
     "net.core.default_qdisc" = "cake";
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.ipv4.tcp_fastopen" = 3;
-    "fs.file-max" = 2097152;
-    "vm.swappiness" = 10;
     "vm.max_map_count" = 2147483642;
-    "net.ipv4.igmp_max_memberships" = 1024;
-    "kernel.sched_migration_cost_ns" = 500000;
-    # Korrigierter Key-Name (war: sched_cfs_bandwidth_slice_u)
-    "kernel.sched_cfs_bandwidth_slice_us" = 3000;
-    "kernel.sched_latency_ns" = 3000000;
-    "kernel.sched_min_granularity_ns" = 300000;
-    "kernel.sched_wakeup_granularity_ns" = 500000;
-    "kernel.sched_nr_migrate" = 32;
+    "vm.mmap_min_addr" = 0; # SheepShaver
+    "fs.file-max" = 2097152;
     "kernel.split_lock_mitigate" = 0;
-    "net.ipv4.tcp_mtu_probing" = true;
+    "net.core.netdev_max_backlog" = 4096;
     "net.ipv4.tcp_fin_timeout" = 5;
-    "kernel.sched_rt_runtime_us" = -1;
-    "vm.dirty_ratio" = 10;
-    "vm.dirty_background_ratio" = 5;
+    "vm.dirty_background_bytes" = 67108864;
+    "vm.dirty_bytes" = 268435456;
+    "vm.dirty_writeback_centisecs" = 1500;
+    "vm.vfs_cache_pressure" = 50;
   };
 
   zramSwap = {
@@ -259,11 +243,11 @@
     ]; 
   };
 
-#  services.ananicy = {
-#    enable = true;
-#    package = pkgs.ananicy-cpp;
-#    rulesProvider = pkgs.ananicy-rules-cachyos;
-#  };
+  services.ananicy = {
+    enable = false;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
 
   programs.neovim = {
     enable = true;

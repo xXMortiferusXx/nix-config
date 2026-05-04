@@ -1,14 +1,16 @@
 { config, pkgs, ... }:
 
 {
-  security.rtkit.enable = true;
   
-  services.pipewire = {
+ services.pulseaudio.enable = false;
+ security.rtkit.enable = true;
+
+services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    jack.enable = true;
+#    jack.enable = true;
     wireplumber.enable = true;
 
     extraConfig.pipewire."99-lowlatency" = {
@@ -21,7 +23,7 @@
     };
   };
   
-  environment.variables.LADSPA_PATH = "/run/current-system/sw/lib/ladspa";
+#  environment.variables.LADSPA_PATH = "/run/current-system/sw/lib/ladspa";
 
   environment.systemPackages = with pkgs; [ 
     pavucontrol 
