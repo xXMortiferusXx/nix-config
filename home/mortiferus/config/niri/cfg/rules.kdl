@@ -1,0 +1,88 @@
+// ────────────── Globale Fenster-Optik ──────────────
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+// ────────────── Layer Rules ──────────────
+layer-rule {
+    match namespace="^noctalia-wallpaper*"
+    place-within-backdrop true
+}
+
+// ────────────── Floating Windows ──────────────
+window-rule {
+    // Portal-Dialoge
+    match app-id="xdg-desktop-portal-gnome"
+    match app-id="xdg-desktop-portal-kde"
+    match app-id="xdg-desktop-portal-gtk"
+    match app-id="xdg-desktop-portal-wlr"
+
+    // System-Tools
+    match app-id="zenity"
+    match app-id="pavucontrol"
+    match app-id="blueman-manager"
+    match app-id="org.gnome.Settings"
+    match app-id="nm-connection-editor"
+
+    open-floating true
+}
+
+// ────────────── Workspace 1: Browser ──────────────
+window-rule {
+    match app-id="zen-beta"
+    open-on-workspace "1"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+    border { off; }
+}
+
+window-rule {
+    match app-id=r#"zen-beta$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// ────────────── Workspace 2: Kommunikation ──────────────
+window-rule {
+    match title="[Ll]egcord"
+    open-on-workspace "2"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+    opacity 0.9
+    geometry-corner-radius 10
+}
+
+// ────────────── Workspace 3: Gaming ──────────────
+window-rule {
+    match app-id="steam"
+    match app-id="net.lutris.Lutris"
+    match app-id="com.heroicgameslauncher.hgl"
+    match app-id="io.github.krawek.cartridges"
+    match app-id="faugus-launcher"
+    match app-id="heroic"
+    match app-id="page.kramo.Cartridges"
+    match title="Heroic Games Launcher"
+    open-on-workspace "3"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+}
+
+// Steam Overlay & Chat floating
+window-rule {
+    match app-id="steam" title="^(Friends|Chat|Settings|Server Browser)"
+    open-floating true
+}
+
+// Path of Exile 2
+window-rule {
+    match title="^Path of Exile 2$"
+    open-on-workspace "3"
+}
+
+// ────────────── Terminal ──────────────
+window-rule {
+    match app-id="kitty"
+    geometry-corner-radius 10
+    opacity 0.9
+}
