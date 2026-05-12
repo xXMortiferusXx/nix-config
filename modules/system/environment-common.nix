@@ -6,6 +6,7 @@
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
+      dotnet-runtime_8
       stdenv.cc.cc
       zlib
       fuse2

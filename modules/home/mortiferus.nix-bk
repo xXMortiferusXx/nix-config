@@ -8,59 +8,32 @@
     programs.home-manager.enable = true;
 
     home.packages = with pkgs; [
-      # Sidekick Nativ Starter - Clean Version
-      (pkgs.writeShellScriptBin "sidekick-nativ" ''
-        TARGET_DIR="$HOME/Apps/Sidekick-extracted"
-        APPIMAGE="$HOME/Apps/Sidekick-linux-stable.AppImage"
-        DOTNET_COMBINED="$HOME/.dotnet_sidekick"
-
-        if [ ! -d "$TARGET_DIR" ]; then
-          mkdir -p "$TARGET_DIR"
-          cd "$HOME/Apps"
-          chmod +x "$APPIMAGE"
-          "$APPIMAGE" --appimage-extract > /dev/null
-          mv squashfs-root/* "$TARGET_DIR/"
-          rm -rf squashfs-root
-        fi
-
-        rm -rf "$DOTNET_COMBINED"
-        mkdir -p "$DOTNET_COMBINED"
-        REAL_DOTNET="${pkgs.dotnet-runtime_8}"
-        ln -s "$REAL_DOTNET/share/dotnet/shared" "$DOTNET_COMBINED/shared"
-        mkdir -p "$DOTNET_COMBINED/host"
-        ln -s "$REAL_DOTNET/share/dotnet/host/fxr" "$DOTNET_COMBINED/host/fxr"
-
-        export DOTNET_ROOT="$DOTNET_COMBINED"
-        FXR_VER=$(ls "$DOTNET_COMBINED/host/fxr" | head -n 1)
-        
-        # --- MINIMAL-KONFIGURATION ---
-        export GDK_BACKEND=x11
-        
-        # WebKit Stabilität (Sandbox-Fix für neuere WebKit-Versionen)
-        export WEBKIT_DISABLE_COMPOSITING_MODE=1
-        export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
-        
-        # Netzwerk & SSL (unverzichtbar für Bilder/Preise)
-        export GIO_EXTRA_MODULES="${pkgs.glib-networking}/lib/gio/modules"
-        export SSL_CERT_FILE="/etc/ssl/certs/ca-bundle.crt"
-        export NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-bundle.crt"
-        
-        # Pfade
-        export GST_PLUGIN_SYSTEM_PATH_1_0="${lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" [
-          pkgs.gst_all_1.gstreamer
-          pkgs.gst_all_1.gst-plugins-base
-          pkgs.gst_all_1.gst-plugins-good
-        ]}"
-        export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
-        
-        export LD_LIBRARY_PATH="${lib.makeLibraryPath [
-          dotnet-runtime_8
+      # Sidekick FHS-Umgebung (Deine funktionierende Liste)
+      (pkgs.buildFHSEnv {
+        name = "sidekick-fhs";
+	unshareDev = false;
+	targetPkgs = pkgs: with pkgs; [
+	  fuse2
+	  libsoup_3
+          enchant_2
+	  fontconfig
+          freetype
+          harfbuzz
+          libXcomposite
+          libXdamage
+          libXrandr
+	  gst_all_1.gstreamer
+	  gst_all_1.gst-plugins-base
+          gst_all_1.gst-plugins-good
+	  libsecret
+	  xsel
           webkitgtk_4_1
+	  dotnet-runtime_8
+	  icu
+          zlib
+          openssl
           gtk3
           glib
-          zlib
-          icu
-          openssl
           nss
           nspr
           atk
@@ -71,43 +44,46 @@
           libxkbcommon
           pango
           cairo
-          libX11
-          libXcomposite
-          libXdamage
-          libXext
-          libXfixes
-          libXi
-          libXrandr
-          libXrender
-          libXtst
           libnotify
           libsecret
-          libappindicator-gtk3
+          libappindicator-gtk3  
+          libXtst
+          libX11
+          libXi
+          libXext
+          libXrender
+          libXfixes
+          libXt
+          libXv
+	  libva
+          libinput
           gdk-pixbuf
           librsvg
-          libsoup_3
-          fontconfig
-          freetype
-          harfbuzz
+          webp-pixbuf-loader
           libglvnd
-          glib-networking
-          gst_all_1.gstreamer
-          gst_all_1.gst-plugins-base
-          libva
-          libinput
-          xsel
-          stdenv.cc.cc.lib
-        ]}:$DOTNET_COMBINED/host/fxr/$FXR_VER"
+          cacert
+          shared-mime-info
+	  glib-networking
+          gnutls
+	  libjxl
+          libavif
+          gdk-pixbuf-xlib
 
-        exec "$TARGET_DIR/usr/bin/Sidekick" "$@"
-      '')
-
-      # --- APPS ---
+	];
+            runScript = "bash"; 
+      })
+      # GUI Openrazer
       polychromatic
+
+      # Icons & Cursors
       papirus-icon-theme
       bibata-cursors
+
+      # 3D Printing
       prusa-slicer
       orca-slicer
+
+      # Tools & Office
       helix
       jq
       libreoffice
@@ -121,30 +97,33 @@
       kitty
       nautilus
       nautilus-open-any-terminal
+
+      # KI
       aider-chat
+
+      # Dokumente & Bilder
       zathura
       loupe
       gimp
       naps2
-
-      # --- TOOLS ---
-      xsel
-      fuse2
-      shared-mime-info
-      cacert
     ];
 
-    # Desktop-Entries & Theme-Config (unverändert)
+# Desktop-Starter mit absolutem Pfad und FUSE-Fix
     xdg.desktopEntries.sidekick = {
       name = "Sidekick";
-      exec = "sidekick-nativ"; 
+      exec = "sidekick-fhs -c \"GDK_BACKEND=x11 /home/mortiferus/Apps/Sidekick-linux-stable.AppImage\""; 
       icon = "/home/mortiferus/Apps/sidekick-linux.png";
       terminal = false;
       categories = [ "Game" ];
     };
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
-    dconf.settings."org/gnome/desktop/interface".icon-theme = "Papirus";
+
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        icon-theme = "Papirus";
+      };
+    };
 
     qt = {
       enable = true;
@@ -185,14 +164,20 @@
       "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
       "noctalia".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/noctalia";
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
+      "kitty".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/kitty";
+      
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
     };
 
-    home.sessionVariables = {
-      XDG_CURRENT_DESKTOP = "niri:GNOME";
-      GNOME_SUPPORTED_DESKTOP = "GNOME";
-    };
+home.sessionVariables = {
+  #GDK_BACKEND = "wayland";
+  # Erlaubt Nautilus den Zugriff auf GNOME-spezifische Portals unter Niri
+  XDG_CURRENT_DESKTOP = "niri:GNOME";
+  # Unterdrückt die Suche nach dem GNOME-Session-Manager
+  GNOME_SUPPORTED_DESKTOP = "GNOME";
+};
 
+    # MangoHud
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
@@ -216,6 +201,7 @@
         frame_timing = true;
       };
     };
+
     # mpv
     programs.mpv = {
       enable = true;

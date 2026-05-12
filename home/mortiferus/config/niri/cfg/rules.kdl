@@ -75,10 +75,28 @@ window-rule {
     open-floating true
 }
 
-// Path of Exile 2
 window-rule {
-    match title="^Path of Exile 2$"
-    open-on-workspace "3"
+    // Erkennt Steam-Benachrichtigungen und kleine Popups
+    match title="^Steam - News$"
+    match title="^Friends List$"
+    // Das hier fängt die meisten "XY spielt jetzt"-Popups ab
+    match title="^notificationtoasts_.*$" 
+    
+    // Macht das Fenster schwebend statt es in den Stream einzureihen
+    open-floating true
+    // In Niri setzt man die Breite der Spalte/des Fensters so:
+    default-column-width { fixed 300; }
+    
+    // Den Fokus-Ring schaltet man innerhalb der Regel so aus:
+    draw-border-with-background false
+    // Verhindert, dass das Popup den Fokus klaut während du spielst
+    focus-ring { off; }
+}
+
+// Steam Spiele auf Workspace 4 starten
+window-rule {
+    match app-id="^steam_app_.*$"
+    open-on-workspace "4"
 }
 
 // ────────────── Terminal ──────────────
