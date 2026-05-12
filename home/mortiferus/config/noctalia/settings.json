@@ -392,7 +392,7 @@
         "onlySameOutput": true,
         "pinnedApps": [
             "zen-beta",
-            "electron",
+            "vesktop",
             "page.kramo.Cartridges"
         ],
         "pinnedStatic": true,
@@ -476,7 +476,7 @@
         "screenLock": "",
         "screenUnlock": "",
         "session": "",
-        "startup": "/home/mortiferus/autostart.sh",
+        "startup": "/home/mortiferus/Apps/autostart.sh",
         "wallpaperChange": ""
     },
     "idle": {
@@ -677,10 +677,6 @@
         "activeTemplates": [
             {
                 "enabled": true,
-                "id": "kcolorscheme"
-            },
-            {
-                "enabled": true,
                 "id": "niri"
             }
         ],
@@ -702,7 +698,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/mortiferus/Pictures/Wallpapers",
+        "directory": "/home/mortiferus/Bilder/Wallpaper-NSFW",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -727,7 +723,7 @@
         "showHiddenFiles": false,
         "skipStartupTransition": false,
         "solidColor": "#1a1a2e",
-        "sortOrder": "name",
+        "sortOrder": "date_desc",
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
@@ -741,7 +737,7 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "single",
+        "viewMode": "browse",
         "wallhavenApiKey": "bguDIangGv21SkcxWq5waRNcLLvIU9oL",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",
@@ -752,6 +748,6 @@
         "wallhavenResolutionMode": "atleast",
         "wallhavenResolutionWidth": "",
         "wallhavenSorting": "relevance",
-        "wallpaperChangeMode": "alphabetical"
+        "wallpaperChangeMode": "random"
     }
 }
