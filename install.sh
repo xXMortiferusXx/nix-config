@@ -106,7 +106,7 @@ info "Bereite Zielsystem vor (Rechte & Git)..."
 sudo nixos-enter --root /mnt -c "chown -R $USERNAME:users /etc/nixos"
 
 # Initialisiere Git im Zielsystem, damit Flakes sofort funktionieren
-sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git remote add origin $REPO_URL && git add ."
+sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git remote add origin git@github.com:xXMortiferusXx/nix-config.git && git add ."
 
 echo ""
 echo "=========================================================="
