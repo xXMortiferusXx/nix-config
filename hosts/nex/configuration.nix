@@ -15,7 +15,6 @@
       ../../modules/programs/gaming.nix
       ../../modules/users/mortiferus.nix
       ../../modules/home/mortiferus.nix
-      ../../modules/services/clipboard.nix
     ];
 
   networking.hostName = "nex";

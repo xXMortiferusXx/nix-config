@@ -1,16 +1,52 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports = [
-  ];
-
+  imports = [ ];
   home-manager.backupFileExtension = "backup";
 
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true;
 
     home.packages = with pkgs; [
-      #GUI Openrazer
+      # Sidekick FHS-Umgebung (Deine funktionierende Liste)
+      (pkgs.buildFHSEnv {
+        name = "sidekick-fhs";
+        targetPkgs = pkgs: with pkgs; [
+          xsel
+          webkitgtk_4_1
+          dotnet-runtime_8
+          icu
+          zlib
+          openssl
+          gtk3
+          glib
+          nss
+          nspr
+          atk
+          at-spi2-atk
+          cups
+          libdrm
+          mesa
+          libxkbcommon
+          pango
+          cairo
+          libnotify
+          libsecret
+          libappindicator-gtk3  
+          libXtst
+          libX11
+          libXi
+          libXext
+          libXrender
+          libXfixes
+          libXt
+          libXv
+          libinput
+        ];
+        runScript = "bash"; 
+      })
+
+      # GUI Openrazer
       polychromatic
 
       # Icons & Cursors
@@ -30,9 +66,11 @@
       yazi
       btop
       legcord
+      vesktop
       cartridges
       kitty
       nautilus
+      nautilus-open-any-terminal
 
       # KI
       aider-chat
@@ -43,6 +81,15 @@
       gimp
       naps2
     ];
+
+    # Desktop-Starter mit absolutem Pfad und FUSE-Fix
+    xdg.desktopEntries.sidekick = {
+      name = "Sidekick";
+      exec = "sidekick-fhs -c \"/home/mortiferus/Apps/Sidekick-linux-stable.AppImage --appimage-extract-and-run\""; 
+      icon = "/home/mortiferus/Apps/sidekick-linux.png";
+      terminal = false;
+      categories = [ "Game" ];
+    };
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
 
@@ -68,14 +115,9 @@
         name = "Bibata-Modern-Classic";
         package = pkgs.bibata-cursors;
       };
-
       gtk2.extraConfig = "gtk-icon-theme-name=\"Papirus\"";
-      gtk3.extraConfig = {
-        gtk-icon-theme-name = "Papirus";
-      };
-      gtk4.extraConfig = {
-        gtk-icon-theme-name = "Papirus";
-      };
+      gtk3.extraConfig = { gtk-icon-theme-name = "Papirus"; };
+      gtk4.extraConfig = { gtk-icon-theme-name = "Papirus"; };
     };
 
     xdg.configFile = {
@@ -99,7 +141,15 @@
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
     };
 
-    # MangoHud – zentral hier verwaltet
+home.sessionVariables = {
+  GDK_BACKEND = "wayland";
+  # Erlaubt Nautilus den Zugriff auf GNOME-spezifische Portals unter Niri
+  XDG_CURRENT_DESKTOP = "niri:GNOME";
+  # Unterdrückt die Suche nach dem GNOME-Session-Manager
+  GNOME_SUPPORTED_DESKTOP = "GNOME";
+};
+
+    # MangoHud
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
@@ -124,7 +174,7 @@
       };
     };
 
-    # mpv Konfiguration
+    # mpv
     programs.mpv = {
       enable = true;
       config = {

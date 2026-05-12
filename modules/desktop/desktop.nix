@@ -5,11 +5,14 @@
   ];
 
   security.polkit.enable = true;
-
   programs.xwayland.enable = true;
+  services.gnome.tinysparql.enable = true;
+  services.gnome.localsearch.enable = true;
+  
 
   xdg.portal = {
     enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
   };
 
   environment.variables = {
