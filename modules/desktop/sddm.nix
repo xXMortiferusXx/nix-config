@@ -10,7 +10,7 @@
     theme = "ltmnight";
     setupScript = ''
       ${pkgs.xrdb}/bin/xrdb -merge <<EOF
-      Xcursor.theme: Bibata-Modern-Classic
+      Xcursor.theme: Bibata-Modern-Ice
       Xcursor.size: 24
       EOF
     '';

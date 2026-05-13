@@ -120,7 +120,6 @@
       cartridges
       kitty
       nautilus
-      nautilus-open-any-terminal
       aider-chat
       zathura
       loupe
@@ -144,7 +143,12 @@
     };
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
-    dconf.settings."org/gnome/desktop/interface".icon-theme = "Papirus";
+    
+    dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      icon-theme = "Papirus";
+     };
+    };
 
     qt = {
       enable = true;
@@ -159,7 +163,7 @@
         package = pkgs.papirus-icon-theme;
       };
       cursorTheme = {
-        name = "Bibata-Modern-Classic";
+        name = "Bibata-Modern-Ice";
         package = pkgs.bibata-cursors;
       };
       gtk2.extraConfig = "gtk-icon-theme-name=\"Papirus\"";
@@ -171,14 +175,14 @@
       "qt5ct/qt5ct.conf".text = ''
         [Appearance]
         icon_theme=Papirus
-        cursor_theme=Bibata-Modern-Classic
+        cursor_theme=Bibata-Modern-Ice
         custom_palette=false
         style=fusion
       '';
       "qt6ct/qt6ct.conf".text = ''
         [Appearance]
         icon_theme=Papirus
-        cursor_theme=Bibata-Modern-Classic
+        cursor_theme=Bibata-Modern-Ice
         custom_palette=false
         style=fusion
       '';
@@ -191,6 +195,8 @@
     home.sessionVariables = {
       XDG_CURRENT_DESKTOP = "niri:GNOME";
       GNOME_SUPPORTED_DESKTOP = "GNOME";
+      NAUTILUS_4_EXTENSION_DIR = "${pkgs.nautilus-open-any-terminal}/lib/nautilus/extensions-4";
+      PYTHONPATH = "${pkgs.nautilus-open-any-terminal}/${pkgs.python3.sitePackages}:$PYTHONPATH";
     };
 
     programs.mangohud = {

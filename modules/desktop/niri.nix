@@ -6,18 +6,18 @@
     package = pkgs.niri;
   };
 
-  # Polkit-Agent für grafische Passwortabfragen
-  systemd.user.services.polkit-gnome-authentication-agent-1 = {
-    description = "gnome-polkit-agent";
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
+  # Polkit-Agent für grafische Passwortabfragen DEAKTIVIERT DA NOCTALIA EINEN MIT BRINGT !!
+  #systemd.user.services.polkit-gnome-authentication-agent-1 = {
+  #  description = "gnome-polkit-agent";
+  #  wantedBy = [ "graphical-session.target" ];
+  #  serviceConfig = {
+  #    Type = "simple";
+  #    ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+  #    Restart = "on-failure";
+  #    RestartSec = 1;
+  #    TimeoutStopSec = 10;
+  #  };
+  #};
 
   # XDG Desktop Portals
   xdg.portal = {

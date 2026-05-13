@@ -22,7 +22,7 @@
     window_padding_width 8
 
     # CURSOR (konsistent mit home.nix GTK/Qt Einstellungen)
-    linux_cursor_theme Bibata-Modern-Classic
+    linux_cursor_theme Bibata-Modern-Ice
     linux_cursor_theme_size 24
 
     # SCHRIFT-RENDERING
@@ -127,4 +127,13 @@
     color7  #dddddd
     color15 #ffffff
   '';
+
+  xdg.terminal-exec = {
+      enable = true;
+      settings = {
+        default = [
+          "kitty.desktop"
+        ];
+      };
+    };
 }
