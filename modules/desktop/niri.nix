@@ -12,7 +12,7 @@
     ];
     config = {
       common.default = [ "gtk" ];
-      niri.default = [ "gtk" "gnome" ];
+      niri.default = lib.mkForce [ "gtk" "gnome" ];
     };
   };
 
