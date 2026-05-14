@@ -10,6 +10,7 @@ environment {
     XDG_SESSION_TYPE "wayland"
     XCURSOR_THEME "Bibata-Modern-Ice"
     XCURSOR_SIZE "24"
+    XDG_PORTAL_BACKEND_CONF "niri"
 
     // NVIDIA Optimierungen (bei Bedarf aktivieren)
     //WLR_NO_HARDWARE_CURSORS "1"

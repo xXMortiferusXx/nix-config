@@ -1,7 +1,8 @@
 // ────────────── Startup Applications ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
 
-spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
+//spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "XDG_PORTAL_BACKEND_CONF"
 spawn-sh-at-startup "noctalia-shell"
 spawn-at-startup "bash" "-c" "wl-paste --type text --watch cliphist store"
 spawn-at-startup "bash" "-c" "wl-paste --type image --watch cliphist store"

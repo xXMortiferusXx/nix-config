@@ -62,6 +62,7 @@ let
         --prefix PATH : "${lib.makeBinPath [ pkgs.cabextract pkgs.unzip pkgs.gnutls pkgs.p11-kit pkgs.wget ]}" \
         --set XDG_DATA_DIRS "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:${pkgs.adwaita-icon-theme}/share:$out/share" \
         --set FONTCONFIG_FILE "/etc/fonts/fonts.conf" \
+	--run "${pkgs.fontconfig}/bin/fc-cache -s" \
         --set XCURSOR_PATH "~/.icons:~/.local/share/icons:/run/current-system/sw/share/icons"
 
       # Desktop-Datei fixen

@@ -15,6 +15,7 @@
     # Deine zusätzlichen Inputs
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
   outputs = { self, nixpkgs, disko, home-manager, ... }@inputs:

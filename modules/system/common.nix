@@ -16,5 +16,7 @@
     ../desktop/desktop.nix
     ../desktop/sddm.nix
     ../desktop/niri.nix
+    ../desktop/plasma.nix
+    ../desktop/hyprland.nix
   ];
 }

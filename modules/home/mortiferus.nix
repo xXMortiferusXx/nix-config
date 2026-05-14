@@ -103,6 +103,13 @@
       '')
 
       # --- APPS ---
+      udiskie
+      satty
+      swappy
+      wf-recorder
+      grim
+      slurp
+      nvtopPackages.full
       polychromatic
       papirus-icon-theme
       bibata-cursors
@@ -144,61 +151,13 @@
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
     
-    dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      icon-theme = "Papirus";
-     };
-    };
-
-    qt = {
-      enable = true;
-      platformTheme.name = "gtk3";
-      style.name = "adwaita";
-    };
-
-    gtk = {
-      enable = true;
-      iconTheme = {
-        name = "Papirus";
-        package = pkgs.papirus-icon-theme;
-      };
-      cursorTheme = {
-        name = "Bibata-Modern-Ice";
-        package = pkgs.bibata-cursors;
-      };
-      gtk2.extraConfig = "gtk-icon-theme-name=\"Papirus\"";
-      gtk3.extraConfig = { gtk-icon-theme-name = "Papirus"; };
-      gtk4.extraConfig = { gtk-icon-theme-name = "Papirus"; };
-    };
-
     xdg.configFile = {
-      "qt5ct/qt5ct.conf".text = ''
-        [Appearance]
-        icon_theme=Papirus
-        cursor_theme=Bibata-Modern-Ice
-        custom_palette=false
-        style=fusion
-      '';
-      "qt6ct/qt6ct.conf".text = ''
-        [Appearance]
-        icon_theme=Papirus
-        cursor_theme=Bibata-Modern-Ice
-        custom_palette=false
-        style=fusion
-      '';
+
       "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
       "noctalia".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/noctalia";
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
-    };
-
-    home.sessionVariables = {
-      XDG_CURRENT_DESKTOP = "niri:GNOME";
-      GNOME_SUPPORTED_DESKTOP = "GNOME";
-      NAUTILUS_4_EXTENSION_DIR = "${pkgs.nautilus-open-any-terminal}/lib/nautilus/extensions-4";
-      PYTHONPATH = "${pkgs.nautilus-open-any-terminal}/${pkgs.python3.sitePackages}:$PYTHONPATH";
-    };
-
+};
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;

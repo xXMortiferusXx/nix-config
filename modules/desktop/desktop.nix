@@ -1,18 +1,17 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports = [
-  ];
-
   security.polkit.enable = true;
   programs.xwayland.enable = true;
-  services.gnome.tinysparql.enable = true;
-  services.gnome.localsearch.enable = true;
-  
+
+  # ENTFERNEN:
+  # services.gnome.tinysparql.enable = true;
+  # services.gnome.localsearch.enable = true;
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    # KEIN xdg-desktop-portal-gnome mehr
   };
 
   environment.variables = {
@@ -21,9 +20,10 @@
   };
 
   environment.systemPackages = with pkgs; [
+    qt6Packages.qt6ct
+    libsForQt5.qt5ct
     bibata-cursors
     gnome-themes-extra
-    xwayland-satellite
     wl-clipboard
     cliphist
   ];

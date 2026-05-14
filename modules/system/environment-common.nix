@@ -104,7 +104,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wl-clipboard
     xclip
     e2fsprogs
     libnotify

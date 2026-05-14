@@ -18,12 +18,6 @@
     ];
 
   networking.hostName = "nex";
-  
-  programs.hyprland.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    nvtopPackages.full
-  ];
 
   system.stateVersion = "25.11"; 
 }
