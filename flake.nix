@@ -17,7 +17,7 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     hyprland.url = "github:hyprwm/Hyprland";
   };
-
+  
   outputs = { self, nixpkgs, disko, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";

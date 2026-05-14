@@ -25,30 +25,6 @@
 
     home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
 
-    dconf.settings = {
-      "org/gnome/desktop/interface" = {
-        icon-theme = "Papirus";
-      };
-    };
-
-    qt = {
-      enable = true;
-      platformTheme.name = "gtk3";
-      style.name = "adwaita";
-    };
-
-    gtk = {
-      enable = true;
-      iconTheme = {
-        name = "Papirus";
-        package = pkgs.papirus-icon-theme;
-      };
-      cursorTheme = {
-        name = "Bibata-Modern-Classic";
-        package = pkgs.bibata-cursors;
-      };
-    };
-
     xdg.configFile = {
       "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/backbone/config/niri";
       "noctalia".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/backbone/config/noctalia";
