@@ -11,7 +11,8 @@ hl.config({
 		repeat_rate = 35,
 		repeat_delay = 200,
 
-		follow_mouse = 1,
+		follow_mouse = 2,
+		mouse_refocus = false,
 
 		sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 

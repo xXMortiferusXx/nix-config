@@ -29,7 +29,15 @@ hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("pavucontrol"))
 hl.bind("Print", hl.dsp.exec_cmd("grim " .. screenshotDir .. "/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" " .. screenshotDir .. "/$(date +'%Y-%m-%d_%H-%M-%S').png"))
 
+-- Exiled-Exchange-2
+-- CTRL + D → pass to exiled-exchange-2
+--hl.bind("CTRL + d", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }))
 
+-- ALT + E → pass to exiled-exchange-2
+--hl.bind("ALT + e", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }))
+
+-- SHIFT + SPACE → pass to exiled-exchange-2
+--hl.bind("SHIFT + Space", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }))
 
 -- Noctalia
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd(ipc .. "notifications toggleHistory"))
