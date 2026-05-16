@@ -8,6 +8,7 @@
     libraries = with pkgs; [
       dotnet-runtime_8
       stdenv.cc.cc
+      stdenv.cc.cc.lib
       zlib
       fuse2
       fuse3
@@ -104,7 +105,8 @@
   };
 
   environment.systemPackages = with pkgs; [
-    xclip
+    appimage-run
+    fuse2
     e2fsprogs
     libnotify
     openldap

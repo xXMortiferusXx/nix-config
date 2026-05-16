@@ -34,7 +34,7 @@
         FXR_VER=$(ls "$DOTNET_COMBINED/host/fxr" | head -n 1)
         
         # --- MINIMAL-KONFIGURATION ---
-        export GDK_BACKEND=x11
+        #export GDK_BACKEND=x11
         
         # WebKit Stabilität (Sandbox-Fix für neuere WebKit-Versionen)
         export WEBKIT_DISABLE_COMPOSITING_MODE=1
@@ -102,42 +102,59 @@
         exec "$TARGET_DIR/usr/bin/Sidekick" "$@"
       '')
 
-      # --- APPS ---
-      udiskie
-      satty
-      swappy
-      wf-recorder
-      grim
-      slurp
-      nvtopPackages.full
-      polychromatic
-      papirus-icon-theme
-      bibata-cursors
-      prusa-slicer
-      orca-slicer
-      helix
-      jq
-      libreoffice
-      hunspellDicts.de_DE
-      hyphenDicts.de-de
-      yazi
-      btop
-      legcord
-      vesktop
-      cartridges
-      kitty
-      nautilus
-      aider-chat
-      zathura
-      loupe
-      gimp
-      naps2
+      # --- Desktop & Appearance (Theming) ---
+      nwg-look               # GTK Konfiguration
+      qt6Packages.qt6ct      # Qt6 Konfiguration
+      libsForQt5.qt5ct       # Qt5 Konfiguration
+      papirus-icon-theme     # Icons
+      bibata-cursors         # Mauszeiger
+      gnome-themes-extra     # GTK-Kompatibilität (Adwaita)
+      shared-mime-info       # Dateizuordnungen
 
-      # --- TOOLS ---
-      xsel
-      fuse2
-      shared-mime-info
-      cacert
+      # --- Wayland & System Utilities ---
+      grim                   # Screenshot-Tool
+      slurp                  # Bereichsauswahl für Screenshots
+      satty                  # Screenshot-Annotation (Modern)
+      swappy                 # Screenshot-Editor
+      wf-recorder            # Screen-Recording
+      wl-clipboard           # Wayland Clipboard
+      xsel                   # X11 Clipboard-Bridge
+      cliphist               # Clipboard-Historie
+      udiskie                # Automount für USB-Sticks
+      cacert                 # Zertifikats-Bundle
+      xdotool
+      xclip
+
+      # --- System Monitoring & Terminal ---
+      kitty                  # Standard Terminal
+      btop                   # System-Monitor
+      nvtopPackages.full     # GPU-Monitor (Nvidia/AMD/Intel)
+      yazi                   # Terminal-Dateimanager
+      jq                     # JSON-Prozessor
+
+      # --- Apps & Social ---
+      nautilus               # Grafischer Dateimanager
+      thunar		     # Grafischer Dateimanager
+      vesktop                # Discord mit Wayland-Support
+      legcord                # Alternativer Discord-Client
+      cartridges             # Game-Launcher
+      polychromatic          # Razer RGB-Steuerung
+
+      # --- Office & Media ---
+      libreoffice            # Office-Suite
+      hunspellDicts.de_DE    # Deutsche Rechtschreibprüfung
+      hyphenDicts.de-de      # Deutsche Silbentrennung
+      zathura                # PDF-Viewer (Keyboard-fokussiert)
+      loupe                  # Bildbetrachter
+      gimp                   # Bildbearbeitung
+      naps2                  # Scanner-Software
+
+      # --- Development & 3D Printing ---
+      aider-chat             # KI-Pair-Programming
+      helix                  # Modal-Editor
+      prusa-slicer           # 3D-Druck Slicer
+      orca-slicer            # 3D-Druck Slicer
+    
     ];
 
     # Desktop-Entries & Theme-Config (unverändert)
@@ -158,7 +175,9 @@
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
       "hypr".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/hypr";
-};
+      "kitty".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/kitty";
+    };
+    
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
@@ -182,6 +201,7 @@
         frame_timing = true;
       };
     };
+    
     # mpv
     programs.mpv = {
       enable = true;

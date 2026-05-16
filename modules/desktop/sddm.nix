@@ -6,7 +6,7 @@
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = false;
-    #package = pkgs.kdePackages.sddm;
+    package = pkgs.kdePackages.sddm;
     theme = "ltmnight";
     setupScript = ''
       ${pkgs.xrdb}/bin/xrdb -merge <<EOF

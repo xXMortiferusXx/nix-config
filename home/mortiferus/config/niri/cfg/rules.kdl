@@ -3,6 +3,11 @@ window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
     draw-border-with-background false
+    default-column-width { proportion 0.5; }
+    opacity 0.95
+    background-effect {
+        blur false
+    }
 }
 
 // ────────────── Layer Rules ──────────────
@@ -46,11 +51,11 @@ window-rule {
 // ────────────── Workspace 2: Kommunikation ──────────────
 window-rule {
     match title="[Ll]egcord"
-    match title="[Vv]esktop"
+    match app-id="[Vv]esktop"
     open-on-workspace "2"
     default-column-width { proportion 1.0; }
     focus-ring { off; }
-    opacity 0.9
+    opacity 0.95
     geometry-corner-radius 10
 }
 
@@ -71,14 +76,18 @@ window-rule {
 
 // Steam Overlay & Chat floating
 window-rule {
-    match app-id="steam" title="^(Friends|Chat|Settings|Server Browser)"
+    match app-id="steam" title="^(Freunde|Steam-Einstellungen|Friends|Chat|Settings|Server Browser)"
     open-floating true
+    default-column-width { fixed 1272; }
+    default-window-height { fixed 830; }
+    draw-border-with-background false
+
 }
 
 window-rule {
     // Erkennt Steam-Benachrichtigungen und kleine Popups
     match title="^Steam - News$"
-    match title="^Friends List$"
+    match title="^Freundesliste$"
     // Das hier fängt die meisten "XY spielt jetzt"-Popups ab
     match title="^notificationtoasts_.*$" 
     
@@ -97,6 +106,8 @@ window-rule {
 window-rule {
     match app-id="^steam_app_.*$"
     open-on-workspace "4"
+    //open-fullscreen true
+    focus-ring { on; }
 }
 
 // ────────────── Terminal ──────────────

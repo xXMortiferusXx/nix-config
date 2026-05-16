@@ -27,6 +27,7 @@ hl.window_rule({
 	float = true,
 })
 
+
 -- Make file picker windows floating
 hl.window_rule({
 	name = "floating-file-picker",
@@ -47,7 +48,7 @@ hl.window_rule({
 -- Layerrule for blur
 hl.layer_rule({
 	name = "noctalia-shell-blur",
-	match = { namespace = "noctalia-bar-content-eDP-2" },
+	match = { namespace = "noctalia-bar-content-eDP-1" },
 	blur = true,
 	ignore_alpha = 0.5,
 })
@@ -68,7 +69,7 @@ hl.window_rule({
 -- Game Launchers
 hl.window_rule({
 	name = "games-launchers-workspace",
-	match = { class = "^(steam|net.lutris.Lutris|com.heroicgameslauncher.hgl|heroic|page.kramo.Cartridges)$" },
+	match = { class = "^(steam|net.lutris.Lutris|com.heroicgameslauncher.hgl|heroic|page.kramo.Cartridges|Sidekick)$" },
 	workspace = 3,
 })
 
@@ -82,7 +83,7 @@ hl.window_rule({
 -- Steam games
 hl.window_rule({
 	name = "steam-games-optimized",
-	match = { class = "^(steam_app_.*)$" },
+	match = { class = "^(steam_app_.*)$" }, immediate = true,
 	workspace = 4,
 })
 
@@ -133,4 +134,11 @@ hl.window_rule({
 	match = { class = "^(com.gabm.satty)$" },
 	float = true,
 	center = true,
+})
+
+hl.window_rule({
+    name = "exiled-exchange",
+    match = { class = "^(exiled-exchange-2)$" },
+    no_blur = true,
+    no_initial_focus = true,
 })
