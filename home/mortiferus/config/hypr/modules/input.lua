@@ -11,9 +11,8 @@ hl.config({
 		repeat_rate = 35,
 		repeat_delay = 200,
 
-		follow_mouse = 2,
-		mouse_refocus = false,
-
+                follow_mouse = 1, 
+		float_switch_override_focus = 0,
 		sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
 		touchpad = {
@@ -28,8 +27,3 @@ hl.gesture({
 	action = "workspace",
 })
 
-
-hl.device({
-	name = "all:mouse",
-	tap_to_click = true,
-})

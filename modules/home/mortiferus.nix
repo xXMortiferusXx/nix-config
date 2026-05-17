@@ -34,7 +34,7 @@
         FXR_VER=$(ls "$DOTNET_COMBINED/host/fxr" | head -n 1)
         
         # --- MINIMAL-KONFIGURATION ---
-        #export GDK_BACKEND=x11
+        export GDK_BACKEND=x11
         
         # WebKit Stabilität (Sandbox-Fix für neuere WebKit-Versionen)
         export WEBKIT_DISABLE_COMPOSITING_MODE=1

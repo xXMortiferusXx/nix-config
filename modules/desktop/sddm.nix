@@ -2,6 +2,7 @@
 
 {
   services.xserver.enable = true;
+  services.xserver.xkb.layout = "de";
 
   services.displayManager.sddm = {
     enable = true;

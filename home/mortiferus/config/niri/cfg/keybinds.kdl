@@ -78,4 +78,5 @@ binds {
     Print       { screenshot; }
     Mod+Print   { screenshot-screen; }
     Alt+Print   { screenshot-window; }
+
 }

@@ -71,6 +71,7 @@ hl.window_rule({
 	name = "games-launchers-workspace",
 	match = { class = "^(steam|net.lutris.Lutris|com.heroicgameslauncher.hgl|heroic|page.kramo.Cartridges|Sidekick)$" },
 	workspace = 3,
+	center = true,
 })
 
 -- Steam menus
@@ -85,6 +86,18 @@ hl.window_rule({
 	name = "steam-games-optimized",
 	match = { class = "^(steam_app_.*)$" }, immediate = true,
 	workspace = 4,
+        center = true,
+	fullscreen = true,
+})
+
+-- Steam Spiel-Launch Popup zentrieren
+hl.window_rule({
+    match = { 
+        class = "steam",
+        title = "^Steam$"
+    },
+    float = false,
+    center = true,
 })
 
 -- Steam notifications
@@ -119,6 +132,7 @@ hl.window_rule({
 	match = { class = "^(org.pulseaudio.pavucontrol)$" },
 	float = true,
 	center = true,
+        size = { "(monitor_w*0.45)", "(monitor_h*0.45)" },
 })
 
 hl.window_rule({
@@ -141,4 +155,16 @@ hl.window_rule({
     match = { class = "^(exiled-exchange-2)$" },
     no_blur = true,
     no_initial_focus = true,
+})
+
+-- Picture-in-Picture
+hl.window_rule({
+	match = {title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" },
+	float = true,
+        keep_aspect_ratio = true,
+        move = {"(monitor_w*0.73)", "(monitor_h*0.72)"},
+        size = {"(monitor_w*0.25)", "(monitor_h*0.25)"},
+	float = true,
+	pin = true,
+        
 })

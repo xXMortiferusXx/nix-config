@@ -224,15 +224,9 @@
                 },
                 {
                     "defaultSettings": {
-                        "enableCross": true,
-                        "enableWindowsSelection": true,
-                        "keepSourceScreenshot": false,
-                        "recordingNotifications": true,
-                        "recordingSavePath": "~/Videos",
-                        "savePath": "~/Pictures/Screenshots",
-                        "screenshotEditor": "swappy"
+                        "mode": "region"
                     },
-                    "id": "plugin:screen-shot-and-record"
+                    "id": "plugin:screenshot"
                 },
                 {
                     "deviceNativePath": "__default__",
