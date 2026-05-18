@@ -15,6 +15,7 @@
     ../programs/tools.nix
     ../desktop/desktop.nix
     ../desktop/sddm.nix
+#    ../desktop/greetd.nix
     ../desktop/niri.nix
 #    ../desktop/plasma.nix
     ../desktop/hyprland.nix

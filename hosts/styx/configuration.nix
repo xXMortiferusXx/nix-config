@@ -13,7 +13,6 @@
       ../../modules/users/backbone.nix
       ../../modules/home/backbone.nix
       ../../modules/programs/editor.nix
-      ../../modules/services/clipboard.nix
     ];
 
   networking.hostName = "styx";

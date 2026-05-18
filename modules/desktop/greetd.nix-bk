@@ -1,0 +1,90 @@
+{ config, pkgs, lib, ... }:
+
+let
+  # nwg-hello Config
+  nwgHelloConfig = pkgs.writeText "nwg-hello.json" (builtins.toJSON {
+    session_dirs = [
+      "/run/current-system/sw/share/wayland-sessions"
+    ];
+    custom_sessions = [];
+    monitor_nums = [];
+    form_on_monitors = [];
+    delay_secs = 1;
+    cmd-sleep = "systemctl suspend";
+    cmd-reboot = "systemctl reboot";
+    cmd-poweroff = "systemctl poweroff";
+    gtk-theme = "Adwaita-dark";
+    gtk-icon-theme = "Papirus-Dark";
+    gtk-cursor-theme = "Bibata-Modern-Ice";
+    prefer-dark-theme = true;
+    template-name = "";
+    time-format = "%H:%M:%S";
+    date-format = "%A, %d. %B %Y";
+  });
+
+  # labwc autostart – startet nwg-hello
+  labwcAutostart = pkgs.writeShellScript "labwc-autostart" ''
+    ${pkgs.nwg-hello}/bin/nwg-hello
+  '';
+
+  # labwc Config – minimal, nur für den Greeter
+  labwcConfigDir = pkgs.writeTextDir "rc.xml" ''
+    <?xml version="1.0"?>
+    <labwc_config>
+      <keyboard>
+        <default/>
+      </keyboard>
+    </labwc_config>
+  '';
+
+in
+{
+  # SDDM deaktivieren
+  services.displayManager.sddm.enable = lib.mkForce false;
+  services.xserver.enable = lib.mkForce false;
+
+  # greetd mit labwc als Compositor
+  services.greetd = {
+    enable = true;
+    settings = {
+      terminal.vt = 1;
+      default_session = {
+        command = "${pkgs.labwc}/bin/labwc -C ${labwcConfigDir} -s ${labwcAutostart}";
+        user = "greeter";
+      };
+    };
+  };
+
+  # greeter User anlegen
+  users.users.greeter = {
+    isSystemUser = true;
+    group = "greeter";
+    extraGroups = [ "video" "input" ];
+  };
+  users.groups.greeter = {};
+
+  # Session-Dateien verlinken
+  environment.pathsToLink = [
+    "/share/wayland-sessions"
+  ];
+
+  # labwc Session verstecken damit es nicht in der Auswahl erscheint
+  environment.etc."share/wayland-sessions/labwc.desktop".text = ''
+    [Desktop Entry]
+    Hidden=true
+  '';
+
+  # nwg-hello Config einbinden
+  environment.etc."nwg-hello/nwg-hello.json".source = nwgHelloConfig;
+
+  # Wallpaper für den Greeter – Pfad anpassen
+  # environment.etc."nwg-hello/background.jpg".source = ./path/to/background.jpg;
+
+  environment.systemPackages = with pkgs; [
+    nwg-hello
+    labwc
+  ];
+
+  # PAM für greetd
+  security.pam.services.greetd.enableGnomeKeyring = true;
+}

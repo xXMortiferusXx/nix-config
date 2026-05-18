@@ -29,10 +29,6 @@
     cursor_trail_decay 0.1 0.4
     cursor_trail_start_threshold 2
 
-    # CURSOR (konsistent mit GTK/Qt Einstellungen)
-    linux_cursor_theme Bibata-Modern-Ice
-    linux_cursor_theme_size 24
-
     # SCHRIFT-RENDERING
     adjust_line_height  0
     adjust_column_width 0
@@ -42,7 +38,6 @@
     repaint_delay    8
     input_delay      3
     sync_to_monitor  yes
-    fps_limit        165
 
     # SCROLLEN
     wheel_scroll_multiplier 5.0
@@ -74,7 +69,6 @@
     # WINDOW
     confirm_os_window_close 0
     remember_window_size    no
-    resize_draw_strategy    scale
 
     # TASTENKÜRZEL
     map ctrl+shift+t new_tab_with_cwd
