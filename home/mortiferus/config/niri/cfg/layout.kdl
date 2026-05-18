@@ -15,20 +15,28 @@ layout {
         color "rgba(0, 0, 0, 0.5)"
     }
 
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-    }
-
     struts {}
+}
+
+    recent-windows {
+        open-delay-ms 0        // sofort anzeigen statt mit Verzögerung
+    
+    previews {
+        max-height 480     // größere Vorschaubilder
+        max-scale 0.5
+    }
+    
+    highlight {
+        active-color "#7aa89f"    // deine aktive Focus-Ring Farbe
+        padding 8
+    }
 }
 
 // ────────────── Cursor ──────────────
 cursor {
     xcursor-theme "Bibata-Modern-Ice"
     xcursor-size 24
-}
+ }
 
 // ────────────── Workspaces ──────────────
 // 1 = Browser | 2 = Chat | 3 = Gaming | 4 = Sonstiges

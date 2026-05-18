@@ -2,7 +2,6 @@
 
 {
   imports = [ ./laptop-common.nix ];
-
   # Lenovo Legion spezifische Features
   boot.extraModulePackages = [
     config.boot.kernelPackages.lenovo-legion-module

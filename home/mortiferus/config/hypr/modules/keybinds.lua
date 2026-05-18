@@ -31,8 +31,8 @@ hl.bind("Print", hl.dsp.exec_cmd("hyprshot -m region -o"  .. screenshotDir))
 
 -- Exiled-Exchange-2
 -- CTRL + D → pass to exiled-exchange-2
---hl.bind("ALT + D", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }), 
---    { non_consuming = true, repeating = false })
+hl.bind("CTRL + Y", hl.dsp.pass({ window = "class:^(Sidekick)$" }), 
+    { non_consuming = true, repeating = false })
 -- SHIFT + SPACE → pass to exiled-exchange-2
 --hl.bind("SHIFT + Space", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }))
 

@@ -36,8 +36,6 @@ window-rule {
 window-rule {
     match app-id="pavucontrol"
     open-floating true
-    
-    // Hier legst du die Standardgröße fest
     default-column-width { fixed 800; }
     default-window-height { fixed 600; }
 
@@ -50,6 +48,10 @@ window-rule {
     default-column-width { proportion 1.0; }
     focus-ring { off; }
     border { off; }
+    opacity 0.95
+    background-effect {
+	    blur true
+    }
 }
 
 window-rule {
@@ -64,8 +66,7 @@ window-rule {
     open-on-workspace "2"
     default-column-width { proportion 1.0; }
     focus-ring { off; }
-    opacity 0.95
-    // geometry-corner-radius 10
+    geometry-corner-radius 10
 }
 
 // ────────────── Workspace 3: Gaming ──────────────
@@ -116,13 +117,46 @@ window-rule {
 window-rule {
     match app-id="^steam_app_.*$"
     open-on-workspace "4"
-    open-fullscreen true
+    //open-fullscreen true
     focus-ring { off; }
+    variable-refresh-rate true
 }
 
 // ────────────── Terminal ──────────────
 window-rule {
     match app-id="kitty"
-    //geometry-corner-radius 10
+    geometry-corner-radius 10
     opacity 0.9
+}
+
+// ────────────── Sonstiges ────────────── 
+window-rule {
+    match app-id="^mpv$"
+
+    variable-refresh-rate true
+}
+
+window-rule {
+    match app-id="org.gnome.Nautilus"
+    default-column-width { proportion 0.5; }
+
+    popups {
+        geometry-corner-radius 15
+        opacity 0.6
+        background-effect {
+            blur true
+        }
+    }
+}
+window-rule {
+    match app-id="thunar"
+    default-column-width { proportion 0.5; }
+
+    popups {
+        geometry-corner-radius 15
+        opacity 0.6
+        background-effect {
+            blur true
+        }
+    }
 }

@@ -83,18 +83,19 @@ hl.window_rule({
 
 -- Steam games
 hl.window_rule({
-	name = "steam-games-optimized",
-	match = { class = "^(steam_app_.*)$" }, immediate = true,
-	workspace = 4,
-        center = true,
-	fullscreen = true,
+    name = "steam-games-optimized",
+    match = { class = "^(steam_app_.*)$" },
+    immediate = true,
+    workspace = 4,
+    center = true,
+    float = false,
 })
 
 -- Steam Spiel-Launch Popup zentrieren
 hl.window_rule({
     match = { 
         class = "steam",
-        title = "^Steam$"
+        title = "^Steam$",
     },
     float = false,
     center = true,
@@ -160,7 +161,6 @@ hl.window_rule({
 -- Picture-in-Picture
 hl.window_rule({
 	match = {title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" },
-	float = true,
         keep_aspect_ratio = true,
         move = {"(monitor_w*0.73)", "(monitor_h*0.72)"},
         size = {"(monitor_w*0.25)", "(monitor_h*0.25)"},
