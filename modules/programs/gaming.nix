@@ -115,7 +115,6 @@ in
 
   users.users.mortiferus.packages = with pkgs; [
     faugus-launcher
-    umu-launcher
     heroic
     gamescope
     lsfg-vk

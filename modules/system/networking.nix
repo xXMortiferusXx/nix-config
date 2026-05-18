@@ -3,6 +3,7 @@
 {
   networking.networkmanager.enable = true;
   networking.firewall.enable = true;
+  services.udisks2.enable = true;
 
   # ────────────────── DNS CACHING ──────────────────
   # Router (192.168.50.1) macht bereits DNS-over-TLS
@@ -15,6 +16,24 @@
       FallbackDNS = [
         "192.168.50.1"
       ];
+    };
+  };
+  
+  services.gvfs = {
+    enable = true;
+    package = pkgs.gvfs;
+  };
+  
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    nssmdns6 = true;  # auch IPv6
+    openFirewall = true;
+    publish = {
+        enable = true;
+        addresses = true;
+        workstation = true;
+        userServices = true;
     };
   };
 }

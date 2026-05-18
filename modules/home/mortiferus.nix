@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports = [ ];
+  # imports = [ ];
   home-manager.backupFileExtension = "backup";
 
   home-manager.users.mortiferus = { config, ... }: {
@@ -126,11 +126,9 @@
       xclip
 
       # --- System Monitoring & Terminal ---
-      kitty                  # Standard Terminal
       btop                   # System-Monitor
       nvtopPackages.full     # GPU-Monitor (Nvidia/AMD/Intel)
       yazi                   # Terminal-Dateimanager
-      jq                     # JSON-Prozessor
 
       # --- Apps & Social ---
       nautilus               # Grafischer Dateimanager
@@ -175,7 +173,6 @@
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
       "hypr".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/hypr";
-      "kitty".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/kitty";
     };
     
     programs.mangohud = {

@@ -7,18 +7,12 @@ let
 in
 {
   environment.systemPackages = with pkgs; [
-    fzf
     jq
-    wl-clipboard
-    cliphist
     ookla-speedtest
     speedtestAuto
   ];
 
   programs.fish.shellAliases = {
-    # Editor Aliase
-    vi    = "nvim";
-    vim   = "nvim";
 
     # System & Update (Nutzt die Fish-Syntax (hostname) für dynamische Auflösung)
     nix-search = "nix search nixpkgs";

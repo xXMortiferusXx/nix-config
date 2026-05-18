@@ -8,9 +8,7 @@
 
     packages = with pkgs; [
       git
-      vim
       tmux
-      htop
       # Browser (Flake-Integration) für Styx
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
