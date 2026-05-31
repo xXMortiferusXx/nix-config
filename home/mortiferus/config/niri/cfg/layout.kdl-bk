@@ -1,0 +1,26 @@
+layout {
+    gaps 8
+    center-focused-column "never"
+    background-color "transparent"
+
+    // Korrigierter Block ohne "enable"
+    focus-ring {
+        width 2
+        active-color "#7fc8ff"
+        inactive-color "#333333"
+    }
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    struts {}
+}
+
+// Deine Workspaces (nach wie vor AUSSERHALB des Layout-Blocks)
+workspace "1"
+workspace "2"
+workspace "3"
+workspace "4"
