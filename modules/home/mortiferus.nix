@@ -107,7 +107,6 @@
       qt6Packages.qt6ct      # Qt6 Konfiguration
       libsForQt5.qt5ct       # Qt5 Konfiguration
       papirus-icon-theme     # Icons
-      bibata-cursors         # Mauszeiger
       gnome-themes-extra     # GTK-Kompatibilität (Adwaita)
       shared-mime-info       # Dateizuordnungen
 

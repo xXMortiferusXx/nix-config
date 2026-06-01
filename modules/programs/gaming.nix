@@ -81,6 +81,13 @@ in
       "/run/opengl-driver/lib"
       "/run/opengl-driver-32/lib"
     ];
+    XCURSOR_THEME = "Bibata-Modern-Ice";
+    XCURSOR_SIZE = "24";
+    XCURSOR_PATH = [
+      "$HOME/.icons"
+      "$HOME/.local/share/icons"
+      "/run/current-system/sw/share/icons"
+    ];
   };
 
   programs.steam = {
@@ -127,5 +134,6 @@ in
     game-performance
     nvidia-offload
     my-lutris
+    pkgs.bibata-cursors
   ];
 }

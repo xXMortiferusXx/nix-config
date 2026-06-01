@@ -122,6 +122,15 @@ window-rule {
     variable-refresh-rate true
 }
 
+window-rule {
+    match app-id="^pathofexilesteam.*$"
+    open-on-workspace "4"
+    //open-fullscreen true
+    focus-ring { off; }
+    variable-refresh-rate true
+}
+
+
 // ────────────── Terminal ──────────────
 window-rule {
     match app-id="kitty"
