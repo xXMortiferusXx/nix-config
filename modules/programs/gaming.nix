@@ -2,39 +2,32 @@
 
 let
   game-performance = pkgs.writeShellScriptBin "game-performance" ''
+    GAMODERUN="${pkgs.gamemode}/bin/gamemoderun"
     SMI="/run/current-system/sw/bin/nvidia-smi"
-    LEGION="/run/current-system/sw/bin/legion_cli"
-    PCTL="/run/current-system/sw/bin/powerprofilesctl"
+    PCTL="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"
     BCTL="${pkgs.brightnessctl}/bin/brightnessctl"
 
-    # --- START-PHASE ---
-    $PCTL set performance
-    echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
-
-    $LEGION set-feature PlatformProfileFeature performance 2>/dev/null
+    # --- START-PHASE: Hardware-Tuning (GameMode-unabhaengig) ---
+    # Platform Profile auf Performance (LED rot) + NVIDIA TDP + Helligkeit + EPP
+    $PCTL set performance 2>/dev/null
     sudo $SMI -pm 1 2>/dev/null
     sudo $SMI -pl 130 2>/dev/null
-
-    # Helligkeit auf 100% setzen
     $BCTL set 100%
+    echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference > /dev/null 2>&1
 
-    echo "--- BEAST MODE AKTIVIERT: 130W TDP ---"
-    echo "--- Helligkeit auf 100% gesetzt ---"
+    echo "--- BEAST MODE: 130W TDP + Legion Performance ---"
+    echo "--- GameMode uebernimmt CPU-Governor, I/O, Renice, GPU-Perf-Mode ---"
 
-    "$@"
+    # GameMode optimiert CPU-Governor, I/O-Priority, Renice, GPU-Performance-Mode
+    $GAMODERUN "$@"
 
-    # --- END-PHASE (nach Beenden des Spiels) ---
-    $PCTL set balanced
-    echo "balance_performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
-
-    $LEGION set-feature PlatformProfileFeature balanced 2>/dev/null
+    # --- END-PHASE: Hardware zuruecksetzen (LED zurueck auf weiss) ---
+    $PCTL set balanced 2>/dev/null
     sudo $SMI -pm 0 2>/dev/null
-
-    # Helligkeit auf 80% zurückregeln
     $BCTL set 80%
+    echo "balance_performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference > /dev/null 2>&1
 
-    echo "--- Zurück im Balanced Mode ---"
-    echo "--- Helligkeit auf 80% reduziert ---"
+    echo "--- Balanced Mode wiederhergestellt ---"
   '';
 
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
@@ -100,13 +93,50 @@ in
     package = pkgs.steam.override {
       extraPkgs = pkgs: with pkgs; [
         mangohud
+        bibata-cursors
       ];
+      extraEnv = {
+        XCURSOR_THEME = "Bibata-Modern-Ice";
+        XCURSOR_SIZE = "24";
+      };
+      extraProfile = "unset TZ";
     };
 
     extraCompatPackages = with pkgs; [
       proton-ge-bin
     ];
   };
+
+  programs.gamemode = {
+    enable = true;
+    settings = {
+      general = {
+        reaper_freq = 5;
+        desiredgov = "performance";
+        softrealtime = "off";
+        renice = -10;
+        ioprio = 0;
+        inhibit_screensaver = 1;
+        disable_splitlock = 1;
+      };
+      gpu = {
+        apply_gpu_optimisations = "accept-responsibility";
+        gpu_device = 0;
+      };
+    };
+  };
+
+  programs.gamescope = {
+    enable = true;
+    capSysNice = true;
+  };
+
+  # Controller-Touchpads als libinput ignorieren (DualSense/DualShock/Xbox)
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*DualSense*Touchpad*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*Wireless Controller Touchpad*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*Xbox*Controller*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+  '';
 
   # Sunshine für Remote-Gaming (z.B. auf dem TV)
   services.sunshine = {

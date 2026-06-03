@@ -13,6 +13,8 @@
     "i915.fastboot=1"          # Schnellerer Bootvorgang
   ];
 
+  boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" ];
+
   boot.kernel.sysctl = {
     "vm.swappiness" = 60;      # Konservativer auf dem Office-Notebook
     "vm.vfs_cache_pressure" = 100;

@@ -5,22 +5,33 @@
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
+  boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" ];
 
   boot.kernelParams = [
-    #"quiet"
-    #"systemd.show_status=auto"
-    "preempt=full"
-#    "split_lock_detect=off"         #bringt wohl nur bei Intel-CPU's etwas
-    "transparent_hugepage=madvise"
-    "amd_pstate=active"
-    "amdgpu.sg_display=0" 
-  ];
+      "preempt=full"
+      "split_lock_detect=off"
+      "transparent_hugepage=madvise"
+      "amd_pstate=active"
+      "amdgpu.sg_display=0"
+      "clearcpuid=514"
+      "usbcore.autosuspend=-1"
+      "nvidia.NVreg_TemporaryFilePath=/var/tmp"
+    
+      # Zwingend nötig für den fehlerfreien VRAM-Standby in NixOS
+      "nvidia.NVreg_PreserveVideoMemoryAllocations=1" 
+    
+      # REAKTIVIERT für Laptops: Erlaubt der Karte in den tiefsten Schlafmodus (RTD3) zu wechseln
+      "nvidia.NVreg_DynamicPowerManagement=0x02" 
+    ];
+
 
   boot.kernel.sysctl = {
     "vm.max_map_count" = 2147483642;
-    "vm.swappiness" = 100;
+    "vm.swappiness" = 10;
+    "vm.vfs_cache_pressure" = 50;
     "kernel.split_lock_mitigate" = 0;
     "kernel.nmi_watchdog" = 0;
+    "kernel.printk" = "3 3 3 3";
   };
 
   # Nex hat genug RAM für aggressives ZRAM (überschreibt common)
