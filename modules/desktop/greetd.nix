@@ -6,7 +6,7 @@ let
     session_dirs = [];
     custom_sessions = [
       { name = "Niri";     exec = "niri --session 2>/dev/null"; }
-      { name = "Hyprland"; exec = "Hyprland";     }
+      { name = "Hyprland"; exec = "start-hyprland 2>/dev/null"; }
 #      { name = "KDE Plasma"; exec = "startplasma-wayland"; }
     ];
     monitor_nums = [];

@@ -152,7 +152,7 @@
       #aider-chat             # KI-Pair-Programming
       #helix                  # Modal-Editor
       prusa-slicer           # 3D-Druck Slicer
-      #orca-slicer            # 3D-Druck Slicer
+      orca-slicer            # 3D-Druck Slicer
 
       # --- Python-Umgebung (poe-price-checker) ---
       (python3.withPackages (ps: with ps; [
@@ -182,6 +182,7 @@
       "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
       "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
       "hypr".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/hypr";
+
     };
     
     programs.mangohud = {

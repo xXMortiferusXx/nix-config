@@ -369,11 +369,11 @@
     },
     "dock": {
         "animationSpeed": 1,
-        "backgroundOpacity": 1,
+        "backgroundOpacity": 0.55,
         "colorizeIcons": false,
         "deadOpacity": 0.6,
         "displayMode": "auto_hide",
-        "dockType": "floating",
+        "dockType": "attached",
         "enabled": true,
         "floatingRatio": 0.5,
         "groupApps": true,

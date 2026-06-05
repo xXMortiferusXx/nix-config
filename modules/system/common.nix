@@ -11,6 +11,7 @@
     ../services/noctalia.nix
     ../programs/shell.nix
     ../programs/editor.nix
+    ../programs/fastfetch.nix
     ../programs/terminal.nix
     ../programs/tools.nix
     ../desktop/desktop.nix

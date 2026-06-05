@@ -5,13 +5,7 @@
     enable = true;
 
     interactiveShellInit = ''
-      # Schaltet die Standard-Begrüßung von Fish aus
       set -g fish_greeting ""
-
-      # Starte Fastfetch
-      ${pkgs.fastfetch}/bin/fastfetch
-
-      # Initialisiert Zoxide
       ${pkgs.zoxide}/bin/zoxide init fish | source
     '';
 
@@ -56,6 +50,5 @@
     bat
     fzf
     starship
-    fastfetch
   ];
 }
