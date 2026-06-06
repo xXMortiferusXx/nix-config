@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, smallPkgs, ... }:
 
 {
   # Lädt AMD-Grafik extrem früh für flüssiges Booten (Sehr gut!)
@@ -13,6 +13,8 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    package = smallPkgs.mesa;
+    package32 = smallPkgs.pkgsi686Linux.mesa;
     extraPackages = with pkgs; [
       # Wichtige Systemkomponenten für Vulkan-Spiele
       vulkan-loader

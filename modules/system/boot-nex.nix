@@ -1,9 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, smallPkgs, ... }:
 
 {
   imports = [ ./boot-common.nix ];
 
-  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
+  boot.kernelPackages = smallPkgs.linuxPackages_xanmod_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" ];
 

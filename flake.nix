@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-small.url = "github:nixos/nixpkgs/nixos-unstable-small";
     
     # Disko
     disko.url = "github:nix-community/disko";
@@ -18,7 +19,7 @@
     hyprland.url = "github:hyprwm/Hyprland";
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -34,6 +35,12 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit inputs; };
+          }
+          {
+            _module.args.smallPkgs = import nixpkgs-small {
+              inherit system;
+              config.allowUnfree = true;
+            };
           }
         ];
       };
