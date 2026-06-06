@@ -18,11 +18,11 @@
     "fs.file-max" = 2097152;
   };
 
-  # Swap (ZRAM) - 60% ist ein sicherer Standard für Office/Alltag (wie styx)
+  # Swap (ZRAM) - 50% CachyOS-Standard für optimales Verhältnis
   zramSwap = {
     enable = true;
     algorithm = "zstd";
-    memoryPercent = lib.mkDefault 60;
+    memoryPercent = lib.mkDefault 50;
     priority = 100;
   };
 

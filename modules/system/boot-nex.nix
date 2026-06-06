@@ -3,7 +3,7 @@
 {
   imports = [ ./boot-common.nix ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" ];
 
@@ -35,7 +35,7 @@
   };
 
   # Nex hat genug RAM für aggressives ZRAM (überschreibt common)
-  zramSwap.memoryPercent = lib.mkForce 100;
+  zramSwap.memoryPercent = lib.mkForce 50;
 
   # Physikalische Swap deaktivieren (nur ZRAM nutzen, kann bei Problemen wieder aktiviert werden)
   swapDevices = lib.mkForce [];

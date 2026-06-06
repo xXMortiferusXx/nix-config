@@ -2,7 +2,7 @@
   description = "Mortiferus NixOS Flake Configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
     # Disko
     disko.url = "github:nix-community/disko";
