@@ -3,12 +3,11 @@
 {
   imports = [ ./boot-common.nix ];
 
-  boot.kernelPackages = smallPkgs.linuxPackages_xanmod_latest;
+  boot.kernelPackages = smallPkgs.linuxPackages_latest;
   boot.kernelModules = [ "tcp_bbr" "ntsync" ];
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" ];
 
   boot.kernelParams = [
-      "preempt=full"
       "split_lock_detect=off"
       "transparent_hugepage=madvise"
       "amd_pstate=active"
@@ -30,15 +29,16 @@
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;
     "kernel.split_lock_mitigate" = 0;
-    "kernel.nmi_watchdog" = 0;
-    "kernel.printk" = "3 3 3 3";
   };
 
   # Nex hat genug RAM für aggressives ZRAM (überschreibt common)
   zramSwap.memoryPercent = lib.mkForce 50;
 
-  # Physikalische Swap deaktivieren (nur ZRAM nutzen, kann bei Problemen wieder aktiviert werden)
-  swapDevices = lib.mkForce [];
+  # 16G Swapfile als Sicherheitsnetz (ZRAM Priority 100 > Swapfile Priority -1 → ZRAM zuerst)
+  swapDevices = [{
+    device = "/swapfile";
+    size = 16384;
+  }];
 
   # Btrfs Scrub für Gaming-Partition
   services.btrfs.autoScrub = {
@@ -92,16 +92,12 @@
     in lib.listToAttrs (map balanceService [ "/" "/gaming" ])
     // {
       scx-scheduler = {
-        description = "SCX BPFland Scheduler";
+        description = "SCX Lavd Scheduler";
         after = [ "systemd-modules-load.service" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           Type = "simple";
-          ExecStart = lib.concatStringsSep " " [
-            "${pkgs.scx.rustscheds}/bin/scx_bpfland"
-            "-m" "performance"
-            "-P"
-          ];
+          ExecStart = "${pkgs.scx.rustscheds}/bin/scx_lavd";
           Restart = "on-failure";
           StandardOutput = "journal";
         };
