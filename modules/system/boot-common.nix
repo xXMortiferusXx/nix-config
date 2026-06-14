@@ -44,12 +44,12 @@
   };
 
   # RAM Schutz
-  services.earlyoom = {
-    enable = true;
-    freeMemThreshold = 5;
-    freeSwapThreshold = 10;
-    enableNotifications = true;
-  };
+  #services.earlyoom = {
+  #  enable = true;
+  #  freeMemThreshold = 5;
+  #  freeSwapThreshold = 10;
+  #  enableNotifications = true;
+  #};
 
   # GC
   nix.gc = {
