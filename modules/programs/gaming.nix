@@ -126,6 +126,19 @@ in
     };
   };
 
+  security.polkit.extraConfig = ''
+    polkit.addRule(function (action, subject) {
+      if ((action.id == "com.feralinteractive.GameMode.governor-helper" ||
+           action.id == "com.feralinteractive.GameMode.gpu-helper" ||
+           action.id == "com.feralinteractive.GameMode.cpu-helper" ||
+           action.id == "com.feralinteractive.GameMode.procsys-helper") &&
+          subject.isInGroup("gamemode"))
+      {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   programs.gamescope = {
     enable = true;
     capSysNice = true;

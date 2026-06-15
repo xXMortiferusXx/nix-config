@@ -3,10 +3,10 @@ local mainMod = "SUPER"
 -- Program Variables
 local terminal = "kitty"
 local fileManager = "nautilus"
-local menu = "noctalia-shell ipc call launcher toggle"
+local menu = "noctalia ipc call launcher toggle"
 local editor = "nvim"
 local browser = "zen-beta"
-local ipc = "noctalia-shell ipc call "
+local ipc = "noctalia ipc call "
 local screenshotDir = "/home/mortiferus/Bilder/Screenshots"
 
 -- Window Behaviour
@@ -28,13 +28,6 @@ hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("pavucontrol"))
 
 -- Sceenshots
 hl.bind("Print", hl.dsp.exec_cmd("hyprshot -m region -o"  .. screenshotDir))
-
--- Exiled-Exchange-2
--- CTRL + D → pass to exiled-exchange-2
-hl.bind("CTRL + Y", hl.dsp.pass({ window = "class:^(Sidekick)$" }), 
-    { non_consuming = true, repeating = false })
--- SHIFT + SPACE → pass to exiled-exchange-2
---hl.bind("SHIFT + Space", hl.dsp.pass({ window = "class:^(exiled-exchange-2)$" }))
 
 -- Noctalia
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd(ipc .. "notifications toggleHistory"))

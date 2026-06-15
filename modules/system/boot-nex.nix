@@ -92,12 +92,12 @@
     in lib.listToAttrs (map balanceService [ "/" "/gaming" ])
     // {
       scx-scheduler = {
-        description = "SCX Lavd Scheduler";
+        description = "SCX BPFLand Scheduler (Auto)";
         after = [ "systemd-modules-load.service" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           Type = "simple";
-          ExecStart = "${pkgs.scx.rustscheds}/bin/scx_lavd";
+          ExecStart = "${pkgs.scx.rustscheds}/bin/scx_bpfland -m auto";
           Restart = "on-failure";
           StandardOutput = "journal";
         };
