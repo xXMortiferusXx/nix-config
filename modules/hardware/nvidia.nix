@@ -1,0 +1,56 @@
+{ config, pkgs, lib, smallPkgs, ... }:
+
+{
+  # Lädt AMD-Grafik extrem früh für flüssiges Booten (Sehr gut!)
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  
+  # Notwendig für die NVIDIA-Firmware
+  hardware.enableRedistributableFirmware = true;
+  
+  # Nur "nvidia" eintragen, amdgpu wird bei PRIME automatisch geladen
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    package = smallPkgs.mesa;
+    package32 = smallPkgs.pkgsi686Linux.mesa;
+    extraPackages = with pkgs; [
+      # Wichtige Systemkomponenten für Vulkan-Spiele
+      vulkan-loader
+      vulkan-tools
+      vulkan-validation-layers
+      vulkan-extension-layer
+      
+      # Native Videobeschleunigung für NVIDIA (Firefox/Discord)
+      nvidia-vaapi-driver
+      libva-utils
+    ];
+  };
+
+  hardware.nvidia = {
+    # Übernimmt Treiber 595/610 automatisch, kann zur Sicherheit aber bleiben
+    modesetting.enable = true; 
+    nvidiaSettings = true;
+    
+    # Perfekt: Nutzt die moderne Open-Source-Architektur
+    open = true;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
+
+    # Essentiell für fehlerfreien Standby & Energiesparen
+    powerManagement.enable = true;
+    powerManagement.finegrained = true;
+
+    # PRIME-Konfiguration für Laptops
+    prime = {
+      amdgpuBusId = "PCI:6:0:0";
+      nvidiaBusId = "PCI:1:0:0";
+
+      # Aktiviert den Offload-Modus (NVIDIA schläft, bis sie gerufen wird)
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+    };
+  };
+}

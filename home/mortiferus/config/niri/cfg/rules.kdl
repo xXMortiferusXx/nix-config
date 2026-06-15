@@ -1,0 +1,171 @@
+// ────────────── Globale Fenster-Optik ──────────────
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+    default-column-width { proportion 0.5; }
+    opacity 0.95
+    background-effect {
+        blur false
+    }
+}
+
+// ────────────── Layer Rules ──────────────
+layer-rule {
+    match namespace="^noctalia-wallpaper*"
+    place-within-backdrop true
+}
+
+// ────────────── Floating Windows ──────────────
+window-rule {
+    // Portal-Dialoge
+    match app-id="xdg-desktop-portal-gnome"
+    match app-id="xdg-desktop-portal-kde"
+    match app-id="xdg-desktop-portal-gtk"
+    match app-id="xdg-desktop-portal-wlr"
+
+    // System-Tools
+    match app-id="zenity"
+    match app-id="blueman-manager"
+    match app-id="org.gnome.Settings"
+    match app-id="nm-connection-editor"
+
+    open-floating true
+}
+
+window-rule {
+    match app-id="pavucontrol"
+    open-floating true
+    default-column-width { fixed 800; }
+    default-window-height { fixed 600; }
+
+}
+
+// ────────────── Workspace 1: Browser ──────────────
+window-rule {
+    match app-id="zen-beta"
+    open-on-workspace "1"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+    border { off; }
+    opacity 0.95
+    background-effect {
+	    blur true
+    }
+}
+
+window-rule {
+    match app-id=r#"zen-beta$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// ────────────── Workspace 2: Kommunikation ──────────────
+window-rule {
+    match title="[Ll]egcord"
+    match app-id="[Vv]esktop"
+    open-on-workspace "2"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+    geometry-corner-radius 10
+}
+
+// ────────────── Workspace 3: Gaming ──────────────
+window-rule {
+    match app-id="steam"
+    match app-id="net.lutris.Lutris"
+    match app-id="com.heroicgameslauncher.hgl"
+    match app-id="io.github.krawek.cartridges"
+    match app-id="faugus-launcher"
+    match app-id="heroic"
+    match app-id="page.kramo.Cartridges"
+    match title="Heroic Games Launcher"
+    match title="Sidekick"
+    open-on-workspace "3"
+    default-column-width { proportion 1.0; }
+    focus-ring { off; }
+}
+
+// Steam Overlay & Chat floating
+window-rule {
+    match app-id="steam" title="^(Freunde|Steam-Einstellungen|Friends|Chat|Settings|Server Browser)"
+    open-floating true
+    default-column-width { fixed 1272; }
+    default-window-height { fixed 830; }
+    draw-border-with-background false
+
+}
+
+window-rule {
+    // Erkennt Steam-Benachrichtigungen und kleine Popups
+    match title="^Steam - News$"
+    match title="^Freundesliste$"
+    // Das hier fängt die meisten "XY spielt jetzt"-Popups ab
+    match title="^notificationtoasts_.*$" 
+    
+    // Macht das Fenster schwebend statt es in den Stream einzureihen
+    open-floating true
+    // In Niri setzt man die Breite der Spalte/des Fensters so:
+    default-column-width { fixed 300; }
+    
+    // Den Fokus-Ring schaltet man innerhalb der Regel so aus:
+    draw-border-with-background false
+    // Verhindert, dass das Popup den Fokus klaut während du spielst
+    focus-ring { off; }
+}
+
+// Steam Spiele auf Workspace 4 starten
+window-rule {
+    match app-id="^steam_app_.*$"
+    open-on-workspace "4"
+    //open-fullscreen true
+    focus-ring { off; }
+    variable-refresh-rate true
+}
+
+window-rule {
+    match app-id="^pathofexilesteam.*$"
+    open-on-workspace "4"
+    //open-fullscreen true
+    focus-ring { off; }
+    variable-refresh-rate true
+}
+
+
+// ────────────── Terminal ──────────────
+window-rule {
+    match app-id="kitty"
+    geometry-corner-radius 10
+    opacity 0.9
+}
+
+// ────────────── Sonstiges ────────────── 
+window-rule {
+    match app-id="^mpv$"
+
+    variable-refresh-rate true
+}
+
+window-rule {
+    match app-id="org.gnome.Nautilus"
+    default-column-width { proportion 0.5; }
+
+    popups {
+        geometry-corner-radius 15
+        opacity 0.6
+        background-effect {
+            blur true
+        }
+    }
+}
+window-rule {
+    match app-id="thunar"
+    default-column-width { proportion 0.5; }
+
+    popups {
+        geometry-corner-radius 15
+        opacity 0.6
+        background-effect {
+            blur true
+        }
+    }
+}
