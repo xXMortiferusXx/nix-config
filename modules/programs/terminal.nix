@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     kitty
+    xdg-utils                 # xdg-open für URL-Handling in kitty
 ];
   environment.etc."xdg/kitty/kitty.conf".text = ''
     # WAYLAND
