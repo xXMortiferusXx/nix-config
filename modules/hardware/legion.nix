@@ -14,7 +14,7 @@
   hardware.uinput.enable = true;
   hardware.xone.enable = true;
   hardware.xpadneo.enable = true;
-  #hardware.openrazer.enable = true;
+  hardware.openrazer.enable = true;
 
   # Interrupt Balancing (gut für Gaming Hubs/Viel Peripherie)
   services.irqbalance.enable = true;
