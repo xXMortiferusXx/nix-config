@@ -451,6 +451,23 @@
         "type": "github"
       }
     },
+    "lsfg-vk-dev": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777143138,
+        "narHash": "sha256-Qb3vufCzNpM1r+vgo8M9nnA7CENgGTithWG0oXqLKbI=",
+        "owner": "PancakeTAS",
+        "repo": "lsfg-vk",
+        "rev": "218820e8dc2d69c21a7a0775b5c47f2c447ed31a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "PancakeTAS",
+        "ref": "v2.0.0-dev",
+        "repo": "lsfg-vk",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1780749050,
@@ -528,6 +545,26 @@
         "type": "github"
       }
     },
+    "noctalia-greeter": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781469970,
+        "narHash": "sha256-b1BFKXdcfsylt8aOF9mBEib791kPPY/OiF7wgpcqcs0=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia-greeter",
+        "rev": "f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "noctalia-greeter",
+        "type": "github"
+      }
+    },
     "noctalia-shell": {
       "inputs": {
         "nixpkgs": "nixpkgs_3"
@@ -574,8 +611,10 @@
         "disko": "disko",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
+        "lsfg-vk-dev": "lsfg-vk-dev",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-small": "nixpkgs-small",
+        "noctalia-greeter": "noctalia-greeter",
         "noctalia-shell": "noctalia-shell",
         "zen-browser": "zen-browser"
       }

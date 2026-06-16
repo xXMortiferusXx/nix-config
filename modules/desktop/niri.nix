@@ -28,9 +28,7 @@
 ]'";
   };
 
-  services.displayManager.sessionPackages = [ pkgs.niri ];
-
- 
+  
   environment.systemPackages = with pkgs; [
     xwayland-satellite
   ];

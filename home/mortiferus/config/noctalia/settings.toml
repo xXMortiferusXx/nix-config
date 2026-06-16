@@ -4,15 +4,7 @@ capsule = true
 contact_shadow = true
 
 [calendar]
-enabled = true
-
-[calendar.account.google_kalender]
-color = "primary"
-name = "Kalender"
-provider = "custom"
-server_url = "https://apidata.googleusercontent.com/caldav/v2/"
-type = "caldav"
-username = "backilein@gmail.com"
+enabled = false
 
 [dock]
 auto_hide = true

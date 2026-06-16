@@ -7,6 +7,7 @@
       ./disk-config.nix
       ./disko-gaming.nix
       ../../modules/system/common.nix
+      ../../modules/system/lsfg-vk-dev.nix
       ../../modules/system/boot-nex.nix
       ../../modules/system/environment-nex.nix
       ../../modules/hardware/nvidia.nix

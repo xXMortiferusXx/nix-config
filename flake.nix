@@ -15,8 +15,18 @@
 
     # Deine zusätzlichen Inputs
     noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     hyprland.url = "github:hyprwm/Hyprland";
+
+    # lsfg-vk v2.0.0-dev (Vulkan Frame Generation) - kein flake.nix im Repo
+    lsfg-vk-dev = {
+      url = "github:PancakeTAS/lsfg-vk/v2.0.0-dev";
+      flake = false;
+    };
   };
   
   outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, ... }@inputs:
@@ -29,6 +39,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          inputs.noctalia-greeter.nixosModules.default
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -49,6 +60,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          inputs.noctalia-greeter.nixosModules.default
           ./hosts/styx/configuration.nix
           #./modules/home/backbone.nix
           home-manager.nixosModules.home-manager

@@ -168,7 +168,6 @@ in
     heroic
     gamescope
     lsfg-vk
-    lsfg-vk-ui
     umu-launcher
     protonplus
   ];
