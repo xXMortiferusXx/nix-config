@@ -22,6 +22,9 @@
       # Browser & Tools
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
+      # OpenGL/Vulkan Test-Tools
+      vulkan-tools    # vulkaninfo
+
     ];
   };
 }

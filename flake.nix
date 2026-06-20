@@ -21,12 +21,11 @@
     };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     hyprland.url = "github:hyprwm/Hyprland";
+    
+    # lsfg-vk GitHub-Version (automatisch develop branch)
+    lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
+    lsfg-vk-src.flake = false;
 
-    # lsfg-vk v2.0.0-dev (Vulkan Frame Generation) - kein flake.nix im Repo
-    lsfg-vk-dev = {
-      url = "github:PancakeTAS/lsfg-vk/v2.0.0-dev";
-      flake = false;
-    };
   };
   
   outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, ... }@inputs:

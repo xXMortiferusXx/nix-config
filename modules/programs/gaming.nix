@@ -35,6 +35,7 @@ let
     export __NV_PRIME_RENDER_OFFLOAD_SETTING=1
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export __VK_LAYER_NV_optimus=NVIDIA_only
+    export VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
     exec "$@"
   '';
 
@@ -70,10 +71,6 @@ in
 
 {
   environment.sessionVariables = {
-    LD_LIBRARY_PATH = lib.mkForce [
-      "/run/opengl-driver/lib"
-      "/run/opengl-driver-32/lib"
-    ];
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";
     XCURSOR_PATH = [
@@ -167,7 +164,7 @@ in
     faugus-launcher
     heroic
     gamescope
-    lsfg-vk
+    # lsfg-vk wird über modules/system/lsfg-vk-dev.nix installiert (GitHub-Version)
     umu-launcher
     protonplus
   ];

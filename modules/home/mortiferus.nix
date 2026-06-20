@@ -50,7 +50,6 @@
       nautilus               # Grafischer Dateimanager
       thunar		     # Grafischer Dateimanager
       vesktop                # Discord mit Wayland-Support
-      legcord                # Alternativer Discord-Client
       cartridges             # Game-Launcher
       polychromatic          # Razer RGB-Steuerung
 

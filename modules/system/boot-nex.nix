@@ -12,7 +12,6 @@
       "transparent_hugepage=madvise"
       "amd_pstate=active"
       "amdgpu.sg_display=0"
-      "clearcpuid=514"
       "usbcore.autosuspend=-1"
       "nvidia.NVreg_TemporaryFilePath=/var/tmp"
     
@@ -25,20 +24,14 @@
 
 
   boot.kernel.sysctl = {
-    "vm.max_map_count" = 16777216;
+    "vm.max_map_count" = 1048576;
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;
     "kernel.split_lock_mitigate" = 0;
   };
 
-  # Nex hat genug RAM für aggressives ZRAM (überschreibt common)
-  zramSwap.memoryPercent = lib.mkForce 50;
-
-  # 16G Swapfile als Sicherheitsnetz (ZRAM Priority 100 > Swapfile Priority -1 → ZRAM zuerst)
-  swapDevices = [{
-    device = "/swapfile";
-    size = 16384;
-  }];
+  # CachyOS-Style: 100% ZRAM, kein Swapfile
+  zramSwap.memoryPercent = lib.mkForce 100;
 
   # Btrfs Scrub für Gaming-Partition
   services.btrfs.autoScrub = {
@@ -50,11 +43,8 @@
   # Gaming Scheduler
   # HINWEIS: services.scx Modul ist seit NixOS Update kaputt (env list Bug).
   # Workaround: systemd Service manuell definieren.
-  # services.scx = {
-  #   enable = true;
-  #   scheduler = "scx_bpfland";
-  #   extraArgs = [ "-m" "performance" "-P" ];
-  # };
+  # Cake: Automatische Game-Erkennung (Steam/Proton), 4-Klassen, null globale Atomics
+  # Falls Cake nicht taugt -> rusty: scx_rusty -o 500 -u 4000 -g 1 -D 90 -K 100 -k -b --perf 1024
 
   # Manuelle systemd Service + Timer für BTRFS Balance
   systemd.timers = let
@@ -92,12 +82,12 @@
     in lib.listToAttrs (map balanceService [ "/" "/gaming" ])
     // {
       scx-scheduler = {
-        description = "SCX BPFLand Scheduler (Auto)";
+        description = "SCX BPFLand Scheduler (Performance)";
         after = [ "systemd-modules-load.service" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           Type = "simple";
-          ExecStart = "${pkgs.scx.rustscheds}/bin/scx_bpfland -m auto";
+          ExecStart = "${pkgs.scx.rustscheds}/bin/scx_bpfland -m performance -P";
           Restart = "on-failure";
           StandardOutput = "journal";
         };

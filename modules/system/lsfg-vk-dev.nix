@@ -1,41 +1,42 @@
 { config, pkgs, lib, inputs, ... }:
 
 let
-  lsfg-vk-dev = final: final.stdenv.mkDerivation {
-      pname = "lsfg-vk";
-      version = "2.0.0-dev";
+  lsfg-vk = pkgs.stdenv.mkDerivation rec {
+    pname = "lsfg-vk";
+    version = "2.0.0-dev";
 
-      src = inputs.lsfg-vk-dev;
+    src = inputs.lsfg-vk-src;
 
-      nativeBuildInputs = [ final.cmake final.pkg-config final.qt6.wrapQtAppsHook ];
+    nativeBuildInputs = with pkgs; [
+      cmake
+      pkg-config
+      qt6.wrapQtAppsHook
+    ];
 
-      buildInputs = [ final.vulkan-headers final.qt6.qtdeclarative ];
+    buildInputs = with pkgs; [
+      vulkan-loader
+      vulkan-tools
+      qt6.qtbase
+      qt6.qtdeclarative
+      qt6.qtshadertools
+    ];
 
-      cmakeFlags = [
-        "-DLSFGVK_BUILD_VK_LAYER=ON"
-        "-DLSFGVK_BUILD_CLI=ON"
-        "-DLSFGVK_BUILD_UI=ON"
-        "-DLSFGVK_INSTALL_XDG_FILES=ON"
-      ];
+    cmakeFlags = [
+      "-DLSFGVK_BUILD_VK_LAYER=ON"
+      "-DLSFGVK_BUILD_UI=ON"
+      "-DLSFGVK_BUILD_CLI=ON"
+      "-DLSFGVK_INSTALL_XDG_FILES=ON"
+      "-DLSFGVK_LAYER_LIBRARY_PATH=${placeholder "out"}/lib/liblsfg-vk-layer.so"
+    ];
 
-      postPatch = ''
-        substituteInPlace lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in \
-          --replace-fail "@LSFGVK_LAYER_LIBRARY_PATH@" "$out/lib/liblsfg-vk-layer.so"
-      '';
-
-      meta = with lib; {
-        description = "Vulkan layer for frame generation (Requires owning Lossless Scaling)";
-        homepage = "https://github.com/PancakeTAS/lsfg-vk/";
-        license = licenses.mit;
-        platforms = platforms.linux;
-      };
+    meta = with lib; {
+      description = "Lossless Scaling Frame Generation on Linux - Vulkan layer";
+      homepage = "https://github.com/PancakeTAS/lsfg-vk";
+      license = licenses.gpl3Plus;
+      platforms = platforms.linux;
     };
+  };
 in
 {
-  nixpkgs.overlays = [
-    (final: prev: {
-      lsfg-vk = lsfg-vk-dev final;
-      lsfg-vk-ui = final.lsfg-vk;
-    })
-  ];
+  environment.systemPackages = [ lsfg-vk ];
 }
