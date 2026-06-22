@@ -9,18 +9,10 @@
   # Konsolen-Level für sauberen Boot
   boot.consoleLogLevel = 3;
 
-  # Gemeinsame sysctl Netzwerk-Einstellungen
+  # Gemeinsame sysctl Einstellungen (CachyOS-konform)
   boot.kernel.sysctl = {
-    "net.core.default_qdisc" = "fq";
-    "net.ipv4.tcp_congestion_control" = "bbr";
-    "net.ipv4.tcp_fastopen" = 3;
-    "net.ipv4.tcp_fin_timeout" = 10;
     "fs.file-max" = 2097152;
-    "net.core.rmem_max" = 16777216;
-    "net.core.wmem_max" = 16777216;
-    "net.ipv4.tcp_rmem" = "4096 262144 16777216";
-    "net.ipv4.tcp_wmem" = "4096 65536 16777216";
-    "net.core.netdev_max_backlog" = 5000;
+    "net.core.netdev_max_backlog" = 4096;
   };
 
   # Swap (ZRAM) - 50% CachyOS-Standard für optimales Verhältnis

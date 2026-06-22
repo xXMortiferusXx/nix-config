@@ -104,6 +104,8 @@
     ++ (pkgs.steam-run.args.multiPkgs pkgs);
   };
 
+  environment.sessionVariables.TRACKER_USE_RUNNER = "0";
+
   environment.systemPackages = with pkgs; [
     bind
     appimage-run
@@ -125,6 +127,7 @@
     p7zip
     hydra-check
     nvd
+    linuxPackages_latest.cpupower
   ];
 
   environment.etc."zen/policies/policies.json".text = builtins.toJSON {

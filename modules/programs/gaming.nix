@@ -19,7 +19,8 @@ let
     echo "--- GameMode uebernimmt CPU-Governor, I/O, Renice, GPU-Perf-Mode ---"
 
     # GameMode optimiert CPU-Governor, I/O-Priority, Renice, GPU-Performance-Mode
-    $GAMODERUN "$@"
+    # systemd-inhibit blockiert Screensaver/Suspend (CachyOS-Style)
+    systemd-inhibit --why "game-performance running" $GAMODERUN "$@"
 
     # --- END-PHASE: Hardware zuruecksetzen (LED zurueck auf weiss) ---
     $PCTL set balanced 2>/dev/null

@@ -38,6 +38,18 @@
 - **LD_LIBRARY_PATH**: Aus gaming.nix entfernt (möglicherweise PoE2 Deadlock-Auslöser)
 - **Test-Tools**: `vulkan-tools` zu mortiferus.nix hinzugefügt (`mesa-demos` schon via `environment-common.nix`)
 
+### CachyOS-Tools Modul (2026-06-21)
+- Neues Modul: `modules/programs/cachyos-tools.nix`
+- Drei Wrapper-Scripts von CachyOS übernommen:
+  - **`dlss-swapper`**: Erzwingt neueste DLSS-Presets + NGX-Updater
+  - **`dlss-swapper-dll`**: DLSS-Presets ohne NGX-Updater
+  - **`zink-run`**: OpenGL-on-Vulkan (Zink) Fallback
+- Importiert in nex/configuration.nix (nur nex, styx kein Gaming)
+
+### Post-CachyOS-Fixes (2026-06-21)
+- **cpupower** zu environment-common.nix hinzugefügt (war nicht im PATH)
+- **kernel.unprivileged_userns_clone** aus boot-nex.nix + boot-styx.nix entfernt (Kernel 7.x hat den sysctl nicht mehr)
+
 ### Bekannte Eigenheiten
 - llvmpipe wird zusätzlich angezeigt (normal, ist Mesa Software-Renderer)
 - gaming.nix: lsfg-vk Einträge entfernt (kommt aus lsfg-vk-dev.nix)

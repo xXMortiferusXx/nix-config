@@ -7,7 +7,7 @@ binds {
     // ─── Programme ───
     Mod+Return { spawn "kitty"; }
     Mod+B      { spawn "zen-beta"; }
-    Mod+E      { spawn "nautilus"; }
+    Mod+E      { spawn "thunar"; }
     Mod+S      { spawn "pavucontrol"; }
 
     // ─── Noctalia UI ───

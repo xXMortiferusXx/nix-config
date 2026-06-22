@@ -5,7 +5,7 @@ let
   nwgHelloConfig = pkgs.writeText "nwg-hello.json" (builtins.toJSON {
     session_dirs = [];
     custom_sessions = [
-      { name = "Niri";     exec = "niri --session 2>/dev/null"; }
+      { name = "Niri";     exec = "niri-session 2>/dev/null"; }
       { name = "Hyprland"; exec = "start-hyprland 2>/dev/null"; }
 #      { name = "KDE Plasma"; exec = "startplasma-wayland"; }
     ];

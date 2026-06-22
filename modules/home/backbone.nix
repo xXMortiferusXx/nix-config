@@ -7,6 +7,7 @@
     home.packages = with pkgs; [
       # Icons & Cursors
       papirus-icon-theme
+      adwaita-icon-theme
       bibata-cursors
 
       # Tools & Office

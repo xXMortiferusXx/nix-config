@@ -15,7 +15,7 @@ let
     [Desktop Entry]
     Name=Niri
     Comment=A scrollable-tiling Wayland compositor
-    Exec=niri --session >/dev/null 2>&1
+    Exec=niri-session >/dev/null 2>&1
     Type=Application
     DesktopNames=niri
     EOF

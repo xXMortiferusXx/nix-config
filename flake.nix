@@ -21,7 +21,7 @@
     };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     hyprland.url = "github:hyprwm/Hyprland";
-    
+
     # lsfg-vk GitHub-Version (automatisch develop branch)
     lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
     lsfg-vk-src.flake = false;

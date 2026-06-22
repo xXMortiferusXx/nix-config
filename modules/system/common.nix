@@ -16,11 +16,11 @@
     ../programs/tools.nix
     ../desktop/desktop.nix
 #    ../desktop/sddm.nix
-    ../desktop/noctalia-greeter.nix
-#    ../desktop/greetd.nix
+#    ../desktop/noctalia-greeter.nix
+    ../desktop/greetd.nix
     ../desktop/niri.nix
 #    ../desktop/plasma.nix
     ../desktop/hyprland.nix
-    ../desktop/quiet-sessions.nix
+#    ../desktop/quiet-sessions.nix
   ];
 }

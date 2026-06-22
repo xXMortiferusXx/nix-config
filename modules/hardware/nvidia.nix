@@ -28,6 +28,11 @@
     ];
   };
 
+  # CachyOS modprobe.d/nvidia.conf: NVIDIA Memory Clearing deaktivieren (Performance)
+  boot.extraModprobeConfig = ''
+    options nvidia NVreg_InitializeSystemMemoryAllocations=0
+  '';
+
   hardware.nvidia = {
     # Übernimmt Treiber 595/610 automatisch, kann zur Sicherheit aber bleiben
     modesetting.enable = true; 

@@ -7,23 +7,16 @@
   home-manager.users.mortiferus = { config, ... }: {
     programs.home-manager.enable = true;
 
-    xdg.mimeApps.enable = true;
-    xdg.mimeApps.defaultApplications = {
-      "text/html" = "zen-beta.desktop";
-      "text/xml" = "zen-beta.desktop";
-      "x-scheme-handler/http" = "zen-beta.desktop";
-      "x-scheme-handler/https" = "zen-beta.desktop";
-      "x-scheme-handler/ftp" = "zen-beta.desktop";
-      "x-scheme-handler/about" = "zen-beta.desktop";
-      "x-scheme-handler/unknown" = "zen-beta.desktop";
-    };
-
     home.packages = with pkgs; [
       # --- Desktop & Appearance (Theming) ---
       nwg-look               # GTK Konfiguration
+      orchis-theme
+      tela-icon-theme
+      catppuccin-gtk
       qt6Packages.qt6ct      # Qt6 Konfiguration
       libsForQt5.qt5ct       # Qt5 Konfiguration
       papirus-icon-theme     # Icons
+      adwaita-icon-theme     # GNOME-Symbol-Icons (Fallback für Embleme)
       gnome-themes-extra     # GTK-Kompatibilität (Adwaita)
       shared-mime-info       # Dateizuordnungen
 
@@ -47,7 +40,7 @@
       yazi                   # Terminal-Dateimanager
 
       # --- Apps & Social ---
-      nautilus               # Grafischer Dateimanager
+      #nautilus               # Grafischer Dateimanager
       thunar		     # Grafischer Dateimanager
       vesktop                # Discord mit Wayland-Support
       cartridges             # Game-Launcher

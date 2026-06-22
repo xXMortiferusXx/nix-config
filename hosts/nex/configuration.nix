@@ -15,6 +15,7 @@
       ../../modules/hardware/atlas-air.nix
       ../../modules/hardware/touchpad.nix
       ../../modules/programs/gaming.nix
+      ../../modules/programs/cachyos-tools.nix
       ../../modules/users/mortiferus.nix
       ../../modules/home/mortiferus.nix
     ];

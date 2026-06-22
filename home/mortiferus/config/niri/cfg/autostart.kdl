@@ -5,7 +5,7 @@
 // -- old -- spawn-at-startup "dbus-update-activation-environment" "--systemd" "XDG_PORTAL_BACKEND_CONF"
 
 spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY"
-spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY"
+spawn-sh-at-startup " dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY"
 spawn-sh-at-startup "systemctl --user start graphical-session.target"
 
 

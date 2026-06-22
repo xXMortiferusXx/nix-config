@@ -9,12 +9,12 @@
   xdg.portal = {
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-gnome
+#      pkgs.xdg-desktop-portal-gnome
     ];
     config = {
       common.default = [ "gtk" ];
       niri = lib.mkForce {
-        default = [ "gtk" "gnome" ];
+        default = [ "gtk" ];
         "org.freedesktop.impl.portal.Access" = [ "gtk" ];
         "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
         "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
