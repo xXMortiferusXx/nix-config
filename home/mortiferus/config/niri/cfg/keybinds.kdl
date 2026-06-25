@@ -10,18 +10,18 @@ binds {
     Mod+E      { spawn "thunar"; }
     Mod+S      { spawn "pavucontrol"; }
 
-    // ─── Noctalia UI ───
-    Mod+CTRL+Return  { spawn "sh" "-c" "noctalia ipc launcher toggle"; }
-    Mod+ALT+L        { spawn "sh" "-c" "noctalia ipc lockScreen lock"; }
-    Mod+Shift+Q      { spawn "sh" "-c" "noctalia ipc sessionMenu toggle"; }
+    // ─── Noctalia IPC ───
+    Mod+CTRL+Return   { spawn "sh" "-c" "noctalia msg panel-toggle launcher"; }
+    Mod+Shift+Q       { spawn "sh" "-c" "noctalia msg panel-toggle session"; }
+    Mod+ALT+L         { spawn "sh" "-c" "noctalia msg session lock"; }
 
     // ─── Media & Brightness ───
-    XF86AudioRaiseVolume  allow-when-locked=true { spawn "sh" "-c" "noctalia ipc volume increase || wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+"; }
-    XF86AudioLowerVolume  allow-when-locked=true { spawn "sh" "-c" "noctalia ipc volume decrease || wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"; }
-    XF86AudioMute         allow-when-locked=true { spawn "sh" "-c" "noctalia ipc volume mutesOutput || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioRaiseVolume  allow-when-locked=true { spawn "sh" "-c" "noctalia msg volume-up || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume  allow-when-locked=true { spawn "sh" "-c" "noctalia msg volume-down || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute         allow-when-locked=true { spawn "sh" "-c" "noctalia msg volume-mute || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     
-    XF86MonBrightnessUp   allow-when-locked=true { spawn "sh" "-c" "noctalia ipc brightness increase || brightnessctl set 5%+"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "sh" "-c" "noctalia ipc brightness decrease || brightnessctl set 5%-"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "sh" "-c" "noctalia msg brightness-up || brightnessctl set 5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "sh" "-c" "noctalia msg brightness-down || brightnessctl set 5%-"; }
     
     Mod+Alt+U { spawn "sh" "-c" "niri msg action power-off-monitors"; }
 

@@ -14,11 +14,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Deine zusätzlichen Inputs
-    noctalia-shell.url = "github:noctalia-dev/noctalia-shell";
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     hyprland.url = "github:hyprwm/Hyprland";
 
@@ -26,9 +21,19 @@
     lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
     lsfg-vk-src.flake = false;
 
+    # Noctalia v5 (ohne follows für Cachix-Binary-Cache)
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+    };
+
+    # Noctalia Greeter (ohne follows für Cachix)
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+    };
+
   };
   
-  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, noctalia, noctalia-greeter, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -38,7 +43,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          inputs.noctalia-greeter.nixosModules.default
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -59,7 +63,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          inputs.noctalia-greeter.nixosModules.default
           ./hosts/styx/configuration.nix
           #./modules/home/backbone.nix
           home-manager.nixosModules.home-manager

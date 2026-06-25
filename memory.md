@@ -1,63 +1,98 @@
-# NixOS Config Memory
+# Migration Memory: DMS → Noctalia v5
 
-## Host: nex (nicht styx!)
-- Legion Laptop mit NVIDIA RTX 3070 + AMD GPU (PRIME Offload)
-- NixOS unstable, stateVersion 26.05
-- Kernel: smallPkgs.linuxPackages_latest (via nixpkgs-small)
-- Scheduler: scx_bpfland (Performance-Modus)
+## Why
+- **DMS (DankMaterialShell)**: v1.5-beta Flake, keine Cachix-Binaries → lokaler Build
+- **Noctalia v5**: Cachix `noctalia.cachix.org` hat Binaries für v5, in nixpkgs nur v4 EOL
+- **Ziel**: v5 aus Cachix, kein systemd für noctalia (Compositor-Autostart), zentraler Greeter
 
-## Hardware
-- AMD CPU mit `amd_pstate=active`
-- NVIDIA: Open-Source Treiber, PRIME Offload, fine-grained Power Management
-- Audio: Atlas Air Headset via PipeWire (Low-Latency)
-- Gaming-Platte: `/dev/disk/by-label/GamingDrive` (btrfs, komprimiert)
+## Migration Date
+2026-06-24/25
 
-## Aktuelle Änderungen
+## Bootstrap-Problem
+- `nix-settings.nix` mit `noctalia.cachix.org` konnte nicht aktiv werden, weil der Build den Cache braucht, der Cache aber erst nach Build im System bekannt ist
+- **Lösung**: 2-Phasen-Build:
+  1. Noctalia deaktiviert → rebuild → Cache-Konfig aufs System
+  2. Noctalia reaktiviert → rebuild zieht noctalia v5 aus Cachix
 
-### lsfg-vk (GitHub develop branch)
-- **Stand**: 2026-06-17 eingefügt, 2026-06-17 gefixt
-- **Pfad**: `/etc/nixos/modules/system/lsfg-vk-dev.nix`
-- **Input**: `lsfg-vk-src` in flake.nix (github:PancakeTAS/lsfg-vk/develop, flake=false)
-- **Fix**: `LSFGVK_LAYER_LIBRARY_PATH` wird direkt in cmakeFlags übergeben (statt postFixup)
-- **Vulkan Layer**: Wird unter `/run/current-system/sw/share/vulkan/implicit_layer.d/` installiert
-- **VK_LAYER_PATH**: NICHT setzen – wird von Steam pressure-vessel ignoriert/entfernt
-- **Steam/Proton**: Layer wird über `XDG_DATA_DIRS` gefunden (enthält `/run/current-system/sw/share`)
-- **Updates**: `nix flake lock --update-input lsfg-vk-src` dann rebuild
+## What changed
 
-### PoE2 Deadlock (2026-06-17)
-- **Problem**: "Deadlock detected" in PoE2 bei DX12/VKD3D
-- **Lösung**: Auf nativen Vulkan Renderer umgestellt
-- **Status**: Deadlock damit vermieden, lsfg-vk kann aber nicht mit nativem Vulkan genutzt werden (da lsfg-vk ein Vulkan Layer ist, der über DX12/VKD3D funktioniert)
-- **NVIDIA Optimierungen**: `__GL_THREADED_OPTIMIZATIONS=1`, `__GL_SYNC_TO_VBLANK=0`
+### New
+- `modules/services/noctalia.nix` – v5 package, kein systemd
+- `modules/desktop/noctalia-greeter.nix` – zentraler greeter (nicht per-host)
+- `modules/system/common.nix` – imports noctalia + greeter + quiet-sessions
 
-### Config-Bereinigung (2026-06-17)
-- **legcord** entfernt (überbleibsel, vesktop reicht)
-- **ZRAM**: 100% (CachyOS-Style), Swapfile komplett entfernt
-- **vm.max_map_count**: 16M → 1048576 (1M, Standard für Gaming)
-- **NVIDIA GL**: `__GL_THREADED_OPTIMIZATIONS=1` + `__GL_SYNC_TO_VBLANK=0` hinzugefügt
-- **LD_LIBRARY_PATH**: Aus gaming.nix entfernt (möglicherweise PoE2 Deadlock-Auslöser)
-- **Test-Tools**: `vulkan-tools` zu mortiferus.nix hinzugefügt (`mesa-demos` schon via `environment-common.nix`)
+### Deleted
+- `modules/services/dms.nix` – dead code
+- `hosts/nex/greeter.nix` – per-host dms-greeter
+- `hosts/styx/greeter.nix` – per-host dms-greeter
+- `home/*/config/niri/dms/` – stale dms configs
+- `home/*/config/hypr/dms/` – stale dms configs
+- `home/*/config/DankMaterialShell/` – stale dms configs
 
-### CachyOS-Tools Modul (2026-06-21)
-- Neues Modul: `modules/programs/cachyos-tools.nix`
-- Drei Wrapper-Scripts von CachyOS übernommen:
-  - **`dlss-swapper`**: Erzwingt neueste DLSS-Presets + NGX-Updater
-  - **`dlss-swapper-dll`**: DLSS-Presets ohne NGX-Updater
-  - **`zink-run`**: OpenGL-on-Vulkan (Zink) Fallback
-- Importiert in nex/configuration.nix (nur nex, styx kein Gaming)
+### Changed
+- `flake.nix`: `dms-shell` → `noctalia` + `noctalia-greeter` (beide ohne `follows` für Cachix)
+- `nix-settings.nix`: `noctalia.cachix.org` in substituters + trusted-public-keys
+- `common.nix`: `dms.nix` → `noctalia.nix`, `quiet-sessions.nix` re-enabled
+- Niri configs: `dms ipc call` → `noctalia msg`, `^dms-wallpaper` → `^noctalia-wallpaper`, `spawn-at-startup "noctalia"`
+- Hyprland configs: `noctalia-shell` → `noctalia`, `dms ipc call` → `noctalia msg`
+- HM symlinks: `DankMaterialShell` → `noctalia`
 
-### Post-CachyOS-Fixes (2026-06-21)
-- **cpupower** zu environment-common.nix hinzugefügt (war nicht im PATH)
-- **kernel.unprivileged_userns_clone** aus boot-nex.nix + boot-styx.nix entfernt (Kernel 7.x hat den sysctl nicht mehr)
+## Noctalia v5 Config
+- Settings file: `~/.config/noctalia/settings.toml` (v4-format, kompatibel)
+- Start via Compositor: `spawn-at-startup "noctalia"` (niri) / `exec_cmd("noctalia")` (hyprland)
+- IPC: `noctalia msg ...`
 
-### Bekannte Eigenheiten
-- llvmpipe wird zusätzlich angezeigt (normal, ist Mesa Software-Renderer)
-- gaming.nix: lsfg-vk Einträge entfernt (kommt aus lsfg-vk-dev.nix)
-- Nautilus + Thunar sind beide installiert (Nautilus hübscher, Thunar schneller)
-- Gaming-Launcher: Steam, Heroic, Lutris (mit steam-run Wrapper), Faugus, cartridges
+## Noctalia IPC Commands
+| Action | Command |
+|---|---|
+| Launcher/Spotlight | `noctalia msg spotlight toggle` |
+| Powermenu | `noctalia msg powermenu toggle` |
+| Settings | `noctalia msg settings toggle` |
+| Clipboard | `noctalia msg clipboard toggle` |
+| Notifications | `noctalia msg notifications toggle` |
+| Notepad | `noctalia msg notepad toggle` |
+| Lock | `noctalia msg lockscreen lock` |
+| Volume up | `noctalia msg audio increment 5` |
+| Volume down | `noctalia msg audio decrement 5` |
+| Mute | `noctalia msg audio mute` |
+| Brightness up | `noctalia msg brightness increment 5` |
+| Brightness down | `noctalia msg brightness decrement 5` |
 
-## TODO
-- [ ] Hash für lsfg-vk muss bei jedem Update manuell in flake.lock aktualisiert werden (via `nix flake lock --update-input`)
-- [ ] Prüfen ob `__GL_SYNC_TO_VBLANK=0` zu Tearings führt (dann auf 1 setzen)
-- [ ] Testen ob PoE2 Deadlock ohne `LD_LIBRARY_PATH` verschwindet
-- [ ] Prüfen ob `glxgears` ohne `LD_LIBRARY_PATH` funktioniert
+## Noctalia-Greeter
+- `programs.noctalia-greeter.enable = true` + `--session niri`
+- Config per `environment.etc."noctalia-greeter.toml"`
+- Upstream-Bug: `tomlFormat.generate` (derivation) kann nicht in `C.argument` (string) → umgangen via `systemd.tmpfiles`
+
+## Cachix
+- Cache: `noctalia.cachix.org`
+- Public Key: `noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=`
+- CI Build #1864 für Commit `2d53f6ab` → success
+- Build aus Cache bestätigt nach Bootstrap
+
+## 2026-06-25: Autostart-Cleanup & Greeter-Sync Automation
+
+### Problem
+- Steam lief 2x: XDG Autostart (`~/.config/autostart/steam.desktop`) + Noctalia Startup Hook (`~/Apps/autostart.sh`)
+- Gleiches für Vesktop (`~/.config/autostart/vesktop.desktop`)
+
+### Fix
+- `~/.config/autostart/steam.desktop` gelöscht
+- `~/.config/autostart/vesktop.desktop` gelöscht
+- Beide laufen nur noch über Noctalia Startup Hook (`~/Apps/autostart.sh`)
+
+### Greeter-Sync Automation
+Damit der Greeter bei jedem Wallpaper-Wechsel automatisch die aktuellen Farben + Wallpaper übernimmt:
+- **`modules/desktop/desktop.nix`**: Polkit-Regel für `org.noctalia.greeter.apply-appearance` (passwordlos für `mortiferus`)
+- **`home/mortiferus/config/noctalia/wallpaper-change.sh`**: Script das `noctalia msg greeter-sync` ausführt
+- **`settings.json`**: `wallpaperChange`-Hook zeigt auf das Script
+- Effekt: Bei jedem Wallpaper-Wechsel (alle 30 Min. / manuell) syncen ohne Passwort-Prompt
+
+### Noctalia Hooks (aktuell)
+| Hook | Script |
+|---|---|
+| `startup` | `/home/mortiferus/Apps/autostart.sh` |
+| `wallpaperChange` | `/etc/nixos/home/mortiferus/config/noctalia/wallpaper-change.sh` |
+
+## Open Points
+- `styx`-Host: gleiches Deployment via `sudo nixos-rebuild switch --flake .#styx`
+- `pkgs.noctalia-shell` in nixpkgs ist v4.7.7 (EOL) – v5 nur via Flake

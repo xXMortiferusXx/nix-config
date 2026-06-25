@@ -1,7 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
+    inputs.noctalia.nixosModules.default
+    inputs.noctalia-greeter.nixosModules.default
     ./locale.nix
     ./networking.nix
     ./security.nix
@@ -16,11 +18,11 @@
     ../programs/tools.nix
     ../desktop/desktop.nix
 #    ../desktop/sddm.nix
-#    ../desktop/noctalia-greeter.nix
-    ../desktop/greetd.nix
+    ../desktop/noctalia-greeter.nix
+#    ../desktop/greetd.nix
     ../desktop/niri.nix
 #    ../desktop/plasma.nix
     ../desktop/hyprland.nix
-#    ../desktop/quiet-sessions.nix
+    ../desktop/quiet-sessions.nix
   ];
 }

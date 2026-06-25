@@ -1,24 +1,36 @@
-{ config, pkgs, lib, inputs, ... }:
-
-let
-  system = pkgs.stdenv.hostPlatform.system;
-in
-{
-  # SDDM deaktivieren (noctalia-greeter nutzt greetd)
-  services.displayManager.sddm.enable = lib.mkForce false;
-  services.xserver.enable = lib.mkForce false;
-
+{ config, pkgs, lib, inputs, ... }: {
   programs.noctalia-greeter = {
     enable = true;
-    package = inputs.noctalia-greeter.packages.${system}.default;
+    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    greeter-args = "--session niri";
+  };
 
-    settings.cursor = {
-      theme = "Bibata-Modern-Ice";
-      size = 24;
-      package = pkgs.bibata-cursors;
+  environment.etc."noctalia-greeter.toml".text = ''
+    [keyboard]
+    layout = "de"
+  '';
+
+  systemd.tmpfiles.settings."10-noctalia-greeter" = {
+    "/var/lib/noctalia-greeter".d = {
+      user = "greeter";
+      group = "greeter";
+      mode = "0750";
     };
   };
 
-  # PAM für greetd (Gnome Keyring entsperren)
-  security.pam.services.greetd.enableGnomeKeyring = true;
+  # tmpfiles .C kopiert den Symlink (→ read-only nix-store)
+  # Stattdessen: echte Datei via cp -L anlegen → beschreibbar für greeter-sync
+  systemd.services.fix-noctalia-greeter-toml = {
+    description = "Create writable greeter.toml (resolve symlink)";
+    after = [ "systemd-tmpfiles-setup.service" ];
+    before = [ "greetd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      rm -f /var/lib/noctalia-greeter/greeter.toml
+      cp -L /etc/noctalia-greeter.toml /var/lib/noctalia-greeter/greeter.toml
+      chown greeter:greeter /var/lib/noctalia-greeter/greeter.toml
+      chmod 0644 /var/lib/noctalia-greeter/greeter.toml
+    '';
+  };
 }

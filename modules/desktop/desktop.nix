@@ -2,6 +2,16 @@
 
 {
   security.polkit.enable = true;
+
+  security.polkit.extraConfig = ''
+    polkit.addRule(function (action, subject) {
+      if (action.id == "org.noctalia.greeter.apply-appearance" &&
+          subject.user == "mortiferus")
+      {
+        return polkit.Result.YES;
+      }
+    });
+  '';
   programs.dconf.enable = true;
   services.gnome.gnome-keyring.enable = true;
   programs.xfconf.enable = true;

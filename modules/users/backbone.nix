@@ -3,7 +3,7 @@
   users.users.backbone = {
     isNormalUser = true;
     description = "Backbone Administrator";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "greeter" ];
     shell = pkgs.fish;
 
     packages = with pkgs; [

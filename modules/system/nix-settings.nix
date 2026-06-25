@@ -13,6 +13,7 @@
     max-free = 5368709120;
     trusted-substituters = [
       "https://hyprland.cachix.org"
+      "https://noctalia.cachix.org"
     ];
     substituters = [
       "https://cache.nixos.org/"

@@ -3,10 +3,10 @@ local mainMod = "SUPER"
 -- Program Variables
 local terminal = "kitty"
 local fileManager = "nautilus"
-local menu = "noctalia ipc call launcher toggle"
+local menu = "noctalia msg panel-toggle launcher"
 local editor = "nvim"
 local browser = "zen-beta"
-local ipc = "noctalia ipc call "
+local ipc = "noctalia msg "
 local screenshotDir = "/home/mortiferus/Bilder/Screenshots"
 
 -- Window Behaviour

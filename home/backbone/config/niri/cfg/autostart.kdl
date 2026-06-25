@@ -9,9 +9,9 @@ spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLA
 spawn-sh-at-startup "systemctl --user start graphical-session.target"
 
 
-spawn-sh-at-startup "noctalia"
 spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=pkcs11,secrets"
 spawn-at-startup "udiskie"
 spawn-at-startup "polychromatic-tray-applet"
+spawn-at-startup "noctalia"
