@@ -87,6 +87,29 @@ if [ -f /mnt/swap/swapfile ]; then
     sudo swapon /mnt/swap/swapfile || warn "Konnte Swapfile nicht aktivieren."
 fi
 
+# --- DYNAMISCHE BUILD-KONFIGURATION BASIEREND AUF RAM ---
+info "Ermittle dynamische Build-Konfiguration..."
+
+if command -v free &>/dev/null; then
+    TOTAL_RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
+else
+    TOTAL_RAM_MB=$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)
+fi
+
+NPROC=$(nproc)
+
+# Sicherheitsfaktor: pro parallelem Job mindestens 3 GB RAM einplanen
+MAX_JOBS=$(( TOTAL_RAM_MB / 3072 ))
+[ "$MAX_JOBS" -lt 1 ] && MAX_JOBS=1
+[ "$MAX_JOBS" -gt "$NPROC" ] && MAX_JOBS="$NPROC"
+
+# Cores so wählen, dass wir bei wenig RAM nicht alle Kerne blockieren
+CORES=$(( NPROC / MAX_JOBS ))
+[ "$CORES" -lt 1 ] && CORES=1
+[ "$CORES" -gt "$NPROC" ] && CORES="$NPROC"
+
+info "RAM: ${TOTAL_RAM_MB}MB | CPU-Kerne: $NPROC | max-jobs: $MAX_JOBS | cores: $CORES"
+
 # --- SCHRITT 5: Dateien nach /mnt kopieren ---
 info "Kopiere Konfiguration nach /mnt..."
 sudo mkdir -p /mnt/etc/nixos
@@ -96,6 +119,8 @@ sudo rm -rf /mnt/etc/nixos/.git
 # --- SCHRITT 6: Installation ---
 info "Starte NixOS-Installation für $HOSTNAME..."
 sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" \
+    --option max-jobs "$MAX_JOBS" \
+    --option cores "$CORES" \
     --option download-buffer-size 268435456 \
     --option connect-timeout 20 \
     --no-root-passwd --no-channel-copy
@@ -106,7 +131,7 @@ info "Bereite Zielsystem vor (Rechte & Git)..."
 sudo nixos-enter --root /mnt -c "chown -R $USERNAME:users /etc/nixos"
 
 # Initialisiere Git im Zielsystem, damit Flakes sofort funktionieren
-sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git remote add origin git@github.com:xXMortiferusXx/nix-config.git && git add ."
+sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git branch -M main && git remote add origin git@github.com:xXMortiferusXx/nix-config.git && git add ."
 
 echo ""
 echo "=========================================================="
