@@ -3,7 +3,9 @@
 {
   imports = [ ./environment-common.nix ];
 
-  # Hier könnten später styx-spezifische Variablen rein
+  # Kein CUDA auf Intel-only-System
+  nixpkgs.config.cudaSupport = false;
+
   environment.variables = {
     "EDITOR" = "nvim";
   };

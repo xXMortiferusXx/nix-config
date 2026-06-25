@@ -93,6 +93,58 @@ Damit der Greeter bei jedem Wallpaper-Wechsel automatisch die aktuellen Farben +
 | `startup` | `/home/mortiferus/Apps/autostart.sh` |
 | `wallpaperChange` | `/etc/nixos/home/mortiferus/config/noctalia/wallpaper-change.sh` |
 
+## 2026-06-25: Modul-Refactoring (Phase 1)
+
+### Ziel
+Jede `.nix`-Datei = genau ein Thema. Dateiname sagt, was drin ist.
+
+### Was sich geändert hat
+
+**Tote Dateien gelöscht:**
+- `modules/desktop/sddm.nix` + `sddm-themes/` – auskommentiert
+- `modules/desktop/greetd.nix` + `greetd.nix-bk` – durch noctalia-greeter ersetzt
+- `modules/programs/gaming.nix` – durch `gaming/`-Verzeichnis ersetzt
+- `modules/home/*.nix` (mortiferus.nix + backbone.nix) – durch Verzeichnisse ersetzt
+
+**Aufgesplittete Module:**
+
+| Alte Datei | Neue Dateien |
+|---|---|
+| `desktop/desktop.nix` | `desktop/polkit.nix`, `desktop/fonts.nix`, `desktop/nautilus-emblems.nix`, `desktop/desktop.nix` (reduziert) |
+| `system/environment-common.nix` | `system/nix-ld.nix`, `programs/zen-policies.nix`, `environment-common.nix` (reduziert) |
+| `boot-nex.nix` + `boot-styx.nix` | `system/cachyos-tuning.nix` (shared) + reduzierte Host-Dateien |
+| `programs/gaming.nix` | `programs/gaming/{default,steam,lutris,gamemode,gamescope,sunshine,scripts}.nix` |
+| `home/{mortiferus,backbone}.nix` | `home/{mortiferus,backbone}/{default,packages,config}.nix` + mortiferus: `mangohud.nix`, `mpv.nix` |
+
+**Neue Module:**
+- `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM
+- `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
+- `system/nix-ld.nix` – nix-ld mit allen Libraries
+- `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
+- `programs/ideamaker.nix` – ideaMaker Desktop-Entry
+- `programs/gaming/lutris.nix` – custom Lutris-Wrapper (steam-run)
+- `desktop/polkit.nix`, `fonts.nix`, `nautilus-emblems.nix`
+
+**Import-Ketten optimiert:**
+- `boot-common.nix` importiert jetzt `cachyos-tuning.nix` + `btrfs.nix` → Hosts importieren nur noch `boot-common.nix`
+- styx: doppelter `editor.nix`-Import entfernt, `earlyoom` gelöscht, `smartd` (war in laptop-common) entfernt
+- `cudaSupport` von styx/config → `environment-styx.nix`
+- `systembus-notify` von legion.nix → `desktop/desktop.nix` (shared)
+- `ideamaker` aus `users/mortiferus.nix` → `programs/ideamaker.nix`
+
+**Größen:**
+- `environment-common.nix`: 151 → 31 Zeilen
+- `boot-nex.nix`: 170 → 24 Zeilen
+- `boot-styx.nix`: 118 → 20 Zeilen
+- `styx/configuration.nix`: 29 → 7 Zeilen
+
+### Design-Regel für neue Module
+- Jede Datei = ein Thema
+- Große Dateien (>100 Z.) in fachliche Teile splitten
+- Home-Manager: pro User ein Verzeichnis, pro Thema eine Datei
+- Gaming: als Verzeichnis mit Submodulen pro Service/Script
+- `system/btrfs.nix`: `my.btrfs.fileSystems`-Option setzt Ziel-Filesysteme für scrub + balance
+
 ## Open Points
 - `styx`-Host: gleiches Deployment via `sudo nixos-rebuild switch --flake .#styx`
 - `pkgs.noctalia-shell` in nixpkgs ist v4.7.7 (EOL) – v5 nur via Flake

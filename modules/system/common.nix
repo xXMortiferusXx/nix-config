@@ -8,6 +8,8 @@
     ./networking.nix
     ./security.nix
     ./nix-settings.nix
+    ./nix-ld.nix
+    ../programs/zen-policies.nix
     ../hardware/audio.nix
     ../services/printing.nix
     ../services/noctalia.nix
@@ -17,9 +19,10 @@
     ../programs/terminal.nix
     ../programs/tools.nix
     ../desktop/desktop.nix
-#    ../desktop/sddm.nix
+    ../desktop/polkit.nix
+    ../desktop/fonts.nix
+    ../desktop/nautilus-emblems.nix
     ../desktop/noctalia-greeter.nix
-#    ../desktop/greetd.nix
     ../desktop/niri.nix
 #    ../desktop/plasma.nix
     ../desktop/hyprland.nix

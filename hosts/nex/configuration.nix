@@ -14,10 +14,11 @@
       ../../modules/hardware/legion.nix
       ../../modules/hardware/atlas-air.nix
       ../../modules/hardware/touchpad.nix
-      ../../modules/programs/gaming.nix
+      ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
+      ../../modules/programs/ideamaker.nix
       ../../modules/users/mortiferus.nix
-      ../../modules/home/mortiferus.nix
+      ../../modules/home/mortiferus
     ];
 
   networking.hostName = "nex";

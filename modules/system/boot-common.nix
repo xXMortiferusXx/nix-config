@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ./cachyos-tuning.nix
+    ./btrfs.nix
+  ];
+
   # Gemeinsame Bootloader-Einstellungen
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

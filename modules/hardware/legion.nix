@@ -19,9 +19,6 @@
   # Interrupt Balancing (gut für Gaming Hubs/Viel Peripherie)
   services.irqbalance.enable = true;
 
-  # Systembus-Notify für Smartd/Earlyoom
-  services.systembus-notify.enable = lib.mkForce true;
-
   environment.systemPackages = with pkgs; [
     lenovo-legion
   ];
