@@ -1,3 +1,5 @@
+# Unterdrückt doppelte Display-Manager-Einträge
+# Erzeugt saubere .desktop-Dateien für niri + hyprland (stdout >/dev/null)
 { config, pkgs, lib, ... }:
 let
   quiet-sessions = pkgs.runCommand "quiet-sessions" {

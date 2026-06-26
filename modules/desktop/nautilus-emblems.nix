@@ -1,3 +1,5 @@
+# Nautilus-Emblem für schreibgeschützte/systemverwaltete Dateien
+# Kopiert Adwaita-Symbole als emblem-unwritable (emblem-important → nix-store)
 { config, pkgs, ... }:
 
 {

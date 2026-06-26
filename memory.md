@@ -39,6 +39,8 @@
 - Große Dateien (>100 Z.) in fachliche Teile splitten
 - Home-Manager: pro User ein Verzeichnis, pro Thema eine Datei
 - Gaming: als Verzeichnis mit Submodulen pro Service/Script
+- Jede `.nix`-Datei hat einen deutschen Header-Kommentar (1-3 Zeilen), der erklärt was das Modul macht
+- Bei sysctl-/kernel-Parametern: Inline-Kommentar in Deutsch was der Wert bewirkt
 
 ## Noctalia v5
 

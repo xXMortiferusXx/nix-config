@@ -1,16 +1,18 @@
+# CachyOS-inspirierte sysctl/udev/PAM/systemd-Optimierung
+# Siehe: https://github.com/CachyOS/linux-cachyos
 { config, pkgs, lib, ... }:
 
 {
   boot.kernel.sysctl = {
-    "vm.swappiness" = 100;
-    "vm.vfs_cache_pressure" = 50;
-    "vm.dirty_bytes" = 268435456;
-    "vm.dirty_background_bytes" = 67108864;
-    "vm.dirty_writeback_centisecs" = 1500;
-    "vm.page-cluster" = 0;
-    "kernel.nmi_watchdog" = 0;
-    "kernel.kptr_restrict" = 2;
-    "kernel.printk" = "3 3 3 3";
+    "vm.swappiness" = 100;                 # Bevorzugt Cache vor Swap (SSD vs. RAM-Cache)
+    "vm.vfs_cache_pressure" = 50;          # Inodes/Dentrys länger im Cache halten
+    "vm.dirty_bytes" = 268435456;          # Max 256MB dirty pages bevor Writeback startet
+    "vm.dirty_background_bytes" = 67108864; # Writeback beginnt bei 64MB dirty pages
+    "vm.dirty_writeback_centisecs" = 1500;  # Writeback-Daemon läuft alle 15s
+    "vm.page-cluster" = 0;                 # Kein Swap-Clustering (SSD, kein Rotationsmedium)
+    "kernel.nmi_watchdog" = 0;              # Deaktiviert (spart Strom/CPU-Zyklen)
+    "kernel.kptr_restrict" = 2;             # Kernel-Pointer nur für root sichtbar
+    "kernel.printk" = "3 3 3 3";           # Nur kritische Meldungen auf Konsole
   };
 
   services.udev.extraRules = ''

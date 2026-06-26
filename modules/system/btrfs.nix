@@ -1,3 +1,5 @@
+# Btrfs Scrub (monatlich) + Balance (wöchentlich)
+# Welche Filesysteme via `my.btrfs.fileSystems` konfigurierbar
 { config, pkgs, lib, ... }:
 
 let

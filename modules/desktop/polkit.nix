@@ -1,3 +1,6 @@
+# Polkit-Regeln
+# - noctalia-greeter: apply-appearance passwordlos für mortiferus
+# - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
 { config, pkgs, ... }:
 
 {

@@ -1,3 +1,6 @@
+# systemd-user-Services für mortiferus (nex)
+# Start nach graphical-session.target + noctalia.service
+# vesktop: +sleep 3 wg. Tray-Race-Condition
 { config, pkgs, ... }:
 
 {

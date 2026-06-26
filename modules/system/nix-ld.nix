@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
 
+# nix-ld mit Library-Set für unfree/nicht-Nix-Binaries (z.B. VS Code, Discord)
+# Steam-Libraries via steam-run.args.multiPkgs inkludiert
 {
   programs.nix-ld = {
     enable = true;

@@ -1,3 +1,5 @@
+# Touchpad bei angeschlossener USB-Maus automatisch deaktivieren
+# udev-getriggertes Script inhibiert das Touchpad-Device via /sys/class/input
 { pkgs, lib, ... }:
 
 let

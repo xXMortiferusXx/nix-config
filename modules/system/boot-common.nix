@@ -1,3 +1,5 @@
+# Gemeinsame Boot-Konfig für alle Hosts
+# Importiert cachyos-tuning + btrfs, setzt systemd-boot, zram, fstrim, chrony, nix.gc
 { config, pkgs, lib, ... }:
 
 {

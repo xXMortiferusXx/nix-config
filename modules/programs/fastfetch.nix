@@ -1,3 +1,5 @@
+# Fastfetch mit custom JSON-Konfig (Hardware/Software/Netzwerk/Zeit)
+# Wird bei jeder Fish-Shell gestartet
 { config, pkgs, lib, ... }:
 
 {

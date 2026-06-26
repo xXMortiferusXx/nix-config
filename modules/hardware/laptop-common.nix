@@ -1,3 +1,5 @@
+# Gemeinsame Laptop-Module für alle Hosts
+# Bluetooth, power-profiles-daemon, upower, fwupd, smartd, libinput
 { config, pkgs, lib, ... }:
 
 {

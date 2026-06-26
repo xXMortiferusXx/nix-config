@@ -1,3 +1,7 @@
+# CachyOS-Wrapper-Scripts für Gaming
+# dlss-swapper: NVIDIA DLSS-Preset-Override + NGX-Updater
+# dlss-swapper-dll: gleiches ohne NGX-Updater
+# zink-run: OpenGL via Zink (OpenGL-on-Vulkan) ausführen
 { pkgs, ... }:
 
 let

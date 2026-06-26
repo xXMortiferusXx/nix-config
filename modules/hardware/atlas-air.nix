@@ -1,3 +1,5 @@
+# Turtle Beach Atlas Air Kopfhörer – stabiler Node-Name via PipeWire/WirePlumber
+# Verhindert dass ALSA den Namen bei jedem Reconnect ändert
 { ... }:
 
 {

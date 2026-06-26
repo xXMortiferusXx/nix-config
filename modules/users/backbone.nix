@@ -1,3 +1,5 @@
+# Benutzer backbone (styx – Office-Laptop)
+# Groups: networkmanager, wheel, video, audio, greeter
 { config, pkgs, inputs, ... }:
 {
   users.users.backbone = {

@@ -1,3 +1,4 @@
+# Hyprland Compositor + gnome-keyring als systemd-Service
 { config, pkgs, lib, ... }: 
 
 {

@@ -1,3 +1,5 @@
+# Enterprise Policies für Zen-Browser
+# Deaktiviert Letterboxing, Workspace-Sync; aktiviert erweiterte Contextmenüs
 { config, pkgs, lib, ... }:
 
 {

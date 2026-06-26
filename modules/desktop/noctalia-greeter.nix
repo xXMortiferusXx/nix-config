@@ -1,3 +1,5 @@
+# Noctalia Login-Greeter (–session niri, DE-Tastatur)
+# Workaround: tmpfiles kann .toml-Symlink nicht kopieren → fix-noctalia-greeter-toml
 { config, pkgs, lib, inputs, ... }: {
   programs.noctalia-greeter = {
     enable = true;

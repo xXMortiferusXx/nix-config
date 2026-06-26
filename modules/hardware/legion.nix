@@ -1,3 +1,5 @@
+# Lenovo Legion Gaming-Laptop (nex)
+# AMD µcode, Conservation Mode (60%), Razer, Xbox-Controller, uinput, irqbalance
 { config, pkgs, lib, ... }:
 
 {

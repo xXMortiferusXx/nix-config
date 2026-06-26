@@ -1,3 +1,5 @@
+# Desktop-Eintrag für ideaMaker (Raise3D 3D-Druck-Slicer)
+# AppImage via xcb-Plattform gebündelt
 { config, pkgs, ... }:
 
 {

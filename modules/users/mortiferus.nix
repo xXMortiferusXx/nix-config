@@ -1,3 +1,5 @@
+# Benutzer mortiferus (nex – Gaming-Laptop)
+# Groups: networkmanager, wheel, video, audio, input, openrazer, gamemode, greeter
 { config, pkgs, inputs, ... }:
 {
   users.groups.greeter = { };

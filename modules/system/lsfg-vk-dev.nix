@@ -1,3 +1,5 @@
+# Lossless Scaling Frame Generation Vulkan Layer
+# Baut lsfg-vk aus Git (Input lsfg-vk-src) – ermöglicht Frame Gen auf Linux
 { config, pkgs, lib, inputs, ... }:
 
 let

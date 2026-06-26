@@ -1,3 +1,5 @@
+# Niri Compositor (scrollable-tiling Wayland)
+# + gnome-keyring als systemd-Service + xdg-portal mit GTK+gnome-keyring + xwayland-satellite
 { config, pkgs, lib, ... }:
 
 {

@@ -1,3 +1,5 @@
+# Zentraler Modul-Aggregator – importiert alle shared Module
+# Von hosts/*/configuration.nix via `../modules/system/common.nix` eingebunden
 { config, pkgs, inputs, ... }:
 
 {
