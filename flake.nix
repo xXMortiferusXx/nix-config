@@ -30,9 +30,12 @@
       url = "github:noctalia-dev/noctalia-greeter";
     };
 
+    # CachyOS Kernel
+    cachyos.url = "github:xddxdd/nix-cachyos-kernel/release";
+
   };
   
-  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, zen-browser, noctalia, noctalia-greeter, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, zen-browser, noctalia, noctalia-greeter, cachyos, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };

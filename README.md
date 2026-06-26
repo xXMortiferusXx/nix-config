@@ -52,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) on nex, **Hyprland** available on both
-- **CachyOS**-derived kernel tuning (sysctl, udev, PAM)
+- **CachyOS** kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE on nex, latest on styx)
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -85,6 +85,7 @@ Plus a dedicated `/gaming` Btrfs partition.
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – desktop shell
 - [niri](https://github.com/YaLTeR/niri) – scrollable-tiling Wayland compositor
+- [xddxdd](https://github.com/xddxdd) – CachyOS kernel package (nix-cachyos-kernel)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
 - All the NixOS community for endless inspiration
 
@@ -144,7 +145,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) auf nex, **Hyprland** auf beiden verfügbar
-- **CachyOS**-inspiriertes Kernel-Tuning (sysctl, udev, PAM)
+- **CachyOS**-Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE auf nex, latest auf styx)
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
@@ -177,5 +178,6 @@ Plus eine dedizierte `/gaming` Btrfs-Partition.
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – Desktop-Shell
 - [niri](https://github.com/YaLTeR/niri) – Scrollable-Tiling Wayland Compositor
+- [xddxdd](https://github.com/xddxdd) – CachyOS-Kernel-Paket (nix-cachyos-kernel)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
 - Der gesamten NixOS-Community für endlose Inspiration

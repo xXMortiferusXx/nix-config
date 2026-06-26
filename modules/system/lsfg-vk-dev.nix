@@ -31,6 +31,10 @@ let
       "-DLSFGVK_LAYER_LIBRARY_PATH=${placeholder "out"}/lib/liblsfg-vk-layer.so"
     ];
 
+    preFixup = ''
+      qtWrapperArgs+=(--prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib")
+    '';
+
     meta = with lib; {
       description = "Lossless Scaling Frame Generation on Linux - Vulkan layer";
       homepage = "https://github.com/PancakeTAS/lsfg-vk";

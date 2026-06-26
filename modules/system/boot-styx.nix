@@ -5,7 +5,8 @@
 
   my.btrfs.fileSystems = [ "/" ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #boot.kernelPackages = pkgs.linuxPackages_latest; # alt (nixpkgs)
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
 
   boot.kernelParams = [
     "intel_pstate=active"

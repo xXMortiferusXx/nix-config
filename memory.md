@@ -8,7 +8,7 @@
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM
 - `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
-- `system/boot-common.nix` – importiert cachyos-tuning + btrfs
+- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + CachyOS pinned Overlay
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -77,9 +77,9 @@
 - Upstream-Bug: `tomlFormat.generate` kann nicht in `C.argument` → umgangen via `systemd.tmpfiles`
 - Polkit: `org.noctalia.greeter.apply-appearance` passwordlos für `mortiferus`
 
-## Cachix
-- Cache: `noctalia.cachix.org`
-- Public Key: `noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=`
+## Cachix / Binary Caches
+- `noctalia.cachix.org` – Noctalia v5 Binaries
+- `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel)
 
 ## systemd.user.services (aktuell)
 
@@ -94,6 +94,15 @@
 
 ### Debug
 - `systemctl --user status noctalia vesktop steam udiskie polychromatic-tray`
+
+## Kernel
+- Flake Input: `cachyos.url = "github:xddxdd/nix-cachyos-kernel/release"`
+- Overlay: `cachyos.overlays.pinned` in `boot-common.nix` (shared, garantiert Cache-Treffer)
+- **nex**: `cachyosKernels.linuxPackages-cachyos-bore-x86_64-v3` (BORE-Scheduler, kein scx)
+- **styx**: `cachyosKernels.linuxPackages-cachyos-latest`
+- scx (bpfland) auf nex deaktiviert (BORE inkompatibel), auskommentiert in `boot-nex.nix`
+- Alter Kernel (`smallPkgs.linuxPackages_latest` / `linuxPackages_latest`) auskommentiert
+- `nixpkgs-small` kann nach erfolgreichem Test entfernt werden
 
 ## Legion Conservation Mode (`hardware/legion.nix`)
 - `systemd.services.legion-conservation-mode`: setzt `conservation_mode = 1` bei jedem Boot
