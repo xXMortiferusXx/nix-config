@@ -22,6 +22,7 @@
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
 - `programs/ideamaker.nix` – ideaMaker Desktop-Entry
 - `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `lutris`, `gamemode`, `gamescope`, `sunshine`, `scripts`
+- **Lutris**: `lutris-unwrapped` aus nixpkgs + `steam-run` Wrapper für FHS-Umgebung, eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts) für korrekte Schriftanzeige
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)
