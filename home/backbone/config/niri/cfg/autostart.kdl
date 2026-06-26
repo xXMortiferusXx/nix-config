@@ -1,17 +1,3 @@
 // ────────────── Startup Applications ──────────────
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
-
-//spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
-// -- old -- spawn-at-startup "dbus-update-activation-environment" "--systemd" "XDG_PORTAL_BACKEND_CONF"
-
-spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY"
-spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DISPLAY"
-spawn-sh-at-startup "systemctl --user start graphical-session.target"
-
-
-spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
-spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
-spawn-at-startup "gnome-keyring-daemon" "--start" "--components=pkcs11,secrets"
-spawn-at-startup "udiskie"
-spawn-at-startup "polychromatic-tray-applet"
-spawn-at-startup "noctalia"
+// All apps are started via systemd --user services (graphical-session.target)
+// This file kept as placeholder for manual test-spawns

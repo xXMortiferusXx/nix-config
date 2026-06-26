@@ -13,9 +13,6 @@ icon_size = 36
 margin_edge = 0
 reserve_space = false
 
-[hooks]
-started = "/home/mortiferus/Apps/autostart.sh"
-
 [idle]
 behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
 

@@ -23,6 +23,8 @@
     };
   };
 
+  services.gnome.gnome-keyring.enable = true;
+
   systemd.user.services.xwayland-satellite = {
     serviceConfig.ExecCondition = "${pkgs.bash}/bin/bash -c '[ \"$XDG_CURRENT_DESKTOP\" = \"niri\"
 ]'";
