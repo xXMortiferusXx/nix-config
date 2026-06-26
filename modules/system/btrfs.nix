@@ -1,5 +1,5 @@
 # Btrfs Scrub (monatlich) + Balance (wöchentlich)
-# Welche Filesysteme via `my.btrfs.fileSystems` konfigurierbar
+# Betroffene Mountpoints pro Host via `my.btrfs.fileSystems` konfiguriert (nex: / + /gaming, styx: /)
 { config, pkgs, lib, ... }:
 
 let
