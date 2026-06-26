@@ -15,7 +15,6 @@
 
     # Deine zusätzlichen Inputs
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
-    hyprland.url = "github:hyprwm/Hyprland";
 
     # lsfg-vk GitHub-Version (automatisch develop branch)
     lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
@@ -33,7 +32,7 @@
 
   };
   
-  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, noctalia, noctalia-greeter, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, zen-browser, noctalia, noctalia-greeter, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
