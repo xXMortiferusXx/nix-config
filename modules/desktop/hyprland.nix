@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }: 
+{ config, pkgs, lib, ... }: 
 
 {
   programs.hyprland = {
@@ -7,8 +7,9 @@
     portalPackage = pkgs.xdg-desktop-portal-hyprland;
   };
 
-environment.systemPackages = with pkgs; [
-  hyprshot
-];
+  services.gnome.gnome-keyring.enable = true;
 
+  environment.systemPackages = with pkgs; [
+    hyprshot
+  ];
 }
