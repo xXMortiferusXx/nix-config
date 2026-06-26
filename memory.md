@@ -6,7 +6,7 @@
 - `system/common.nix` – imports noctalia + greeter + quiet-sessions
 - `system/environment-common.nix` – base env (31 Zeilen)
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
-- `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM
+- `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
 - `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
 - `system/boot-common.nix` – importiert cachyos-tuning + btrfs + CachyOS pinned Overlay
 
@@ -80,6 +80,13 @@
 ## Cachix / Binary Caches
 - `noctalia.cachix.org` – Noctalia v5 Binaries
 - `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel)
+
+## bpftune
+- `services.bpftune.enable = true` in `cachyos-tuning.nix`
+- Oracle-Tool: dynamische Netzwerk-Auto-Optimierung via BPF (keine statischen sysctl nötig)
+- Ersetzt manuelle TCP/Congestion/Buffer-Tuning: wählt pro Verbindung per Reinforcement Learning den besten CC-Algorithmus
+- Tuner: TCP-Connection (CC-Auswahl), TCP/UDP-Buffer, IP-Frag, Neighbour/Route-Table, sysctl-Monitoring
+- Deaktiviert Tuner automatisch bei manuellen sysctl-Überschreibungen
 
 ## systemd.user.services (aktuell)
 

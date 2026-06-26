@@ -51,8 +51,8 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Home Manager** for per-user dotfiles and services
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
-- **Niri** (scrollable-tiling Wayland compositor) on nex, **Hyprland** available on both
-- **CachyOS** kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE on nex, latest on styx)
+- **Niri** (scrollable-tiling Wayland compositor) and **Hyprland** available on both
+- **CachyOS** kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE on nex, latest on styx) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -86,6 +86,7 @@ Plus a dedicated `/gaming` Btrfs partition.
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – desktop shell
 - [niri](https://github.com/YaLTeR/niri) – scrollable-tiling Wayland compositor
 - [xddxdd](https://github.com/xddxdd) – CachyOS kernel package (nix-cachyos-kernel)
+- [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
 - All the NixOS community for endless inspiration
 
@@ -144,8 +145,8 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Home Manager** für User-Dotfiles und -Services
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
-- **Niri** (scrollable-tiling Wayland Compositor) auf nex, **Hyprland** auf beiden verfügbar
-- **CachyOS**-Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE auf nex, latest auf styx)
+- **Niri** (scrollable-tiling Wayland Compositor) und **Hyprland** auf beiden verfügbar
+- **CachyOS**-Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE auf nex, latest auf styx) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
@@ -179,5 +180,6 @@ Plus eine dedizierte `/gaming` Btrfs-Partition.
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – Desktop-Shell
 - [niri](https://github.com/YaLTeR/niri) – Scrollable-Tiling Wayland Compositor
 - [xddxdd](https://github.com/xddxdd) – CachyOS-Kernel-Paket (nix-cachyos-kernel)
+- [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
 - Der gesamten NixOS-Community für endlose Inspiration

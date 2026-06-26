@@ -70,6 +70,10 @@
     DefaultLimitNOFILE = "1024:1048576";
   };
 
+  # CachyOS bpftune: dynamische Netzwerk-Optimierung via BPF
+  # Ersetzt statische sysctl für TCP, Buffer, Congestion Control etc.
+  services.bpftune.enable = true;
+
   # CachyOS journald.conf.d: Journal auf 50M begrenzen
   services.journald.extraConfig = ''
     SystemMaxUse=50M
