@@ -1,8 +1,13 @@
 # systemd-user-Services für mortiferus (nex)
 # Start nach graphical-session.target + noctalia.service
 # vesktop: +sleep 3 wg. Tray-Race-Condition
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [
+    pkgs.proton-ge-bin
+  ];
+in
 {
   systemd.user.services = {
     vesktop = {
@@ -29,6 +34,11 @@
         WantedBy = [ "graphical-session.target" ];
       };
       Service = {
+        Environment = [
+          "XCURSOR_THEME=Bibata-Modern-Ice"
+          "XCURSOR_SIZE=24"
+          "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
+        ];
         ExecStart = "${pkgs.steam}/bin/steam";
         Restart = "on-failure";
         RestartSec = 10;

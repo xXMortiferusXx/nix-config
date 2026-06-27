@@ -22,7 +22,11 @@
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
 - `programs/ideamaker.nix` – ideaMaker Desktop-Entry
 - `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `lutris`, `gamemode`, `gamescope`, `sunshine`, `scripts`
-- **Lutris**: `lutris-unwrapped` aus nixpkgs + `steam-run` Wrapper für FHS-Umgebung, eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts) für korrekte Schriftanzeige
+- **Lutris**: `lutris-unwrapped` aus nixpkgs + `steam-run` Wrapper für FHS-Umgebung
+  - **Font-Problem**: Schriften erscheinen als kleine Quadrate (Fontconfig findet Fonts nicht in FHS-Umgebung)
+  - **Lösung**: Eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts)
+  - `FONTCONFIG_FILE` zeigt auf Nix-Store-Pfad (nicht `/etc/fonts/fonts.conf`, das ist in steam-run nicht erreichbar)
+  - `fc-cache -fs` baut Cache vor Lutris-Start neu
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)
@@ -78,6 +82,51 @@
 - Upstream-Bug: `tomlFormat.generate` kann nicht in `C.argument` → umgangen via `systemd.tmpfiles`
 - Polkit: `org.noctalia.greeter.apply-appearance` passwordlos für `mortiferus`
 
+## Steam & Proton-GE
+
+### Konfiguration
+- `programs.steam.package = pkgs.steam.override` mit eigenen `extraPkgs` (mangohud, bibata-cursors)
+- `extraCompatPackages = [ pkgs.proton-ge-bin ]` für Proton-GE Integration
+- **Wichtig**: `STEAM_EXTRA_COMPAT_TOOLS_PATHS` wird **direkt** in `extraEnv` gesetzt, nicht über die NixOS-Modul `apply`-Funktion
+
+### Bekannte Probleme & Lösungen
+**Problem**: Proton-GE verschwindet plötzlich aus Steam (2026-06-26)
+- **Ursache**: NixOS steam-Modul `apply`-Funktion setzt `STEAM_EXTRA_COMPAT_TOOLS_PATHS` nicht zuverlässig
+- **Lösung**: Variable direkt in `steam.override.extraEnv` setzen:
+  ```nix
+  let
+    extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
+  in
+  programs.steam.package = pkgs.steam.override {
+    extraEnv = {
+      STEAM_EXTRA_COMPAT_TOOLS_PATHS = extraCompatPaths;
+      # ... andere env vars
+    };
+  };
+  ```
+- **Debug**: Prüfe ob Variable in FHS-Umgebung gesetzt ist:
+  ```bash
+  cat /nix/store/*steam-*-fhsenv-rootfs/etc/profile | grep STEAM_EXTRA_COMPAT
+  ```
+
+**Problem**: Proton-GE fehlt nach Reboot beim Autostart, ist aber da nach manuellem Neustart (2026-06-27)
+- **Ursache**: systemd-Service verwendet `${pkgs.steam}` (Basis-Paket), nicht `programs.steam.package` (override mit extraEnv)
+- **Lösung**: Umgebungsvariablen direkt im systemd-Service setzen:
+  ```nix
+  Service = {
+    Environment = [
+      "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
+      # ... andere env vars
+    ];
+    ExecStart = "${pkgs.steam}/bin/steam";
+  };
+  ```
+
+### Proton-GE Paket
+- `proton-ge-bin` aus nixpkgs (aktuell GE-Proton10-34)
+- Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
+- Pfad: `/nix/store/*-proton-ge-bin-GE-Proton*-steamcompattool/`
+
 ## Cachix / Binary Caches
 - `noctalia.cachix.org` – Noctalia v5 Binaries
 - `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel)
@@ -93,7 +142,7 @@
 
 ### mortiferus (`home/mortiferus/autostart.nix`)
 - `vesktop`: `After=graphical-session.target noctalia.service`, `ExecStartPre = sleep 3` (wg. Tray Race-Condition)
-- `steam`: `After=graphical-session.target noctalia.service`
+- `steam`: `After=graphical-session.target noctalia.service`, `Environment` mit `STEAM_EXTRA_COMPAT_TOOLS_PATHS`, `XCURSOR_THEME`, `XCURSOR_SIZE`
 - `udiskie`: `After=graphical-session.target noctalia.service`
 - `polychromatic-tray`: `After=graphical-session.target noctalia.service`
 
