@@ -27,6 +27,9 @@
   - **Lösung**: Eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts)
   - `FONTCONFIG_FILE` zeigt auf Nix-Store-Pfad (nicht `/etc/fonts/fonts.conf`, das ist in steam-run nicht erreichbar)
   - `fc-cache -fs` baut Cache vor Lutris-Start neu
+  - **PROTONPATH-Problem**: umu-launcher versucht GE-Proton von GitHub zu laden (Codename `GE-Proton`), schlägt fehl
+  - **Lösung**: Wrapper erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton10-34` → Nix-Store (`proton-ge-bin.steamcompattool`)
+  - umu-launcher findet GE-Proton lokal via `_get_from_compat` als Fallback
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)
@@ -81,6 +84,9 @@
 - Config per `environment.etc."noctalia-greeter.toml"`
 - Upstream-Bug: `tomlFormat.generate` kann nicht in `C.argument` → umgangen via `systemd.tmpfiles`
 - Polkit: `org.noctalia.greeter.apply-appearance` passwordlos für `mortiferus`
+- **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
+  - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
+  - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
 
 ## Steam & Proton-GE
 

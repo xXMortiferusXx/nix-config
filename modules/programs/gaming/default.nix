@@ -10,16 +10,6 @@
     ./scripts.nix
   ];
 
-  environment.sessionVariables = {
-    XCURSOR_THEME = "Bibata-Modern-Ice";
-    XCURSOR_SIZE = "24";
-    XCURSOR_PATH = [
-      "$HOME/.icons"
-      "$HOME/.local/share/icons"
-      "/run/current-system/sw/share/icons"
-    ];
-  };
-
   # Controller-Touchpads als libinput ignorieren (DualSense/DualShock/Xbox)
   services.udev.extraRules = ''
     ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*DualSense*Touchpad*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
@@ -37,9 +27,5 @@
     gamescope
     umu-launcher
     protonplus
-  ];
-
-  environment.systemPackages = with pkgs; [
-    bibata-cursors
   ];
 }
