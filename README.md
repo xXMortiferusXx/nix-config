@@ -52,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) and **Hyprland** available on both
-- **CachyOS** kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE on nex, latest on styx) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **CachyOS** kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (latest-x86_64-v3 on nex, latest on styx, scx bpfland on nex) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -146,7 +146,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) und **Hyprland** auf beiden verfügbar
-- **CachyOS**-Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (BORE auf nex, latest auf styx) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **CachyOS**-Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (latest-x86_64-v3 auf nex, latest auf styx, scx bpfland auf nex) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 

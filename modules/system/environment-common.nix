@@ -3,7 +3,10 @@
 {
   services.envfs.enable = false;
 
-  environment.sessionVariables.TRACKER_USE_RUNNER = "0";
+  environment.sessionVariables = {
+    TRACKER_USE_RUNNER = "0";
+    TZ = "Europe/Berlin";
+  };
 
   environment.systemPackages = with pkgs; [
     bind

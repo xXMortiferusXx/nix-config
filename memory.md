@@ -96,8 +96,15 @@
 - **Wichtig**: `STEAM_EXTRA_COMPAT_TOOLS_PATHS` wird **direkt** in `extraEnv` gesetzt, nicht über die NixOS-Modul `apply`-Funktion
 
 ### Bekannte Probleme & Lösungen
+
+**Problem**: Falsche Uhrzeit in Spielen (z.B. POE2) – Zeitzone nicht gesetzt (2026-06-30)
+- **Ursache**: `TZ=""` (leer) in der Session → glibc/Proton fällt auf UTC zurück
+- **Lösung**: Doppelstrategie
+  - `environment.sessionVariables.TZ = "Europe/Berlin"` global (`environment-common.nix`)
+  - `extraProfile = "unset TZ"` in Steam-FHS-Umgebung (`steam.nix` + `autostart.nix`)
+- **Grund**: `TZ=Europe/Berlin` funktioniert in der FHS-Umgebung nicht zuverlässig, `unset TZ` zwingt glibc auf `/etc/localtime`
+
 **Problem**: Proton-GE verschwindet plötzlich aus Steam (2026-06-26)
-- **Ursache**: NixOS steam-Modul `apply`-Funktion setzt `STEAM_EXTRA_COMPAT_TOOLS_PATHS` nicht zuverlässig
 - **Lösung**: Variable direkt in `steam.override.extraEnv` setzen:
   ```nix
   let
@@ -128,6 +135,10 @@
   };
   ```
 
+**Problem**: Falsche Uhrzeit in Spielen (z.B. POE2) – Zeitzone nicht gesetzt (2026-06-30)
+- **Ursache**: TZ-Variable in Session leer (`TZ=""`) → glibc fällt auf UTC zurück
+- **Lösung**: `environment.sessionVariables.TZ = "Europe/Berlin"` global setzen (`environment-common.nix`) + `TZ=Europe/Berlin` im Service-Environment (`autostart.nix`)
+
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton10-34)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
@@ -147,7 +158,7 @@
 ## systemd.user.services (aktuell)
 
 ### mortiferus (`home/mortiferus/autostart.nix`)
-- `vesktop`: `After=graphical-session.target noctalia.service`, `ExecStartPre = sleep 3` (wg. Tray Race-Condition)
+- `discord`: `After=graphical-session.target noctalia.service` (ersetzt vesktop wg. pnpm-CVEs)
 - `steam`: `After=graphical-session.target noctalia.service`, `Environment` mit `STEAM_EXTRA_COMPAT_TOOLS_PATHS`, `XCURSOR_THEME`, `XCURSOR_SIZE`
 - `udiskie`: `After=graphical-session.target noctalia.service`
 - `polychromatic-tray`: `After=graphical-session.target noctalia.service`
@@ -156,14 +167,14 @@
 - `udiskie`: `After=graphical-session.target noctalia.service`
 
 ### Debug
-- `systemctl --user status noctalia vesktop steam udiskie polychromatic-tray`
+- `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
 - Flake Input: `cachyos.url = "github:xddxdd/nix-cachyos-kernel/release"`
 - Overlay: `cachyos.overlays.pinned` in `boot-common.nix` (shared, garantiert Cache-Treffer)
-- **nex**: `cachyosKernels.linuxPackages-cachyos-bore-x86_64-v3` (BORE-Scheduler, kein scx)
+- **nex**: `cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3` (scx bpfland aktiv)
 - **styx**: `cachyosKernels.linuxPackages-cachyos-latest`
-- scx (bpfland) auf nex deaktiviert (BORE inkompatibel), auskommentiert in `boot-nex.nix`
+- scx (bpfland) aktiv auf nex, Performance-Modus in `boot-nex.nix`
 - Alter Kernel (`smallPkgs.linuxPackages_latest` / `linuxPackages_latest`) auskommentiert
 - `nixpkgs-small` kann nach erfolgreichem Test entfernt werden
 

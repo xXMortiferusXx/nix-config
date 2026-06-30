@@ -7,7 +7,10 @@
 
   environment.etc."fastfetch/config.jsonc".text = ''
     {
-      "logo": "NixOS",
+      "logo": {
+        "source": "NixOS",
+        "type": "small"
+      },
       "display": {
         "separator": " ",
         "constants": [

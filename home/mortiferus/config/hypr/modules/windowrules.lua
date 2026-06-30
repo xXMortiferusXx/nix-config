@@ -56,7 +56,7 @@ hl.layer_rule({
 -- Communication workspace
 hl.window_rule({
 	name = "comms-workspace",
-	match = { class = "^(discord|equibop|vesktop|org.telegram.desktop|whatsapp|Element)$" },
+	match = { class = "^(discord|equibop|org.telegram.desktop|whatsapp|Element)$" },
 	workspace = 2,
 })
 

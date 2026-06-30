@@ -62,7 +62,7 @@ window-rule {
 // ────────────── Workspace 2: Kommunikation ──────────────
 window-rule {
     match title="[Ll]egcord"
-    match app-id="[Vv]esktop"
+    match app-id="^discord$"
     open-on-workspace "2"
     default-column-width { proportion 1.0; }
     focus-ring { off; }

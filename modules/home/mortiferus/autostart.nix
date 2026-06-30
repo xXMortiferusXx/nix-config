@@ -1,26 +1,36 @@
 # systemd-user-Services für mortiferus (nex)
 # Start nach graphical-session.target + noctalia.service
-# vesktop: +sleep 3 wg. Tray-Race-Condition
 { config, pkgs, lib, ... }:
 
 let
   extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [
     pkgs.proton-ge-bin
   ];
+  steamPackage = pkgs.steam.override {
+    extraPkgs = pkgs: with pkgs; [
+      mangohud
+      bibata-cursors
+    ];
+    extraEnv = {
+      XCURSOR_THEME = "Bibata-Modern-Ice";
+      XCURSOR_SIZE = "24";
+      STEAM_EXTRA_COMPAT_TOOLS_PATHS = extraCompatPaths;
+    };
+    extraProfile = "unset TZ";
+  };
 in
 {
   systemd.user.services = {
-    vesktop = {
+    discord = {
       Unit = {
-        Description = "Vesktop";
+        Description = "Discord";
         After = [ "graphical-session.target" "noctalia.service" ];
       };
       Install = {
         WantedBy = [ "graphical-session.target" ];
       };
       Service = {
-        ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
-        ExecStart = "${pkgs.vesktop}/bin/vesktop";
+        ExecStart = "${pkgs.discord}/bin/discord";
         Restart = "on-failure";
         RestartSec = 5;
       };
@@ -39,7 +49,7 @@ in
           "XCURSOR_SIZE=24"
           "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
         ];
-        ExecStart = "${pkgs.steam}/bin/steam";
+        ExecStart = "${steamPackage}/bin/steam";
         Restart = "on-failure";
         RestartSec = 10;
       };

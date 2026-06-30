@@ -50,16 +50,14 @@ window-rule {
     default-column-width { proportion 0.5; }
 }
 
-// ─── Workspace 2: Vesktop (Soll maximiert starten) ───
+// ─── Workspace 2: Discord (Soll maximiert starten) ───
 window-rule {
-    match app-id="^vesktop$"
     match app-id="^discord$"
     
     open-on-workspace "2"
     open-floating false
     
-    // Das hier sorgt dafür, dass Vesktop (wie in deiner alten Config) 
-    // sofort den ganzen Platz einnimmt.
+    // Das hier sorgt dafür, dass Discord sofort den ganzen Platz einnimmt.
     default-column-width { proportion 1.0; }
 }
 

@@ -31,7 +31,7 @@ pkgs: with pkgs; [
 
   # --- Apps & Social ---
   thunar
-  vesktop
+  discord
   cartridges
   polychromatic
 
