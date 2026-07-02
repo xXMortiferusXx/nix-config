@@ -7,6 +7,7 @@ let
 in
 {
   environment.systemPackages = with pkgs; [
+    iw
     jq
     ookla-speedtest
     speedtestAuto

@@ -9,6 +9,10 @@
     config.boot.kernelPackages.lenovo-legion-module
   ];
 
+  # iwlmvm Power Management deaktivieren (active mode)
+  # Verhindert tausende tx_retries durch Firmware-Power-Save bei 6GHz/160MHz
+  boot.extraModprobeConfig = "options iwlmvm power_scheme=1";
+
   # AMD CPU Optimierungen
   hardware.cpu.amd.updateMicrocode = true;
 
