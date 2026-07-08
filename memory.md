@@ -28,7 +28,7 @@
   - `FONTCONFIG_FILE` zeigt auf Nix-Store-Pfad (nicht `/etc/fonts/fonts.conf`, das ist in steam-run nicht erreichbar)
   - `fc-cache -fs` baut Cache vor Lutris-Start neu
   - **PROTONPATH-Problem**: umu-launcher versucht GE-Proton von GitHub zu laden (Codename `GE-Proton`), schlägt fehl
-  - **Lösung**: Wrapper erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton10-34` → Nix-Store (`proton-ge-bin.steamcompattool`)
+   - **Lösung**: Wrapper erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton11-1` → Nix-Store (`proton-ge-bin.steamcompattool`)
   - umu-launcher findet GE-Proton lokal via `_get_from_compat` als Fallback
 
 ### Services
@@ -140,7 +140,7 @@
 - **Lösung**: `environment.sessionVariables.TZ = "Europe/Berlin"` global setzen (`environment-common.nix`) + `TZ=Europe/Berlin` im Service-Environment (`autostart.nix`)
 
 ### Proton-GE Paket
-- `proton-ge-bin` aus nixpkgs (aktuell GE-Proton10-34)
+- `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
 - Pfad: `/nix/store/*-proton-ge-bin-GE-Proton*-steamcompattool/`
 

@@ -35,7 +35,7 @@ let
         --set XDG_DATA_DIRS "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:${pkgs.adwaita-icon-theme}/share:$out/share" \
         --set FONTCONFIG_FILE "${lutris-fontconfig}/etc/fonts/fonts.conf" \
         --run "mkdir -p /tmp/lutris-fontconfig-cache && ${pkgs.fontconfig}/bin/fc-cache -fs" \
-        --run 'mkdir -p "$HOME/.local/share/Steam/compatibilitytools.d" && ln -sfn ${pkgs.proton-ge-bin.steamcompattool} "$HOME/.local/share/Steam/compatibilitytools.d/${pkgs.proton-ge-bin.version}"' \
+        --run 'ln -sfn ${pkgs.proton-ge-bin.steamcompattool} "$HOME/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest"' \
         --set XCURSOR_PATH "~/.icons:~/.local/share/icons:/run/current-system/sw/share/icons"
 
       rm $out/share/applications/net.lutris.Lutris.desktop
