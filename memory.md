@@ -8,7 +8,7 @@
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
 - `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
-- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + CachyOS pinned Overlay
+- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + CachyOS pinned Overlay + tmpfiles für `/var/lib/nixos`
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -36,6 +36,7 @@
 
 ### Hardware
 - `hardware/legion.nix` – Legion Conservation Mode + Kernel-Modul
+- `hardware/nvidia.nix` – NVIDIA PRIME Offload, `vulkan-validation-layers` entfernt (Debug-Tool, nicht nötig für Gaming, Build-Fehler mit Sandbox)
 
 ### Home-Manager
 - `home/mortiferus/{default,packages,config,autostart,mangohud,mpv}.nix`
@@ -49,6 +50,16 @@
 - Gaming: als Verzeichnis mit Submodulen pro Service/Script
 - Jede `.nix`-Datei hat einen deutschen Header-Kommentar (1-3 Zeilen), der erklärt was das Modul macht
 - Bei sysctl-/kernel-Parametern: Inline-Kommentar in Deutsch was der Wert bewirkt
+- **System-Bau**: Nur mortiferus baut das System neu. Alias `nix-switch` = `sudo nixos-rebuild switch --flake /etc/nixos#(hostname)` (in `programs/tools.nix`). Wenn ich (opencode) Änderungen mache, niemals manuell rebuilden – nur Dateien editieren.
+
+## Bekannte Probleme
+
+### Atlas Air: Physischer Mute-Schalter stört Audio-Output
+- **Problem**: Wird der Flip-to-Mute Schalter am Headset benutzt, fällt der Ton am Output aus und wieder ein
+- **Ursache**: Headset-Firmware unterbricht beim Muten kurz den Wireless-Link zwischen Headset und Dongle (kein HID-Event, kein ALSA-Control-Change, kein USB-Reset in Linux sichtbar)
+- **Workaround**: Mute nur per Software (`wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle`) und physischen Schalter ignorieren
+- **Keybind**: `Mod+Shift+M` in Niri (`keybinds.kdl`)
+- **USB Autosuspend** wurde als Ursache ausgeschlossen (udev-Regel in `atlas-air.nix` hat nichts gebracht)
 
 ## Noctalia v5
 
@@ -135,10 +146,6 @@
   };
   ```
 
-**Problem**: Falsche Uhrzeit in Spielen (z.B. POE2) – Zeitzone nicht gesetzt (2026-06-30)
-- **Ursache**: TZ-Variable in Session leer (`TZ=""`) → glibc fällt auf UTC zurück
-- **Lösung**: `environment.sessionVariables.TZ = "Europe/Berlin"` global setzen (`environment-common.nix`) + `TZ=Europe/Berlin` im Service-Environment (`autostart.nix`)
-
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
@@ -183,3 +190,41 @@
 - Pfad: `/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode`
 - `After=systemd-modules-load.service`, `WantedBy=multi-user.target`
 - Runtime-Toggle: `echo 0 | sudo tee /sys/.../conservation_mode` (bis Reboot)
+
+## Package-Audit (2026-07-11)
+
+Überflüssige/ redundante Pakete entfernt. Bei Problemen mit Apps → prüfen ob das entfernte Paket doch nötig war.
+
+### Entfernte Pakete
+
+| Paket | Datei | Grund der Entfernung |
+|---|---|---|
+| `xsel` | `mortiferus/packages.nix` | X11-Clipboard, `wl-clipboard` reicht (auch XWayland) |
+| `xclip` | `mortiferus/packages.nix` | X11-Clipboard, `wl-clipboard` reicht |
+| `xdotool` | `mortiferus/packages.nix` | X11-Automatisierung, `ydotool` ist Wayland-Ersatz |
+| `wf-recorder` | `mortiferus/packages.nix` | Deprecated, ungewartet |
+| `htop` | `environment-common.nix` | `btop` macht dasselbe |
+| `satty` | `mortiferus/packages.nix` | Screenshot-Annotation, nicht nötig (Niri/Noctalia Screenshots direkt ins Clipboard) |
+| `swappy` | `mortiferus/packages.nix` + `noctalia.nix` | Screenshot-Annotation, nicht nötig |
+| `vulkan-tools` | `mortiferus.nix` (User) | Bereits systemweit in `nvidia.nix` |
+| `git` | `backbone.nix` (User) | Bereits systemweit in `environment-common.nix` |
+| `openldap` | `environment-common.nix` | LDAP-Libs, nötig für nix-ld (bleibt dort), systemweit unnötig |
+| `gnome-themes-extra` | `mortiferus/packages.nix` | Redundant mit `orchis-theme` |
+| `cacert` | `mortiferus/packages.nix` | NixOS handled CA-Zertifikate systemweit, `nix-shell -p` (ohne `--pure`) erbt System-Umgebung |
+| `faugus-launcher` | `gaming/default.nix` | 4. Game-Launcher, Steam/Heroic/Lutris reichen |
+| `ladspa-sdk` | `audio.nix` | SDK für Entwicklung, `ladspaPlugins` reicht für Audio-Plugins (Chatmixer etc.) |
+
+### Behalten mit Begründung
+
+| Paket | Grund |
+|---|---|
+| `protonplus` | Nutzer bekommt Proton-Versionen die Steam nicht anbietet |
+| `samba` | Netzwerk-Zugriff zwischen allen Rechnern gewünscht |
+| `brightnessctl` | Fallback in Niri-Keybinds (`keybinds.kdl`) + Hyprland + Gaming-Scripts |
+| `dlss-swapper` / `dlss-swapper-dll` | DLSS-Preset-Override + NGX-Updater |
+| `prusa-slicer` / `orca-slicer` / `ideaMaker` | Verschiedene UIs, jeder Slicer hat andere Features |
+| `slurp` | Region-Selection für manuelle Screenshots |
+| `grim` | Screenshot-Tool (Wayland-nativ) |
+| `libsForQt5.qt5ct` | Qt5-Legacy, behalten für Kompatibilität |
+| `shared-mime-info` | Mime-Type-Datenbank, wird von Apps benötigt |
+| Hyprland + `hyprshot` | Gelegentliche Tests, nicht komplett entfernt |

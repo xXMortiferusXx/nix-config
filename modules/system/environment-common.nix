@@ -14,12 +14,10 @@
     fuse2
     e2fsprogs
     libnotify
-    openldap
     nix-tree
     gcc
     wget
     git
-    htop
     pciutils
     usbutils
     mesa-demos

@@ -3,27 +3,19 @@ pkgs: with pkgs; [
   nwg-look
   orchis-theme
   tela-icon-theme
-  catppuccin-gtk
+  # catppuccin-gtk  # deaktiviert: python3.14-catppuccin inkompatibel mit neuem matplotlib
   qt6Packages.qt6ct
   libsForQt5.qt5ct
   papirus-icon-theme
   adwaita-icon-theme
-  gnome-themes-extra
   shared-mime-info
 
   # --- Wayland & System Utilities ---
   grim
   slurp
-  satty
-  swappy
-  wf-recorder
   wl-clipboard
-  xsel
   cliphist
   udiskie
-  cacert
-  xdotool
-  xclip
 
   # --- System Monitoring & Terminal ---
   btop

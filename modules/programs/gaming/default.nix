@@ -22,7 +22,6 @@
   ];
 
   users.users.mortiferus.packages = with pkgs; [
-    faugus-launcher
     heroic
     gamescope
     umu-launcher

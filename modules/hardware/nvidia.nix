@@ -19,7 +19,6 @@
       # Wichtige Systemkomponenten für Vulkan-Spiele
       vulkan-loader
       vulkan-tools
-      vulkan-validation-layers
       vulkan-extension-layer
       
       # Native Videobeschleunigung für NVIDIA (Firefox/Discord)

@@ -54,7 +54,7 @@
   #services.earlyoom = {
   #  enable = true;
   #  freeMemThreshold = 5;
-  #  freeSwapThreshold = 10;
+  #  freeSwapThreshold = 20;
   #  enableNotifications = true;
   #};
 
@@ -63,5 +63,16 @@
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 14d";
+  };
+
+  # /var/lib/nixos für manuelle Updates
+  systemd.tmpfiles.settings."nixos" = {
+    "/var/lib/nixos" = {
+      d = {
+        mode = "0755";
+        user = "root";
+        group = "root";
+      };
+    };
   };
 }

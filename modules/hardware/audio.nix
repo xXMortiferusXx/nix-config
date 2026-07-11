@@ -24,7 +24,6 @@
   environment.systemPackages = with pkgs; [
     pavucontrol
     qpwgraph
-    ladspa-sdk
     ladspaPlugins
     alsa-utils
   ];
