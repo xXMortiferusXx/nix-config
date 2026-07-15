@@ -8,10 +8,7 @@ capsule_thickness = 0.79999998584389687
 start = [ "launcher", "wallpaper", "workspaces", "active_window" ]
 
 [calendar]
-enabled = true
-
-    [calendar.account.personal_google]
-    type = "google"
+enabled = false
 
 [dock]
 background_opacity = 0.79999998211860657
@@ -44,9 +41,9 @@ address = "Barsinghausen"
 auto_locate = true
 
 [lockscreen_widgets]
-enabled = true
+enabled = false
 schema_version = 2
-widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-0000000000000001", "lockscreen-widget-0000000000000002" ]
+widget_order = [ "lockscreen-login-box@eDP-1" ]
 
     [lockscreen_widgets.grid]
     cell_size = 16
@@ -54,10 +51,10 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
     visible = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
-    box_height = 70.0
-    box_width = 400.0
-    cx = 976.0
-    cy = 1007.0
+    box_height = 0.0
+    box_width = 0.0
+    cx = 960.0
+    cy = 957.0
     output = "eDP-1"
     rotation = 0.0
     type = "login_box"
@@ -69,37 +66,6 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
         input_opacity = 1.0
         input_radius = 6.0
         show_login_button = true
-
-    [lockscreen_widgets.widget.lockscreen-widget-0000000000000001]
-    box_height = 240.0
-    box_width = 800.0
-    cx = 976.0
-    cy = 124.0
-    output = "eDP-1"
-    rotation = 0.0
-    type = "clock"
-
-        [lockscreen_widgets.widget.lockscreen-widget-0000000000000001.settings]
-        background_opacity = 0.59999999999999998
-        center_text = true
-        clock_style = "digital"
-        color = "primary"
-        font_family = "Courier New"
-
-    [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
-    box_height = 160.0
-    box_width = 464.0
-    cx = 976.0
-    cy = 844.0
-    output = "eDP-1"
-    rotation = 0.0
-    type = "weather"
-
-        [lockscreen_widgets.widget.lockscreen-widget-0000000000000002.settings]
-        background_opacity = 0.59999999999999998
-        color = "primary"
-        font_family = "Comic Sans MS"
-        show_forecast = true
 
 [[plugins.source]]
 auto_update = true
@@ -114,7 +80,7 @@ location = "https://github.com/noctalia-dev/community-plugins"
 name = "community"
 
 [shell]
-avatar_path = "/home/mortiferus/Bilder/Linux-Profil.png"
+avatar_path = "/home/backbone/Bilder/Linux-Profil.png"
 launch_apps_as_systemd_services = true
 password_style = "random"
 polkit_agent = true
@@ -130,21 +96,12 @@ mode = "light"
 source = "wallpaper"
 
 [wallpaper]
-directory = "/home/mortiferus/Bilder/Wallpaper-NSFW"
+directory = "/home/backbone/Bilder/Wallpaper"
 transition_on_startup = true
 
     [wallpaper.automation]
     enabled = true
     order = "alphabetical"
-
-    [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
-
-    [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
-
-    [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
 [widget.battery]
 show_label = false
