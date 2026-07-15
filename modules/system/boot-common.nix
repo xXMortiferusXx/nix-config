@@ -14,7 +14,6 @@
   # Gemeinsame Bootloader-Einstellungen
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.enable = false;
 
   # Konsolen-Level für sauberen Boot
   boot.consoleLogLevel = 3;

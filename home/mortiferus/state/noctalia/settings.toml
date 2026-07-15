@@ -138,13 +138,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
 [widget.battery]
 show_label = false

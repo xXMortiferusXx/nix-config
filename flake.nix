@@ -3,8 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-small.url = "github:nixos/nixpkgs/nixos-unstable-small";
-    
     # Disko
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
@@ -35,7 +33,7 @@
 
   };
   
-  outputs = { self, nixpkgs, nixpkgs-small, disko, home-manager, zen-browser, noctalia, noctalia-greeter, cachyos, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, cachyos, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -51,12 +49,6 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit inputs; };
-          }
-          {
-            _module.args.smallPkgs = import nixpkgs-small {
-              inherit system;
-              config.allowUnfree = true;
-            };
           }
         ];
       };

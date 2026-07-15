@@ -197,8 +197,8 @@
 - **nex**: `cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3` (scx bpfland aktiv)
 - **styx**: `cachyosKernels.linuxPackages-cachyos-latest`
 - scx (bpfland) aktiv auf nex, Performance-Modus in `boot-nex.nix`
-- Alter Kernel (`smallPkgs.linuxPackages_latest` / `linuxPackages_latest`) auskommentiert
-- `nixpkgs-small` kann nach erfolgreichem Test entfernt werden
+- `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
+- `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
 
 ## Legion Conservation Mode (`hardware/legion.nix`)
 - `systemd.services.legion-conservation-mode`: setzt `conservation_mode = 1` bei jedem Boot
