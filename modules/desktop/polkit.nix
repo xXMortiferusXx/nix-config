@@ -1,5 +1,6 @@
 # Polkit-Regeln
-# - noctalia-greeter: apply-appearance passwordlos für mortiferus + backbone
+# - noctalia-greeter: apply-appearance passwordlos für wheel-Mitglieder
+#   (Fallback für inactive Sessions, z.B. während Lockscreen)
 # - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
 { config, pkgs, ... }:
 
@@ -9,7 +10,7 @@
   security.polkit.extraConfig = ''
     polkit.addRule(function (action, subject) {
       if (action.id == "org.noctalia.greeter.apply-appearance" &&
-          (subject.user == "mortiferus" || subject.user == "backbone"))
+          subject.isInGroup("wheel"))
       {
         return polkit.Result.YES;
       }

@@ -7,3 +7,6 @@ home/mortiferus/state/noctalia/state.toml
 # Noctalia Clipboard: kann Klartext-Passwörter, API-Keys, Screenshots enthalten
 home/mortiferus/state/noctalia/clipboard/
 home/mortiferus/state/noctalia/notification_history.json
+# Noctalia Plugin Sources: werden automatisch von Noctalia gecloned
+home/mortiferus/state/noctalia/plugins/sources/
+home/backbone/state/noctalia/plugins/sources/
