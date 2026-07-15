@@ -1,0 +1,41 @@
+ixos on  main [!] ➜ nix-switch 
+[sudo] Passwort für mortiferus: 
+warning: Git tree '/etc/nixos' is dirty
+building the system configuration...
+warning: Git tree '/etc/nixos' is dirty
+error:
+       … while calling the 'derivationStrict' builtin
+         at «nix-internal»/derivation-internal.nix:37:12:
+           36|
+           37|   strict = derivationStrict drvAttrs;
+             |            ^
+           38|
+
+       … while evaluating derivation 'nixos-system-nex-26.11.20260705.d407951'
+         whose name attribute is located at «github:nixos/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea?narHash=sha256-8i/87eeoqiGE4yOTjwSA3Eh/ziJRQEmd/unYU%2BK27sk%3D»/pkgs/stdenv/generic/make-derivation.nix:651:11
+
+       … while evaluating attribute 'buildCommand' of derivation 'nixos-system-nex-26.11.20260705.d407951'
+         at «github:nixos/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea?narHash=sha256-8i/87eeoqiGE4yOTjwSA3Eh/ziJRQEmd/unYU%2BK27sk%3D»/nixos/modules/system/activation/top-level.nix:63:7:
+           62|       allowSubstitutes = false;
+           63|       buildCommand = systemBuilder;
+             |       ^
+           64|
+
+       … while evaluating the option `environment.etc."systemd/system".source':
+
+       … while evaluating the option `systemd.units."nixos-upgrade.timer".text':
+
+       … while evaluating definitions from `/nix/store/ifpab9hxqmk2biwy594da8ipxzsp3y4s-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.timers.nixos-upgrade.timerConfig':
+
+       … while evaluating definitions from `/nix/store/ifpab9hxqmk2biwy594da8ipxzsp3y4s-source/nixos/modules/tasks/auto-upgrade.nix':
+
+       … while evaluating the option `system.autoUpgrade.randomizedDelaySec':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: A definition for option `system.autoUpgrade.randomizedDelaySec' is not of type `string'. Definition values:
+       - In `/nix/store/mrc5gmymdr09rm8s4jfvcn15jxynisw3-source/modules/system/auto-upgrade.nix': 0
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/etc/nixos#nixosConfigurations."nex".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
+nixos on  main [!+] ➜ 

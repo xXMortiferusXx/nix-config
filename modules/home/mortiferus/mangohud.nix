@@ -22,6 +22,7 @@
       fps = true;
       fps_metrics = "avg+0.01";
       frame_timing = true;
+      toggle_hud = "Shift_R+F12";
     };
   };
 }

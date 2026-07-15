@@ -1,0 +1,1797 @@
+{
+  "entries": [
+    {
+      "byte_size": 69,
+      "captured_at_ms": 1784105687944,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1784105687944-2",
+      "mime_types": [
+        "application/glfw+clipboard-5258",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784105687944-2.bin",
+      "pinned": false,
+      "text_preview": " ~/.config/noctalia = Basis-Config (manuell gepflegt, deine Defaults)"
+    },
+    {
+      "byte_size": 34,
+      "captured_at_ms": 1784104514648,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1784104514648-9",
+      "mime_types": [
+        "application/glfw+clipboard-92531",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784104514648-9.bin",
+      "pinned": false,
+      "text_preview": "modules/home/mortiferus/config.nix"
+    },
+    {
+      "byte_size": 6,
+      "captured_at_ms": 1784103640488,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1784103640488-7",
+      "mime_types": [
+        "application/glfw+clipboard-27881",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784103640488-7.bin",
+      "pinned": false,
+      "text_preview": "pkexec"
+    },
+    {
+      "byte_size": 363,
+      "captured_at_ms": 1784103604612,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1784103604612-5",
+      "mime_types": [
+        "application/glfw+clipboard-27881",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784103604612-5.bin",
+      "pinned": false,
+      "text_preview": "Was habe ich geändert? Ich überschreibe die Policy-Datei systemweit und setze: <allow_active>yes</allow_active> Plus den absoluten Pfad zum Apply-Helper im Nix-Store: <annotate key=\"org.freedesktop."
+    },
+    {
+      "byte_size": 237929,
+      "captured_at_ms": 1784103545950,
+      "data_mime_type": "image/png",
+      "id": "1784103545950-4",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784103545950-4.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 29,
+      "captured_at_ms": 1784103532138,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1784103532138-2",
+      "mime_types": [
+        "application/glfw+clipboard-27881",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784103532138-2.bin",
+      "pinned": false,
+      "text_preview": "sudo systemctl restart polkit"
+    },
+    {
+      "byte_size": 145406,
+      "captured_at_ms": 1784102598625,
+      "data_mime_type": "image/png",
+      "id": "1784102598625-1",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1784102598625-1.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 1211,
+      "captured_at_ms": 1783974335845,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783974335845-26",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783974335845-26.bin",
+      "pinned": false,
+      "text_preview": "Jul 13 21:57:30 dnsmasq[8826]: possible DNS-rebind attack detected: mobile.events.data.microsoft.com Jul 13 21:57:30 dnsmasq[8826]: possible DNS-rebind attack detected: mobile.events.data.microsoft.co"
+    },
+    {
+      "byte_size": 52,
+      "captured_at_ms": 1783974334871,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783974334871-25",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783974334871-25.bin",
+      "pinned": false,
+      "text_preview": "https://192.168.50.1:8443/Main_LogStatus_Content.asp"
+    },
+    {
+      "byte_size": 1204,
+      "captured_at_ms": 1783974247867,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783974247867-24",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783974247867-24.bin",
+      "pinned": false,
+      "text_preview": "Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com Jul 13 21:55:18 dnsmasq[66"
+    },
+    {
+      "byte_size": 26,
+      "captured_at_ms": 1783973273671,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783973273671-23",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783973273671-23.bin",
+      "pinned": false,
+      "text_preview": "WAN-Aggregation aktivieren"
+    },
+    {
+      "byte_size": 23,
+      "captured_at_ms": 1783973106284,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783973106284-22",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783973106284-22.bin",
+      "pinned": false,
+      "text_preview": "Prevent client auto DoH"
+    },
+    {
+      "byte_size": 1552,
+      "captured_at_ms": 1783972962552,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783972962552-21",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783972962552-21.bin",
+      "pinned": false,
+      "text_preview": "IP Address  Percent  City  Country  ISP  ASN ORG 185.40.234.187 4.98 % Frankfurt am Main DE Germany NetActuate NETACTUATE 185.40.234.191 4.77 % Frankfurt am Main DE Germany NetActuate NETACTUATE 185.4"
+    },
+    {
+      "byte_size": 37,
+      "captured_at_ms": 1783970844895,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970844895-20",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970844895-20.bin",
+      "pinned": false,
+      "text_preview": "https://dnsleaktest.org/dns-leak-test"
+    },
+    {
+      "byte_size": 138,
+      "captured_at_ms": 1783970636737,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970636737-19",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970636737-19.bin",
+      "pinned": false,
+      "text_preview": "IP Address  Percent  City  Country  ISP  ASN ORG 185.213.155.123 100.00 % Frankfurt am Main DE Germany 31173 Services AB 31173 Services AB"
+    },
+    {
+      "byte_size": 15,
+      "captured_at_ms": 1783970574818,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970574818-17",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970574818-17.bin",
+      "pinned": false,
+      "text_preview": "dnsleaktest.org"
+    },
+    {
+      "byte_size": 19,
+      "captured_at_ms": 1783970543045,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970543045-15",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970543045-15.bin",
+      "pinned": false,
+      "text_preview": "browserleak.com/dns"
+    },
+    {
+      "byte_size": 15,
+      "captured_at_ms": 1783970520042,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970520042-14",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970520042-14.bin",
+      "pinned": false,
+      "text_preview": "dnsleaktest.com"
+    },
+    {
+      "byte_size": 19,
+      "captured_at_ms": 1783970519459,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970519459-12",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970519459-12.bin",
+      "pinned": false,
+      "text_preview": "browserleak.com/dns"
+    },
+    {
+      "byte_size": 15,
+      "captured_at_ms": 1783970499505,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970499505-11",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970499505-11.bin",
+      "pinned": false,
+      "text_preview": "dnsleaktest.com"
+    },
+    {
+      "byte_size": 12,
+      "captured_at_ms": 1783970432860,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783970432860-9",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783970432860-9.bin",
+      "pinned": false,
+      "text_preview": "2a07:e340::4"
+    },
+    {
+      "byte_size": 20,
+      "captured_at_ms": 1783969596663,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783969596663-7",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783969596663-7.bin",
+      "pinned": false,
+      "text_preview": "base.dns.mullvad.net"
+    },
+    {
+      "byte_size": 12,
+      "captured_at_ms": 1783969579985,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783969579985-5",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783969579985-5.bin",
+      "pinned": false,
+      "text_preview": "2a07:e340::4"
+    },
+    {
+      "byte_size": 23,
+      "captured_at_ms": 1783968277386,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783968277386-4",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783968277386-4.bin",
+      "pinned": false,
+      "text_preview": "Prevent client auto DoH"
+    },
+    {
+      "byte_size": 9,
+      "captured_at_ms": 1783968043460,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783968043460-2",
+      "mime_types": [
+        "application/glfw+clipboard-7707",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783968043460-2.bin",
+      "pinned": false,
+      "text_preview": "76.76.2.2"
+    },
+    {
+      "byte_size": 74,
+      "captured_at_ms": 1783966937691,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783966937691-1",
+      "mime_types": [
+        "TIMESTAMP",
+        "STRING",
+        "UTF8_STRING",
+        "TEXT",
+        "text/plain",
+        "text/plain;charset=utf-8"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783966937691-1.bin",
+      "pinned": false,
+      "text_preview": "https://store.steampowered.com/sale/ataripublishersale2026?snr=1_4_4__40_2"
+    },
+    {
+      "byte_size": 169,
+      "captured_at_ms": 1783850303989,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783850303989-2",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783850303989-2.bin",
+      "pinned": false,
+      "text_preview": "LD_PRELOAD=\"\" PROTON_USE_NTSYNC=1 DXVK_FRAME_RATE=80 PROTON_ENABLE_NVAPI=1 DXVK_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1  mangohud %command% --waitforpreload"
+    },
+    {
+      "byte_size": 253,
+      "captured_at_ms": 1783804873189,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783804873189-1",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783804873189-1.bin",
+      "pinned": false,
+      "text_preview": "Der Farm-Stil: Die Fragmente für Doryani sind zwar teurer im Einkauf, aber der Ertrag pro Run ist extrem stabil. Du gehst hier selten mit dem Gefühl raus, deine Zeit verschwendet zu haben, weil die "
+    },
+    {
+      "byte_size": 5,
+      "captured_at_ms": 1783765523611,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765523611-15",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765523611-15.bin",
+      "pinned": false,
+      "text_preview": "samba"
+    },
+    {
+      "byte_size": 10,
+      "captured_at_ms": 1783765483235,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765483235-13",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765483235-13.bin",
+      "pinned": false,
+      "text_preview": "ladspa-sdk"
+    },
+    {
+      "byte_size": 10,
+      "captured_at_ms": 1783765449026,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765449026-11",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765449026-11.bin",
+      "pinned": false,
+      "text_preview": "protonplus"
+    },
+    {
+      "byte_size": 15,
+      "captured_at_ms": 1783765439790,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765439790-9",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765439790-9.bin",
+      "pinned": false,
+      "text_preview": "faugus-launcher"
+    },
+    {
+      "byte_size": 6,
+      "captured_at_ms": 1783765227438,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765227438-5",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765227438-5.bin",
+      "pinned": false,
+      "text_preview": "cacert"
+    },
+    {
+      "byte_size": 22,
+      "captured_at_ms": 1783765223282,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783765223282-3",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783765223282-3.bin",
+      "pinned": false,
+      "text_preview": "speech-dispatcher/orca"
+    },
+    {
+      "byte_size": 4523,
+      "captured_at_ms": 1783763841315,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783763841315-2",
+      "mime_types": [
+        "application/glfw+clipboard-96584",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783763841315-2.bin",
+      "pinned": false,
+      "text_preview": "Checking switch inhibitors... done Copied \"/boot/EFI/systemd/systemd-bootx64.efi\" to \"/boot/EFI/systemd/systemd-boot-fallbackx64.efi\". Copied \"/nix/store/3v7kqg55hx4awhy5hdckniypbgqbqfmx-systemd-261/l"
+    },
+    {
+      "byte_size": 24,
+      "captured_at_ms": 1783763527643,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783763527643-6",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783763527643-6.bin",
+      "pinned": false,
+      "text_preview": "vulkan-validation-layers"
+    },
+    {
+      "byte_size": 5505,
+      "captured_at_ms": 1783763424687,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783763424687-5",
+      "mime_types": [
+        "application/glfw+clipboard-96584",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783763424687-5.bin",
+      "pinned": false,
+      "text_preview": "nixos on  main [!+] ➜ nix-check warning: Git tree '/etc/nixos' is dirty building the system configuration... warning: Git tree '/etc/nixos' is dirty error: Cannot build '/nix/store/rlskik9fpi31rk"
+    },
+    {
+      "byte_size": 7912,
+      "captured_at_ms": 1783763084730,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783763084730-4",
+      "mime_types": [
+        "application/glfw+clipboard-96584",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783763084730-4.bin",
+      "pinned": false,
+      "text_preview": "nixos on  main [!+] ➜ nix-check warning: Git tree '/etc/nixos' is dirty warning: updating lock file \"/etc/nixos/flake.lock\": • Updated input 'cachyos':     'github:xddxdd/nix-cachyos-kernel/cf3"
+    },
+    {
+      "byte_size": 787498,
+      "captured_at_ms": 1783711470992,
+      "data_mime_type": "image/png",
+      "id": "1783711470992-3",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783711470992-3.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 780054,
+      "captured_at_ms": 1783711236179,
+      "data_mime_type": "image/png",
+      "id": "1783711236179-2",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783711236179-2.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 34,
+      "captured_at_ms": 1783663189803,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783663189803-2",
+      "mime_types": [
+        "application/glfw+clipboard-8116",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783663189803-2.bin",
+      "pinned": false,
+      "text_preview": "sudo rm /var/lib/nixos/last-failed"
+    },
+    {
+      "byte_size": 28,
+      "captured_at_ms": 1783631603326,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783631603326-1",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783631603326-1.bin",
+      "pinned": false,
+      "text_preview": "Monster Rarity: .*[4-9][0-9]"
+    },
+    {
+      "byte_size": 24,
+      "captured_at_ms": 1783625805632,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625805632-24",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625805632-24.bin",
+      "pinned": false,
+      "text_preview": "amixer -c 0 cget numid=5"
+    },
+    {
+      "byte_size": 232,
+      "captured_at_ms": 1783625664052,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625664052-23",
+      "mime_types": [
+        "application/glfw+clipboard-24231",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625664052-23.bin",
+      "pinned": false,
+      "text_preview": "nixos on  main [!+] ➜ evtest /dev/input/by-path/*-event-kbd fish: Unknown command: evtest nixos on  main [!+] ➜ libinput debug-events | grep -i \"atlas\\|mute\\|key\" fish: Unknown command: libi"
+    },
+    {
+      "byte_size": 50,
+      "captured_at_ms": 1783625657708,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625657708-21",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625657708-21.bin",
+      "pinned": false,
+      "text_preview": "libinput debug-events | grep -i \"atlas\\|mute\\|key\""
+    },
+    {
+      "byte_size": 37,
+      "captured_at_ms": 1783625651934,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625651934-19",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625651934-19.bin",
+      "pinned": false,
+      "text_preview": "evtest /dev/input/by-path/*-event-kbd"
+    },
+    {
+      "byte_size": 33,
+      "captured_at_ms": 1783625485696,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625485696-17",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625485696-17.bin",
+      "pinned": false,
+      "text_preview": "wpctl status | grep -A2 \"Sources\""
+    },
+    {
+      "byte_size": 25,
+      "captured_at_ms": 1783625454522,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625454522-15",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625454522-15.bin",
+      "pinned": false,
+      "text_preview": "wpctl set-mute 114 toggle"
+    },
+    {
+      "byte_size": 1154,
+      "captured_at_ms": 1783625360155,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625360155-14",
+      "mime_types": [
+        "application/glfw+clipboard-24231",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625360155-14.bin",
+      "pinned": false,
+      "text_preview": "nixos on  main [!+] ➜ journalctl -k -f Jul 09 21:25:54 nex kernel: usb 1-2.3: new full-speed USB device number 9 using xhci_hcd Jul 09 21:25:54 nex kernel: usb 1-2.3: not running at top speed; co"
+    },
+    {
+      "byte_size": 16,
+      "captured_at_ms": 1783625338811,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783625338811-12",
+      "mime_types": [
+        "application/glfw+clipboard-23374",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783625338811-12.bin",
+      "pinned": false,
+      "text_preview": "journalctl -k -f"
+    },
+    {
+      "byte_size": 346,
+      "captured_at_ms": 1783621908512,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783621908512-11",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783621908512-11.bin",
+      "pinned": false,
+      "text_preview": "#% erhöhter erhaltener Tribut (Increased Tribute Gained): Das ist der wichtigste Suffix-Modifikator überhaupt. Wenn du diesen Wert über 4 Tafeln stapelst, bekommst du pro getötetem Monster ein Vie"
+    },
+    {
+      "byte_size": 100,
+      "captured_at_ms": 1783621658500,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783621658500-10",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783621658500-10.bin",
+      "pinned": false,
+      "text_preview": "also delirium kannst du knicken taugt nichts.. welches lohnt aktuelle season am meisten zu farmen ? "
+    },
+    {
+      "byte_size": 504697,
+      "captured_at_ms": 1783619753544,
+      "data_mime_type": "image/png",
+      "id": "1783619753544-9",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783619753544-9.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 386909,
+      "captured_at_ms": 1783617490555,
+      "data_mime_type": "image/png",
+      "id": "1783617490555-8",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783617490555-8.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 52727,
+      "captured_at_ms": 1783617120520,
+      "data_mime_type": "image/png",
+      "id": "1783617120519-7",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783617120519-7.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 38645,
+      "captured_at_ms": 1783617031746,
+      "data_mime_type": "image/png",
+      "id": "1783617031746-6",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783617031746-6.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 213,
+      "captured_at_ms": 1783616900950,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783616900950-5",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783616900950-5.bin",
+      "pinned": false,
+      "text_preview": "Für maximalen Währungsgewinn: Suche nach ~Stapelgröße von Simulacrum-Splittern (Increased Stack Size of Simulacrum Splinters). Wenn du davon 5–10% auf der Tafel hast, skaliert das im 4er-Pack ex"
+    },
+    {
+      "byte_size": 211,
+      "captured_at_ms": 1783616900942,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783616900942-4",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783616900942-4.bin",
+      "pinned": false,
+      "text_preview": "Für maximalen Währungsgewinn: Suche nach ~Stapelgröße von Simulacrum-Splittern (Increased Stack Size of Simulacrum Splinters). Wenn du davon 5–10% auf der Tafel hast, skaliert das im 4er-Pack ex"
+    },
+    {
+      "byte_size": 75,
+      "captured_at_ms": 1783616723895,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783616723889-3",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783616723889-3.bin",
+      "pinned": false,
+      "text_preview": "https://de.pathofexile.com/trade2/search/poe2/Runes%20of%20Aldur/D6O4k5ywC5"
+    },
+    {
+      "byte_size": 49277,
+      "captured_at_ms": 1783612921260,
+      "data_mime_type": "image/png",
+      "id": "1783612921260-2",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783612921260-2.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 308,
+      "captured_at_ms": 1783612881954,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783612881954-1",
+      "mime_types": [
+        "TIMESTAMP",
+        "STRING",
+        "UTF8_STRING",
+        "TEXT",
+        "chromium/x-internal-source-rfh-token",
+        "chromium/x-source-url",
+        "text/html",
+        "text/plain",
+        "text/plain;charset=utf-8"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783612881954-1.bin",
+      "pinned": false,
+      "text_preview": "ich habe gestern scheinbar eine riss tafel ausversehen für 200 chaos Orbs bei der tante zum verkauf rein gestellt.. sollten eigentlich 200 erhabene sein.. aber war mir nciht aufgefallen. und scheinba"
+    },
+    {
+      "byte_size": 1240,
+      "captured_at_ms": 1783598963067,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783598963067-5",
+      "mime_types": [
+        "application/glfw+clipboard-8154",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783598963067-5.bin",
+      "pinned": false,
+      "text_preview": "nixos on  main [!+] ➜ nix-switch warning: Git tree '/etc/nixos' is dirty building the system configuration... warning: Git tree '/etc/nixos' is dirty Checking switch inhibitors... done Skipping \""
+    },
+    {
+      "byte_size": 35,
+      "captured_at_ms": 1783598951759,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783598951759-3",
+      "mime_types": [
+        "application/glfw+clipboard-3403",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783598951759-3.bin",
+      "pinned": false,
+      "text_preview": "systemctl list-timers nixos-upgrade"
+    },
+    {
+      "byte_size": 2307,
+      "captured_at_ms": 1783598898151,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783598898151-2",
+      "mime_types": [
+        "application/glfw+clipboard-8154",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783598898151-2.bin",
+      "pinned": false,
+      "text_preview": "ixos on  main [!] ➜ nix-switch  [sudo] Passwort für mortiferus:  warning: Git tree '/etc/nixos' is dirty building the system configuration... warning: Git tree '/etc/nixos' is dirty error:      "
+    },
+    {
+      "byte_size": 527,
+      "captured_at_ms": 1783598084264,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783598084264-6",
+      "mime_types": [
+        "application/glfw+clipboard-3403",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783598084264-6.bin",
+      "pinned": false,
+      "text_preview": "2. Nach dem Update Ein Script prüft ob ein Reboot nötig ist (Kernel/systemd geändert → diff-closures). Wenn nein → systemctl suspend. Wenn ja → ein Flag-File setzen, damit du es beim nächste"
+    },
+    {
+      "byte_size": 167,
+      "captured_at_ms": 1783535264800,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783535264800-4",
+      "mime_types": [
+        "application/glfw+clipboard-16447",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783535264800-4.bin",
+      "pinned": false,
+      "text_preview": "Du hast völlig recht. Das Problem ist, dass Steam den Tool-Pfad cached und nicht neu scanned – selbst wenn der alte Symlink weg ist (was NixOS ja tut beim rebuild)."
+    },
+    {
+      "byte_size": 192,
+      "captured_at_ms": 1783534819638,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783534819638-2",
+      "mime_types": [
+        "application/glfw+clipboard-16447",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783534819638-2.bin",
+      "pinned": false,
+      "text_preview": "Der Symlink GE-Proton10-34 → GE-Proton11-1 ist angelegt. Da Steam die Tool-Registrierung aber bereits für diese Session aufgelöst hat, starte Steam einmal neu und versuche dann POE2 erneut"
+    },
+    {
+      "byte_size": 174,
+      "captured_at_ms": 1783515792534,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783515792534-1",
+      "mime_types": [
+        "application/glfw+clipboard-8154",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783515792534-1.bin",
+      "pinned": false,
+      "text_preview": "Skipping \"/boot/EFI/systemd/systemd-bootx64.efi\", same boot loader version in place already. Skipping \"/boot/EFI/BOOT/BOOTX64.EFI\", same boot loader version in place already."
+    },
+    {
+      "byte_size": 19,
+      "captured_at_ms": 1783514948222,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783514948222-1",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783514948222-1.bin",
+      "pinned": false,
+      "text_preview": "PROTON_USE_NTSYNC=1"
+    },
+    {
+      "byte_size": 238319,
+      "captured_at_ms": 1783286974546,
+      "data_mime_type": "image/png",
+      "id": "1783286974546-9",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783286974546-9.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 897002,
+      "captured_at_ms": 1783262724075,
+      "data_mime_type": "image/png",
+      "id": "1783262724075-8",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783262724075-8.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 261,
+      "captured_at_ms": 1783246898904,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783246898904-7",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783246898904-7.bin",
+      "pinned": false,
+      "text_preview": "Die Basis (Der Atlas-Knoten): Wähle auf deinem Atlas einen Knoten im Bereich Doryani (oben links). Diese Knoten haben die angeborene Eigenschaft „Bestrahlt“ (Irradiated) / +1 Area Level. Dadurch "
+    },
+    {
+      "byte_size": 502,
+      "captured_at_ms": 1783245503341,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783245503341-6",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783245503341-6.bin",
+      "pinned": false,
+      "text_preview": "2x Seltene Irradiated Tablets (Bestrahlte Tafeln): Wichtig: Achte beim Kauf der bestrahlten Tafeln zwingend auf die folgenden Modifikatoren:„Map has 2 additional random map modifiers“ (Fügt der K"
+    },
+    {
+      "byte_size": 11,
+      "captured_at_ms": 1783213354077,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783213354077-5",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783213354077-5.bin",
+      "pinned": false,
+      "text_preview": "194.242.2.4"
+    },
+    {
+      "byte_size": 20,
+      "captured_at_ms": 1783213349661,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783213349661-4",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783213349661-4.bin",
+      "pinned": false,
+      "text_preview": "base.dns.mullvad.net"
+    },
+    {
+      "byte_size": 12,
+      "captured_at_ms": 1783213340305,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783213340305-3",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783213340305-3.bin",
+      "pinned": false,
+      "text_preview": "2a07:e340::4"
+    },
+    {
+      "byte_size": 11,
+      "captured_at_ms": 1783213324698,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783213324698-2",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783213324698-2.bin",
+      "pinned": false,
+      "text_preview": "194.242.2.4"
+    },
+    {
+      "byte_size": 20,
+      "captured_at_ms": 1783213306897,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783213306897-1",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783213306897-1.bin",
+      "pinned": false,
+      "text_preview": "base.dns.mullvad.net"
+    },
+    {
+      "byte_size": 1520738,
+      "captured_at_ms": 1783196913030,
+      "data_mime_type": "image/png",
+      "id": "1783193643939-3",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783193643939-3.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 1880253,
+      "captured_at_ms": 1783196879592,
+      "data_mime_type": "image/png",
+      "id": "1783193667258-4",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783193667258-4.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 23,
+      "captured_at_ms": 1783196460041,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783196460041-7",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783196460041-7.bin",
+      "pinned": false,
+      "text_preview": "Raok, der Blutdürstige"
+    },
+    {
+      "byte_size": 1121456,
+      "captured_at_ms": 1783185207284,
+      "data_mime_type": "image/png",
+      "id": "1783185207284-2",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783185207284-2.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 189065,
+      "captured_at_ms": 1783165798927,
+      "data_mime_type": "image/png",
+      "id": "1783165798927-1",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783165798927-1.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 1444426,
+      "captured_at_ms": 1783100801925,
+      "data_mime_type": "image/png",
+      "id": "1783100801925-7",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783100801925-7.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 20,
+      "captured_at_ms": 1783073937819,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073937819-6",
+      "mime_types": [
+        "application/glfw+clipboard-13508",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073937819-6.bin",
+      "pinned": false,
+      "text_preview": "PathOfExileSteam.exe"
+    },
+    {
+      "byte_size": 82,
+      "captured_at_ms": 1783073846240,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073846240-5",
+      "mime_types": [
+        "application/glfw+clipboard-13508",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073846240-5.bin",
+      "pinned": false,
+      "text_preview": "/home/mortiferus/.local/share/Steam/steamapps/common/Lossless Scaling/Lossless.dll"
+    },
+    {
+      "byte_size": 54,
+      "captured_at_ms": 1783073713859,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073713859-4",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073713859-4.bin",
+      "pinned": false,
+      "text_preview": "/gaming/SteamLibrary/steamapps/common/Path of Exile 2/"
+    },
+    {
+      "byte_size": 35,
+      "captured_at_ms": 1783073237794,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073237794-3",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073237794-3.bin",
+      "pinned": false,
+      "text_preview": "PROTON_USE_NTSYNC=1 ENABLE_VKSUMI=1"
+    },
+    {
+      "byte_size": 37,
+      "captured_at_ms": 1783073206070,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073206070-2",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073206070-2.bin",
+      "pinned": false,
+      "text_preview": "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1"
+    },
+    {
+      "byte_size": 24,
+      "captured_at_ms": 1783073181095,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783073181095-1",
+      "mime_types": [
+        "text/html",
+        "text/_moz_htmlcontext",
+        "text/_moz_htmlinfo",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "text/x-moz-url-priv",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783073181095-1.bin",
+      "pinned": false,
+      "text_preview": "__GL_SHADER_DISK_CACHE=1"
+    },
+    {
+      "byte_size": 18,
+      "captured_at_ms": 1783026119175,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1783026119175-1",
+      "mime_types": [
+        "text/html",
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1783026119175-1.bin",
+      "pinned": false,
+      "text_preview": "Heiliges Reservoir"
+    },
+    {
+      "byte_size": 13,
+      "captured_at_ms": 1782850914975,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782850914975-13",
+      "mime_types": [
+        "application/glfw+clipboard-5078",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850914975-13.bin",
+      "pinned": false,
+      "text_preview": "iw reg get   "
+    },
+    {
+      "byte_size": 18,
+      "captured_at_ms": 1782850899509,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782850899509-11",
+      "mime_types": [
+        "application/glfw+clipboard-5078",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850899509-11.bin",
+      "pinned": false,
+      "text_preview": "iw dev wlp4s0 link"
+    },
+    {
+      "byte_size": 67,
+      "captured_at_ms": 1782850665096,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782850665096-9",
+      "mime_types": [
+        "application/glfw+clipboard-5078",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850665096-9.bin",
+      "pinned": false,
+      "text_preview": "nix-shell -p iperf3 --run \"iperf3 -c iperf.volia.net -p 5204 -t 10\""
+    },
+    {
+      "byte_size": 149642,
+      "captured_at_ms": 1782850131495,
+      "data_mime_type": "image/png",
+      "id": "1782850131495-8",
+      "mime_types": [
+        "image/png"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850131495-8.bin",
+      "pinned": false,
+      "text_preview": ""
+    },
+    {
+      "byte_size": 45,
+      "captured_at_ms": 1782850087361,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782850087361-7",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850087361-7.bin",
+      "pinned": false,
+      "text_preview": "cat /sys/class/net/wlan0/device/power/control"
+    },
+    {
+      "byte_size": 6,
+      "captured_at_ms": 1782850058211,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782850058211-6",
+      "mime_types": [
+        "text/plain;charset=utf-8",
+        "UTF8_STRING",
+        "COMPOUND_TEXT",
+        "TEXT",
+        "text/plain",
+        "STRING",
+        "text/plain;charset=utf-8",
+        "text/plain",
+        "SAVE_TARGETS"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782850058211-6.bin",
+      "pinned": false,
+      "text_preview": "iw dev"
+    },
+    {
+      "byte_size": 79,
+      "captured_at_ms": 1782849387688,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782849387688-5",
+      "mime_types": [
+        "application/glfw+clipboard-5500",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782849387688-5.bin",
+      "pinned": false,
+      "text_preview": "~ ➜ ethtool -S wlp4s0 | grep tx_retries fish: Unknown command: ethtool ~ ➜ "
+    },
+    {
+      "byte_size": 35,
+      "captured_at_ms": 1782849381440,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782849381440-3",
+      "mime_types": [
+        "application/glfw+clipboard-5078",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782849381440-3.bin",
+      "pinned": false,
+      "text_preview": "ethtool -S wlp4s0 | grep tx_retries"
+    },
+    {
+      "byte_size": 54,
+      "captured_at_ms": 1782849371259,
+      "data_mime_type": "text/plain;charset=utf-8",
+      "id": "1782849371259-1",
+      "mime_types": [
+        "application/glfw+clipboard-5078",
+        "TEXT",
+        "STRING",
+        "UTF8_STRING",
+        "text/plain;charset=utf-8",
+        "text/plain"
+      ],
+      "payload_path": "/home/mortiferus/.local/state/noctalia/clipboard/entries/1782849371259-1.bin",
+      "pinned": false,
+      "text_preview": "cat /sys/module/iwlmvm/parameters/power_scheme  # -> 1"
+    }
+  ]
+}

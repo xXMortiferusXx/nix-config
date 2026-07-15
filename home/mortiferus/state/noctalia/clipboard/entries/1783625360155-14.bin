@@ -1,0 +1,11 @@
+nixos on  main [!+] ➜ journalctl -k -f
+Jul 09 21:25:54 nex kernel: usb 1-2.3: new full-speed USB device number 9 using xhci_hcd
+Jul 09 21:25:54 nex kernel: usb 1-2.3: not running at top speed; connect to a high speed hub
+Jul 09 21:25:54 nex kernel: usb 1-2.3: New USB device found, idVendor=10f5, idProduct=225e, bcdDevice= 1.00
+Jul 09 21:25:54 nex kernel: usb 1-2.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+Jul 09 21:25:54 nex kernel: usb 1-2.3: Product: Atlas Air
+Jul 09 21:25:54 nex kernel: usb 1-2.3: Manufacturer: Turtle Beach Corp
+Jul 09 21:25:54 nex kernel: usb 1-2.3: SerialNumber: 0000000000000001
+Jul 09 21:25:54 nex kernel: input: Turtle Beach Corp Atlas Air Consumer Control as /devices/pci0000:00/0000:00:08.1/0000:06:00.3/usb1/1-2/1-2.3/1-2.3:1.3/0003:10F5:225E.0008/input/input30
+Jul 09 21:25:54 nex kernel: input: Turtle Beach Corp Atlas Air as /devices/pci0000:00/0000:00:08.1/0000:06:00.3/usb1/1-2/1-2.3/1-2.3:1.3/0003:10F5:225E.0008/input/input31
+Jul 09 21:25:54 nex kernel: hid-generic 0003:10F5:225E.0008: input,hiddev97,hidraw1: USB HID v1.10 Device [Turtle Beach Corp Atlas Air] on usb-0000:06:00.3-2.3/input3

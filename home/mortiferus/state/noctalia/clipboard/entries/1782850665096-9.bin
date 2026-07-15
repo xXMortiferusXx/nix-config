@@ -1,0 +1,1 @@
+nix-shell -p iperf3 --run "iperf3 -c iperf.volia.net -p 5204 -t 10"

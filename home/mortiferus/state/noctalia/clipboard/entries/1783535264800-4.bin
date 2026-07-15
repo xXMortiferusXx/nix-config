@@ -1,0 +1,1 @@
+Du hast völlig recht. Das Problem ist, dass Steam den Tool-Pfad cached und nicht neu scanned – selbst wenn der alte Symlink weg ist (was NixOS ja tut beim rebuild).

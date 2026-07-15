@@ -1,0 +1,13 @@
+Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com
+Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com
+Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com
+Jul 13 21:55:18 dnsmasq[6670]: possible DNS-rebind attack detected: metrics.roblox.com
+Jul 13 21:55:35 dnsmasq[6670]: possible DNS-rebind attack detected: ads-img.mozilla.org
+Jul 13 21:55:38 dnsmasq[6670]: possible DNS-rebind attack detected: ads-img.mozilla.org
+Jul 13 21:55:52 dnsmasq[6670]: possible DNS-rebind attack detected: mdp-appconf-eu.heytapdl.com
+Jul 13 21:55:52 dnsmasq[6670]: possible DNS-rebind attack detected: mdp-appconf-eu.heytapdl.com
+Jul 13 21:55:52 dnsmasq[6670]: possible DNS-rebind attack detected: adx-ads-fr.heytapmobile.com
+Jul 13 21:55:52 dnsmasq[6670]: possible DNS-rebind attack detected: adx-ads-fr.heytapmobile.com
+Jul 13 21:55:53 dnsmasq[6670]: possible DNS-rebind attack detected: stgdata-ads-fr.heytapmobile.com
+Jul 13 21:55:53 dnsmasq[6670]: possible DNS-rebind attack detected: stgdata-ads-fr.heytapmobile.com
+Jul 13 21:55:53 dnsmasq[6670]: possible DNS-rebind attack detected: classify-app-eu.allawnos.com

@@ -42,6 +42,9 @@
 - `home/mortiferus/{default,packages,config,autostart,mangohud,mpv}.nix`
 - `home/backbone/{default,packages,config,autostart}.nix`
 - Default-Nix importiert `./autostart.nix`
+- **Noctalia State-Symlink** (v5, 2026-07-15):
+  - `~/.local/state/noctalia` → `/etc/nixos/home/mortiferus/state/noctalia` (GUI-State + interner State)
+  - `~/.config/noctalia` wird von v5 nicht mehr genutzt (v4-Überbleibsel entfernt)
 
 ### Design-Regeln
 - Jede Datei = ein Thema
@@ -63,11 +66,15 @@
 
 ## Noctalia v5
 
-### Konfig
-- Settings file: `~/.config/noctalia/settings.toml` (v4-Format, kompatibel)
+### Config-Struktur (wichtig: v5 ≠ v4)
+- **GUI-State** (automatisch geschrieben): `~/.local/state/noctalia/` (Symlink aufs Repo)
+  - `settings.toml` – alle Settings-UI-Änderungen (Greeter-Sync, Auto-Sync, etc.)
+  - `clipboard/`, `plugin-cache/`, `state.toml` – interner State
+  - v5 verwaltet alles unter `~/.local/state/noctalia`, `~/.config/noctalia` wird nicht mehr genutzt
 - Start via `systemd --user` Service (graphical-session.target, nicht per Compositor-Spawn)
 - IPC: `noctalia msg ...`
-- `programs.noctalia.settings` wird **nicht** gesetzt (konflikt mit xdg.configFile-Symlink)
+- `programs.noctalia.settings` wird **nicht** gesetzt (konflikt mit State-Symlink)
+- Alte v4-Daten in `~/.config/noctalia` (inkompatible Plugins, settings.toml, colors.json) entfernt
 
 ### IPC Commands
 | Action | Command |
@@ -94,7 +101,15 @@
 - `programs.noctalia-greeter.enable = true` + `--session niri`
 - Config per `environment.etc."noctalia-greeter.toml"`
 - Upstream-Bug: `tomlFormat.generate` kann nicht in `C.argument` → umgangen via `systemd.tmpfiles`
-- Polkit: `org.noctalia.greeter.apply-appearance` passwordlos für `mortiferus`
+- **Polkit-Policy**: Eigene Policy-Datei überschrieben (`desktop/noctalia-greeter.nix`)
+  - `allow_active` auf `yes` gesetzt (aktive Benutzer ohne Passwort)
+  - `exec.path` auf absoluten Nix-Store-Pfad des Apply-Helpers
+  - Zusätzlich `polkit.nix` mit JS-Regel als Fallback
+- **Greeter-Sync ohne Passwort**:
+  - Noctalia v5 bevorzugt intern `run0` statt `pkexec` (wenn verfügbar)
+  - `run0` verwendet `systemd-run` und fragt für transient units → **keine** Noctalia-Policy greift
+  - **Lösung**: In Noctalia-Settings `kitty -e pkexec` als Privilege-Befehl setzen
+  - Dadurch öffnet sich ein Terminal mit `pkexec`, Polkit-Policy greift, kein Passwort
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung

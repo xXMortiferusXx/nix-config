@@ -1,0 +1,1 @@
+evtest /dev/input/by-path/*-event-kbd

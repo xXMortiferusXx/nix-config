@@ -1,0 +1,93 @@
+nixos on  main [!+] ➜ nix-check
+warning: Git tree '/etc/nixos' is dirty
+warning: updating lock file "/etc/nixos/flake.lock":
+• Updated input 'cachyos':
+    'github:xddxdd/nix-cachyos-kernel/cf393892e55698ed5ac49377a24476d87bd880d4?narHash=sha256-7%2B9RDZQxflIV5AuRqxIh%2BZK%2BGrFUgngAzo5wPyhxBP4%3D' (2026-07-05)
+  → 'github:xddxdd/nix-cachyos-kernel/4673c8f6d48baf2ec3f14b6a9f8c4ecfb0810d6f?narHash=sha256-w5ALD125oHIa5MVhoBXo3qx2ktvRvJ%2B1p8UScV9f8OI%3D' (2026-07-10)
+• Updated input 'cachyos/cachyos-kernel':
+    'github:CachyOS/linux-cachyos/d96a067ff30ed47ff1743d60a569b4badd2d7670?narHash=sha256-IzB6XWH8zyBhR3zS2eCKwtVOLipOpVSwN8Lnpgn%2B5k0%3D' (2026-07-04)
+  → 'github:CachyOS/linux-cachyos/4065d7e175fb182a2e30b982b0d8121c97c8d46b?narHash=sha256-EyVTx67qTNB2utnXRUgOWnaZxV6c07XE2rVCq/qgWxI%3D' (2026-07-09)
+• Updated input 'cachyos/cachyos-kernel-patches':
+    'github:CachyOS/kernel-patches/f98908d8b5cacc4c24a6039ffd9f41f6a0de4ba2?narHash=sha256-YGYe7cy8vUFguQzdCt6FP1B/viF53cJdFZhNJ8Rpp5Y%3D' (2026-06-30)
+  → 'github:CachyOS/kernel-patches/c624c9c8cffc11dd619a7d37f903556c60d24e9c?narHash=sha256-oOgjJXRLkTDfOcgPQpHF7MwIBPOf1pHT77EC/YVfkm4%3D' (2026-07-09)
+• Updated input 'cachyos/nixpkgs':
+    'github:NixOS/nixpkgs/28d4faad49f8095ec21ebf0454aa8e9c7d7d0af9?narHash=sha256-3Uiwx/j6LYuQH3hYkPLOZrKjLtQO03fPkO3K0hIp8Jc%3D' (2026-07-05)
+  → 'github:NixOS/nixpkgs/dc29ee8fa098c86053cc8ef25594738f28be5b6b?narHash=sha256-ll8SjCNgwWuou5Q64GMjuUrrqRJW1gy3uCMjd%2Boa9KA%3D' (2026-07-10)
+• Updated input 'home-manager':
+    'github:nix-community/home-manager/144f4e36d0186195037da9fce80a727108978070?narHash=sha256-F43DGcBoIO8xOZFAfodg3jy0VghB9NGdb6xbTYAIx1A%3D' (2026-07-09)
+  → 'github:nix-community/home-manager/2afec152df4e284d264f8489d16004c264aebf4c?narHash=sha256-yYVxW%2BuIbCx0Nt870fbErQbz%2Bb2%2B3Gwpppe%2BJbIU%2BCo%3D' (2026-07-11)
+• Updated input 'nixpkgs':
+    'github:nixos/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea?narHash=sha256-8i/87eeoqiGE4yOTjwSA3Eh/ziJRQEmd/unYU%2BK27sk%3D' (2026-07-05)
+  → 'github:nixos/nixpkgs/0bb7ec54c8483066ec9d7720e780a5caa71f8612?narHash=sha256-iffAls3iaNTyJC2faYcUXSI%2BGp02cDjYl%2BMygxKl2GI%3D' (2026-07-08)
+• Updated input 'nixpkgs-small':
+    'github:nixos/nixpkgs/1f67b2542cd28cacf647a01bad01c3ea762f5c62?narHash=sha256-31bKrtu9iDAaXyoFZEjauookb4iy87MNhD9yCJx%2B9rY%3D' (2026-07-10)
+  → 'github:nixos/nixpkgs/1aa63e215e84f5977b85ea56b39d888e3240f755?narHash=sha256-zuIR1jOzbfBTfyMfSv3oSkfr9lw9EQieOJPVJr5nWFs%3D' (2026-07-10)
+• Updated input 'noctalia':
+    'github:noctalia-dev/noctalia/313732302e6432d7ce41a9ce2334fdaca879dcd7?narHash=sha256-UwLxkIz9HDiARFVocKnGR6OAMs9XAuFRke%2BInNBmL1A%3D' (2026-07-09)
+  → 'github:noctalia-dev/noctalia/b6d8447e346d01c5fc3e8fd49a0bccaf29a41edd?narHash=sha256-UlM3IQXwfBbLem5LmBkeCEuW327PW5o1Knnj/0z51BA%3D' (2026-07-11)
+• Updated input 'zen-browser':
+    'github:0xc000022070/zen-browser-flake/175926c1007114b9d0f8465f23a7d7ce9b26fe33?narHash=sha256-LAz4EAdT56VSCSF0oFJNjpIYFVmWW81nM5%2B3Ieocx5I%3D' (2026-07-09)
+  → 'github:0xc000022070/zen-browser-flake/71e156423dae9496d7fd9e89029a1a82516fb9d8?narHash=sha256-KFnepHImqltAzpJZ8sh8i3qzC1NRVNQX3WBVoD5oBRM%3D' (2026-07-10)
+building the system configuration...
+warning: Git tree '/etc/nixos' is dirty
+error: Cannot build '/nix/store/v49fwvb996j898p6crig3ik4agbgk3zp-python3.14-catppuccin-2.5.0.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/95mh8xkxs4ri8fbw6g4iqagw6wb1y1j9-python3.14-catppuccin-2.5.0-dist
+         /nix/store/lddsvil8v4wwryqjqdf7v9x1lamldmph-python3.14-catppuccin-2.5.0
+       Last 25 log lines:
+       > mkdir -p failed for path /homeless-shelter/.config/matplotlib: [Errno 13] Permission denied: '/homeless-shelter'
+       > Matplotlib created a temporary cache directory at /build/matplotlib-h933cp0q because there was an issue with the default path ({configdir}); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+       > Traceback (most recent call last):
+       >   File "<string>", line 1, in <module>
+       >     import sys; import importlib; list(map(lambda mod: importlib.import_module(mod), sys.argv[1:]))
+       >                                   ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       >   File "<string>", line 1, in <lambda>
+       >     import sys; import importlib; list(map(lambda mod: importlib.import_module(mod), sys.argv[1:]))
+       >                                                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+       >   File "/nix/store/jxyrvv4gbpnp3ap5iy7wxwl1sg4x2x88-python3-3.14.6/lib/python3.14/importlib/__init__.py", line 88, in import_module
+       >     return _bootstrap._gcd_import(name[level:], package, level)
+       >            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       >   File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+       >   File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+       >   File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+       >   File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+       >   File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+       >   File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+       >   File "/nix/store/lddsvil8v4wwryqjqdf7v9x1lamldmph-python3.14-catppuccin-2.5.0/lib/python3.14/site-packages/catppuccin/__init__.py", line 96, in <module>
+       >     _register_styles()
+       >     ~~~~~~~~~~~~~~~~^^
+       >   File "/nix/store/lddsvil8v4wwryqjqdf7v9x1lamldmph-python3.14-catppuccin-2.5.0/lib/python3.14/site-packages/catppuccin/extras/matplotlib.py", line 87, in _register_styles
+       >     catppuccin_stylesheets = mpl.style.core.read_style_directory(  # type: ignore [attr-defined]
+       >                              ^^^^^^^^^^^^^^
+       > AttributeError: module 'matplotlib.style' has no attribute 'core'
+       For full logs, run:
+         nix log /nix/store/v49fwvb996j898p6crig3ik4agbgk3zp-python3.14-catppuccin-2.5.0.drv
+error: Cannot build '/nix/store/yibbc4sgr8f1ry0g8acrbp6yi0c4s4n6-python3-3.14.6-env.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/cq0b5ldnq21r9xvmdcvdl93s6xj07r5q-python3-3.14.6-env
+error: Build failed due to failed dependency
+error: Cannot build '/nix/store/4kwg5zvbjgasyg7asqa947yy1js1h8sw-catppuccin-gtk-1.0.3.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/81rxji2ygfgh8r7vpjic8kzx83srfpbz-catppuccin-gtk-1.0.3
+error: Build failed due to failed dependency
+error: Cannot build '/nix/store/jswby5716vwhfbycky1sa4c891bprgy6-home-manager-path.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/mma4p6k0kysrplkf3sc061zjyp9kpq41-home-manager-path
+error: Build failed due to failed dependency
+error: Cannot build '/nix/store/17d3vvllad4p5w24swm3z32bpqfi94lp-hm_hmfontconfigfonts.xml.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/21ynky3prxfbbr6haybxbcaf749hfilc-hm_hmfontconfigfonts.xml
+error: Cannot build '/nix/store/wnrcjxrhlcq07ijfw4b7k8fckwafcn8i-home-manager-generation.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/q848rmnwc8n4n8zsrn32ky0hi5vw4zq1-home-manager-generation
+error: Cannot build '/nix/store/kgv0f4zzzn5k35dvdmp1hkqg0ywzvgx1-user-environment.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/lhxwrllp2rmgdz4qm40025a310w03rza-user-environment
+[12/348/739 built (1 failed), 16/154/254 copied (2.9/4.0 GiB), 901.9/1009.1 MiB DL] fetching sunshine-2026.516.143833 from https://cache.nixos.org^C⏎                                                           nixos on  main [!+] ➜ 

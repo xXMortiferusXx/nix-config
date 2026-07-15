@@ -1,0 +1,5 @@
+nixos on  main [!+] ➜ evtest /dev/input/by-path/*-event-kbd
+fish: Unknown command: evtest
+nixos on  main [!+] ➜ libinput debug-events | grep -i "atlas\|mute\|key"
+fish: Unknown command: libinput
+nixos on  main [!+] ➜ 

@@ -1,16 +1,9 @@
 { config, pkgs, ... }:
-let
-  speedtestAuto = pkgs.writeShellScriptBin "speedtest-auto" ''
-    # Ookla wählt standardmäßig automatisch den optimalen Server
-    exec ${pkgs.ookla-speedtest}/bin/speedtest --accept-license --accept-gdpr "$@"
-  '';
-in
 {
   environment.systemPackages = with pkgs; [
     iw
     jq
     ookla-speedtest
-    speedtestAuto
   ];
 
   programs.fish.shellAliases = {

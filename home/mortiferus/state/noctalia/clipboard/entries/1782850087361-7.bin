@@ -1,0 +1,1 @@
+cat /sys/class/net/wlan0/device/power/control

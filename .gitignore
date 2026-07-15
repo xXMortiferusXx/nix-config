@@ -1,3 +1,6 @@
 .aider*
 *nex-iso*
 result
+
+# Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
+home/mortiferus/state/noctalia/state.toml
