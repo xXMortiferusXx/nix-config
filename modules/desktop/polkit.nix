@@ -2,10 +2,12 @@
 # - noctalia-greeter: apply-appearance passwordlos für wheel-Mitglieder
 #   (Fallback für inactive Sessions, z.B. während Lockscreen)
 # - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   security.polkit.enable = true;
+  # NixOS unstable: pkexec-Wrapper wird nicht mehr automatisch erstellt
+  security.polkit.enablePkexecWrapper = true;
 
   security.polkit.extraConfig = ''
     polkit.addRule(function (action, subject) {
