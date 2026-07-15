@@ -1,0 +1,10 @@
+{
+  "Applications": [
+    "/etc/profiles/per-user/mortiferus/share/applications/com.heroicgameslauncher.hgl.desktop",
+    "/etc/profiles/per-user/mortiferus/share/applications/com.vysp3r.ProtonPlus.desktop",
+    "/run/current-system/sw/share/applications/net.lutris.Lutris.desktop",
+    "/run/current-system/sw/share/applications/steam.desktop",
+    "/run/current-system/sw/share/applications/protontricks.desktop",
+    "/run/current-system/sw/share/applications/legion_gui.desktop"
+  ]
+}
