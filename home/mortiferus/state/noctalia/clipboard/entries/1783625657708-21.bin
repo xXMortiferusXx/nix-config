@@ -1,1 +1,0 @@
-libinput debug-events | grep -i "atlas\|mute\|key"

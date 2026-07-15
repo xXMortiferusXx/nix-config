@@ -1,6 +1,0 @@
-Was habe ich geändert?
-Ich überschreibe die Policy-Datei systemweit und setze:
-<allow_active>yes</allow_active>
-Plus den absoluten Pfad zum Apply-Helper im Nix-Store:
-<annotate key="org.freedesktop.policykit.exec.path">${greeterPkg}/bin/noctalia-greeter-apply-appearance</annotate>
-Damit darf jeder aktive eingeloggte Benutzer den Sync ohne Passwort ausführen.

@@ -1,1 +1,0 @@
-systemctl list-timers nixos-upgrade

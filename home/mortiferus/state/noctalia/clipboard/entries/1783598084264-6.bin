@@ -1,4 +1,0 @@
-2. Nach dem Update
-Ein Script prüft ob ein Reboot nötig ist (Kernel/systemd geändert → diff-closures). Wenn nein → systemctl suspend. Wenn ja → ein Flag-File setzen, damit du es beim nächsten Login siehst + nicht suspendieren (das Notebook bleibt an – du siehst ja dann dass es läuft).
-3. Reboot-Benachrichtigung beim Login
-Ein user systemd Service, der beim Start des Desktop checkt ob ein Reboot fällig ist und dir per notify-send eine Desktop-Notification schickt: "🔄 Neustart erforderlich (Kernel-Update)".

@@ -1,3 +1,0 @@
-~ ➜ ethtool -S wlp4s0 | grep tx_retries
-fish: Unknown command: ethtool
-~ ➜ 
