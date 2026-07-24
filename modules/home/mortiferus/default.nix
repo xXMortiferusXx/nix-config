@@ -10,9 +10,14 @@ in {
       inputs.noctalia.homeModules.default
       ./config.nix
       ./autostart.nix
-      ./mangohud.nix
       ./mpv.nix
     ];
+
+    programs.mangohud = {
+      enable = true;
+      enableSessionWide = false;
+      settings = { };
+    };
 
     programs.home-manager.enable = true;
     programs.noctalia.enable = true;

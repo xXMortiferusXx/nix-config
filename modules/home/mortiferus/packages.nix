@@ -26,6 +26,8 @@ pkgs: with pkgs; [
   discord
   cartridges
   polychromatic
+  goverlay
+  vulkan-tools
 
   # --- Office & Media ---
   thunderbird-latest

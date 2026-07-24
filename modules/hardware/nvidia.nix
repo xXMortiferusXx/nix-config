@@ -24,6 +24,9 @@
       # Native Videobeschleunigung für NVIDIA (Firefox/Discord)
       nvidia-vaapi-driver
       libva-utils
+
+      # vkBasalt Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen)
+      vkbasalt
     ];
   };
 

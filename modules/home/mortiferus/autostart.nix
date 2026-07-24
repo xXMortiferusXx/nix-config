@@ -3,6 +3,8 @@
 { config, pkgs, lib, ... }:
 
 let
+  extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
+
   steamPackage = pkgs.steam.override {
     extraPkgs = pkgs: with pkgs; [
       mangohud
@@ -45,6 +47,7 @@ in
       };
       Service = {
         Environment = [
+          "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
           "XCURSOR_THEME=Bibata-Modern-Ice"
           "XCURSOR_SIZE=24"
         ];

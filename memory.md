@@ -36,14 +36,20 @@
 
 ### Hardware
 - `hardware/legion.nix` – Legion Conservation Mode + Kernel-Modul
-- `hardware/nvidia.nix` – NVIDIA PRIME Offload, `vulkan-validation-layers` entfernt (Debug-Tool, nicht nötig für Gaming, Build-Fehler mit Sandbox)
+- `hardware/nvidia.nix` – NVIDIA PRIME Offload
+  - `vulkan-validation-layers` entfernt (Debug-Tool, nicht nötig für Gaming, Build-Fehler mit Sandbox)
+  - `vkbasalt` als System-Vulkan-Layer in `hardware.graphics.extraPackages` (64-Bit + 32-Bit)
+    - GOverlay zeigt "not found" an (kein CLI-Binary in nixpkgs), funktioniert aber in Spielen
+    - Aktivierung via `ENABLE_VKBASALT=1 %command%` in Steam
 
 ### Home-Manager
-- `home/mortiferus/{default,packages,config,autostart,mangohud,mpv}.nix`
+- `home/mortiferus/{default,packages,config,autostart,mpv}.nix` (mangohud.nix gelöscht – Config wird von GOverlay verwaltet)
 - `home/backbone/{default,packages,config,autostart}.nix`
 - Default-Nix importiert `./autostart.nix`
-- **Noctalia State-Symlink** (v5, 2026-07-15):
+- **Noctalia State-Symlink** (v5, 2026-07-24 – korrigiert):
   - `~/.local/state/noctalia` → `/etc/nixos/home/mortiferus/state/noctalia` (GUI-State + interner State)
+  - **Wichtig**: `home.file.mkOutOfStoreSymlink` funktioniert **nicht** – Home-Manager überschreibt den Symlink bei jedem Rebuild mit einem Store-Pfad
+  - **Lösung**: `home.activation` Script in `config.nix` (mortiferus + backbone), das nach `writeBoundary` den Symlink robust aufs Repo setzt
   - `~/.config/noctalia` wird von v5 nicht mehr genutzt (v4-Überbleibsel entfernt)
 
 ### Design-Regeln
@@ -108,8 +114,7 @@
 - **Greeter-Sync ohne Passwort**:
   - Noctalia v5 bevorzugt intern `run0` statt `pkexec` (wenn verfügbar)
   - `run0` verwendet `systemd-run` und fragt für transient units → **keine** Noctalia-Policy greift
-  - **Lösung**: In Noctalia-Settings `kitty -e pkexec` als Privilege-Befehl setzen
-  - Dadurch öffnet sich ein Terminal mit `pkexec`, Polkit-Policy greift, kein Passwort
+  - **Lösung**: `privilege_command = "pkexec"` in `settings.toml` (Polkit-Policy mit `allow_active = yes` greift direkt, kein Passwort nötig)
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
@@ -119,7 +124,10 @@
 ### Konfiguration
 - `programs.steam.package = pkgs.steam.override` mit eigenen `extraPkgs` (mangohud, bibata-cursors)
 - `extraCompatPackages = [ pkgs.proton-ge-bin ]` für Proton-GE Integration
-- **Wichtig**: `STEAM_EXTRA_COMPAT_TOOLS_PATHS` wird **direkt** in `extraEnv` gesetzt, nicht über die NixOS-Modul `apply`-Funktion
+- **Autostart** (2026-07-24): `STEAM_EXTRA_COMPAT_TOOLS_PATHS` wird **direkt im systemd-Service** (`home/mortiferus/autostart.nix`) gesetzt, nicht nur in `steam.override.extraEnv`
+  - Grund: `extraEnv` im Steam-Override wirkt nur für manuelle Starts, der systemd-Service sieht sie nicht
+  - `lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ]` baut den korrekten Pfad
+  - Service nutzt trotzdem `pkgs.steam` als Basis für `ExecStart`, die Env-Variablen werden über `Service.Environment` injiziert
 
 ### Bekannte Probleme & Lösungen
 
@@ -131,7 +139,7 @@
 - **Grund**: `TZ=Europe/Berlin` funktioniert in der FHS-Umgebung nicht zuverlässig, `unset TZ` zwingt glibc auf `/etc/localtime`
 
 **Problem**: Proton-GE verschwindet plötzlich aus Steam (2026-06-26)
-- **Lösung**: Variable direkt in `steam.override.extraEnv` setzen:
+- **Lösung**: Variable direkt in `steam.override.extraEnv` setzen (nur für manuelle Starts relevant)
   ```nix
   let
     extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
@@ -139,36 +147,81 @@
   programs.steam.package = pkgs.steam.override {
     extraEnv = {
       STEAM_EXTRA_COMPAT_TOOLS_PATHS = extraCompatPaths;
-      # ... andere env vars
     };
   };
   ```
-- **Debug**: Prüfe ob Variable in FHS-Umgebung gesetzt ist:
-  ```bash
-  cat /nix/store/*steam-*-fhsenv-rootfs/etc/profile | grep STEAM_EXTRA_COMPAT
-  ```
 
-**Problem**: Proton-GE fehlt nach Reboot beim Autostart, ist aber da nach manuellem Neustart (2026-06-27)
+**Problem**: Proton-GE fehlt nach Reboot beim Autostart, ist aber da nach manuellem Neustart (2026-06-27, fix 2026-07-24)
 - **Ursache**: systemd-Service verwendet `${pkgs.steam}` (Basis-Paket), nicht `programs.steam.package` (override mit extraEnv)
 - **Lösung**: Umgebungsvariablen direkt im systemd-Service setzen:
   ```nix
-  Service = {
+  let extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
+  in
+  systemd.user.services.steam.Service = {
     Environment = [
       "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
-      # ... andere env vars
+      "XCURSOR_THEME=Bibata-Modern-Ice"
+      "XCURSOR_SIZE=24"
     ];
     ExecStart = "${pkgs.steam}/bin/steam";
   };
   ```
+- **Zusätzlich**: `tmpfiles` erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest` → Store (`proton-ge-bin.steamcompattool`)
 
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
 - Pfad: `/nix/store/*-proton-ge-bin-GE-Proton*-steamcompattool/`
 
+## MangoHud & GOverlay
+
+### Konfiguration (2026-07-24)
+- **GOverlay** steuert MangoHud – `goverlay` + `vulkan-tools` (vkcube Preview) in `home/mortiferus/packages.nix`
+- **Home-Manager**: `programs.mangohud.enable = true`, `settings = { }` (leer)
+  - Keine festen `settings` in Home-Manager, damit kein unveränderlicher Nix-Store-Symlink nach `~/.config/MangoHud/MangoHud.conf` entsteht
+  - GOverlay schreibt die Config als reguläre Datei nach `~/.config/MangoHud/MangoHud.conf`
+  - `mangohud.nix` (fixe Config) wurde gelöscht – alles wird von GOverlay verwaltet
+- **Steam-FHS-Umgebung** sieht `~/.config/MangoHud/MangoHud.conf` (Home-Verzeichnis ist gemountet, Datei ist regulär und nicht ein Store-Symlink)
+- **Steam-Launch-Option**: Weiterhin `mangohud %command%` in den Steam-Spieleigenschaften setzen
+- **MangoHud-Toggle**: `Shift_R+F12` (oder via GOverlay neu belegen)
+
+### PRIME Offload – GPU-Swap Workaround (2026-07-17)
+- **Problem**: `lspci` zeigt `01:00.0` (NVIDIA) und `06:00.0` (AMD)
+  - GOverlay baut Dropdown aus `lspci`, MangoHud `gpu_list` nutzt `/sys/class/drm/renderD*` Reihenfolge
+  - Auf nex: render node order ist vertauscht → `gpu_list=0` = AMD, obwohl `lspci` es als NVIDIA listet
+- **Lösung**: In GOverlay den "falschen" Eintrag wählen
+  - NVIDIA-Stats: Dropdown-Eintrag `06:00.0` (AMD) auswählen → schreibt `gpu_list=0`
+  - "Use both GPUs" → `gpu_list=0,1` (beide)
+- **GPU-Label korrekt**: In GOverlay Metrics → GPU Name `RTX 3070 Mobile` eintragen
+  - Schreibt `gpu_text=RTX 3070 Mobile`, damit Overlay richtig beschriftet ist
+
+### Horizontal-Centering Workaround (2026-07-17)
+- **Problem**: `position=top-center` zentriert das Fenster, nicht den Inhalt
+  - Bei `horizontal` + `horizontal_stretch` (default) ist HUD zwar oben mittig, aber Inhalt linksbündig
+  - MangoHud Issue #1746 – kein natives Content-Centering für horizontale Layouts
+- **Lösung**: `position=top-left` + `offset_x=250` in GOverlay Visual → Position
+  - Verschiebt HUD pixelgenau nach rechts, simuliert Zentrierung
+  - Wert muss bei Auflösungswechsel neu angepasst werden
+
+### Fazit (2026-07-24)
+- **Keine Home-Manager/Repo-Integration** für MangoHud Config
+  - Symlink auf `/etc/nixos/` funktioniert nicht in Steam's FHS-Umgebung
+  - Automatisches Backup ist manuell und daher nutzlos → entfernt
+  - GOverlay verwaltet `~/.config/MangoHud/MangoHud.conf` vollständig selbst
+  - Wenn Config verloren geht: neu in GOverlay einstellen (dauert 2 Minuten)
+- **GOverlay Abhängigkeiten** (2026-07-24):
+  - `goverlay` + `vulkan-tools` (vkcube Preview) – beide in `mortiferus/packages.nix`
+  - `vkbasalt` in nixpkgs ist Vulkan-Layer-Library (`libvkbasalt.so`), kein CLI-Binary → GOverlay zeigt "not found" an
+  - **Aber**: vkBasalt als System-Layer in `hardware.graphics.extraPackages` installiert (64-Bit + 32-Bit)
+  - Funktioniert in Spielen trotz GOverlay-Anzeige – Aktivierung via `ENABLE_VKBASALT=1 %command%` in Steam
+  - Nicht in nixpkgs verfügbar: `vksumi`, `qt6pas` → bleiben rot in GOverlay, sind aber optional
+
 ## Cachix / Binary Caches
+- `cache.nixos.org` – Offizieller NixOS Cache
+- `nix-community.cachix.org` – Nix-Community Cache
 - `noctalia.cachix.org` – Noctalia v5 Binaries
-- `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel)
+- `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel, primärer Cache)
+- `cache.xinux.uz` – CachyOS Kernel Community-Mirror (bahrom04, alternativer Cache für Redundanz)
 
 ## bpftune
 - `services.bpftune.enable = true` in `cachyos-tuning.nix`
@@ -206,6 +259,21 @@
 - `After=systemd-modules-load.service`, `WantedBy=multi-user.target`
 - Runtime-Toggle: `echo 0 | sudo tee /sys/.../conservation_mode` (bis Reboot)
 
+## Thunar Erweiterungen (vorgemerkt, 2026-07-24)
+
+Status: `modules/home/thunar.nix` wurde bei Git-Reset entfernt (uncommitted). Inhalt zur Wiederverwendung dokumentiert.
+
+### Geplante Features
+| # | Feature | Beschreibung |
+|---|---|---|
+| 08 | `thunar-extract-here` | Rechtsklick-Menü: Archiv im aktuellen Ordner extrahieren |
+| 09 | `thunar-extract-to-folder` | Rechtsklick-Menü: Archiv in neuen Unterordner extrahieren |
+
+### Offene Entscheidung
+- Thunar vs. Nautilus – noch nicht final entschieden
+- Wenn Thunar: `thunar.nix` neu erstellen mit Extract-Actions
+- Wenn Nautilus: Features werden nicht benötigt (Nautilus hat native Extract-Funktion)
+
 ## Package-Audit (2026-07-11)
 
 Überflüssige/ redundante Pakete entfernt. Bei Problemen mit Apps → prüfen ob das entfernte Paket doch nötig war.
@@ -221,7 +289,8 @@
 | `htop` | `environment-common.nix` | `btop` macht dasselbe |
 | `satty` | `mortiferus/packages.nix` | Screenshot-Annotation, nicht nötig (Niri/Noctalia Screenshots direkt ins Clipboard) |
 | `swappy` | `mortiferus/packages.nix` + `noctalia.nix` | Screenshot-Annotation, nicht nötig |
-| `vulkan-tools` | `mortiferus.nix` (User) | Bereits systemweit in `nvidia.nix` |
+| `mangohud.nix` | `mortiferus/` | Fixe MangoHud-Config, wird jetzt von GOverlay verwaltet |
+| `vulkan-tools` | `mortiferus/packages.nix` | Wieder hinzugefügt (2026-07-24) – wird von GOverlay für vkcube Preview genutzt |
 | `git` | `backbone.nix` (User) | Bereits systemweit in `environment-common.nix` |
 | `openldap` | `environment-common.nix` | LDAP-Libs, nötig für nix-ld (bleibt dort), systemweit unnötig |
 | `gnome-themes-extra` | `mortiferus/packages.nix` | Redundant mit `orchis-theme` |
@@ -243,3 +312,6 @@
 | `libsForQt5.qt5ct` | Qt5-Legacy, behalten für Kompatibilität |
 | `shared-mime-info` | Mime-Type-Datenbank, wird von Apps benötigt |
 | Hyprland + `hyprshot` | Gelegentliche Tests, nicht komplett entfernt |
+| `goverlay` | MangoHud-GUI-Konfigurator, verwaltet `~/.config/MangoHud/MangoHud.conf` |
+| `vulkan-tools` | GOverlay Live-Preview (vkcube) + Vulkan-Debugging |
+| `vkbasalt` | Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen) |
