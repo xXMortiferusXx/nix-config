@@ -5,6 +5,20 @@ background_opacity = 0.60999998636543751
 capsule = true
 capsule_opacity = 0.74999998323619366
 capsule_thickness = 0.79999998584389687
+end = [
+    "media",
+    "tray",
+    "nix-monitor",
+    "notifications",
+    "clipboard",
+    "network",
+    "bluetooth",
+    "volume",
+    "brightness",
+    "battery",
+    "control-center",
+    "session"
+]
 start = [ "launcher", "wallpaper", "workspaces", "active_window" ]
 
 [calendar]
@@ -101,17 +115,20 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
         font_family = "Comic Sans MS"
         show_forecast = true
 
-[[plugins.source]]
-auto_update = true
-kind = "git"
-location = "https://github.com/noctalia-dev/official-plugins"
-name = "official"
+[plugins]
+enabled = [ "avivbintangaringga/nix-monitor" ]
 
-[[plugins.source]]
-auto_update = true
-kind = "git"
-location = "https://github.com/noctalia-dev/community-plugins"
-name = "community"
+    [[plugins.source]]
+    auto_update = true
+    kind = "git"
+    location = "https://github.com/noctalia-dev/official-plugins"
+    name = "official"
+
+    [[plugins.source]]
+    auto_update = true
+    kind = "git"
+    location = "https://github.com/noctalia-dev/community-plugins"
+    name = "community"
 
 [shell]
 avatar_path = "/home/mortiferus/Bilder/Linux-Profil.png"
@@ -157,6 +174,10 @@ format = "{:%H:%M} -- {:%d.%m.%y}"
 
 [widget.network]
 show_label = false
+
+[widget.nix-monitor]
+show_text = false
+type = "avivbintangaringga/nix-monitor:nix-monitor"
 
 [widget.volume]
 show_label = false
