@@ -18,9 +18,9 @@
     lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
     lsfg-vk-src.flake = false;
 
-    # Noctalia v5 (ohne follows für Cachix-Binary-Cache)
+    # Noctalia v5 (cachix-Branch = letzter gecachter Commit)
     noctalia = {
-      url = "github:noctalia-dev/noctalia";
+      url = "github:noctalia-dev/noctalia/cachix";
     };
 
     # Noctalia Greeter (ohne follows für Cachix)

@@ -125,6 +125,23 @@ sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" \
     --option connect-timeout 20 \
     --no-root-passwd --no-channel-copy
 
+# --- WLAN-VERBINDUNGEN VOM LIVE-SYSTEM ÜBERNEHMEN ---
+info "Kopiere NetworkManager-Verbindungen vom Live-System..."
+if [ -d /etc/NetworkManager/system-connections ]; then
+    CONNECTIONS=$(ls /etc/NetworkManager/system-connections/*.nmconnection 2>/dev/null || true)
+    if [ -n "$CONNECTIONS" ]; then
+        sudo mkdir -p /mnt/etc/NetworkManager/system-connections
+        sudo cp /etc/NetworkManager/system-connections/*.nmconnection /mnt/etc/NetworkManager/system-connections/
+        sudo chown -R root:root /mnt/etc/NetworkManager/system-connections/
+        sudo chmod 600 /mnt/etc/NetworkManager/system-connections/*.nmconnection 2>/dev/null || true
+        info "WLAN-Verbindung(en) erfolgreich kopiert."
+    else
+        warn "Keine .nmconnection-Dateien im Live-System gefunden."
+    fi
+else
+    warn "NetworkManager system-connections Verzeichnis nicht gefunden."
+fi
+
 # --- SCHRITT 7: Rechte & Git-Setup ---
 info "Bereite Zielsystem vor (Rechte & Git)..."
 # Setze Rechte für den User

@@ -240,7 +240,7 @@
 ## Cachix / Binary Caches
 - `cache.nixos.org` – Offizieller NixOS Cache
 - `nix-community.cachix.org` – Nix-Community Cache
-- `noctalia.cachix.org` – Noctalia v5 Binaries
+- `noctalia.cachix.org` – Noctalia v5 Binaries (Flake-Input: `github:noctalia-dev/noctalia/cachix`)
 - `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel, primärer Cache)
 - `cache.xinux.uz` – CachyOS Kernel Community-Mirror (bahrom04, alternativer Cache für Redundanz)
 
