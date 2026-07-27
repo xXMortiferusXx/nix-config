@@ -13,6 +13,7 @@ in
       <action>
         <icon>package-x-generic</icon>
         <name>Hier entpacken</name>
+        <unique-id>net.mortiferus.thunar.extract-here</unique-id>
         <submenu>Entpacken</submenu>
         <command>${pkgs.bash}/bin/bash -c 'cd "%d" && thunar-extract "%f" "%d" here'</command>
         <description>Archiv im aktuellen Ordner entpacken</description>
@@ -22,6 +23,7 @@ in
       <action>
         <icon>folder-open</icon>
         <name>In Ordner entpacken...</name>
+        <unique-id>net.mortiferus.thunar.extract-to-folder</unique-id>
         <submenu>Entpacken</submenu>
         <command>${pkgs.bash}/bin/bash -c 'cd "%d" && thunar-extract "%f" "%d" tofolder'</command>
         <description>Archiv in neuen Unterordner entpacken</description>
