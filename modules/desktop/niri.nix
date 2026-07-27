@@ -1,11 +1,22 @@
 # Niri Compositor (scrollable-tiling Wayland)
 # + gnome-keyring als systemd-Service + xdg-portal mit GTK+gnome-keyring + xwayland-satellite
-{ config, pkgs, lib, ... }:
+# Paket-Quelle: sodiboo/niri-flake (Overlay + niri.cachix.org Binary Cache)
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  # sodiboo/niri-flake Overlay aktivieren (für niri-stable / niri-unstable)
+  nixpkgs.overlays = [ inputs.niri.overlays.niri ];
+
+  # Binary Cache für niri-flake (verhindert lokales Kompilieren)
+  nix.settings = {
+    substituters = [ "https://niri.cachix.org" ];
+    trusted-public-keys = [ "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=" ];
+  };
+
   programs.niri = {
     enable = true;
-    package = pkgs.niri;
+    # niri-unstable = aktueller main-Branch (immer vor Merge im Cache)
+    package = pkgs.niri-unstable;
   };
 
   xdg.portal = {
@@ -28,11 +39,9 @@
   services.gnome.gnome-keyring.enable = true;
 
   systemd.user.services.xwayland-satellite = {
-    serviceConfig.ExecCondition = "${pkgs.bash}/bin/bash -c '[ \"$XDG_CURRENT_DESKTOP\" = \"niri\"
-]'";
+    serviceConfig.ExecCondition = "${pkgs.bash}/bin/bash -c '[ \"$XDG_CURRENT_DESKTOP\" = \"niri\" ]'";
   };
 
-  
   environment.systemPackages = with pkgs; [
     xwayland-satellite
   ];

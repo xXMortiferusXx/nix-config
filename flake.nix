@@ -31,6 +31,14 @@
     # CachyOS Kernel
     cachyos.url = "github:xddxdd/nix-cachyos-kernel/release";
 
+    # sodiboo/niri-flake (Community-Flake mit Binary Cache)
+    # - niri-stable / niri-unstable verfügbar
+    # - Binary Cache: https://niri.cachix.org
+    # - Overlay: inputs.niri.overlays.niri
+    niri = {
+      url = "github:sodiboo/niri-flake";
+    };
+
   };
   
   outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, cachyos, ... }@inputs:

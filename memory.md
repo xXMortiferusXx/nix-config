@@ -16,7 +16,7 @@
 - `desktop/fonts.nix` – Fonts
 - `desktop/nautilus-emblems.nix` – Nautilus Emblems
 - `desktop/noctalia-greeter.nix` – zentraler greeter (nicht per-host)
-- `desktop/niri.nix` – services.gnome.gnome-keyring.enable
+- `desktop/niri.nix` – niri via sodiboo/niri-flake (Overlay + niri-unstable + niri.cachix.org Cache)
 
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
@@ -60,6 +60,27 @@
 - Jede `.nix`-Datei hat einen deutschen Header-Kommentar (1-3 Zeilen), der erklärt was das Modul macht
 - Bei sysctl-/kernel-Parametern: Inline-Kommentar in Deutsch was der Wert bewirkt
 - **System-Bau**: Nur mortiferus baut das System neu. Alias `nix-switch` = `sudo nixos-rebuild switch --flake /etc/nixos#(hostname)` (in `programs/tools.nix`). Wenn ich (opencode) Änderungen mache, niemals manuell rebuilden – nur Dateien editieren.
+
+## Niri Quelle & Binary Cache (2026-07-27)
+
+### Warum sodiboo/niri-flake statt nixpkgs oder offiziellem Flake
+- **nixpkgs (vorher)**: `libdisplay-info` 0.4.0 brach niri-Build (Rust-Crate fordert `< 0.4.0`). Temporärer upstream-Bug.
+- **Offizielles niri-Flake**: Kein Binary-Cache → lokales Kompilieren auf jedem Host nötig (10–40 Min.)
+- **sodiboo/niri-flake**: Community-Flake mit `niri.cachix.org` Cache + automatisierte CI-Builds
+  - Cache-Public-Key: `niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=`
+  - `niri-stable` (letztes getaggtes Release) und `niri-unstable` (aktueller main)
+  - Wir nutzen `niri-unstable` für aktuellsten Stand (war vorher auch main)
+
+### Setup
+- `flake.nix`: Input `github:sodiboo/niri-flake`
+- `modules/desktop/niri.nix`: Overlay + Cache + `package = pkgs.niri-unstable;`
+- NixOS-Modul von sodiboo wird **nicht** importiert (würde nixpkgs-Modul deaktivieren und Konflikte mit unserer Portal/Polkit-Config erzeugen)
+- Stattdessen: Nur Overlay anwenden + Paket überschreiben + Cache manuell setzen
+
+### Fallback bei Problemen
+1. Cache nicht erreichbar → Nix baut lokal (dauert länger, aber funktioniert)
+2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
+3. `niri-unstable` zu instabil → Auf `pkgs.niri-stable` wechseln (älterer, getaggter Release)
 
 ## Bekannte Probleme
 

@@ -1,4 +1,4 @@
-config_version = 2
+config_version = 7
 
 [bar.default]
 background_opacity = 0.60999998636543751
@@ -155,13 +155,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-ex15ww_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-ex15ww_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-ex15ww_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
 [widget.battery]
 show_label = false
