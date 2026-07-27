@@ -60,12 +60,7 @@ in
     enable = true;
   };
 
-  # Extraktions-Tools + thunar-extract Script systemweit bereitstellen
-  environment.systemPackages = [
-    thunar-extract
-    pkgs.unzip
-    pkgs.gnutar
-    pkgs.p7zip
-    pkgs.unrar
-  ];
+  # thunar-extract Script systemweit bereitstellen
+  # (unzip, unrar, p7zip bereits in environment-common.nix; gnutar im System-Default)
+  environment.systemPackages = [ thunar-extract ];
 }
