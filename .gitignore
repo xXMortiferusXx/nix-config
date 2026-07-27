@@ -10,3 +10,6 @@ home/mortiferus/state/noctalia/notification_history.json
 # Noctalia Plugin Sources: werden automatisch von Noctalia gecloned
 home/mortiferus/state/noctalia/plugins/sources/
 home/backbone/state/noctalia/plugins/sources/
+# Noctalia Runtime-PID-Dateien: ändern sich bei jedem Start
+home/mortiferus/state/noctalia/plugins/data/**/*.pid
+home/backbone/state/noctalia/plugins/data/**/*.pid
