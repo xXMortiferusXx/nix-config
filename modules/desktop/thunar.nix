@@ -58,7 +58,7 @@ in
   # Thunar aktivieren + Archive-Plugin als Fallback
   programs.thunar = {
     enable = true;
-    plugins = with pkgs.xfce; [ thunar-archive-plugin ];
+    plugins = with pkgs; [ thunar-archive-plugin ];
   };
 
   # Extraktions-Tools bereitstellen
