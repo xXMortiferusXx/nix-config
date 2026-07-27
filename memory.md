@@ -292,7 +292,7 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | 09 | `Entpacken → In Ordner entpacken...` | Rechtsklick-Untermenü: Archiv in neuen Unterordner (Archivname) entpacken |
 
 ### Implementierung
-- `programs.thunar.enable = true` + `thunar-archive-plugin`
+- `programs.thunar.enable = true` (kein Archive-Plugin – Custom Actions reichen)
 - Custom Actions via `/etc/xdg/Thunar/uca.xml` (systemweit für alle User)
 - Untermenü via `<submenu>Entpacken</submenu>` (Thunar gruppiert Actions automatisch)
 - Helper-Script `thunar-extract` erkennt Format und nutzt passendes Tool (unzip, tar, 7z, unrar)
