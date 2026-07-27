@@ -281,20 +281,22 @@
 - `After=systemd-modules-load.service`, `WantedBy=multi-user.target`
 - Runtime-Toggle: `echo 0 | sudo tee /sys/.../conservation_mode` (bis Reboot)
 
-## Thunar Erweiterungen (vorgemerkt, 2026-07-24)
+## Thunar Erweiterungen (implementiert, 2026-07-27)
 
-Status: `modules/home/thunar.nix` wurde bei Git-Reset entfernt (uncommitted). Inhalt zur Wiederverwendung dokumentiert.
+Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 
-### Geplante Features
+### Features
 | # | Feature | Beschreibung |
 |---|---|---|
-| 08 | `thunar-extract-here` | Rechtsklick-Menü: Archiv im aktuellen Ordner extrahieren |
-| 09 | `thunar-extract-to-folder` | Rechtsklick-Menü: Archiv in neuen Unterordner extrahieren |
+| 08 | `Entpacken → Hier entpacken` | Rechtsklick-Untermenü: Archiv direkt im aktuellen Ordner entpacken |
+| 09 | `Entpacken → In Ordner entpacken...` | Rechtsklick-Untermenü: Archiv in neuen Unterordner (Archivname) entpacken |
 
-### Offene Entscheidung
-- Thunar vs. Nautilus – noch nicht final entschieden
-- Wenn Thunar: `thunar.nix` neu erstellen mit Extract-Actions
-- Wenn Nautilus: Features werden nicht benötigt (Nautilus hat native Extract-Funktion)
+### Implementierung
+- `programs.thunar.enable = true` + `thunar-archive-plugin`
+- Custom Actions via `/etc/xdg/Thunar/uca.xml` (systemweit für alle User)
+- Untermenü via `<submenu>Entpacken</submenu>` (Thunar gruppiert Actions automatisch)
+- Helper-Script `thunar-extract` erkennt Format und nutzt passendes Tool (unzip, tar, 7z, unrar)
+- Unterstützte Formate: zip, tar.gz/tgz, tar.bz2/tbz2, tar.xz/txz, tar, 7z, rar
 
 ## Package-Audit (2026-07-11)
 

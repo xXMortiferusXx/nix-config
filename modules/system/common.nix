@@ -24,6 +24,7 @@
     ../desktop/polkit.nix
     ../desktop/fonts.nix
     ../desktop/nautilus-emblems.nix
+    ../desktop/thunar.nix
     ../desktop/noctalia-greeter.nix
     ../desktop/niri.nix
 #    ../desktop/plasma.nix
