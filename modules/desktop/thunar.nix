@@ -55,13 +55,12 @@ let
 in
 
 {
-  # Thunar aktivieren + Archive-Plugin als Fallback
+  # Thunar aktivieren (kein Archive-Plugin – Custom Actions reichen)
   programs.thunar = {
     enable = true;
-    plugins = with pkgs; [ thunar-archive-plugin ];
   };
 
-  # Extraktions-Tools bereitstellen
+  # Extraktions-Tools + thunar-extract Script systemweit bereitstellen
   environment.systemPackages = [
     thunar-extract
     pkgs.unzip
@@ -69,30 +68,4 @@ in
     pkgs.p7zip
     pkgs.unrar
   ];
-
-  # Custom Actions systemweit unter /etc/xdg/Thunar/uca.xml ablegen
-  # Thunar gruppiert Actions mit gleichem <submenu> automatisch zu einem Untermenü
-  environment.etc."xdg/Thunar/uca.xml".text = ''
-    <?xml version="1.0" encoding="UTF-8"?>
-    <actions>
-      <action>
-        <icon>package-x-generic</icon>
-        <name>Hier entpacken</name>
-        <submenu>Entpacken</submenu>
-        <command>${thunar-extract}/bin/thunar-extract %f %d here</command>
-        <description>Archiv im aktuellen Ordner entpacken</description>
-        <patterns>${archivePatterns}</patterns>
-        <other-files/>
-      </action>
-      <action>
-        <icon>folder-open</icon>
-        <name>In Ordner entpacken...</name>
-        <submenu>Entpacken</submenu>
-        <command>${thunar-extract}/bin/thunar-extract %f %d tofolder</command>
-        <description>Archiv in neuen Unterordner entpacken</description>
-        <patterns>${archivePatterns}</patterns>
-        <other-files/>
-      </action>
-    </actions>
-  '';
 }
