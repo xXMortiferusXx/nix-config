@@ -8,7 +8,6 @@ in {
   home-manager.users.mortiferus = { config, ... }: {
     imports = [
       inputs.noctalia.homeModules.default
-      ../thunar-uca.nix
       ./config.nix
       ./autostart.nix
       ./mpv.nix

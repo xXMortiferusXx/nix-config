@@ -63,4 +63,32 @@ in
   # thunar-extract Script systemweit bereitstellen
   # (unzip, unrar, p7zip bereits in environment-common.nix; gnutar im System-Default)
   environment.systemPackages = [ thunar-extract ];
+
+  # Custom Actions systemweit unter /etc/xdg/Thunar/uca.xml ablegen
+  # Thunar gruppiert Actions mit gleichem <submenu> automatisch zu einem Untermenü
+  environment.etc."xdg/Thunar/uca.xml".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <actions>
+      <action>
+        <icon>package-x-generic</icon>
+        <name>Hier entpacken</name>
+        <unique-id>net.mortiferus.thunar.extract-here</unique-id>
+        <submenu>Entpacken</submenu>
+        <command>${thunar-extract}/bin/thunar-extract %f %d here</command>
+        <description>Archiv im aktuellen Ordner entpacken</description>
+        <patterns>${archivePatterns}</patterns>
+        <other-files/>
+      </action>
+      <action>
+        <icon>folder-open</icon>
+        <name>In Ordner entpacken...</name>
+        <unique-id>net.mortiferus.thunar.extract-to-folder</unique-id>
+        <submenu>Entpacken</submenu>
+        <command>${thunar-extract}/bin/thunar-extract %f %d tofolder</command>
+        <description>Archiv in neuen Unterordner entpacken</description>
+        <patterns>${archivePatterns}</patterns>
+        <other-files/>
+      </action>
+    </actions>
+  '';
 }

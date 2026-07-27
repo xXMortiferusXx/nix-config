@@ -6,7 +6,6 @@ in {
   home-manager.users.backbone = { config, ... }: {
     imports = [
       inputs.noctalia.homeModules.default
-      ../thunar-uca.nix
       ./config.nix
       ./autostart.nix
     ];
