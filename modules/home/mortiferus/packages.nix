@@ -29,6 +29,9 @@ pkgs: with pkgs; [
   goverlay
   vulkan-tools
 
+  # --- Gaming ---
+  rusty-path-of-building
+
   # --- Office & Media ---
   thunderbird-latest
   libreoffice

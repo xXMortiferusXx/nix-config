@@ -11,7 +11,6 @@ in {
       ./config.nix
       ./autostart.nix
       ./mpv.nix
-      ./distrobox-sidekick.nix
     ];
 
     programs.mangohud = {
