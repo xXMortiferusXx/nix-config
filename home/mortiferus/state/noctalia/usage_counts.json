@@ -2,9 +2,11 @@
   "Applications": {
     "/etc/profiles/per-user/mortiferus/share/applications/com.heroicgameslauncher.hgl.desktop": 7,
     "/etc/profiles/per-user/mortiferus/share/applications/com.vysp3r.ProtonPlus.desktop": 5,
+    "/home/mortiferus/.local/share/applications/sidekick.desktop": 4,
     "/run/current-system/sw/share/applications/legion_gui.desktop": 2,
     "/run/current-system/sw/share/applications/net.lutris.Lutris.desktop": 9,
     "/run/current-system/sw/share/applications/protontricks.desktop": 1,
+    "/run/current-system/sw/share/applications/sidekick.desktop": 3,
     "/run/current-system/sw/share/applications/steam.desktop": 7
   }
 }

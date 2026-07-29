@@ -1,5 +1,7 @@
 {
   "Applications": [
+    "/home/mortiferus/.local/share/applications/sidekick.desktop",
+    "/run/current-system/sw/share/applications/sidekick.desktop",
     "/run/current-system/sw/share/applications/steam.desktop",
     "/etc/profiles/per-user/mortiferus/share/applications/com.heroicgameslauncher.hgl.desktop",
     "/etc/profiles/per-user/mortiferus/share/applications/com.vysp3r.ProtonPlus.desktop",
