@@ -13,3 +13,27 @@ home/backbone/state/noctalia/plugins/sources/
 # Noctalia Runtime-PID-Dateien: ändern sich bei jedem Start
 home/mortiferus/state/noctalia/plugins/data/**/*.pid
 home/backbone/state/noctalia/plugins/data/**/*.pid
+
+# Noctalia Caches: werden von Noctalia automatisch generiert/aktualisiert
+home/mortiferus/state/noctalia/community-palettes/
+home/mortiferus/state/noctalia/community-templates/
+home/mortiferus/state/noctalia/plugin-cache/
+home/mortiferus/state/noctalia/notification_history_assets/
+home/mortiferus/state/noctalia/plugins/data/
+home/mortiferus/state/noctalia/screen_time.json
+home/mortiferus/state/noctalia/recently_used.json
+home/mortiferus/state/noctalia/usage_counts.json
+home/mortiferus/state/noctalia/instance.id
+home/mortiferus/state/noctalia/.setup-complete
+
+# Gleiche Patterns für backbone falls vorhanden
+home/backbone/state/noctalia/community-palettes/
+home/backbone/state/noctalia/community-templates/
+home/backbone/state/noctalia/plugin-cache/
+home/backbone/state/noctalia/notification_history_assets/
+home/backbone/state/noctalia/plugins/data/
+home/backbone/state/noctalia/screen_time.json
+home/backbone/state/noctalia/recently_used.json
+home/backbone/state/noctalia/usage_counts.json
+home/backbone/state/noctalia/instance.id
+home/backbone/state/noctalia/.setup-complete
