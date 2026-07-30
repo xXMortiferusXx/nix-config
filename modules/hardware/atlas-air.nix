@@ -25,4 +25,21 @@
       }
     ];
   };
+
+  services.pipewire.wireplumber.extraConfig."11-game-routing" = {
+    "policy.policy-node.rules" = [
+      {
+        matches = [
+          {
+            "application.name" = "~PathOfExile";
+          }
+        ];
+        actions = {
+          update-props = {
+            "node.target" = "GameSink";
+          };
+        };
+      }
+    ];
+  };
 }
