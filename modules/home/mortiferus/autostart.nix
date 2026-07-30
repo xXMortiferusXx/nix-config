@@ -82,5 +82,20 @@ in
         Restart = "on-failure";
       };
     };
+    obex = {
+      Unit = {
+        Description = "Bluetooth OBEX File Transfer";
+        After = [ "graphical-session.target" "noctalia.service" ];
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.bluez}/libexec/bluetooth/obexd --auto-accept --root=%h/Downloads/Bluetooth";
+        Type = "dbus";
+        BusName = "org.bluez.obex";
+        Restart = "on-failure";
+      };
+    };
   };
 }
