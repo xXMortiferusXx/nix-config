@@ -85,6 +85,38 @@
 2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
 3. `niri-unstable` zu instabil → Auf `pkgs.niri-stable` wechseln (älterer, getaggter Release)
 
+## Virtual Surround / HRTF (2026-07-31)
+
+### Setup
+- **7.1.4 Virtual Surround** für Atlas Air via PipeWire `filter-chain` + SOFA-Spatializer
+- **SADIE II D2** (KEMAR, 256 Taps, anechoic, TH Köln) als aktive HRTF
+- Alternative HRTFs gesammelt: `KU100_dry.sofa`, `subject_003.sofa` (CIPIC), `subject_021.sofa`
+- **12-Kanal-Layout**: FL FR FC LFE RL RR SL SR TFL TFR TRL TRR
+- **Quantum 1024** (`modules/hardware/audio.nix`) für stabile 256-Tap-Verarbeitung
+
+### Bekannter PipeWire-Bug: `bqeq` Label
+- `bqeq` existiert **nicht** in PipeWire 1.6.8 → muss `bq_lowshelf` / `bq_peaking` (mit Unterstrich) verwenden
+- Falsches Label crasht die komplette Filter-Chain → PoE1 hat lange nur 2 von 12 Kanälen ausgegeben
+- **Fix**: Alle EQ-Nodes auf `bq_lowshelf` + `bq_peaking` umgestellt
+
+### SADIE: Gain Compensation
+- SADIE ist **nicht** generell lauter als andere HRTFs (RMS -39 dB vs -15 dB bei subject_003)
+- **Aber**: Höhere Peak-Amplituden durch präzise 256-Tap-Convolution + Diffuse-Field-Equalisierung
+- Bei **12 parallelen Kanälen** summiert sich SADIE konstruktiv auf → massive Übersteuerung
+- **Community-Bekannt**: GitHub Issues (dhewm3 #768), Steam Audio Docs, Google VR-Studie warnen explizit vor SADIE-Clipping
+- **Empfohlener Gain**: 2-6 dB für Stereo→Binaural, wir brauchen **-18 dB** für 12-Kanal→Binaural
+- **Finaler Wert**: `-18.0 dB` via `bq_peaking` (Q=0.1, Breitband-Dämpfung) als Gain Compensation
+
+### PoE1 Audio-Output
+- PoE1 gibt tatsächlich **alle 12 Kanäle** aus (nicht nur Stereo!)
+- `PathOfExileSteam.exe:output_FL` bis `output_TRR` → `GameSink:playback_*`
+- FMOD in PoE1 upmixt 7.1 auf 12 Kanäle
+- In-Game-Auswahl "GameSink" nötig für 7.1.4-Modus
+
+### Atlas Air EQ
+- **EQ komplett neutral** (0 dB) – SADIE braucht keine Korrektur, klingt pur perfekt
+- Ursprüngliche Atlas Air EQ-Kurve (Dolby Smile + Korrektur) war für andere HRTFs gedacht
+
 ## Bekannte Probleme
 
 ### Atlas Air: Physischer Mute-Schalter stört Audio-Output
