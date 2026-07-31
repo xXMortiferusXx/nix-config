@@ -1,7 +1,6 @@
 pkgs: with pkgs; [
   # --- Desktop & Appearance (Theming) ---
   nwg-look
-  orchis-theme
   tela-icon-theme
   # catppuccin-gtk  # deaktiviert: python3.14-catppuccin inkompatibel mit neuem matplotlib
   qt6Packages.qt6ct

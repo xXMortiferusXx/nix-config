@@ -352,6 +352,7 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `git` | `backbone.nix` (User) | Bereits systemweit in `environment-common.nix` |
 | `openldap` | `environment-common.nix` | LDAP-Libs, nötig für nix-ld (bleibt dort), systemweit unnötig |
 | `gnome-themes-extra` | `mortiferus/packages.nix` | Redundant mit `orchis-theme` |
+| `orchis-theme` | `mortiferus/packages.nix` | Aus nixpkgs entfernt (Abhängigkeit `gtk-engine-murrine`/GTK 2 unmaintained, 2026-07-31) |
 | `cacert` | `mortiferus/packages.nix` | NixOS handled CA-Zertifikate systemweit, `nix-shell -p` (ohne `--pure`) erbt System-Umgebung |
 | `faugus-launcher` | `gaming/default.nix` | 4. Game-Launcher, Steam/Heroic/Lutris reichen |
 | `ladspa-sdk` | `audio.nix` | SDK für Entwicklung, `ladspaPlugins` reicht für Audio-Plugins (Chatmixer etc.) |
