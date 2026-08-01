@@ -1,0 +1,149 @@
+# /home/mortiferus/.config/pipewire/pipewire.conf.d/chatmixer.conf
+
+context.modules = [
+    # 1. SURROUND ENGINE 7.1.4 (SOFA-Spatializer, wandelt 12 Kanäle per HRTF in Stereo um)
+    { name = libpipewire-module-filter-chain
+      flags = [ nofail ]
+      args = {
+          node.description = "Atmos DSP Engine"
+          node.name = "AtmosFilter"
+          filter.graph = {
+              nodes = [
+                   # Ground-Plane Spatializer (7.1 Standard)
+                    { type = sofa label = spatializer name = spFL
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 35.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spFR
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 325.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spFC
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 0.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spRL
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 150.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spRR
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 210.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spSL
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 85.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+{ type = sofa label = spatializer name = spSR
+                      config = { filename = "/home/mortiferus/.config/pipewire/hrir_hesuvi/SADIE_D2.sofa" }
+                      control = { "Azimuth" = 275.0 "Elevation" = 0.0 "Radius" = 100.0  } }
+                    # LFE direkt
+                    { type = builtin label = copy name = copyLFE }
+                    # Layer-Mixer (nur Ground für 7.1)
+                    { type = builtin label = mixer name = mixBL }
+                    { type = builtin label = mixer name = mixBR }
+                     # Endmixer
+                     { type = builtin label = mixer name = mixL }
+                     { type = builtin label = mixer name = mixR }
+                     # SADIE D2 Gain Compensation (-18 dB Breitband)
+                     { type = builtin label = bq_peaking name = gainCompL
+                       control = { "Freq" = 1000.0 "Gain" = -18.0 "Q" = 0.1 } }
+                     { type = builtin label = bq_peaking name = gainCompR
+                       control = { "Freq" = 1000.0 "Gain" = -18.0 "Q" = 0.1 } }
+                    # Dolby-Smile EQ (Atmos-Gefühl für SADIE)
+                    { type = builtin label = bq_lowshelf name = eqL_bass
+                      control = { "Freq" = 80.0 "Gain" = 1.0 "Q" = 0.7 } }
+{ type = builtin label = bq_peaking name = eqL_mid
+                      control = { "Freq" = 600.0 "Gain" = -2.0 "Q" = 1.5 } }
+                    { type = builtin label = bq_peaking name = eqL_treb
+                      control = { "Freq" = 4000.0 "Gain" = 0.0 "Q" = 1.5 } }
+                    { type = builtin label = bq_peaking name = eqL_high
+                      control = { "Freq" = 8000.0 "Gain" = 1.5 "Q" = 2.0 } }
+{ type = builtin label = bq_lowshelf name = eqR_bass
+                      control = { "Freq" = 80.0 "Gain" = 1.0 "Q" = 0.7 } }
+{ type = builtin label = bq_peaking name = eqR_mid
+                      control = { "Freq" = 600.0 "Gain" = -2.0 "Q" = 1.5 } }
+                    { type = builtin label = bq_peaking name = eqR_treb
+                      control = { "Freq" = 4000.0 "Gain" = 0.0 "Q" = 1.5 } }
+                    { type = builtin label = bq_peaking name = eqR_high
+                      control = { "Freq" = 8000.0 "Gain" = 1.5 "Q" = 2.0 } }
+              ]
+              links = [
+                  # Ground → Bottom-Mixer
+                  { output = "spFL:Out L" input = "mixBL:In 1" }
+                  { output = "spFL:Out R" input = "mixBR:In 1" }
+                  { output = "spFR:Out L" input = "mixBL:In 2" }
+                  { output = "spFR:Out R" input = "mixBR:In 2" }
+                  { output = "spFC:Out L" input = "mixBL:In 3" }
+                  { output = "spFC:Out R" input = "mixBR:In 3" }
+                  { output = "spRL:Out L" input = "mixBL:In 4" }
+                  { output = "spRL:Out R" input = "mixBR:In 4" }
+                  { output = "spRR:Out L" input = "mixBL:In 5" }
+                  { output = "spRR:Out R" input = "mixBR:In 5" }
+                  { output = "spSL:Out L" input = "mixBL:In 6" }
+                  { output = "spSL:Out R" input = "mixBR:In 6" }
+                  { output = "spSR:Out L" input = "mixBL:In 7" }
+                  { output = "spSR:Out R" input = "mixBR:In 7" }
+                  { output = "copyLFE:Out" input = "mixBL:In 8" }
+                  { output = "copyLFE:Out" input = "mixBR:In 8" }
+                   # Layer → Endmixer
+                   { output = "mixBL:Out" input = "mixL:In 1" }
+                   { output = "mixBR:Out" input = "mixR:In 1" }
+                   # Endmixer → Gain Comp → EQ
+                   { output = "mixL:Out" input = "gainCompL:In" }
+                   { output = "gainCompL:Out" input = "eqL_bass:In" }
+                   { output = "eqL_bass:Out" input = "eqL_mid:In" }
+                   { output = "eqL_mid:Out" input = "eqL_treb:In" }
+                   { output = "eqL_treb:Out" input = "eqL_high:In" }
+                   { output = "mixR:Out" input = "gainCompR:In" }
+                   { output = "gainCompR:Out" input = "eqR_bass:In" }
+                   { output = "eqR_bass:Out" input = "eqR_mid:In" }
+                   { output = "eqR_mid:Out" input = "eqR_treb:In" }
+                   { output = "eqR_treb:Out" input = "eqR_high:In" }
+              ]
+               inputs  = [ "spFL:In" "spFR:In" "spFC:In" "copyLFE:In" "spRL:In" "spRR:In" "spSL:In" "spSR:In" ]
+              outputs = [ "eqL_high:Out" "eqR_high:Out" ]
+          }
+           capture.props = {
+               node.name = "AtmosSink"
+               media.class = "Audio/Sink"
+               audio.channels = 8
+               audio.position = [ FL FR FC LFE RL RR SL SR ]
+               monitor.channel-volumes = false
+           }
+          playback.props = {
+              node.target = "alsa_output.atlas_air_headset"
+              node.passive = true
+          }
+      }
+    }
+
+    # 2. GAME SINK 7.1.4 (Loopback, damit Spiele 12 Kanäle sehen)
+    { name = libpipewire-module-loopback
+      args = {
+          node.description = "Game Audio"
+           capture.props = {
+               node.name = "GameSink"
+               media.class = "Audio/Sink"
+               audio.channels = 8
+               audio.position = [ FL FR FC LFE RL RR SL SR ]
+           }
+          playback.props = {
+              node.target = "AtmosSink"
+              node.passive = true
+              audio.dont-reconnect = true
+          }
+      }
+    }
+
+    # 3. CHAT SINK (Stereo, direkt ans Headset)
+    { name = libpipewire-module-loopback
+      args = {
+          node.description = "Chat Audio"
+          capture.props = {
+              node.name = "ChatSink"
+              media.class = "Audio/Sink"
+              audio.position = [ FL FR ]
+          }
+          playback.props = {
+              node.target = "alsa_output.atlas_air_headset"
+              node.passive = true
+              audio.dont-reconnect = true
+          }
+      }
+    }
+]
