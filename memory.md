@@ -374,3 +374,49 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `goverlay` | MangoHud-GUI-Konfigurator, verwaltet `~/.config/MangoHud/MangoHud.conf` |
 | `vulkan-tools` | GOverlay Live-Preview (vkcube) + Vulkan-Debugging |
 | `vkbasalt` | Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen) |
+
+## Audio / Chatduck (2026-08-01)
+
+### Problem
+Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio entsteht Detailverlust, weil Game dauerhaft leiser gestellt werden muss, damit Chat durchkommt.
+
+### Versuche (alles scheiterte an PipeWire 1.6.8)
+- LADSPA `sc3_1427` (Sidechain Compressor): Lädt, reagiert aber nie auf Sidechain-Input.
+- LADSPA `sc4_1883`: Kein echter Sidechain-Audio-Input (nur Kontroll-Port).
+- LV2 `calf.lv2/SidechainCompressor`: PipeWire `filter-chain` kann LV2 nicht instanziieren ("can't load plugin type 'lv2'").
+- EasyEffects: Sidechain künstlich auf Hardware-Inputs beschränkt (GitHub #1641).
+- JACK+Carla+Calf: Theoretisch möglich, aber keine bestätigte Gaming-Config in Community; Streams disconnecten dynamisch.
+
+### Lösung: `chatduck` — Pegel-basiertes Auto-Ducking
+Da PipeWire keinen externen Sidechain unterstützt, lesen wir den **ChatSink-Monitor** direkt und steuern **GameSink** via `wpctl`.
+
+```
+Chat/Discord ──► ChatSink ──► [Monitor] ──► chatduck.py (RMS-Analyse)
+                                              │
+                                              ▼
+Game (7.1) ──► AtmosFilter (H3 SOFA) ──► GameSink ◄── wpctl set-volume
+```
+
+- **Daemon**: `python3 + pw-record + wpctl` (keine externen Abhängigkeiten)
+- **Trigger**: RMS > Threshold (~0.008) auf ChatSink-Monitor
+- **Attack**: 50 ms (schnelles Ducken bei Sprachbeginn)
+- **Release**: 300 ms (sanftes Wiederanheben)
+- **Duck-Ziel**: 60% (`CHATDUCK_DUCK_VOL=0.60`)
+- **Toggle**: `Mod+Alt+D` (Niri) / `Super+Alt+D` (Hyprland) — Notfall-Aus
+
+### Kalibrierung
+```bash
+chatduck-calibrate
+```
+Zeigt 30–60s live RMS-Pegel in Discord an und empfiehlt Threshold.
+
+### Files
+- `home/mortiferus/config/bin/chatduck` — Daemon (Nix-Store-Pfad, reproduzierbar)
+- `home/mortiferus/config/bin/chatduck-calibrate` — Threshold-Kalibrierung
+- `modules/home/mortiferus/autostart.nix` — systemd user service
+- `home/mortiferus/config/niri/cfg/keybinds.kdl` — `Mod+Alt+D` Toggle
+- `home/mortiferus/config/hypr/modules/keybinds.lua` — `Super+Alt+D` Toggle
+- `modules/hardware/audio.nix` — `clock.quantum = 512` (niedrigere Latenz)
+
+### Wichtige Erkenntnis
+Der ChatSink-Monitor eines `libpipewire-module-loopback` liefert in **PipeWire 1.6.8 brauchbares Audio** (~0.35 RMS bei Testton). Frühere Tests mit `pw-cat` zeigten nur −78 dBFS Rauschen — vermutlich falscher Node oder falsches Format. Dies war der entscheidende Durchbruch.
