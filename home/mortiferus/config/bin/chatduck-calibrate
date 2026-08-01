@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""
+chatduck-calibrate — Threshold-Kalibrierung für chatduck
+
+Zeigt Live-RMS-Pegel des ChatSink-Monitors an. Nach Ctrl+C gibt es eine
+Zusammenfassung mit Empfehlung für den optimalen Ducking-Threshold.
+"""
+
+import subprocess
+import struct
+import math
+import sys
+import time
+import signal
+import json
+import statistics
+
+SAMPLE_RATE   = 48000
+CHANNELS      = 2
+FORMAT        = "f32"
+CHUNK_MS      = 50   # Etwas größer für stabilere Anzeige
+CHUNK_SAMPLES = int(SAMPLE_RATE * CHUNK_MS / 1000)
+CHUNK_BYTES   = CHUNK_SAMPLES * CHANNELS * 4
+
+running = True
+rms_history = []
+
+signal.signal(signal.SIGINT, lambda s, f: globals().update({'running': False}))
+signal.signal(signal.SIGTERM, lambda s, f: globals().update({'running': False}))
+
+def get_node_id(name):
+    try:
+        out = subprocess.check_output(["pw-dump"], text=True)
+        data = json.loads(out)
+        for item in data:
+            if item.get("type") == "PipeWire:Interface:Node":
+                props = item.get("info", {}).get("props", {})
+                if props.get("node.name") == name:
+                    return str(item["id"])
+    except Exception as e:
+        print(f"[calib] Fehler: {e}", file=sys.stderr)
+    return None
+
+def main():
+    chat_id = get_node_id("ChatSink")
+    if not chat_id:
+        print("[calib] FEHLER: ChatSink nicht gefunden.", file=sys.stderr)
+        sys.exit(1)
+    
+    print("=" * 60)
+    print("chatduck-calibrate — Threshold-Kalibrierung")
+    print("=" * 60)
+    print(f"ChatSink ID: {chat_id}")
+    print("")
+    print("INSTRUKTION:")
+    print("  1. Starte Discord und tritt einem Voice-Channel bei.")
+    print("  2. Lass die anderen sprechen (oder spiele selbst was).")
+    print("  3. Beobachte die RMS-Werte unten.")
+    print("  4. Drücke Ctrl+C nach ~30–60 Sekunden.")
+    print("  5. Das Skript zeigt eine Threshold-Empfehlung an.")
+    print("")
+    print("Werte:")
+    print("  [Stille]  → RMS sehr niedrig  (z.B. 0.0001 – 0.001)")
+    print("  [Sprache] → RMS mittel        (z.B. 0.005 – 0.05)")
+    print("  [Laut]    → RMS hoch           (z.B. 0.05+)")
+    print("")
+    print("Drücke ENTER zum Starten...")
+    input()
+    
+    proc = subprocess.Popen(
+        ["pw-record", "--target", chat_id,
+         "--channels", str(CHANNELS),
+         "--format", FORMAT,
+         "-"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL
+    )
+    
+    print(f"\n{'Zeit':>8} | {'RMS':>10} | {'Balken'}")
+    print("-" * 60)
+    
+    start_time = time.time()
+    last_display = 0
+    
+    try:
+        while running:
+            raw = proc.stdout.read(CHUNK_BYTES)
+            if len(raw) < CHUNK_BYTES:
+                time.sleep(0.001)
+                continue
+            
+            fmt = "<" + "f" * (CHUNK_SAMPLES * CHANNELS)
+            samples = struct.unpack_from(fmt, raw)
+            sq = sum(s * s for s in samples)
+            rms = math.sqrt(sq / (CHUNK_SAMPLES * CHANNELS))
+            rms_history.append(rms)
+            
+            elapsed = time.time() - start_time
+            if elapsed - last_display >= 0.2:  # Alle 200ms aktualisieren
+                last_display = elapsed
+                bar = "█" * int(min(rms * 200, 40))
+                print(f"{elapsed:>7.1f}s | {rms:>10.5f} | {bar}")
+    
+    finally:
+        proc.terminate()
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+    
+    # Auswertung
+    if len(rms_history) < 10:
+        print("\nZu wenig Daten. Bitte länger laufen lassen.")
+        sys.exit(1)
+    
+    sorted_rms = sorted(rms_history)
+    n = len(sorted_rms)
+    
+    # Perzentile
+    p10 = sorted_rms[int(n * 0.10)]
+    p50 = sorted_rms[int(n * 0.50)]
+    p90 = sorted_rms[int(n * 0.90)]
+    p95 = sorted_rms[int(n * 0.95)]
+    
+    mean = statistics.mean(rms_history)
+    stdev = statistics.stdev(rms_history) if n > 1 else 0
+    
+    print("\n" + "=" * 60)
+    print("KALIBRIERUNGS-ERGEBNIS")
+    print("=" * 60)
+    print(f"  Gesamt-Samples:     {n}")
+    print(f"  Zeitraum:           {n * CHUNK_MS / 1000:.1f} s")
+    print(f"  Mittelwert (Mean):  {mean:.6f}")
+    print(f"  Standardabw.:       {stdev:.6f}")
+    print(f"  Minimum:            {min(rms_history):.6f}")
+    print(f"  Maximum:            {max(rms_history):.6f}")
+    print("")
+    print(f"  10. Perzentil:      {p10:.6f}  (untere 10% = Stille)")
+    print(f"  50. Perzentil:      {p50:.6f}  (Median)")
+    print(f"  90. Perzentil:      {p90:.6f}  (obere 10% = Sprache)")
+    print(f"  95. Perzentil:      {p95:.6f}  (obere 5% = laute Sprache)")
+    print("")
+    
+    # Empfehlung
+    # Threshold sollte zwischen Stille und Sprache liegen.
+    # Konservativ: p10 + 3*stdev oder p50 * 0.3
+    suggested = max(p10 * 3, mean * 0.5, p50 * 0.25)
+    suggested = round(suggested, 4)
+    
+    print("EMPFHEHLUNG:")
+    print(f"  Threshold für chatduck:  {suggested}")
+    print(f"  (liegt zwischen Stille und leiser Sprache)")
+    print("")
+    print("KONFIGURATION in chatduck:")
+    print(f"  Environment=\"CHATDUCK_THRESHOLD={suggested}\"")
+    print("  oder bearbeite /etc/nixos/home/mortiferus/config/bin/chatduck")
+    print("")
+    print("Hinweis: Wenn es zu oft duckt (Hintergrundrauschen), erhöhe den")
+    print("         Threshold leicht. Wenn es zu selten duckt, senke ihn.")
+
+if __name__ == "__main__":
+    main()

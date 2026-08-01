@@ -5,6 +5,9 @@
 let
   extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
 
+  # chatduck — Auto-Ducking für Game/Chat-Audio (in den Nix Store für echte Reproduzierbarkeit)
+  chatduck = pkgs.writeScriptBin "chatduck" (builtins.readFile ../../../home/mortiferus/config/bin/chatduck);
+
   steamPackage = pkgs.steam.override {
     extraPkgs = pkgs: with pkgs; [
       mangohud
@@ -97,5 +100,22 @@ in
         Restart = "on-failure";
       };
     };
+    chatduck = {
+      Unit = {
+        Description = "Chatduck — Auto-Ducking für Game/Chat-Audio";
+        After = [ "graphical-session.target" "pipewire.service" ];
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = "${chatduck}/bin/chatduck";
+        Restart = "on-failure";
+        RestartSec = 3;
+        Environment = "CHATDUCK_DUCK_VOL=0.60";
+      };
+    };
+
   };
 }

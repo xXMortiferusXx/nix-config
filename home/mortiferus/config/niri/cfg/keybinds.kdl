@@ -80,4 +80,7 @@ binds {
     Mod+Print   { screenshot-screen; }
     Alt+Print   { screenshot-window; }
 
+    // ─── Chatduck Toggle ───
+    Mod+Alt+D { spawn "sh" "-c" "systemctl --user is-active chatduck >/dev/null 2>&1 && systemctl --user stop chatduck || systemctl --user start chatduck"; }
+
 }
