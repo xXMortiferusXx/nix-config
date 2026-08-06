@@ -23,8 +23,8 @@
     enableDefaultPath = false;
     description = "Hyprland";
     bindsTo = [ "graphical-session.target" ];
-    before = [ "graphical-session.target" ];
-    wants = [ "graphical-session-pre.target" ];
+    before = [ "graphical-session.target" "xdg-desktop-autostart.target" ];
+    wants = [ "graphical-session-pre.target" "xdg-desktop-autostart.target" ];
     after = [ "graphical-session-pre.target" ];
     serviceConfig = {
       # notify: Hyprland sendet READY=1 (src/Compositor.cpp, sdNotify) NACH

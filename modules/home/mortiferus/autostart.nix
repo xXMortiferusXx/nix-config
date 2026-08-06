@@ -37,6 +37,21 @@ let
   };
 in
 {
+  # Unterdrückt den Paket-eigenen XDG-Autostart-Eintrag des polychromatic-Pakets
+  # (per-user-Profil: /etc/profiles/per-user/mortiferus/etc/xdg/autostart).
+  # Der Tray-Applet wird hier über polychromatic-tray.service gestartet, das die
+  # waitForTray-Reihenfolge + Restart über systemd bekommt. Der XDG-Eintrag liefe
+  # zeitgleich über xdg-desktop-autostart.target (hyprland.service: Wants) und
+  # würde per PID-Lock den systemd-verwalteten Applet killen (Restart-Kampf).
+  # Hidden=true ist der XDG-Spec-Override: gleicher Name in ~/.config/autostart
+  # hat Vorrang vor dem Profil-Pfad.
+  xdg.configFile."autostart/polychromatic-autostart.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Polychromatic Autostart
+    Hidden=true
+  '';
+
   systemd.user.tmpfiles.rules = [
     "L+ %h/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest - - - - ${lib.getOutput "steamcompattool" pkgs.proton-ge-bin}"
   ];

@@ -21,6 +21,11 @@ let
     dbus-update-activation-environment --all >/dev/null 2>&1
     systemctl --user --wait start hyprland.service >/dev/null 2>&1
     status=$?
+    # Parität zu niri-shutdown.target: beim Logout graphical-session.target
+    # stoppen, damit Autostart-Services (noctalia, steam, discord, Portale) mit
+    # veralteter Env nicht im User-Manager weiterlaufen (nächste Session startet
+    # sie frisch über das Target).
+    systemctl --user stop graphical-session.target >/dev/null 2>&1
     systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP >/dev/null 2>&1
     exit $status
     SCRIPT
