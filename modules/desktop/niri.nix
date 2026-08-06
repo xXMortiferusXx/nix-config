@@ -1,12 +1,12 @@
 # Niri Compositor (scrollable-tiling Wayland)
 # + gnome-keyring als systemd-Service + xdg-portal mit GTK+gnome-keyring + xwayland-satellite
-# Paket-Quelle: sodiboo/niri-flake (Overlay + niri.cachix.org Binary Cache)
+# Paket-Quelle: sodiboo/niri-flake (eigenes Flake-Paket + niri.cachix.org Binary Cache)
+# Kein Overlay: `inputs.niri.overlays.niri` baut gegen das lokale nixpkgs und bricht an
+# `libdisplay-info_0_2` (aus nixpkgs entfernt). Das Flake-eigene Paket nutzt das im
+# niri-flake gelockte nixpkgs und kommt aus dem Binary Cache.
 { config, pkgs, lib, inputs, ... }:
 
 {
-  # sodiboo/niri-flake Overlay aktivieren (für niri-stable / niri-unstable)
-  nixpkgs.overlays = [ inputs.niri.overlays.niri ];
-
   # Binary Cache für niri-flake (verhindert lokales Kompilieren)
   nix.settings = {
     substituters = [ "https://niri.cachix.org" ];
@@ -16,7 +16,7 @@
   programs.niri = {
     enable = true;
     # niri-unstable = aktueller main-Branch (immer vor Merge im Cache)
-    package = pkgs.niri-unstable;
+    package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri-unstable;
   };
 
   xdg.portal = {
