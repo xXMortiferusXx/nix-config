@@ -1,4 +1,4 @@
-# Noctalia Login-Greeter (–session niri, DE-Tastatur)
+# Noctalia Login-Greeter (DE-Tastatur, merkt letzte Session via sync.toml)
 # Workaround: tmpfiles kann .toml-Symlink nicht kopieren → fix-noctalia-greeter-toml
 { config, pkgs, lib, inputs, ... }:
 let
@@ -8,7 +8,6 @@ in
   programs.noctalia-greeter = {
     enable = true;
     package = greeterPkg;
-    greeter-args = "--session niri";
   };
 
   # Polkit-Policy überschreiben: aktive Benutzer dürfen den Greeter-Apply-Helper

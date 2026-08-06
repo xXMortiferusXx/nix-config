@@ -8,6 +8,22 @@ let
   # chatduck — Auto-Ducking für Game/Chat-Audio (in den Nix Store für echte Reproduzierbarkeit)
   chatduck = pkgs.writeScriptBin "chatduck" (builtins.readFile ../../../home/mortiferus/config/bin/chatduck);
 
+  # SNI-Tray-Watcher (org.kde.StatusNotifierWatcher) wird von noctalia erst
+  # registriert, NACHDEM noctalia wirklich läuft (noctalia.service ist
+  # Type=simple, systemd meldet "started" sofort beim Exec). Electron-Apps
+  # (Discord) registrieren ihr Tray-Item aber nur EINMAL beim Start und nie
+  # nach – starten sie vor dem Watcher, fehlt das Systray-Icon dauerhaft.
+  # → Vor dem App-Start warten, bis der Watcher wirklich bereit ist.
+  waitForTray = pkgs.writeShellScript "wait-for-tray" ''
+    until ${pkgs.systemd}/bin/busctl --user get-property \
+      org.kde.StatusNotifierWatcher /StatusNotifierWatcher \
+      org.kde.StatusNotifierWatcher IsStatusNotifierHostRegistered \
+      2>/dev/null | ${pkgs.gnugrep}/bin/grep -q 'b true'; do
+      ${pkgs.coreutils}/bin/sleep 0.3
+    done
+  '';
+
+
   steamPackage = pkgs.steam.override {
     extraPkgs = pkgs: with pkgs; [
       mangohud
@@ -35,6 +51,7 @@ in
         WantedBy = [ "graphical-session.target" ];
       };
       Service = {
+        ExecStartPre = [ waitForTray ];
         ExecStart = "${pkgs.discord}/bin/discord";
         Restart = "on-failure";
         RestartSec = 5;
@@ -54,6 +71,7 @@ in
           "XCURSOR_THEME=Bibata-Modern-Ice"
           "XCURSOR_SIZE=24"
         ];
+        ExecStartPre = [ waitForTray ];
         ExecStart = "${steamPackage}/bin/steam";
         Restart = "on-failure";
         RestartSec = 10;

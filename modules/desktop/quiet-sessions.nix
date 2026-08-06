@@ -9,7 +9,20 @@ let
 
     cat > $out/bin/start-hyprland << 'SCRIPT'
     #!/bin/sh
-    exec ${config.programs.hyprland.package}/bin/start-hyprland >/dev/null 2>&1
+    # Wie niri-session: Environment importieren und hyprland.service starten.
+    # hyprland.service hat BindsTo=graphical-session.target → das Target wird als
+    # Dependency aktiviert (manueller `systemctl start` ist verweigert) und damit
+    # starten die systemd-user-Services (noctalia, steam, discord, ...).
+    if systemctl --user -q is-active hyprland.service; then
+      exit 1
+    fi
+    systemctl --user reset-failed >/dev/null 2>&1
+    systemctl --user import-environment >/dev/null 2>&1
+    dbus-update-activation-environment --all >/dev/null 2>&1
+    systemctl --user --wait start hyprland.service >/dev/null 2>&1
+    status=$?
+    systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP >/dev/null 2>&1
+    exit $status
     SCRIPT
     chmod +x $out/bin/start-hyprland
 
@@ -26,7 +39,7 @@ let
     [Desktop Entry]
     Name=Hyprland
     Comment=Hyprland
-    Exec=start-hyprland >/dev/null 2>&1
+    Exec=$out/bin/start-hyprland >/dev/null 2>&1
     Type=Application
     DesktopNames=Hyprland
     EOF
