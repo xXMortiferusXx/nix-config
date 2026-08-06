@@ -63,10 +63,30 @@ def set_volume(node_id, vol):
     except Exception:
         pass
 
+def spawn_capture(chat_id):
+    """ChatSink-Monitor als Capture-Device öffnen und pw-record-Prozess zurückgeben."""
+    return subprocess.Popen(
+        ["pw-record", "--target", chat_id,
+         "--channels", str(CHANNELS),
+         "--format", FORMAT,
+         "-"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL
+    )
+
 def main():
-    chat_id = get_node_id("ChatSink")
-    game_id = get_node_id("GameSink")
-    
+    sys.stdout.reconfigure(line_buffering=True)
+
+    # Warten bis die Sinks existieren (Boot-Race: chatmixer.conf lädt evtl. später)
+    chat_id = None
+    game_id = None
+    for _ in range(60):
+        chat_id = get_node_id("ChatSink")
+        game_id = get_node_id("GameSink")
+        if chat_id and game_id:
+            break
+        time.sleep(0.5)
+
     if not chat_id or not game_id:
         print("[chatduck] FEHLER: ChatSink oder GameSink nicht gefunden.", file=sys.stderr)
         print("[chatduck] Stelle sicher, dass chatmixer.conf geladen ist.", file=sys.stderr)
@@ -75,15 +95,7 @@ def main():
     print(f"[chatduck] ChatSink={chat_id}, GameSink={game_id}")
     print(f"[chatduck] Threshold={THRESHOLD_RMS:.4f} | Duck={DUCK_VOLUME:.0%} | Release={RELEASE_MS:.0f}ms")
     
-    # ChatSink-Monitor als Capture-Device öffnen
-    proc = subprocess.Popen(
-        ["pw-record", "--target", chat_id,
-         "--channels", str(CHANNELS),
-         "--format", FORMAT,
-         "-"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL
-    )
+    proc = spawn_capture(chat_id)
     
     state = "idle"
     above_count = 0
@@ -93,6 +105,17 @@ def main():
     try:
         while running:
             raw = proc.stdout.read(CHUNK_BYTES)
+            if not raw:
+                # EOF: pw-record beendet oder Pipe geschlossen -> neu starten
+                if proc.poll() is None:
+                    proc.wait(timeout=5)
+                print(f"[chatduck] pw-record beendet (rc={proc.returncode}), starte neu...")
+                proc = spawn_capture(chat_id)
+                state = "idle"
+                above_count = 0
+                below_count = 0
+                time.sleep(0.5)
+                continue
             if len(raw) < CHUNK_BYTES:
                 time.sleep(0.001)
                 continue

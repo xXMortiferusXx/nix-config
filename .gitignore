@@ -1,6 +1,8 @@
 .aider*
 *nex-iso*
 result
+result-man
+__pycache__/
 
 # Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
 home/mortiferus/state/noctalia/state.toml

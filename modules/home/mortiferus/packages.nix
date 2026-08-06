@@ -37,20 +37,20 @@ pkgs: with pkgs; [
   hunspellDicts.de_DE
   hyphenDicts.de-de
   zathura
-  loupe
-  gimp
-  naps2
+    loupe
+    gimp
+    naps2
 
-  # --- Development & 3D Printing ---
-  opencode
-  prusa-slicer
-  orca-slicer
+    # --- Development & 3D Printing ---
+    opencode
+    prusa-slicer
+    orca-slicer
 
-  # --- Python-Umgebung (poe-price-checker) ---
-  (python3.withPackages (ps: with ps; [
-    pyqt6
-    httpx
-    pyperclip
-    pynput
-  ]))
+    # --- Python-Umgebung (poe-price-checker) ---
+    (python3.withPackages (ps: with ps; [
+      pyqt6
+      httpx
+      pyperclip
+      pynput
+    ]))
 ]
