@@ -8,7 +8,7 @@
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
 - `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
-- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + CachyOS pinned Overlay + tmpfiles für `/var/lib/nixos`
+- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + tmpfiles für `/var/lib/nixos`
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -16,7 +16,7 @@
 - `desktop/fonts.nix` – Fonts
 - `desktop/nautilus-emblems.nix` – Nautilus Emblems
 - `desktop/noctalia-greeter.nix` – zentraler greeter (nicht per-host)
-- `desktop/niri.nix` – niri via sodiboo/niri-flake (Overlay + niri-unstable + niri.cachix.org Cache)
+- `desktop/niri.nix` – niri via sodiboo/niri-flake (Flake-Paket + niri-unstable + niri.cachix.org Cache)
 
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
@@ -76,14 +76,20 @@
 
 ### Setup
 - `flake.nix`: Input `github:sodiboo/niri-flake`
-- `modules/desktop/niri.nix`: Overlay + Cache + `package = pkgs.niri-unstable;`
+- `modules/desktop/niri.nix`: Cache + `package = inputs.niri.packages.${system}.niri-unstable;`
 - NixOS-Modul von sodiboo wird **nicht** importiert (würde nixpkgs-Modul deaktivieren und Konflikte mit unserer Portal/Polkit-Config erzeugen)
-- Stattdessen: Nur Overlay anwenden + Paket überschreiben + Cache manuell setzen
+- Stattdessen: Flake-eigenes Paket (eigenes gelocktes nixpkgs) + Cache manuell setzen
+
+### Kein Overlay (seit 2026-08-06)
+- `inputs.niri.overlays.niri` wurde **entfernt**: Das Overlay baut gegen das lokale nixpkgs und
+  brach an `libdisplay-info_0_2` (aus nixpkgs entfernt, "unused in Nixpkgs").
+- Das Flake-eigene Paket `inputs.niri.packages.${system}.niri-unstable` nutzt das im niri-flake
+  gelockte nixpkgs und kommt aus dem `niri.cachix.org` Binary Cache (kein lokaler Build).
 
 ### Fallback bei Problemen
 1. Cache nicht erreichbar → Nix baut lokal (dauert länger, aber funktioniert)
 2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
-3. `niri-unstable` zu instabil → Auf `pkgs.niri-stable` wechseln (älterer, getaggter Release)
+3. `niri-unstable` zu instabil → Auf `inputs.niri.packages.${system}.niri-stable` wechseln (älterer, getaggter Release)
 
 ## Virtual Surround / HRTF (2026-07-31)
 
@@ -276,8 +282,6 @@
 - `cache.nixos.org` – Offizieller NixOS Cache
 - `nix-community.cachix.org` – Nix-Community Cache
 - `noctalia.cachix.org` – Noctalia v5 Binaries (Flake-Input: `github:noctalia-dev/noctalia/cachix`)
-- `attic.xuyh0120.win/lantian` – CachyOS Kernel (xddxdd/nix-cachyos-kernel, primärer Cache)
-- `cache.xinux.uz` – CachyOS Kernel Community-Mirror (bahrom04, alternativer Cache für Redundanz)
 
 ## bpftune
 - `services.bpftune.enable = true` in `cachyos-tuning.nix`
@@ -301,10 +305,10 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- Flake Input: `cachyos.url = "github:xddxdd/nix-cachyos-kernel/release"`
-- Overlay: `cachyos.overlays.pinned` in `boot-common.nix` (shared, garantiert Cache-Treffer)
-- **nex**: `cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3` (scx bpfland aktiv)
-- **styx**: `cachyosKernels.linuxPackages-cachyos-latest`
+- Mainline nixpkgs-Kernel: `linuxPackages_latest` (7.1.6) auf beiden Hosts
+- **nex**: `boot.kernelPackages = pkgs.linuxPackages_latest` (scx bpfland aktiv)
+- **styx**: `boot.kernelPackages = pkgs.linuxPackages_latest`
+- CachyOS-Kernel am 2026-08-06 entfernt (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
 - scx (bpfland) aktiv auf nex, Performance-Modus in `boot-nex.nix`
 - `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
 - `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`

@@ -1,12 +1,15 @@
 # Gemeinsame Boot-Konfig für alle Hosts
 # Importiert cachyos-tuning + btrfs, setzt systemd-boot, zram, fstrim, chrony, nix.gc
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   imports = [
     ./cachyos-tuning.nix
     ./btrfs.nix
   ];
+
+  # CachyOS Kernel-Overlay (shared, kein Kernel-Zwang – wird pro Host gesetzt)
+  nixpkgs.overlays = [ inputs.cachyos.overlays.pinned ];
 
   # Gemeinsame Bootloader-Einstellungen
   boot.loader.systemd-boot.enable = true;

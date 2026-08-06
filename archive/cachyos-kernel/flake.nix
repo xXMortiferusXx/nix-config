@@ -28,6 +28,9 @@
       url = "github:noctalia-dev/noctalia-greeter";
     };
 
+    # CachyOS Kernel
+    cachyos.url = "github:xddxdd/nix-cachyos-kernel/release";
+
     # Hyprland (offizieller Flake mit Binary Cache)
     # - Binary Cache: https://hyprland.cachix.org
     # - Paket: inputs.hyprland.packages.${system}.hyprland
@@ -43,7 +46,7 @@
 
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, cachyos, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
