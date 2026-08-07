@@ -130,6 +130,17 @@ window-rule {
     variable-refresh-rate true
 }
 
+// Spiele außerhalb von Steam (Heroic, Lutris, ...) über Gamescope starten.
+// Das Gamescope-Fenster hat immer die App-ID "gamescope", damit greift diese
+// Regel generell auf alle Proton-/Native-Spiele, unabhängig vom Launcher.
+window-rule {
+    match app-id="^gamescope$"
+    open-on-workspace "4"
+    open-fullscreen true
+    focus-ring { off; }
+    variable-refresh-rate true
+}
+
 
 // ────────────── Terminal ──────────────
 window-rule {
