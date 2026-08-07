@@ -13,6 +13,9 @@
     "transparent_hugepage=madvise"
     "amd_pstate=active"
     "nvidia.NVreg_DynamicPowerManagement=0x02"
+    # amdgpu: VRR-assoziiertes MCLK-Switching + Stutter-Mode deaktivieren (Snow-Blitz bei Last)
+    "amdgpu.dcfeaturemask=0x0"
+    "amdgpu.dcdebugmask=0x2"
   ];
 
   boot.kernel.sysctl = {
