@@ -25,12 +25,12 @@
   zramSwap.memoryPercent = lib.mkForce 100;
 
   systemd.services.scx-scheduler = {
-    description = "SCX BPFLand Scheduler (Performance)";
+    description = "SCX LAVD Scheduler (Performance)";
     after = [ "systemd-modules-load.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.scx.rustscheds}/bin/scx_bpfland -m performance -P";
+      ExecStart = "${pkgs.scx.rustscheds}/bin/scx_lavd --performance";
       Restart = "on-failure";
       StandardOutput = "journal";
     };
