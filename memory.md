@@ -10,7 +10,7 @@
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
 - `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
 - `system/boot-common.nix` – importiert cachyos-tuning + btrfs + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – xanmod + scx_lavd, **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-nex.nix` – xanmod + scx_bpfland (Auto-Modus), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -133,6 +133,26 @@
 - Ursprüngliche Atlas Air EQ-Kurve (Dolby Smile + Korrektur) war für andere HRTFs gedacht
 
 ## Bekannte Probleme
+
+### AX210: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-12)
+- **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
+- **Ursache**: Intel AX210 Combo-Chip (WiFi + BT) teilt Airtime intern, iwlwifi-Firmware `89.735b75a4.0` ist auf Linux tot gepflegt
+- **Kernel-Log**: `iwlwifi: missed beacons exceeds threshold`, `Unhandled alg: 0x707`
+- **Test 1**: `bt_coex_active=0` in `modules/hardware/wifi-iwlwifi-btcoex.nix` (BT-Koexistenz deaktiviert)
+  - **Status**: Lösung verifiziert (2026-08-12). Ping bleibt unter Volllast stabil, nur normale ms-Schwankungen.
+  - **Speedtest-Ergebnisse**: `wieistmeineip.de` = 1.078 Mbit/s, `fast.com` = 1,1 Gbps — beide ohne Drosselung oder Abbruch
+  - **Einschränkung**: Bluetooth am AX210 ist ohne Koexistenz-Schutz (gleichzeitige WLAN+BT-Nutzung kann instabil werden)
+  - **Langfristig**: Weiterbeobachtung über mehrere Tage (Steam-Downloads, Alltagsnutzung). Workaround funktioniert aktuell, aber ist kein "echter" Fix — Intel pflegt die AX210-Firmware für Linux nicht mehr. Entscheidung: Nicht sofort tauschen, aber Backup-Plan halten.
+
+### AX210 Hardware-Upgrade-Plan (Backup)
+- **Ziel**: Volle Performance + stabile Latenz unter Linux, ohne Treiber-Workarounds
+- **Empfohlene Karte**: MediaTek MT7922 (M.2 2230) oder AMD RZ616 (rebadged MT7922)
+  - Treiber: `mt7921e` (Kernel 5.16+, aktiv gepflegt von MediaTek)
+  - WiFi 6E, 160 MHz, Bluetooth integriert
+  - Linux-Support deutlich besser als AX210
+- **Alternative**: USB-Stick mit MT7921AU-Chip (z.B. TP-Link Archer TX20U) für Plug & Play
+- **Preis**: ~20-40€, Einbau: 1 Schraube M.2 2230
+- **Status**: Nicht dringend, aber als Plan B festhalten
 
 ### Atlas Air: Physischer Mute-Schalter stört Audio-Output
 - **Problem**: Wird der Flip-to-Mute Schalter am Headset benutzt, fällt der Ton am Output aus und wieder ein
@@ -314,7 +334,7 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex**: `boot.kernelPackages = pkgs.linuxPackages_xanmod_latest` + `scx_lavd --performance`
+- **nex**: `boot.kernelPackages = pkgs.linuxPackages_xanmod_latest` + `scx_bpfland` (Auto-Modus, `--primary-domain=auto` per Default)
 - **styx**: `boot.kernelPackages = pkgs.linuxPackages_latest`
 - CachyOS-Kernel am 2026-08-06 entfernt (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
 - `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)

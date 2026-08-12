@@ -4,6 +4,7 @@
     iw
     jq
     ookla-speedtest
+    scx.full
   ];
 
   programs.fish.shellAliases = {

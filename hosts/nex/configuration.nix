@@ -14,6 +14,7 @@
       ../../modules/hardware/legion.nix
       ../../modules/hardware/atlas-air.nix
       ../../modules/hardware/touchpad.nix
+      ../../modules/hardware/wifi-iwlwifi-btcoex.nix  # BT-Koexistenz deaktiviert fuer stabileres WLAN
       # ../../modules/hardware/wifi-iwlwifi.nix  # deaktiviert zum Testen
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix

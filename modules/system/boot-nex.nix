@@ -1,5 +1,6 @@
-# Boot-Konfiguration fuer nex (xanmod + scx_lavd)
+# Boot-Konfiguration fuer nex (xanmod + scx_bpfland)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
+# scx_bpfland ohne Flags = Auto-Modus (--primary-domain=auto per Default).
 { config, pkgs, lib, ... }:
 
 {
@@ -26,12 +27,12 @@
   zramSwap.memoryPercent = lib.mkForce 100;
 
   systemd.services.scx-scheduler = {
-    description = "SCX LAVD Scheduler (Performance)";
+    description = "SCX bpfland Scheduler (Auto-Modus)";
     after = [ "systemd-modules-load.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.scx.rustscheds}/bin/scx_lavd --performance";
+      ExecStart = "${pkgs.scx.full}/bin/scx_bpfland";
       Restart = "on-failure";
       StandardOutput = "journal";
     };
