@@ -6,7 +6,7 @@ This is my personal NixOS flake managing two machines with a shared module syste
 
 | Host | Hardware | Role |
 |------|----------|------|
-| **nex** | AMD Ryzen + NVIDIA RTX, Lenovo Legion Laptop | Gaming / Desktop |
+| **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only mode), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
 
 Both share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
@@ -52,13 +52,13 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) with `niri.cachix.org` binary cache (`niri-unstable` branch) and **Hyprland** available on both
-- **Mainline** kernel (`linuxPackages_latest`, scx bpfland on nex) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **Xanmod** kernel (`linuxPackages_xanmod_latest`) with **scx scheduler** on nex (currently evaluating lavd vs. bpfland) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
 ## Desktop / Compositor
 
-Both hosts use Noctalia as the shell (started via `systemd --user`). The login manager is the Noctalia Greeter (`--session niri`). All user services (Vesktop, Steam, udiskie, …) run as `systemd.user.services`.
+Both hosts use Noctalia as the shell (started via `systemd --user`). The login manager is the Noctalia Greeter (`--session niri`). All user services (Discord, Steam, udiskie, …) run as `systemd.user.services`.
 
 ### Noctalia IPC Commands
 
@@ -68,9 +68,9 @@ See `memory.md` for the full list.
 
 ## Gaming (nex only)
 
-nex has a dedicated gaming module stack:
+nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU performance. It has a dedicated gaming module stack:
 
-- Steam (with hardware decoding)
+- Steam (with Proton-GE, hardware decoding)
 - Lutris (custom wrapper with steam-run)
 - Gamescope session
 - Feral Gamemode
@@ -100,7 +100,7 @@ Meine persönliche NixOS-Flake, die zwei Rechner mit einem gemeinsamen Modulsyst
 
 | Host | Hardware | Rolle |
 |------|----------|-------|
-| **nex** | AMD Ryzen + NVIDIA RTX, Lenovo Legion Laptop | Gaming / Desktop |
+| **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only Modus), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
 
 Beide teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.
@@ -146,13 +146,13 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) mit `niri.cachix.org` Binary Cache (`niri-unstable` Branch) und **Hyprland** auf beiden verfügbar
-- **Mainline**-Kernel (`linuxPackages_latest`, scx bpfland auf nex) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **Xanmod**-Kernel (`linuxPackages_xanmod_latest`) mit **scx Scheduler** auf nex (aktuell lavd vs. bpfland im Test) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
 ## Desktop / Compositor
 
-Beide Hosts nutzen Noctalia als Shell (gestartet via `systemd --user`). Der Login-Manager ist der Noctalia Greeter (`--session niri`). Alle User-Services (Vesktop, Steam, udiskie, …) laufen als `systemd.user.services`.
+Beide Hosts nutzen Noctalia als Shell (gestartet via `systemd --user`). Der Login-Manager ist der Noctalia Greeter (`--session niri`). Alle User-Services (Discord, Steam, udiskie, …) laufen als `systemd.user.services`.
 
 ### Noctalia IPC-Befehle
 
@@ -162,9 +162,9 @@ Die vollständige Liste steht in `memory.md`.
 
 ## Gaming (nur nex)
 
-nex hat einen dedizierten Gaming-Modul-Stack:
+nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale dGPU-Performance. Er hat einen dedizierten Gaming-Modul-Stack:
 
-- Steam (mit Hardware-Dekodierung)
+- Steam (mit Proton-GE, Hardware-Dekodierung)
 - Lutris (custom Wrapper mit steam-run)
 - Gamescope-Session
 - Feral Gamemode
