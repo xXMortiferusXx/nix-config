@@ -1,0 +1,8 @@
+#Damit git ruhe gibt und ich Daten live bearbeitenn kann 
+
+#---Einzelne Datei---#
+git update-index --assume-unchanged home/BENUTZERNAME/config/VERZEICHNISS/DEINE_DATEI
+
+
+#---Ganzes Verzeichniss---#
+git ls-files -z home/BENUTZERNAME/config/VERZEICHNISS/ | xargs -0 git update-index --assume-unchanged

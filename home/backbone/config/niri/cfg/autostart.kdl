@@ -1,0 +1,3 @@
+// ────────────── Startup Applications ──────────────
+// All apps are started via systemd --user services (graphical-session.target)
+// This file kept as placeholder for manual test-spawns

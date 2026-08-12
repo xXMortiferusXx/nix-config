@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""
+chatduck — Pegel-basiertes Auto-Ducking für PipeWire / NixOS
+
+Liest den ChatSink-Monitor in Echtzeit und senkt die GameSink-Lautstärke,
+wenn jemand im Voice-Chat spricht. Nutzt wpctl für Volume-Control.
+"""
+
+import os
+import subprocess
+import struct
+import math
+import sys
+import time
+import signal
+import json
+
+# --- Konfiguration (Kann via Umgebungsvariablen überschrieben werden) ---
+DUCK_VOLUME       = float(os.environ.get("CHATDUCK_DUCK_VOL",  "0.60"))  # Game auf 60% bei Ducking
+UNDUCK_VOLUME     = float(os.environ.get("CHATDUCK_UNDUCK_VOL","1.00")) # Game auf 100% im Ruhe
+THRESHOLD_RMS     = float(os.environ.get("CHATDUCK_THRESHOLD", "0.008"))  # ~-42 dBFS Startwert
+ATTACK_MS         = float(os.environ.get("CHATDUCK_ATTACK",   "50"))    # Schnelles Ducken
+RELEASE_MS        = float(os.environ.get("CHATDUCK_RELEASE",  "300"))   # Langsames Wiederanheben
+CHUNK_MS          = 10
+SAMPLE_RATE       = 48000
+CHANNELS          = 2
+FORMAT            = "f32"
+CHUNK_SAMPLES     = int(SAMPLE_RATE * CHUNK_MS / 1000)
+CHUNK_BYTES       = CHUNK_SAMPLES * CHANNELS * 4  # float32
+ATTACK_CHUNKS     = max(1, int(ATTACK_MS / CHUNK_MS))
+RELEASE_CHUNKS    = max(1, int(RELEASE_MS / CHUNK_MS))
+
+running = True
+
+def handler(signum, frame):
+    global running
+    running = False
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
+
+def get_node_id(name):
+    """Hole die Node-ID anhand des node.name über pw-dump."""
+    try:
+        out = subprocess.check_output(["pw-dump"], text=True)
+        data = json.loads(out)
+        for item in data:
+            if item.get("type") == "PipeWire:Interface:Node":
+                props = item.get("info", {}).get("props", {})
+                if props.get("node.name") == name:
+                    return str(item["id"])
+    except Exception as e:
+        print(f"[chatduck] Fehler bei Node-Suche: {e}", file=sys.stderr)
+    return None
+
+def set_volume(node_id, vol):
+    """PipeWire-Lautstärke setzen (0.0 – 1.0+)."""
+    try:
+        subprocess.run(
+            ["wpctl", "set-volume", str(node_id), str(vol)],
+            capture_output=True, check=False
+        )
+    except Exception:
+        pass
+
+def spawn_capture(chat_id):
+    """ChatSink-Monitor als Capture-Device öffnen und pw-record-Prozess zurückgeben."""
+    return subprocess.Popen(
+        ["pw-record", "--target", chat_id,
+         "--channels", str(CHANNELS),
+         "--format", FORMAT,
+         "-"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL
+    )
+
+def main():
+    sys.stdout.reconfigure(line_buffering=True)
+
+    # Warten bis die Sinks existieren (Boot-Race: chatmixer.conf lädt evtl. später)
+    chat_id = None
+    game_id = None
+    for _ in range(60):
+        chat_id = get_node_id("ChatSink")
+        game_id = get_node_id("GameSink")
+        if chat_id and game_id:
+            break
+        time.sleep(0.5)
+
+    if not chat_id or not game_id:
+        print("[chatduck] FEHLER: ChatSink oder GameSink nicht gefunden.", file=sys.stderr)
+        print("[chatduck] Stelle sicher, dass chatmixer.conf geladen ist.", file=sys.stderr)
+        sys.exit(1)
+    
+    print(f"[chatduck] ChatSink={chat_id}, GameSink={game_id}")
+    print(f"[chatduck] Threshold={THRESHOLD_RMS:.4f} | Duck={DUCK_VOLUME:.0%} | Release={RELEASE_MS:.0f}ms")
+    
+    proc = spawn_capture(chat_id)
+    
+    state = "idle"
+    above_count = 0
+    below_count = 0
+    last_report = 0
+    
+    try:
+        while running:
+            raw = proc.stdout.read(CHUNK_BYTES)
+            if not raw:
+                # EOF: pw-record beendet oder Pipe geschlossen -> neu starten
+                if proc.poll() is None:
+                    proc.wait(timeout=5)
+                print(f"[chatduck] pw-record beendet (rc={proc.returncode}), starte neu...")
+                proc = spawn_capture(chat_id)
+                state = "idle"
+                above_count = 0
+                below_count = 0
+                time.sleep(0.5)
+                continue
+            if len(raw) < CHUNK_BYTES:
+                time.sleep(0.001)
+                continue
+            
+            # Float32 little-endian stereo unpacken
+            fmt = "<" + "f" * (CHUNK_SAMPLES * CHANNELS)
+            samples = struct.unpack_from(fmt, raw)
+            
+            # RMS über beide Kanäle
+            sq = sum(s * s for s in samples)
+            rms = math.sqrt(sq / (CHUNK_SAMPLES * CHANNELS))
+            
+            # Hysterese
+            if rms > THRESHOLD_RMS:
+                above_count += 1
+                below_count = 0
+            else:
+                below_count += 1
+                above_count = 0
+            
+            # Zustandswechsel
+            if state == "idle" and above_count >= ATTACK_CHUNKS:
+                print(f"[chatduck] DUCK → GameSink {DUCK_VOLUME:.0%} (RMS={rms:.5f})")
+                set_volume(game_id, DUCK_VOLUME)
+                state = "ducking"
+                last_report = time.time()
+            
+            elif state == "ducking" and below_count >= RELEASE_CHUNKS:
+                print(f"[chatduck] UNDUCK → GameSink {UNDUCK_VOLUME:.0%} (RMS={rms:.5f})")
+                set_volume(game_id, UNDUCK_VOLUME)
+                state = "idle"
+                last_report = time.time()
+            
+    finally:
+        print("[chatduck] Beende... GameSink zurück auf 100%")
+        set_volume(game_id, UNDUCK_VOLUME)
+        proc.terminate()
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+
+if __name__ == "__main__":
+    main()
