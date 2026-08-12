@@ -14,7 +14,7 @@
       ../../modules/hardware/legion.nix
       ../../modules/hardware/atlas-air.nix
       ../../modules/hardware/touchpad.nix
-      ../../modules/hardware/wifi-iwlwifi.nix
+      # ../../modules/hardware/wifi-iwlwifi.nix  # deaktiviert zum Testen
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
       ../../modules/programs/ideamaker.nix
