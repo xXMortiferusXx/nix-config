@@ -26,18 +26,8 @@ let
     echo "--- Balanced Mode wiederhergestellt ---"
   '';
 
-  nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
-    export __NV_PRIME_RENDER_OFFLOAD=1
-    export __NV_PRIME_RENDER_OFFLOAD_SETTING=1
-    export __GLX_VENDOR_LIBRARY_NAME=nvidia
-    export __VK_LAYER_NV_optimus=NVIDIA_only
-    export VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
-    exec "$@"
-  '';
-
 in {
   environment.systemPackages = [
     game-performance
-    nvidia-offload
   ];
 }
