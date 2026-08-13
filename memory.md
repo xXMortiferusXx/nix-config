@@ -140,15 +140,28 @@
 
 ## Bekannte Probleme
 
-### AX210: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-12)
+### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
-- **Ursache**: Intel AX210 Combo-Chip (WiFi + BT) teilt Airtime intern, iwlwifi-Firmware `89.735b75a4.0` ist auf Linux tot gepflegt
-- **Kernel-Log**: `iwlwifi: missed beacons exceeds threshold`, `Unhandled alg: 0x707`
-- **Test 1**: `bt_coex_active=0` in `modules/hardware/wifi-iwlwifi-btcoex.nix` (BT-Koexistenz deaktiviert)
-  - **Status**: Lösung verifiziert (2026-08-12). Ping bleibt unter Volllast stabil, nur normale ms-Schwankungen.
-  - **Speedtest-Ergebnisse**: `wieistmeineip.de` = 1.078 Mbit/s, `fast.com` = 1,1 Gbps — beide ohne Drosselung oder Abbruch
-  - **Einschränkung**: Bluetooth am AX210 ist ohne Koexistenz-Schutz (gleichzeitige WLAN+BT-Nutzung kann instabil werden)
-  - **Langfristig**: Weiterbeobachtung über mehrere Tage (Steam-Downloads, Alltagsnutzung). Workaround funktioniert aktuell, aber ist kein "echter" Fix — Intel pflegt die AX210-Firmware für Linux nicht mehr. Entscheidung: Nicht sofort tauschen, aber Backup-Plan halten.
+- **Ursache ursprünglich vermutet**: AX210-Treiber/Firmware — `bt_coex_active=0`, Kernel-Wechsel, `11n_disable=8` getestet, alles ohne Erfolg
+- **Echte Ursache gefunden**: ASUS Router Firmware-Bug — `Broadcom Packet Flow Cache` (Archer Hardware-Offload) crasht bei Volllast
+- **Router-Log**: `[ERROR archer] archer_ucast_common_flow_set,413: Invalid ENET-WAN source`
+- **Trigger**: `igs: Unknown symbol emfc_mfdb_ipv6_membership_add` — IPv6-Multicast-Treiber broken in ASUS Firmware
+- **Workarounds getestet (alle erfolglos)**:
+  - `bt_coex_active=0` (wird von iwlmvm ignoriert)
+  - Kernel-Wechsel: Xanmod → Standard-Latest
+  - Router-Reboot + Multicast-Routing deaktiviert
+  - `11n_disable=8` (war nie aktiv, nur zum Test)
+- **Finale Lösung**: ASUS als **Access Point** (AP-Modus) statt Router
+  - FritzBox übernimmt NAT/Routing/DHCP (192.168.178.1)
+  - ASUS bietet nur WiFi 6E (6GHz)
+  - Kein Archer-Bug mehr, da keine NAT-Offload
+  - Erste Tests: Ping stabil bei Volllast
+
+### Netzwerk-Architektur (2026-08-13)
+- **FritzBox** (192.168.178.1): Router, NAT, DHCP, DNS-over-TLS, Internet-Gateway
+- **ASUS RT-AXE7800**: Access Point (AP-Modus), WiFi 6E (6GHz) + WiFi 6 (2.4/5GHz)
+- **NixOS DNS**: `192.168.178.1` (FritzBox) in `modules/system/networking.nix`
+- **Vorteil**: Kein Double-NAT, kein Archer-Bug, FritzBox als stabiler Router
 
 ### AX210 Hardware-Upgrade-Plan (Backup)
 - **Ziel**: Volle Performance + stabile Latenz unter Linux, ohne Treiber-Workarounds
