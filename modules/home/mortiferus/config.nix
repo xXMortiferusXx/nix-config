@@ -34,4 +34,11 @@
     # Erstelle Symlink aufs Repo (accounts-daemon kann echten Pfad lesen)
     ln -sfn /etc/nixos/home/mortiferus/assets/face.png "$HOME/.face"
   '';
+
+  # Home-Manager's writeBoundary setzt bei nix-switch die ACL-Mask auf Home auf ---
+  # (chmod synchronisiert Mask mit Unix-Gruppenrechten). Das blockiert greeter/accounts-daemon.
+  # Daher: Nach writeBoundary die Mask wieder auf r-x setzen (greeter darf Home betreten).
+  home.activation.fixHomeAclMask = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ${pkgs.acl}/bin/setfacl -m m::r-x "$HOME"
+  '';
 }

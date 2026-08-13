@@ -272,8 +272,10 @@
 **Avatar/Profilbild im Greeter (2026-08-13)**
 - `~/.face` wird von `accounts-daemon` automatisch erkannt und im Login-Screen (Noctalia-Greeter) angezeigt.
 - **Home-Manager**: `home.file` erzeugt einen Store-Symlink, den `accounts-daemon` nicht lesen kann.
-  - **Lösung**: `home.activation` Script (analog zu `createNoctaliaState`), das nach `writeBoundary` einen Out-of-Store-Symlink `~/.face -> /etc/nixos/home/mortiferus/assets/face.png` setzt.
-  - ACL `mask::r-x` auf `~` ist nötig, damit `greeter`/`accounts-daemon` das Home-Verzeichnis betreten kann (`setfacl -m m::r-x ~`).
+  - **Lösung**: `home.activation.createFaceAvatar` (analog zu `createNoctaliaState`), das nach `writeBoundary` einen Out-of-Store-Symlink `~/.face -> /etc/nixos/home/mortiferus/assets/face.png` setzt.
+- **ACL-Mask Problem**: Home-Manager's `writeBoundary` setzt bei `nix-switch` die ACL-Mask auf `~` auf `---` (chmod synchronisiert Mask mit Unix-Gruppenrechten). Das blockiert `greeter`/`accounts-daemon`.
+  - **Lösung**: `home.activation.fixHomeAclMask` setzt nach `writeBoundary` automatisch `setfacl -m m::r-x ~`.
+  - `setfacl` ist bereits systemweit verfügbar (via `acl` Abhängigkeit), kein explizites Paket nötig.
 
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
