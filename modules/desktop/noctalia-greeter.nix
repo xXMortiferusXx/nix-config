@@ -35,6 +35,10 @@ in
   environment.etc."noctalia-greeter.toml".text = ''
     [keyboard]
     layout = "de"
+
+    [appearance]
+    # Passwort-Maskierung: "default" (gefuellte Kreise) oder "random" (zufaellige Symbole/Glyphs)
+    password_style = "random"
   '';
 
   systemd.tmpfiles.settings."10-noctalia-greeter" = {
