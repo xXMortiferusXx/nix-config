@@ -437,34 +437,52 @@ Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio
 Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
 
 ### Neue Lösung: ChatMixer DSP Engine
-Statt Game leiser zu machen, wird Chat **präsenter und klarer** — durch HRTF + EQ + Kompressor in einer PipeWire `filter-chain`.
+Statt Game leiser zu machen, wird Chat **praesenter und klarer** — durch HRTF + EQ + LADSPA Kompressor in einer PipeWire `filter-chain`.
 
 ```
-Game (7.1) ──► AtmosFilter (H3 SOFA, Radius 150%) ──► Headset
-                                                (atmospherisch, luftig)
+Game (7.1) ──> AtmosFilter (H3 SOFA, Radius 150%) ──> Headset
+                                                 (atmospherisch, luftig)
 
-Chat/Discord ──► ChatSink ──► ChatFilter (HRTF frontal + EQ + Compressor) ──► Headset
-                              (präsent, verständlich, im Kopf)
+Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor) ──> Headset
+                               (praesent, verstaendlich, im Kopf)
 ```
+
+### LADSPA_PATH Fix (NixOS pipewire-Modul Bug)
+- Das NixOS `pipewire`-Modul setzt `LADSPA_PATH` hardcoded auf `${pkgs.pipewire.ladspa-plugins}/lib/ladspa` — dieses Paket ist **leer**.
+- **Fix**: `systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";` in `audio.nix`.
+- `lib.mkForce` ist noetig, weil das NixOS-Modul den gleichen Option-Pfad definiert und sonst ein Konflikt entsteht.
 
 ### ChatFilter-Chain (`chatmixer.conf`)
-- **HRTF**: SOFA-Spatializer (Azimuth 0°, Elevation 10°, Radius 100%)
+- **HRTF**: SOFA-Spatializer (Azimuth 0 degrees, Elevation 10 degrees, Radius 100%)
   - Chat klingt frontal/im Kopf, psychoakustisch getrennt vom Game
 - **EQ**: `bq_peaking` bei 3000 Hz, Q=1.0, Gain=+6 dB
-  - Boost im Sprachverständlichkeits-Bereich (2-4 kHz)
-- **Kompressor**: Nicht verfügbar in PipeWire 1.6.8 (bekannter Bug, analog zu `bqeq`)
-  - Deaktiviert; EQ-Boost muss allein ausreichen
+  - Boost im Sprachverstaendlichkeits-Bereich (2-4 kHz)
+- **Kompressor**: LADSPA `sc1_1425` (Steve Harris Mono Compressor)
+  - PipeWire fuehrt Mono-Plugins automatisch per Kanal fuer Stereo aus
+  - **Explizite L/R-Pfade**: Zwei separate `sc1`-Instanzen (L+R) mit eigenen EQs, analog zur AtmosFilter-Chain
+  - **Parameter** (optimiert fuer Sprache):
+    - `Threshold level (dB)` = -35.0 (fruehes Greifen, auch bei leiser Stimme)
+    - `Ratio (1:n)` = 3.0 (sanfte Kompression)
+    - `Attack time (ms)` = 2.0 (schnelle Reaktion)
+    - `Release time (ms)` = 200.0 (natuerlich fuer Sprache)
+    - `Knee radius (dB)` = 6.0 (weiche Uebergaenge)
+    - `Makeup gain (dB)` = 12.0 (lauteres Ausgangssignal)
 
-### Game-Änderung
-- **HRTF-Radius**: 100% → 150%
+### Game-Aenderung
+- **HRTF-Radius**: 100% -> 150%
 - Game klingt atmospherischer/luftiger, gibt Chat mehr Raum
-- **Positionserkennung in Shootern bleibt erhalten** (nur Radius, keine Richtungsänderung)
+- **Positionserkennung in Shootern bleibt erhalten** (nur Radius, keine Richtungsaenderung)
+
+### Test-Script
+- `home/mortiferus/scripts/test-chatsink.sh`: 5-Sekunden 1kHz Sine-Wave an ChatSink
+  - Nutzung: `PULSE_SINK=ChatSink speaker-test -t sine -f 1000 -c 2 -l 1 -d 5`
 
 ### Files
 - `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf` — Game + Chat DSP Chains
+- `modules/hardware/audio.nix` — `clock.quantum = 512` + LADSPA_PATH Fix
 - `modules/home/mortiferus/autostart.nix` — chatduck entfernt
-- `modules/hardware/audio.nix` — `clock.quantum = 512` (niedrigere Latenz)
+- `home/mortiferus/scripts/test-chatsink.sh` — ChatSink Test-Script
 
 ### Archivierte Experimente (PipeWire 1.6.8 Limits)
-- LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstützt keinen externen Sidechain
-- EasyEffects: Sidechain auf Hardware-Inputs beschränkt, inkompatibel mit HRTF-Chain
+- LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
+- EasyEffects: Sidechain auf Hardware-Inputs beschraenkt, inkompatibel mit HRTF-Chain
