@@ -7,18 +7,18 @@
 #  networking.search = [ "lan" ];
   
   # ────────────────── DNS CACHING ──────────────────
-  # FritzBox (192.168.178.1) macht DNS-over-TLS
+  # ASUS (192.168.50.1) macht DNS
   # Hier nur lokales Caching für schnellere Auflösung
  services.resolved = {
      enable = true;
      settings.Resolve = {
  #        Domains = [ "lan" "~." ];
- 	DNS = [ "192.168.178.1" ];
+ 	DNS = [ "192.168.50.1" ];
          MulticastDNS = "resolve";  # nur auflösen, nicht selbst announcen
          LLMNR = "no";
          DNSSEC = "allow-downgrade";
          DNSOverTLS = "opportunistic";
-         FallbackDNS = [ "192.168.178.1" ];
+         FallbackDNS = [ "192.168.50.1" ];
      };
  };
 

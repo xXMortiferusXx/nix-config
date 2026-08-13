@@ -10,7 +10,6 @@
       ../../modules/system/environment-styx.nix
       ../../modules/hardware/intel.nix
       ../../modules/hardware/laptop-common.nix
-      # ../../modules/hardware/wifi-iwlwifi.nix  # deaktiviert zum Testen
       ../../modules/users/backbone.nix
       ../../modules/home/backbone
     ];
