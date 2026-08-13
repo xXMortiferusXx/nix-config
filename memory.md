@@ -428,48 +428,43 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `vulkan-tools` | GOverlay Live-Preview (vkcube) + Vulkan-Debugging |
 | `vkbasalt` | Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen) |
 
-## Audio / Chatduck (2026-08-01)
+## Audio / ChatMixer (2026-08-13)
 
 ### Problem
 Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio entsteht Detailverlust, weil Game dauerhaft leiser gestellt werden muss, damit Chat durchkommt.
 
-### Versuche (alles scheiterte an PipeWire 1.6.8)
-- LADSPA `sc3_1427` (Sidechain Compressor): Lädt, reagiert aber nie auf Sidechain-Input.
-- LADSPA `sc4_1883`: Kein echter Sidechain-Audio-Input (nur Kontroll-Port).
-- LV2 `calf.lv2/SidechainCompressor`: PipeWire `filter-chain` kann LV2 nicht instanziieren ("can't load plugin type 'lv2'").
-- EasyEffects: Sidechain künstlich auf Hardware-Inputs beschränkt (GitHub #1641).
-- JACK+Carla+Calf: Theoretisch möglich, aber keine bestätigte Gaming-Config in Community; Streams disconnecten dynamisch.
+### Alte Lösung (archiviert): `chatduck`
+Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
 
-### Lösung: `chatduck` — Pegel-basiertes Auto-Ducking
-Da PipeWire keinen externen Sidechain unterstützt, lesen wir den **ChatSink-Monitor** direkt und steuern **GameSink** via `wpctl`.
+### Neue Lösung: ChatMixer DSP Engine
+Statt Game leiser zu machen, wird Chat **präsenter und klarer** — durch HRTF + EQ + Kompressor in einer PipeWire `filter-chain`.
 
 ```
-Chat/Discord ──► ChatSink ──► [Monitor] ──► chatduck.py (RMS-Analyse)
-                                              │
-                                              ▼
-Game (7.1) ──► AtmosFilter (H3 SOFA) ──► GameSink ◄── wpctl set-volume
+Game (7.1) ──► AtmosFilter (H3 SOFA, Radius 150%) ──► Headset
+                                                (atmospherisch, luftig)
+
+Chat/Discord ──► ChatSink ──► ChatFilter (HRTF frontal + EQ + Compressor) ──► Headset
+                              (präsent, verständlich, im Kopf)
 ```
 
-- **Daemon**: `python3 + pw-record + wpctl` (keine externen Abhängigkeiten)
-- **Trigger**: RMS > Threshold (~0.008) auf ChatSink-Monitor
-- **Attack**: 50 ms (schnelles Ducken bei Sprachbeginn)
-- **Release**: 300 ms (sanftes Wiederanheben)
-- **Duck-Ziel**: 60% (`CHATDUCK_DUCK_VOL=0.60`)
-- **Toggle**: `Mod+Alt+D` (Niri) / `Super+Alt+D` (Hyprland) — Notfall-Aus
+### ChatFilter-Chain (`chatmixer.conf`)
+- **HRTF**: SOFA-Spatializer (Azimuth 0°, Elevation 10°, Radius 100%)
+  - Chat klingt frontal/im Kopf, psychoakustisch getrennt vom Game
+- **EQ**: `bq_peaking` bei 3000 Hz, Q=1.0, Gain=+6 dB
+  - Boost im Sprachverständlichkeits-Bereich (2-4 kHz)
+- **Kompressor**: Nicht verfügbar in PipeWire 1.6.8 (bekannter Bug, analog zu `bqeq`)
+  - Deaktiviert; EQ-Boost muss allein ausreichen
 
-### Kalibrierung
-```bash
-chatduck-calibrate
-```
-Zeigt 30–60s live RMS-Pegel in Discord an und empfiehlt Threshold.
+### Game-Änderung
+- **HRTF-Radius**: 100% → 150%
+- Game klingt atmospherischer/luftiger, gibt Chat mehr Raum
+- **Positionserkennung in Shootern bleibt erhalten** (nur Radius, keine Richtungsänderung)
 
 ### Files
-- `home/mortiferus/config/bin/chatduck` — Daemon (Nix-Store-Pfad, reproduzierbar)
-- `home/mortiferus/config/bin/chatduck-calibrate` — Threshold-Kalibrierung
-- `modules/home/mortiferus/autostart.nix` — systemd user service
-- `home/mortiferus/config/niri/cfg/keybinds.kdl` — `Mod+Alt+D` Toggle
-- `home/mortiferus/config/hypr/modules/keybinds.lua` — `Super+Alt+D` Toggle
+- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf` — Game + Chat DSP Chains
+- `modules/home/mortiferus/autostart.nix` — chatduck entfernt
 - `modules/hardware/audio.nix` — `clock.quantum = 512` (niedrigere Latenz)
 
-### Wichtige Erkenntnis
-Der ChatSink-Monitor eines `libpipewire-module-loopback` liefert in **PipeWire 1.6.8 brauchbares Audio** (~0.35 RMS bei Testton). Frühere Tests mit `pw-cat` zeigten nur −78 dBFS Rauschen — vermutlich falscher Node oder falsches Format. Dies war der entscheidende Durchbruch.
+### Archivierte Experimente (PipeWire 1.6.8 Limits)
+- LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstützt keinen externen Sidechain
+- EasyEffects: Sidechain auf Hardware-Inputs beschränkt, inkompatibel mit HRTF-Chain

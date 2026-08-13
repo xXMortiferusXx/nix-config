@@ -115,6 +115,9 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
         font_family = "Comic Sans MS"
         show_forecast = true
 
+[notification]
+layer = "overlay"
+
 [plugins]
 enabled = [ "avivbintangaringga/nix-monitor" ]
 
@@ -131,7 +134,6 @@ enabled = [ "avivbintangaringga/nix-monitor" ]
     name = "community"
 
 [shell]
-avatar_path = "/home/mortiferus/Bilder/Linux-Profil.png"
 launch_apps_as_systemd_services = true
 password_style = "random"
 polkit_agent = true
@@ -141,6 +143,9 @@ telemetry_enabled = true
     [shell.greeter_sync]
     auto_sync = true
     privilege_command = "pkexec"
+
+    [shell.screenshot]
+    directory = "/home/mortiferus/Bilder/Screenshots"
 
 [theme]
 mode = "light"
@@ -159,13 +164,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gw82qe_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-je9lp5_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gw82qe_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-je9lp5_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gw82qe_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-je9lp5_1920x1080.png"
 
 [widget.battery]
 show_label = false
