@@ -1,14 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.file = {
-    ".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
-    # Avatar/Profilbild fuer AccountsService und Noctalia-Greeter.
-    # accounts-daemon liest ~/.face automatisch und zeigt es im Login-Screen an.
-    # Out-of-Store-Symlink aufs Repo (analog zu xdg.configFile-Symlinks),
-    # damit accounts-daemon die echte Datei lesen kann.
-    ".face".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/assets/face.png";
-  };
+  home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
 
   xdg.configFile = {
     "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
@@ -27,5 +20,18 @@
     fi
     # Erstelle Symlink aufs Repo (schreibbar, fuer State-Backup)
     ln -sfn /etc/nixos/home/mortiferus/state/noctalia "$HOME/.local/state/noctalia"
+  '';
+
+  # Avatar/Profilbild fuer AccountsService und Noctalia-Greeter.
+  # accounts-daemon liest ~/.face automatisch und zeigt es im Login-Screen an.
+  # Home-Manager's home.file erzeugt einen Store-Symlink, den accounts-daemon
+  # nicht lesen kann. Daher: Out-of-Store-Symlink via activation-Script.
+  home.activation.createFaceAvatar = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    # Entferne ggf. alten Store-Symlink
+    if [ -L "$HOME/.face" ]; then
+      rm -f "$HOME/.face"
+    fi
+    # Erstelle Symlink aufs Repo (accounts-daemon kann echten Pfad lesen)
+    ln -sfn /etc/nixos/home/mortiferus/assets/face.png "$HOME/.face"
   '';
 }
