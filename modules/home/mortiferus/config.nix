@@ -1,7 +1,14 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
+  home.file = {
+    ".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
+    # Avatar/Profilbild fuer AccountsService und Noctalia-Greeter.
+    # accounts-daemon liest ~/.face automatisch und zeigt es im Login-Screen an.
+    # Out-of-Store-Symlink aufs Repo (analog zu xdg.configFile-Symlinks),
+    # damit accounts-daemon die echte Datei lesen kann.
+    ".face".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/assets/face.png";
+  };
 
   xdg.configFile = {
     "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";

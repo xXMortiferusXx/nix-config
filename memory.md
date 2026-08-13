@@ -269,6 +269,11 @@
 - **Ursache**: Steam's CEF-Teil (steamwebhelper, Chromium-basiert) nutzt GTK für Cursor-Rendering. `XCURSOR_THEME` reicht für native X11/Wayland-Apps, CEF/Chromium liest aber GTK-Settings (`~/.config/gtk-3.0/settings.ini`). Ohne GTK-Config zeigt CEF den Standard-Cursor.
 - **Lösung**: `xdg.configFile."gtk-3.0/settings.ini"` in `home/mortiferus/config.nix` mit `gtk-cursor-theme-name=Bibata-Modern-Ice` und `gtk-cursor-theme-size=24`.
 
+**Avatar/Profilbild im Greeter (2026-08-13)**
+- `~/.face` wird von `accounts-daemon` automatisch erkannt und im Login-Screen (Noctalia-Greeter) angezeigt.
+- **Home-Manager**: `home.file.".face".source` verlinkt auf `home/mortiferus/assets/face.png` (im Repo, reproduzierbar).
+- ACLs auf `~` und `~/Bilder` für `greeter` User sind nicht nötig, wenn accounts-daemon das Icon aus `~/.face` liest (PAM greift als root auf Home zu).
+
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
