@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.pulseaudio.enable = false;
@@ -20,6 +20,12 @@
       };
     };
   };
+
+  # LADSPA_PATH fuer PipeWire filter-chain (LADSPA-Plugins wie Kompressor)
+  # WICHTIG: Das NixOS pipewire-Modul setzt LADSPA_PATH hardcoded auf sein eigenes
+  # leeres pipewire-ladspa-plugins Paket. Wir überschreiben das hier explizit
+  # in der systemd Unit, damit Steve Harris Plugins (sc2_1426) geladen werden.
+  systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";
 
   environment.systemPackages = with pkgs; [
     pavucontrol
