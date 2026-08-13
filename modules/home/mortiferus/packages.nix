@@ -8,6 +8,10 @@ pkgs: with pkgs; [
   papirus-icon-theme
   adwaita-icon-theme
   shared-mime-info
+  # Noctalia setzt adw-gtk3 als Basis-Theme fuer GTK3-Apps.
+  # adw-gtk3 nutzt @define-color Variablen, die Noctalia generiert,
+  # sodass klassische GTK3-Apps (Thunar, NAPS2, etc.) Noctalia-Farben annehmen.
+  adw-gtk3
 
   # --- Wayland & System Utilities ---
   grim

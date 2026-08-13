@@ -259,6 +259,16 @@
   ```
 - **Zusätzlich**: `tmpfiles` erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest` → Store (`proton-ge-bin.steamcompattool`)
 
+**Problem**: Gelegentliche Freezes in Steam (2026-08-13)
+- **Ursache**: CEF (Chromium Embedded Framework) GPU-Beschleunigung in Steam kollidiert unter NVIDIA+Wayland/XWayland. Bekannter upstream-Bug (ValveSoftware/steam-for-linux #13000).
+- **Lösung**: CEF-GPU-Beschleunigung deaktivieren (reduziert/eliminiert Freezes):
+  - `ExecStart = "${steamPackage}/bin/steam -cef-disable-gpu-compositing -cef-disable-gpu"` im systemd-Service (`autostart.nix`)
+- **Nicht verwenden**: `STEAM_DISABLE_HARDWARE_CURSORS = "1"` blockiert das System-Cursor-Theme (Bibata) in Steam — entfernt (2026-08-13, korrigiert).
+
+**Problem**: Cursor-Theme (Bibata-Modern-Ice) in Steam nicht überall sichtbar (2026-08-13)
+- **Ursache**: Steam's CEF-Teil (steamwebhelper, Chromium-basiert) nutzt GTK für Cursor-Rendering. `XCURSOR_THEME` reicht für native X11/Wayland-Apps, CEF/Chromium liest aber GTK-Settings (`~/.config/gtk-3.0/settings.ini`). Ohne GTK-Config zeigt CEF den Standard-Cursor.
+- **Lösung**: `xdg.configFile."gtk-3.0/settings.ini"` in `home/mortiferus/config.nix` mit `gtk-cursor-theme-name=Bibata-Modern-Ice` und `gtk-cursor-theme-size=24`.
+
 ### Proton-GE Paket
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts

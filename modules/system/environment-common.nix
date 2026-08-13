@@ -6,6 +6,10 @@
   environment.sessionVariables = {
     TRACKER_USE_RUNNER = "0";
     TZ = "Europe/Berlin";
+    # Qt-Platform-Theme systemweit fuer alle Qt-Apps (qt5ct/qt6ct).
+    # Ohne diese Variable zeigen Qt-Apps den Fehler
+    # "The QT_QPA_PLATFORMTHEME environment variable is not set".
+    QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 
   environment.systemPackages = with pkgs; [
