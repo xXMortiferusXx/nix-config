@@ -106,13 +106,14 @@
   - Schneller als SOFA-Spatializer (FFT-basiert), kein sporadisches Knacken
   - Headset-neutral: verfaelscht das Klangbild des Atlas Air nicht
   - Ortung funktioniert gut (Positionserkennung erhalten)
-- **Chat-Audio**: SOFA-Spatializer (H19) fuer Discord/Voice — nur 1 Kanal, CPU-Last vernachlaessigbar
+- **Chat-Audio**: SOFA-Spatializer (KU100_dry.sofa) fuer Discord/Voice — nur 1 Kanal, CPU-Last vernachlaessigbar
 - **Quantum 512** (`modules/hardware/audio.nix`) — ausreichend fuer Convolver, niedrigere Latenz als 1024
 
 ### Archivierte Setup-Varianten
 - ~~SADIE II D2 (KEMAR, 256 Taps)~~ — verworfen: generische HRTF passt nicht zu den Ohren, verfaelscht Klangbild
 - ~~SOFA-Spatializer fuer Game~~ — verworfen: Knacken unter CPU-Last, schlechtere Ortung als Convolver
 - ~~Quantum 1024~~ — verworfen: haette das Knacken nicht behoben, Ursache war SOFA nicht das Quantum
+- ~~A/B-Testmaterial~~ — entfernt (2026-08-15): alle verworfenen HRIR-Dateien (SADIE, SS2_*, H3/H4/H5, H19, D1, IRC, subject_*, gsx/razer) und 26 chatmixer-Testvarianten aus dem Repo geloescht; nur `atmos.wav` + `KU100_dry.sofa` + dts-Dateien bleiben
 
 ### Bekannter PipeWire-Bug: `bqeq` Label
 - `bqeq` existiert **nicht** in PipeWire 1.6.8 → muss `bq_lowshelf` / `bq_peaking` (mit Unterstrich) verwenden
