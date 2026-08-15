@@ -3,8 +3,6 @@
 {
   imports = [ ./boot-common.nix ];
 
-  my.btrfs.fileSystems = [ "/" ];
-
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.kernelParams = [

@@ -7,13 +7,10 @@
   # Gaming-Platte via Label
   fileSystems."/gaming" = {
     device = "/dev/disk/by-label/GamingDrive";
-    fsType = "btrfs";
+    fsType = "ext4";
     options = [ 
       "defaults"
       "noatime"
-      "nodiratime"
-      "compress=zstd"
-      "commit=60"
       "nofail" 
     ];
   };

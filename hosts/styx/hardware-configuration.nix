@@ -3,7 +3,7 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  # Notwendige Kernel-Module für den Boot (Btrfs, USB, NVMe/SATA)
+  # Notwendige Kernel-Module für den Boot (USB, NVMe/SATA)
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "usbhid" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];

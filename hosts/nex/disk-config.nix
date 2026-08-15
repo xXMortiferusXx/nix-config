@@ -3,7 +3,7 @@
     disk = {
       main = {
         # Hier wird das Device fest definiert, damit der Fehler 'attribute device missing' verschwindet
-        device = "/dev/nvme0n1"; 
+        device = "/dev/nvme0n1";
         type = "disk";
         content = {
           type = "gpt";
@@ -30,22 +30,10 @@
             root = {
               size = "100%";
               content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ]; 
-                subvolumes = {
-                  "/root" = { 
-                    mountpoint = "/"; 
-                    mountOptions = [ "compress=zstd" "noatime" ]; 
-                  };
-                  "/home" = { 
-                    mountpoint = "/home"; 
-                    mountOptions = [ "compress=zstd" "noatime" ]; 
-                  };
-                  "/nix" = { 
-                    mountpoint = "/nix"; 
-                    mountOptions = [ "compress=zstd" "noatime" ]; 
-                  };
-                };
+                type = "filesystem";
+                format = "ext4";
+                mountpoint = "/";
+                mountOptions = [ "noatime" ];
               };
             };
           };

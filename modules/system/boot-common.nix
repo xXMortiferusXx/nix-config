@@ -1,11 +1,10 @@
 # Gemeinsame Boot-Konfig für alle Hosts
-# Importiert cachyos-tuning + btrfs, setzt systemd-boot, zram, fstrim, chrony, nix.gc
+# Importiert cachyos-tuning, setzt systemd-boot, zram, fstrim, chrony, nix.gc
 { config, pkgs, lib, ... }:
 
 {
   imports = [
     ./cachyos-tuning.nix
-    ./btrfs.nix
   ];
 
   # Gemeinsame Bootloader-Einstellungen
@@ -16,9 +15,9 @@
   boot.consoleLogLevel = 3;
 
   # Gemeinsame sysctl Einstellungen (CachyOS-konform)
+  # net.core.netdev_max_backlog bewusst weggelassen — bpftune (cachyos-tuning.nix) steuert das dynamisch
   boot.kernel.sysctl = {
     "fs.file-max" = 2097152;
-    "net.core.netdev_max_backlog" = 4096;
   };
 
   # Swap (ZRAM) - 50% CachyOS-Standard für optimales Verhältnis

@@ -1,13 +1,10 @@
 # Boot-Konfiguration fuer nex (zen kernel)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
 # Kernel auf zen umgestellt (2026-08-14) — bessere Latenz fuer Gaming/Audio.
-# scx_bpfland bleibt aktiv (unterstuetzt von sched-ext im zen-Kernel).
 { config, pkgs, lib, ... }:
 
 {
   imports = [ ./boot-common.nix ];
-
-  my.btrfs.fileSystems = [ "/" "/gaming" ];
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "ntsync" ];
