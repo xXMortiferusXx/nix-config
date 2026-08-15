@@ -47,13 +47,6 @@
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
-      # Disko-Configs für den Installer (--flake .#nex / .#styx)
-      # device wird vom Installer per --argstr device übergeben (cli.nix ruft
-      # die Funktion mit { lib } // args auf, daher kommt device hier an).
-      diskoConfigurations.nex = { lib, ... }@args:
-        import ./hosts/nex/disk-config.nix { inherit lib; device = args.device or "/dev/nvme0n1"; };
-      diskoConfigurations.styx = { lib, ... }@args:
-        import ./modules/system/disko-basic.nix { inherit lib; device = args.device or "/dev/nvme0n1"; };
     in
     {
       nixosConfigurations."nex" = nixpkgs.lib.nixosSystem {
