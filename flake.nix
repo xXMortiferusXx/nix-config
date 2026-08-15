@@ -68,7 +68,6 @@
         modules = [
           disko.nixosModules.disko
           ./hosts/styx/configuration.nix
-          #./modules/home/backbone.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

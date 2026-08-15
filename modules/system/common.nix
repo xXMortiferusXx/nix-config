@@ -29,7 +29,6 @@
     ../desktop/thunar.nix
     ../desktop/noctalia-greeter.nix
     ../desktop/niri.nix
-#    ../desktop/plasma.nix
     ../desktop/hyprland.nix
     ../desktop/quiet-sessions.nix
   ];
