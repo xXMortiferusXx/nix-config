@@ -1,7 +1,7 @@
-# Boot-Konfiguration fuer nex (standard latest kernel)
+# Boot-Konfiguration fuer nex (zen kernel)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
-# Kernel auf standard latest umgestellt (2026-08-13) — xanmod entfernt.
-# scx_bpfland bleibt aktiv (unterstuetzt von sched-ext im Standard-Kernel).
+# Kernel auf zen umgestellt (2026-08-14) — bessere Latenz fuer Gaming/Audio.
+# scx_bpfland bleibt aktiv (unterstuetzt von sched-ext im zen-Kernel).
 { config, pkgs, lib, ... }:
 
 {
@@ -9,7 +9,7 @@
 
   my.btrfs.fileSystems = [ "/" "/gaming" ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "ntsync" ];
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
