@@ -506,3 +506,20 @@ Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor
 ### Archivierte Experimente (PipeWire 1.6.8 Limits)
 - LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
 - EasyEffects: Sidechain auf Hardware-Inputs beschraenkt, inkompatibel mit HRTF-Chain
+
+## Installation (2026-08-15)
+
+### Installer: `install.sh` (sichere NVMe-Auswahl)
+- **Problem (geloest)**: Linux erkennt NVMe-Geraete nicht immer in gleicher Reihenfolge (nvme0 vs. nvme1) — die Festplatte waere sonst auf der falschen NVMe gelandet
+- **Loesung**: Interaktive NVMe-Auswahl per `lsblk` mit Modell + Seriennummer + Label
+  - Kein hardcoded `/dev/nvme0n1` mehr im Skript
+  - Sicherheitsabfrage vor dem Loeschen ("ja/NEIN")
+  - Warnung, falls das gewaehlte Laufwerk ein Label hat (z.B. `GamingDrive` auf nex)
+- **Backup**: alte Version als `install.sh.legacy` (falls das neue Skript zicken sollte)
+
+### Disko + `--argstr device` (geloest)
+- `--argstr device` im Installer wirkte **vorher nicht**: die disko-Configs hatten `device` hardcoded und wurden nur als NixOS-Modul (`nixosConfigurations.${host}.config.disko.devices`) genutzt — cli.nix reicht dort KEIN `device` durch
+- **Loesung**: `flake.nix` hat jetzt `diskoConfigurations.nex` / `diskoConfigurations.styx`, die `device` als Funktionsargument durchreichen
+- Die disko-Configs (`hosts/nex/disk-config.nix`, `modules/system/disko-basic.nix`) sind jetzt Funktionen: `{ device ? "/dev/nvme0n1", ... }` — Default nur fuer normales Rebuild
+- Aufruf: `nix run github:nix-community/disko -- --mode destroy,format,mount --argstr device /dev/nvmeXn1 --flake ".#<host>"`
+- **ACHTUNG vor Installation**: Gaming-NVMe (nex) einmalig formatieren: `sudo mkfs.ext4 -L GamingDrive /dev/nvmeXn1` (loescht Daten!) — `/gaming` wird per Label gemountet

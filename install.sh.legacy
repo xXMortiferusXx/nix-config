@@ -35,67 +35,16 @@ read -p "Auswahl [1-2]: " HOST_CHOICE
 if [[ "$HOST_CHOICE" == "1" ]]; then
     HOSTNAME="nex"
     USERNAME="mortiferus"
+    DISK_DEVICE="/dev/nvme0n1"
 elif [[ "$HOST_CHOICE" == "2" ]]; then
     HOSTNAME="styx"
     USERNAME="backbone"
+    DISK_DEVICE="/dev/nvme0n1"
 else
     error "Ungültige Auswahl."
 fi
 
-info "Installiere Host: $HOSTNAME für User: $USERNAME"
-
-# --- SCHRITT 1b: NVMe-Laufwerksauswahl (SICHERHEIT) ---
-# Problem: Linux erkennt NVMe-Geräte nicht immer in gleicher Reihenfolge
-# (nvme0 vs. nvme1). Daher NIE hart verdrahten, sondern immer interaktiv
-# anhand von Modell + Seriennummer + Label auswählen!
-echo ""
-echo "=========================================================="
-echo "  NVMe-Laufwerksauswahl"
-echo "=========================================================="
-echo ""
-echo "Erkannte NVMe-Laufwerke:"
-echo "----------------------------------------------------------"
-
-mapfile -t NVME_DEVICES < <(lsblk -d -n -o NAME,SIZE,MODEL,SERIAL,LABEL | awk '$1 ~ /^nvme/')
-
-if [ ${#NVME_DEVICES[@]} -eq 0 ]; then
-    error "Keine NVMe-Laufwerke gefunden! Abgebrochen."
-fi
-
-for i in "${!NVME_DEVICES[@]}"; do
-    echo "  [$((i+1))] ${NVME_DEVICES[$i]}"
-done
-echo "----------------------------------------------------------"
-echo ""
-read -p "Welches Laufwerk soll installiert werden? [1-${#NVME_DEVICES[@]}]: " DISK_CHOICE
-
-if ! [[ "$DISK_CHOICE" =~ ^[0-9]+$ ]] || [ "$DISK_CHOICE" -lt 1 ] || [ "$DISK_CHOICE" -gt "${#NVME_DEVICES[@]}" ]; then
-    error "Ungültige Auswahl."
-fi
-
-DISK_NAME=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $1}')
-DISK_MODEL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $3}')
-DISK_SERIAL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $4}')
-DISK_LABEL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $5}')
-DISK_DEVICE="/dev/${DISK_NAME}"
-
-# Warnung, falls das gewählte Laufwerk ein Label hat (z.B. GamingDrive auf nex)
-if [ -n "$DISK_LABEL" ] && [ "$DISK_LABEL" != "-" ]; then
-    warn "Gewähltes Laufwerk hat ein Dateisystem-Label: $DISK_LABEL"
-fi
-
-echo ""
-warn "ACHTUNG: $DISK_DEVICE wird KOMPLETT GELÖSCHT und neu partitioniert!"
-echo "  Modell:      $DISK_MODEL"
-echo "  Seriennummer: $DISK_SERIAL"
-echo "  Label:       ${DISK_LABEL:--}"
-echo ""
-read -p "Soll das WIRKLICH dieses Laufwerk sein? (ja/NEIN): " CONFIRM
-if [[ "$CONFIRM" != "ja" ]]; then
-    error "Abgebrochen. Bitte Skript erneut starten und richtiges Laufwerk wählen."
-fi
-
-info "Installiere auf: $DISK_DEVICE (Modell: $DISK_MODEL)"
+info "Installiere Host: $HOSTNAME für User: $USERNAME auf $DISK_DEVICE"
 
 # --- SCHRITT 2: Voraussetzungen prüfen ---
 info "Prüfe Voraussetzungen..."
@@ -127,7 +76,8 @@ sudo nix --experimental-features "nix-command flakes" \
     --option download-buffer-size 268435456 \
     --option connect-timeout 20 \
     run github:nix-community/disko -- \
-    --mode destroy,format,mount \
+    --mode disko \
+    --mode zap_create_mount \
     --argstr device "$DISK_DEVICE" \
     --flake ".#$HOSTNAME"
 

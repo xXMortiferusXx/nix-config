@@ -1,9 +1,11 @@
-{
+# Gerät als Argument (vom Installer per --argstr device übergeben).
+# Default nur als Fallback für normales Rebuild, wenn kein Gerät übergeben wird.
+{ device ? "/dev/nvme0n1", ... }: {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme0n1";
+        device = device;
         content = {
           type = "gpt";
           partitions = {
