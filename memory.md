@@ -8,9 +8,8 @@
 - `system/environment-nex.nix` – nex-spezifische Env (NVIDIA Shader-Cache, Explicit-Sync, Flipping)
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
-- `system/btrfs.nix` – scrub + balance via `my.btrfs.fileSystems`
-- `system/boot-common.nix` – importiert cachyos-tuning + btrfs + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – xanmod + scx_bpfland (Auto-Modus), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
+- `system/boot-nex.nix` – zen + scx_bpfland (Auto-Modus), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -49,7 +48,7 @@
   - Wayland-Optimierungen: `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `__GL_VRR_ALLOWED=1`
   - `LIBVA_DRIVER_NAME=nvidia` + `VDPAU_DRIVER=nvidia` für Hardware-Decoding
   - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland
-  - `__GL_EXPLICIT_SYNC_ENABLED=1` + `__GL_ALLOW_FLIPPING=1` in `environment-nex.nix`
+  - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
 
 ### Home-Manager
 - `home/mortiferus/{default,packages,config,autostart,mpv}.nix` (mangohud.nix gelöscht – Config wird von GOverlay verwaltet)

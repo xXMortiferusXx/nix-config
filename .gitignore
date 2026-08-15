@@ -1,6 +1,7 @@
 .aider*
 *nex-iso*
 result
+result-*
 result-man
 __pycache__/
 

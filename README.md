@@ -35,7 +35,7 @@ modules/
 ├── home/              # Home-Manager per user (mortiferus + backbone)
 ├── programs/          # Gaming stack, tools, shell, terminal, editor, zen-browser
 ├── services/          # Noctalia (desktop shell), printing
-├── system/            # Boot, kernel, btrfs, tuning, networking, nix-settings
+├── system/            # Boot, kernel, tuning, networking, nix-settings
 └── users/             # User definitions
 home/                  # Raw dotfiles (linked via home-manager xdg.configFile)
 memory.md              # Dev notes (current state, IPC commands, systemd services)
@@ -79,7 +79,7 @@ nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU per
 - MangoHud
 - DLSS Swapper / Zink wrappers
 
-Plus a dedicated `/gaming` Btrfs partition.
+Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 
 ## Acknowledgements
 
@@ -129,7 +129,7 @@ modules/
 ├── home/              # Home-Manager pro User (mortiferus + backbone)
 ├── programs/          # Gaming-Stack, Tools, Shell, Terminal, Editor, Zen-Browser
 ├── services/          # Noctalia (Desktop-Shell), Drucken
-├── system/            # Boot, Kernel, Btrfs, Tuning, Netzwerk, Nix-Settings
+├── system/            # Boot, Kernel, Tuning, Netzwerk, Nix-Settings
 └── users/             # Benutzerdefinitionen
 home/                  # Rohe Dotfiles (via home-manager xdg.configFile verlinkt)
 memory.md              # Entwickler-Notizen (aktueller Stand, IPC, systemd)
@@ -173,7 +173,7 @@ nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale 
 - MangoHud
 - DLSS Swapper / Zink-Wrapper
 
-Plus eine dedizierte `/gaming` Btrfs-Partition.
+Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 
 ## Danksagungen
 

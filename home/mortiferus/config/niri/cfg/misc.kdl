@@ -13,8 +13,6 @@ environment {
     XCURSOR_THEME "Bibata-Modern-Ice"
     XCURSOR_SIZE "24"
     XDG_PORTAL_BACKEND_CONF "niri"
-
-    __GL_SHADER_DISK_CACHE_SKIP_CLEANUP "1"
 }
 
 blur {
