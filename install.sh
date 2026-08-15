@@ -131,11 +131,41 @@ sudo nix --experimental-features "nix-command flakes" \
     --argstr device "$DISK_DEVICE" \
     --flake ".#$HOSTNAME"
 
-# --- NEU: SWAP AKTIVIEREN GEGEN OOM ---
-info "Aktiviere Swap zur RAM-Entlastung..."
-if [ -f /mnt/swap/swapfile ]; then
-    sudo swapon /mnt/swap/swapfile || warn "Konnte Swapfile nicht aktivieren."
-fi
+# --- TEMPORÄRER SWAP GEGEN OOM (nur für die Installation) ---
+# Die disko-Configs haben KEINEN dauerhaften Swap (System läuft ZRAM-only).
+# Für den nixos-install-Build kann viel RAM nötig sein (OOM-Risiko).
+# Daher legen wir hier ein temporäres Swapfile auf /mnt an, aktivieren es
+# für die Installation und entfernen es danach wieder — es landet also
+# NIE im installierten System.
+SWAPFILE="/mnt/.install-swapfile"
+
+cleanup_swap() {
+    sudo swapoff "$SWAPFILE" 2>/dev/null || true
+    sudo rm -f "$SWAPFILE" 2>/dev/null || true
+}
+trap cleanup_swap EXIT
+
+setup_swap() {
+    if command -v free &>/dev/null; then
+        local ram_mb
+        ram_mb=$(free -m | awk '/^Mem:/{print $2}')
+    else
+        local ram_mb
+        ram_mb=$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)
+    fi
+
+    # Swap = 2x RAM (max 16G), damit der Build nie an RAM scheitert
+    local swap_mb=$(( ram_mb * 2 ))
+    [ "$swap_mb" -gt 16384 ] && swap_mb=16384
+
+    info "Lege temporäres Swapfile an (${swap_mb}MB, nur für die Installation)..."
+    sudo truncate -s "${swap_mb}M" "$SWAPFILE"
+    sudo chmod 600 "$SWAPFILE"
+    sudo mkswap "$SWAPFILE" >/dev/null
+    sudo swapon "$SWAPFILE" || { warn "Swapfile konnte nicht aktiviert werden — weiter ohne Swap (OOM-Risiko)"; sudo rm -f "$SWAPFILE"; }
+}
+
+setup_swap
 
 # --- DYNAMISCHE BUILD-KONFIGURATION BASIEREND AUF RAM ---
 info "Ermittle dynamische Build-Konfiguration..."

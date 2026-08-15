@@ -523,3 +523,10 @@ Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor
 - Die disko-Configs (`hosts/nex/disk-config.nix`, `modules/system/disko-basic.nix`) sind jetzt Funktionen: `{ device ? "/dev/nvme0n1", ... }` — Default nur fuer normales Rebuild
 - Aufruf: `nix run github:nix-community/disko -- --mode destroy,format,mount --argstr device /dev/nvmeXn1 --flake ".#<host>"`
 - **ACHTUNG vor Installation**: Gaming-NVMe (nex) einmalig formatieren: `sudo mkfs.ext4 -L GamingDrive /dev/nvmeXn1` (loescht Daten!) — `/gaming` wird per Label gemountet
+  - **Alternativ nach der Installation** (Boot blockiert nicht, `nofail` in hardware-configuration.nix): `/gaming` ist dann nur bis zum Formatieren nicht gemountet
+- **NEU (2026-08-15)**: Gaming-Platte kann **auch nach** der Installation formatiert werden — `/gaming` hat `nofail`, Boot laeuft trotzdem durch
+
+### Installer-Swap (temporaer, nur fuer die Installation)
+- **Problem (geloest)**: Alter Swap-Block prüfte `/mnt/swap/swapfile` — existierte nach dem ext4-Umbau nicht mehr (Swap-Partition aus disko entfernt) → OOM-Schutz war kaputt
+- **Loesung**: `install.sh` legt jetzt ein **temporaeres Swapfile** auf `/mnt/.install-swapfile` an (2x RAM, max 16G), aktiviert es per `swapon` und entfernt es via `trap cleanup_swap EXIT` nach der Installation wieder
+- **Wichtig**: Swapfile landet **nie** im installierten System — disko-Configs haben weiterhin keinen Swap, System laeuft ZRAM-only (`zramSwap` in `boot-common.nix` / `boot-nex.nix`)
