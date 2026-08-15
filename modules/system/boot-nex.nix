@@ -27,15 +27,16 @@
 
   zramSwap.memoryPercent = lib.mkForce 100;
 
-  systemd.services.scx-scheduler = {
-    description = "SCX bpfland Scheduler (Gaming-Modus)";
-    after = [ "systemd-modules-load.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.scx.full}/bin/scx_bpfland -m all";
-      Restart = "on-failure";
-      StandardOutput = "journal";
-    };
-  };
+  # scx_bpfland deaktiviert — Zen-Kernel wird pur getestet
+  # systemd.services.scx-scheduler = {
+  #   description = "SCX bpfland Scheduler (Gaming-Modus)";
+  #   after = [ "systemd-modules-load.service" ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig = {
+  #     Type = "simple";
+  #     ExecStart = "${pkgs.scx.full}/bin/scx_bpfland -m all";
+  #     Restart = "on-failure";
+  #     StandardOutput = "journal";
+  #   };
+  # };
 }
