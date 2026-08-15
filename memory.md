@@ -107,6 +107,7 @@
   - Headset-neutral: verfaelscht das Klangbild des Atlas Air nicht
   - Ortung funktioniert gut (Positionserkennung erhalten)
 - **Chat-Audio**: SOFA-Spatializer (KU100_dry.sofa) fuer Discord/Voice — nur 1 Kanal, CPU-Last vernachlaessigbar
+  - **Hinweis (2026-08-15)**: KU100 wurde fuer den Sprachchat getestet, taugt laut Einschaetzung nichts → Pruefung offen, evtl. wurde der Push vergessen (Config-Referenz und Einschaetzung kollidieren)
 - **Quantum 512** (`modules/hardware/audio.nix`) — ausreichend fuer Convolver, niedrigere Latenz als 1024
 
 ### Archivierte Setup-Varianten
