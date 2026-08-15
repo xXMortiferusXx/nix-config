@@ -84,9 +84,7 @@ in
           "XCURSOR_SIZE=24"
         ];
         ExecStartPre = [ waitForTray ];
-        # -cef-disable-gpu-compositing + -cef-disable-gpu: Deaktiviert CEF-GPU-Beschleunigung.
-        # Bekannter Fix fuer NVIDIA+Wayland: Cursor-Glitches, fehlende UI-Elemente, Freezes.
-        ExecStart = "${steamPackage}/bin/steam -cef-disable-gpu-compositing -cef-disable-gpu";
+        ExecStart = "${steamPackage}/bin/steam";
         Restart = "on-failure";
         RestartSec = 10;
       };
