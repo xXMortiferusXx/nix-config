@@ -72,6 +72,13 @@
 - **Saubere History**: Trial-and-Error-Commits werden vor dem Push entfernt oder gesquashed. Nur funktionierende, sinnvolle Commits landen auf GitHub. Bei größeren Experimenten: lokalen Branch nutzen und erst nach Erfolg in `main` rebasen/mergen.
 - **Home-Manager vs. Systemweit**: Home-Manager nur für **User-spezifische** Configs (nur ein Benutzer betroffen). Alles was systemweit gilt (alle User, Compositor, Dateimanager, Tools) wird über `environment.etc` oder NixOS-Module konfiguriert. Store-Symlinks aus HM werden von vielen Apps nicht korrekt gelesen (siehe MangoHud, Thunar).
 
+## Git / GitHub (2026-08-16)
+- SSH-Key: `~/.ssh/github_ed25519` (ed25519, Kommentar `mortiferus@nex`), bei GitHub hinterlegt
+- `~/.ssh/config`: `Host github.com` → `IdentityFile ~/.ssh/github_ed25519` + `IdentitiesOnly yes`
+- Git-Identität global: `user.name=xXMortiferusXx`, `user.email=backilein@gmail.com`
+- Remote: `git@github.com:xXMortiferusXx/nix-config.git` (SSH)
+- `.git`-Ownership war nach Installation `root` (nixos-enter) → auf `mortiferus:users` gefixt
+
 ## Niri Quelle & Binary Cache (2026-07-27)
 
 ### Warum sodiboo/niri-flake statt nixpkgs oder offiziellem Flake
