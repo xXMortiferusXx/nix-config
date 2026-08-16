@@ -507,7 +507,7 @@ Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor
 - LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
 - EasyEffects: Sidechain auf Hardware-Inputs beschraenkt, inkompatibel mit HRTF-Chain
 
-## Installation (2026-08-15)
+## Installation (2026-08-15, Stand 2026-08-16)
 
 ### Installer: `install.sh` (sichere NVMe-Auswahl)
 - **Problem (geloest)**: Linux erkennt NVMe-Geraete nicht immer in gleicher Reihenfolge (nvme0 vs. nvme1) — die Festplatte waere sonst auf der falschen NVMe gelandet
@@ -517,11 +517,17 @@ Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor
   - Warnung, falls das gewaehlte Laufwerk ein Label hat (z.B. `GamingDrive` auf nex)
 - **Backup**: alte Version als `install.sh.legacy` (falls das neue Skript zicken sollte)
 
-### Disko + `--argstr device` (geloest)
-- `--argstr device` im Installer wirkte **vorher nicht**: die disko-Configs hatten `device` hardcoded und wurden nur als NixOS-Modul (`nixosConfigurations.${host}.config.disko.devices`) genutzt — cli.nix reicht dort KEIN `device` durch
-- **Loesung**: `flake.nix` hat jetzt `diskoConfigurations.nex` / `diskoConfigurations.styx`, die `device` als Funktionsargument durchreichen
-- Die disko-Configs (`hosts/nex/disk-config.nix`, `modules/system/disko-basic.nix`) sind jetzt Funktionen: `{ device ? "/dev/nvme0n1", ... }` — Default nur fuer normales Rebuild
-- Aufruf: `nix run github:nix-community/disko -- --mode destroy,format,mount --argstr device /dev/nvmeXn1 --flake ".#<host>"`
+### Disko + `--argstr device` (NICHT geloest, wieder zurueckgerollt 2026-08-16)
+- `--argstr device` im Installer wirkte **nicht**: die disko-Configs hatten `device` hardcoded und wurden nur als NixOS-Modul (`nixosConfigurations.${host}.config.disko.devices`) genutzt — cli.nix reicht dort KEIN `device` durch
+- **Versuch**: `flake.nix` bekam `diskoConfigurations.nex` / `diskoConfigurations.styx`, die `device` als Funktionsargument durchreichen sollten
+- **Ergebnis**: Der Installer funktionierte damit **nicht** — Versuch verworfen, `diskoConfigurations` aus `flake.nix` entfernt (zurueckgerollt)
+- **Aktueller Stand (zurueckgerollt)**:
+  - `flake.nix`: nur noch `nixosConfigurations` mit `disko.nixosModules.disko` (kein `diskoConfigurations`-Output)
+  - `hosts/nex/disk-config.nix`: wieder einfaches Modul `{ ... }:` mit hartcodiertem `device = "/dev/nvme0n1"` (Kommentar erklaert warum — "damit der Fehler 'attribute device missing' verschwindet")
+  - `modules/system/disko-basic.nix` (styx): noch als Funktion `{ device ? "/dev/nvme0n1", ... }`, Default fuer normales Rebuild
+  - `install.sh` uebergibt **weiterhin** `--argstr device "$DISK_DEVICE"` (Zeile 131) — greift aber aktuell **nicht**, da die Configs das Argument nicht durchreichen
+- **Status**: Offen — sauberer Weg fuer die interaktive Device-Auswahl muss noch gefunden werden (z.B. disko CLI direkt mit eigenem Argument-Parsing, oder `diskoConfigurations`-Output sauber verdrahten und testen)
+- **TODO**: Installer vor dem naechsten Einsatz in einer **virtuellen Maschine** testen (inkl. `--argstr device`) — nicht wieder blind auf echter Hardware installieren
 - **ACHTUNG vor Installation**: Gaming-NVMe (nex) einmalig formatieren: `sudo mkfs.ext4 -L GamingDrive /dev/nvmeXn1` (loescht Daten!) — `/gaming` wird per Label gemountet
   - **Alternativ nach der Installation** (Boot blockiert nicht, `nofail` in hardware-configuration.nix): `/gaming` ist dann nur bis zum Formatieren nicht gemountet
 - **NEU (2026-08-15)**: Gaming-Platte kann **auch nach** der Installation formatiert werden — `/gaming` hat `nofail`, Boot laeuft trotzdem durch
