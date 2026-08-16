@@ -45,7 +45,7 @@
 
     # Moderner Open-Source-Kernel-Modul (Open-GPU-Kernel-Modules)
     open = true;
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     # Power Management: bei NVIDIA-only kein feingranuliertes PM nötig
     powerManagement.enable = true;

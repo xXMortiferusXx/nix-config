@@ -9,7 +9,7 @@
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – zen + scx_bpfland (Auto-Modus), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-nex.nix` – zen-Kernel (seit 2026-08-14), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -49,6 +49,7 @@
   - `LIBVA_DRIVER_NAME=nvidia` + `VDPAU_DRIVER=nvidia` für Hardware-Decoding
   - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland
   - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
+  - **Treiber**: `nvidiaPackages.stable` = 595.91.07 (seit 2026-08-16; vorher `latest` = 610.57.04, NVIDIA nennt 610 jetzt `new_feature`/`bleeding_edge`, 595 ist der `production`-Zweig)
 
 ### Home-Manager
 - `home/mortiferus/{default,packages,config,autostart,mpv}.nix` (mangohud.nix gelöscht – Config wird von GOverlay verwaltet)
@@ -379,7 +380,8 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex**: `boot.kernelPackages = pkgs.linuxPackages_xanmod_latest` + `scx_bpfland` (Auto-Modus, `--primary-domain=auto` per Default)
+- **nex**: `boot.kernelPackages = pkgs.linuxPackages_zen` (seit 2026-08-14)
+  - `scx_bpfland` **deaktiviert** (auskommentiert in `boot-nex.nix`) — Zen-Kernel wird pur getestet; Aktivierung per `systemd.services.scx-scheduler` reaktivierbar
 - **styx**: `boot.kernelPackages = pkgs.linuxPackages_latest`
 - CachyOS-Kernel am 2026-08-06 entfernt (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
 - `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
@@ -538,6 +540,7 @@ Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor
 - **ACHTUNG vor Installation**: Gaming-NVMe (nex) einmalig formatieren: `sudo mkfs.ext4 -L GamingDrive /dev/nvmeXn1` (loescht Daten!) — `/gaming` wird per Label gemountet
   - **Alternativ nach der Installation** (Boot blockiert nicht, `nofail` in hardware-configuration.nix): `/gaming` ist dann nur bis zum Formatieren nicht gemountet
 - **NEU (2026-08-15)**: Gaming-Platte kann **auch nach** der Installation formatiert werden — `/gaming` hat `nofail`, Boot laeuft trotzdem durch
+- **ERLEDIGT (2026-08-16)**: Gaming-NVMe (nvme0n1, Samsung 980 PRO 2TB) als ext4 mit Label `GamingDrive` formatiert (vorher btrfs + NTFS-Partition) und unter `/gaming` gemountet — mountet per Label automatisch nach Reboot
 
 ### Installer-Swap (temporaer, nur fuer die Installation)
 - **Problem (geloest)**: Alter Swap-Block prüfte `/mnt/swap/swapfile` — existierte nach dem ext4-Umbau nicht mehr (Swap-Partition aus disko entfernt) → OOM-Schutz war kaputt
