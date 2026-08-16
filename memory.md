@@ -107,22 +107,21 @@
 2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
 3. `niri-unstable` zu instabil → Auf `inputs.niri.packages.${system}.niri-stable` wechseln (älterer, getaggter Release)
 
-## Virtual Surround / HRTF (2026-07-31, final 2026-08-13)
+## Virtual Surround / HRTF (2026-07-31, EINGESTELLT 2026-08-16)
 
-### Setup (aktuell)
-- **Game-Audio**: PipeWire `filter-chain` + **Convolver** mit `atmos.wav` (Dolby Atmos IR)
-  - Schneller als SOFA-Spatializer (FFT-basiert), kein sporadisches Knacken
-  - Headset-neutral: verfaelscht das Klangbild des Atlas Air nicht
-  - Ortung funktioniert gut (Positionserkennung erhalten)
-- **Chat-Audio**: SOFA-Spatializer (KU100_dry.sofa) fuer Discord/Voice — nur 1 Kanal, CPU-Last vernachlaessigbar
-  - **Hinweis (2026-08-15)**: KU100 wurde fuer den Sprachchat getestet, taugt laut Einschaetzung nichts → Pruefung offen, evtl. wurde der Push vergessen (Config-Referenz und Einschaetzung kollidieren)
-- **Quantum 512** (`modules/hardware/audio.nix`) — ausreichend fuer Convolver, niedrigere Latenz als 1024
+### Setup (aktuell, ab 2026-08-16)
+- **Kein Virtual Surround / kein HRTF / kein Convolver mehr** — komplett deaktiviert
+- Spiele und Chat klingen so, wie die Entwickler es vorgesehen haben (unverfaelscht)
+- `GameSink` (8 Kanäle) + `ChatSink` (Stereo) sind reine Loopbacks direkt aufs Headset, separat regelbar
+- Hintergrund: Atmos-Routing war unvorhersehbar (Spiele ohne Geraeteauswahl nutzen Default), plus Risiko doppelter HRTF-Verarbeitung
+- **Quantum 512** (`modules/hardware/audio.nix`) bleibt — guter Kompromiss aus Latenz und Stabilität, schadet nicht
 
-### Archivierte Setup-Varianten
-- ~~SADIE II D2 (KEMAR, 256 Taps)~~ — verworfen: generische HRTF passt nicht zu den Ohren, verfaelscht Klangbild
-- ~~SOFA-Spatializer fuer Game~~ — verworfen: Knacken unter CPU-Last, schlechtere Ortung als Convolver
-- ~~Quantum 1024~~ — verworfen: haette das Knacken nicht behoben, Ursache war SOFA nicht das Quantum
-- ~~A/B-Testmaterial~~ — entfernt (2026-08-15): alle verworfenen HRIR-Dateien (SADIE, SS2_*, H3/H4/H5, H19, D1, IRC, subject_*, gsx/razer) und 26 chatmixer-Testvarianten aus dem Repo geloescht; nur `atmos.wav` + `KU100_dry.sofa` + dts-Dateien bleiben
+### Verworfen (chronologisch)
+- ~~SADIE II D2 (KEMAR, 256 Taps)~~ — generische HRTF passt nicht zu den Ohren
+- ~~SOFA-Spatializer fuer Game~~ — Knacken unter CPU-Last, schlechtere Ortung
+- ~~Quantum 1024~~ — haette das Knacken nicht behoben (Ursache war SOFA)
+- ~~Convolver mit atmos.wav (Dolby Atmos IR)~~ — entfernt (2026-08-16): Routing/Risiko-Problem
+- ~~KU100_dry.sofa fuer Chat~~ — taugte nichts, entfernt (2026-08-16)
 
 ### Bekannter PipeWire-Bug: `bqeq` Label
 - `bqeq` existiert **nicht** in PipeWire 1.6.8 → muss `bq_lowshelf` / `bq_peaking` (mit Unterstrich) verwenden
@@ -465,42 +464,27 @@ Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio
 ### Alte Lösung (archiviert): `chatduck`
 Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
 
-### Neue Lösung: ChatMixer DSP Engine
-Statt Game leiser zu machen, wird Chat **praesenter und klarer** — durch HRTF + EQ + LADSPA Kompressor in einer PipeWire `filter-chain`.
+### ChatSink jetzt sauber (2026-08-16)
+- **KU100-SOFA-HRTF entfernt** (taugte laut Einschaetzung nichts, Pruefung abgeschlossen)
+- **Atmos/Convolver komplett entfernt** (atmos.wav) — GameSink + ChatSink sind reine Loopbacks direkt aufs Headset
+- **Kein HRTF/EQ/Kompressor mehr** — Spiele klingen so, wie die Entwickler es vorgesehen haben (kein Risiko doppelter HRTF oder Atmos-Routing)
+- Aktuelles Modell:
+  - `GameSink` (8 Kanäle) → Headset — separat regelbar für Spiele-Lautstärke
+  - `ChatSink` (Stereo) → Headset — separat regelbar für Chat-Lautstärke
+  - Balance über Noctalia/`wpctl`: z.B. Atlas-Air-Master 50%, GameSink 60%, ChatSink 100% → Chat bleibt verständlich, Spiel separat abgesenkt
+- **Gleiches Setup auf backbone** (beide Configs identisch aufgebaut, nur anderer ALSA-Device-Name)
+- **Nachteil**: Spiele ohne eigene Audio-Geraeteauswahl nutzen den Default-Sink; wer Atmos- oder GameSink-Routing will, muss den Default-Sink auf GameSink stellen
 
-```
-Game (7.1) ──> AtmosFilter (H3 SOFA, Radius 150%) ──> Headset
-                                                 (atmospherisch, luftig)
-
-Chat/Discord ──> ChatSink ──> ChatFilter (HRTF frontal + EQ + Compressor) ──> Headset
-                               (praesent, verstaendlich, im Kopf)
-```
+### Alte ChatFilter-Chain (archiviert, entfernt 2026-08-16)
+- ~~KU100-SOFA-Spatializer (frontal)~~ — entfernt, natuerlicher Klang gewuenscht
+- ~~EQ bq_peaking 3000 Hz +6 dB~~ — entfernt
+- ~~LADSPA sc1 Kompressor~~ — entfernt
+- ~~Atmos Convolver (atmos.wav, Dolby Atmos IR)~~ — entfernt (2026-08-16), Spiele klingen unverfaelscht
 
 ### LADSPA_PATH Fix (NixOS pipewire-Modul Bug)
 - Das NixOS `pipewire`-Modul setzt `LADSPA_PATH` hardcoded auf `${pkgs.pipewire.ladspa-plugins}/lib/ladspa` — dieses Paket ist **leer**.
 - **Fix**: `systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";` in `audio.nix`.
 - `lib.mkForce` ist noetig, weil das NixOS-Modul den gleichen Option-Pfad definiert und sonst ein Konflikt entsteht.
-
-### ChatFilter-Chain (`chatmixer.conf`)
-- **HRTF**: SOFA-Spatializer (Azimuth 0 degrees, Elevation 10 degrees, Radius 100%)
-  - Chat klingt frontal/im Kopf, psychoakustisch getrennt vom Game
-- **EQ**: `bq_peaking` bei 3000 Hz, Q=1.0, Gain=+6 dB
-  - Boost im Sprachverstaendlichkeits-Bereich (2-4 kHz)
-- **Kompressor**: LADSPA `sc1_1425` (Steve Harris Mono Compressor)
-  - PipeWire fuehrt Mono-Plugins automatisch per Kanal fuer Stereo aus
-  - **Explizite L/R-Pfade**: Zwei separate `sc1`-Instanzen (L+R) mit eigenen EQs, analog zur AtmosFilter-Chain
-  - **Parameter** (optimiert fuer Sprache):
-    - `Threshold level (dB)` = -35.0 (fruehes Greifen, auch bei leiser Stimme)
-    - `Ratio (1:n)` = 3.0 (sanfte Kompression)
-    - `Attack time (ms)` = 2.0 (schnelle Reaktion)
-    - `Release time (ms)` = 200.0 (natuerlich fuer Sprache)
-    - `Knee radius (dB)` = 6.0 (weiche Uebergaenge)
-    - `Makeup gain (dB)` = 12.0 (lauteres Ausgangssignal)
-
-### Game-Aenderung
-- **HRTF-Radius**: 100% -> 150%
-- Game klingt atmospherischer/luftiger, gibt Chat mehr Raum
-- **Positionserkennung in Shootern bleibt erhalten** (nur Radius, keine Richtungsaenderung)
 
 ### Test-Script
 - `home/mortiferus/scripts/test-chatsink.sh`: 5-Sekunden 1kHz Sine-Wave an ChatSink
