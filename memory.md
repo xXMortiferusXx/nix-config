@@ -148,28 +148,31 @@
 
 ## Bekannte Probleme
 
-### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13)
+### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
 - **Ursache ursprünglich vermutet**: AX210-Treiber/Firmware — `bt_coex_active=0`, Kernel-Wechsel, `11n_disable=8` getestet, alles ohne Erfolg
-- **Echte Ursache gefunden**: ASUS Router Firmware-Bug — `Broadcom Packet Flow Cache` (Archer Hardware-Offload) crasht bei Volllast
-- **Router-Log**: `[ERROR archer] archer_ucast_common_flow_set,413: Invalid ENET-WAN source`
-- **Trigger**: `igs: Unknown symbol emfc_mfdb_ipv6_membership_add` — IPv6-Multicast-Treiber broken in ASUS Firmware
+- **Theorie (nicht bestaetigt)**: ASUS Router Firmware-Bug — `Broadcom Packet Flow Cache` (Archer Hardware-Offload) crasht bei Volllast
+  - **Router-Log**: `[ERROR archer] archer_ucast_common_flow_set,413: Invalid ENET-WAN source`
+  - **Trigger vermutet**: `igs: Unknown symbol emfc_mfdb_ipv6_membership_add` — IPv6-Multicast-Treiber in ASUS Firmware
+  - **Wichtig**: War am Ende **nicht schluessig belegt** — bleibt eine Vermutung, keine bewiesene Ursache
 - **Workarounds getestet (alle erfolglos)**:
   - `bt_coex_active=0` (wird von iwlmvm ignoriert)
   - Kernel-Wechsel: Xanmod → Standard-Latest
   - Router-Reboot + Multicast-Routing deaktiviert
   - `11n_disable=8` (war nie aktiv, nur zum Test)
-- **Finale Lösung**: ASUS als **Access Point** (AP-Modus) statt Router
+- **Damaliger Umweg**: ASUS als **Access Point** (AP-Modus) statt Router
   - FritzBox übernimmt NAT/Routing/DHCP (192.168.178.1)
-  - ASUS bietet nur WiFi 6E (6GHz)
-  - Kein Archer-Bug mehr, da keine NAT-Offload
   - Erste Tests: Ping stabil bei Volllast
+- **Aktuell (2026-08-16)**: ASUS ist wieder vollwertiger Router (192.168.50.1), FritzBox raus. Notebook-WLAN läuft **wieder problemlos** — echte Ursache des frueheren Problems ist weiterhin ungeklaert
 
-### Netzwerk-Architektur (2026-08-13)
-- **FritzBox** (192.168.178.1): Router, NAT, DHCP, DNS-over-TLS, Internet-Gateway
-- **ASUS RT-AXE7800**: Access Point (AP-Modus), WiFi 6E (6GHz) + WiFi 6 (2.4/5GHz)
-- **NixOS DNS**: `192.168.178.1` (FritzBox) in `modules/system/networking.nix`
-- **Vorteil**: Kein Double-NAT, kein Archer-Bug, FritzBox als stabiler Router
+### Netzwerk-Architektur (2026-08-16, aktuell)
+- **ASUS RT-AXE7800** (192.168.50.1): wieder **vollwertiger Router** — NAT, DHCP, DNS, Firewall, WLAN
+  - ASUS-Router-DNS-Filter aktiv (fuer andere Geraete im Netz)
+  - WiFi 6E (6GHz) + WiFi 6 (2.4/5GHz)
+  - FritzBox ist wieder raus aus dem Routing
+- **NixOS DNS**: Router-DNS via DHCP (NixOS-Defaults). Resolved verwaltet DNS, Router ist mDNS-Responder.
+- **DNS-Hinweis 2026-08-17**: Mullvad DoT musste aufgegeben werden. Steam's steamwebhelper blockiert Port 5353 (mDNS-Multicast) — kein lokaler mDNS-Responder funktioniert wenn Steam laeuft (bekanntes Valve-Problem, betrifft sogar SteamOS). Router als DNS = Router als mDNS = kein Konflikt. Mullvad unterwegs spaeter per VPN loesen.
+- **Hinweis**: Archer-Bug-Lösung (AP-Modus) war nur temporär; ASUS übernimmt wieder alle Router-Aufgaben
 
 ### AX210 Hardware-Upgrade-Plan (Backup)
 - **Ziel**: Volle Performance + stabile Latenz unter Linux, ohne Treiber-Workarounds
