@@ -1,9 +1,10 @@
-{ ... }: {
+# Gerät als Argument (vom Installer per temporaerer Config uebergeben).
+# Default fuer normales Rebuild, wenn kein Geraet uebergeben wird.
+{ device ? "/dev/nvme0n1", ... }: {
   disko.devices = {
     disk = {
       main = {
-        # Hier wird das Device fest definiert, damit der Fehler 'attribute device missing' verschwindet
-        device = "/dev/nvme0n1";
+        inherit device;
         type = "disk";
         content = {
           type = "gpt";
