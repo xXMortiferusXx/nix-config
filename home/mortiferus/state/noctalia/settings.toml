@@ -132,6 +132,9 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
 [notification]
 layer = "overlay"
 
+[plugin_settings."avivbintangaringga/nix-monitor"]
+update_command = "nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#nex"
+
 [plugins]
 enabled = [ "avivbintangaringga/nix-monitor" ]
 
