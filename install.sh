@@ -48,39 +48,55 @@ fi
 
 info "Installiere Host: $HOSTNAME für User: $USERNAME"
 
-# --- SCHRITT 1b: NVMe-Laufwerksauswahl (SICHERHEIT) ---
-# Problem: Linux erkennt NVMe-Geräte nicht immer in gleicher Reihenfolge
-# (nvme0 vs. nvme1). Daher NIE hart verdrahten, sondern immer interaktiv
-# anhand von Modell + Seriennummer + Label auswählen!
+# --- SCHRITT 1b: Laufwerksauswahl (SICHERHEIT) ---
+# Problem: Linux erkennt Laufwerke nicht immer in gleicher Reihenfolge
+# (nvme0 vs. nvme1 vs. sda vs. vda). Daher NIE hart verdrahten, sondern
+# immer interaktiv anhand von Modell + Seriennummer + Label auswählen!
 echo ""
 echo "=========================================================="
-echo "  NVMe-Laufwerksauswahl"
+echo "  Laufwerksauswahl"
 echo "=========================================================="
 echo ""
-echo "Erkannte NVMe-Laufwerke:"
+echo "Erkannte Laufwerke:"
 echo "----------------------------------------------------------"
 
-mapfile -t NVME_DEVICES < <(lsblk -d -n -o NAME,SIZE,MODEL,SERIAL,LABEL | awk '$1 ~ /^nvme/')
+# NVMe, SATA/SAS/USB (sd*), VirtIO (vd*), IDE (hd*), eMMC (mmcblk*)
+# lsblk JSON verwenden, weil Modellnamen Leerzeichen enthalten.
+# Ausgabeformat: NAME|SIZE|MODEL|SERIAL|LABEL
+mapfile -t INSTALL_DEVICES < <(lsblk -J -d -o NAME,SIZE,MODEL,SERIAL,LABEL,TYPE | python3 -c '
+import json, sys
+data = json.load(sys.stdin)
+for dev in data.get("blockdevices", []):
+    name = dev.get("name", "")
+    dtype = dev.get("type") or ""
+    if dtype == "disk" and name.startswith(("nvme", "sd", "vd", "hd", "mmcblk")):
+        size = dev.get("size", "")
+        model = dev.get("model") or ""
+        serial = dev.get("serial") or ""
+        label = dev.get("label") or ""
+        print(f"{name}|{size}|{model}|{serial}|{label}")
+')
 
-if [ ${#NVME_DEVICES[@]} -eq 0 ]; then
-    error "Keine NVMe-Laufwerke gefunden! Abgebrochen."
+if [ ${#INSTALL_DEVICES[@]} -eq 0 ]; then
+    error "Keine installierbaren Laufwerke gefunden! Abgebrochen."
 fi
 
-for i in "${!NVME_DEVICES[@]}"; do
-    echo "  [$((i+1))] ${NVME_DEVICES[$i]}"
+for i in "${!INSTALL_DEVICES[@]}"; do
+    echo "  [$((i+1))] ${INSTALL_DEVICES[$i]}"
 done
 echo "----------------------------------------------------------"
 echo ""
-read -p "Welches Laufwerk soll installiert werden? [1-${#NVME_DEVICES[@]}]: " DISK_CHOICE
+read -p "Welches Laufwerk soll installiert werden? [1-${#INSTALL_DEVICES[@]}]: " DISK_CHOICE
 
-if ! [[ "$DISK_CHOICE" =~ ^[0-9]+$ ]] || [ "$DISK_CHOICE" -lt 1 ] || [ "$DISK_CHOICE" -gt "${#NVME_DEVICES[@]}" ]; then
+if ! [[ "$DISK_CHOICE" =~ ^[0-9]+$ ]] || [ "$DISK_CHOICE" -lt 1 ] || [ "$DISK_CHOICE" -gt "${#INSTALL_DEVICES[@]}" ]; then
     error "Ungültige Auswahl."
 fi
 
-DISK_NAME=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $1}')
-DISK_MODEL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $3}')
-DISK_SERIAL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $4}')
-DISK_LABEL=$(echo "${NVME_DEVICES[$((DISK_CHOICE-1))]}" | awk '{print $5}')
+DISK_NAME=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f1)
+DISK_SIZE=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f2)
+DISK_MODEL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f3)
+DISK_SERIAL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f4)
+DISK_LABEL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f5)
 DISK_DEVICE="/dev/${DISK_NAME}"
 
 # Warnung, falls das gewählte Laufwerk ein Label hat (z.B. GamingDrive auf nex)
