@@ -7,6 +7,9 @@ __pycache__/
 
 # Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
 home/mortiferus/state/noctalia/state.toml
+# Noctalia Theme Files: werden automatisch bei Hintergrundbild-Wechsel neu generiert
+home/mortiferus/config/hypr/noctalia.lua
+home/mortiferus/config/niri/noctalia.kdl
 # Noctalia Clipboard: kann Klartext-Passwörter, API-Keys, Screenshots enthalten
 home/mortiferus/state/noctalia/clipboard/
 home/mortiferus/state/noctalia/notification_history.json
