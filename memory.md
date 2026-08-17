@@ -507,33 +507,33 @@ Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-0
 - LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
 - EasyEffects: Sidechain auf Hardware-Inputs beschraenkt, inkompatibel mit HRTF-Chain
 
-## Installation (2026-08-15, Stand 2026-08-16)
+## Installation (2026-08-15, aktualisiert 2026-08-17)
 
-### Installer: `install.sh` (sichere NVMe-Auswahl)
-- **Problem (geloest)**: Linux erkennt NVMe-Geraete nicht immer in gleicher Reihenfolge (nvme0 vs. nvme1) — die Festplatte waere sonst auf der falschen NVMe gelandet
-- **Loesung**: Interaktive NVMe-Auswahl per `lsblk` mit Modell + Seriennummer + Label
+### Installer: `install.sh` (sichere Laufwerksauswahl)
+- **Problem (geloest)**: Linux erkennt Laufwerke nicht immer in gleicher Reihenfolge (nvme0 vs. nvme1 vs. sda) — die Festplatte waere sonst auf der falschen Disk gelandet
+- **Loesung**: Interaktive Laufwerksauswahl per `lsblk -P` mit Modell + Seriennummer + Label
+  - Unterstuetzte Geraete: `nvme*`, `sd*` (SATA/SAS/USB), `vd*` (VirtIO), `hd*` (IDE), `mmcblk*` (eMMC)
   - Kein hardcoded `/dev/nvme0n1` mehr im Skript
-  - Sicherheitsabfrage vor dem Loeschen ("ja/NEIN")
+  - Sicherheitsabfrage vor dem Loeschen (disko fragt `yes`)
   - Warnung, falls das gewaehlte Laufwerk ein Label hat (z.B. `GamingDrive` auf nex)
-- **Backup**: alte Version als `install.sh.legacy` (falls das neue Skript zicken sollte)
+- **Device-Uebergabe an disko**: `--argstr device` funktioniert bei Flakes nicht zuverlaessig. Stattdessen erzeugt `install.sh` zur Laufzeit eine temporaere disko-Config (`/tmp/disko-<host>.nix`), die die host-spezifische disko-Config mit dem gewaehlten Device importiert.
+- **Unterstuetzte Hosts**: `nex`, `styx`, `test`
+- **Backup**: alte Version als `install.sh.legacy`
 
-### Disko + `--argstr device` (NICHT geloest, wieder zurueckgerollt 2026-08-16)
-- `--argstr device` im Installer wirkte **nicht**: die disko-Configs hatten `device` hardcoded und wurden nur als NixOS-Modul (`nixosConfigurations.${host}.config.disko.devices`) genutzt — cli.nix reicht dort KEIN `device` durch
-- **Versuch**: `flake.nix` bekam `diskoConfigurations.nex` / `diskoConfigurations.styx`, die `device` als Funktionsargument durchreichen sollten
-- **Ergebnis**: Der Installer funktionierte damit **nicht** — Versuch verworfen, `diskoConfigurations` aus `flake.nix` entfernt (zurueckgerollt)
-- **Aktueller Stand (zurueckgerollt)**:
-  - `flake.nix`: nur noch `nixosConfigurations` mit `disko.nixosModules.disko` (kein `diskoConfigurations`-Output)
-  - `hosts/nex/disk-config.nix`: wieder einfaches Modul `{ ... }:` mit hartcodiertem `device = "/dev/nvme0n1"` (Kommentar erklaert warum — "damit der Fehler 'attribute device missing' verschwindet")
-  - `modules/system/disko-basic.nix` (styx): noch als Funktion `{ device ? "/dev/nvme0n1", ... }`, Default fuer normales Rebuild
-  - `install.sh` uebergibt **weiterhin** `--argstr device "$DISK_DEVICE"` (Zeile 131) — greift aber aktuell **nicht**, da die Configs das Argument nicht durchreichen
-- **Status**: Offen — sauberer Weg fuer die interaktive Device-Auswahl muss noch gefunden werden (z.B. disko CLI direkt mit eigenem Argument-Parsing, oder `diskoConfigurations`-Output sauber verdrahten und testen)
-- **TODO**: Installer vor dem naechsten Einsatz in einer **virtuellen Maschine** testen (inkl. `--argstr device`) — nicht wieder blind auf echter Hardware installieren
-- **ACHTUNG vor Installation**: Gaming-NVMe (nex) einmalig formatieren: `sudo mkfs.ext4 -L GamingDrive /dev/nvmeXn1` (loescht Daten!) — `/gaming` wird per Label gemountet
-  - **Alternativ nach der Installation** (Boot blockiert nicht, `nofail` in hardware-configuration.nix): `/gaming` ist dann nur bis zum Formatieren nicht gemountet
-- **NEU (2026-08-15)**: Gaming-Platte kann **auch nach** der Installation formatiert werden — `/gaming` hat `nofail`, Boot laeuft trotzdem durch
-- **ERLEDIGT (2026-08-16)**: Gaming-NVMe (nvme0n1, Samsung 980 PRO 2TB) als ext4 mit Label `GamingDrive` formatiert (vorher btrfs + NTFS-Partition) und unter `/gaming` gemountet — mountet per Label automatisch nach Reboot
+### Disko-Configs
+- `hosts/nex/disk-config.nix`: `{ device ? "/dev/nvme0n1", ... }:` — Default fuer normales Rebuild, vom Installer ueberschreibbar
+- `modules/system/disko-basic.nix` (styx): `{ device ? "/dev/nvme0n1", ... }:` — bereits flexibel
+- `hosts/test/disk-config.nix`: `{ device ? "/dev/nvme0n1", ... }:` — fuer QEMU-Tests
+- `flake.nix`: `diskoConfigurations.nex/styx/test` bleiben als Flake-Output erhalten (fuer direktes disko-CLI), der Installer nutzt sie aber nicht mehr
+
+### QEMU-Testumgebung
+- `test-installer.sh`: QEMU-VM mit 2 virtuellen NVMe-Disks + NixOS ISO
+  - `./test-installer.sh iso` — baut ISO und bootet VM fuer Installer-Test
+  - `./test-installer.sh vm` — baut Test-Host direkt
+  - ISO wird als `packages.installer-iso` im Flake gebaut
+- `hosts/test/configuration.nix`: minimaler NixOS-Host (kein Desktop, kein Home-Manager) fuer schnelle Builds
 
 ### Installer-Swap (temporaer, nur fuer die Installation)
-- **Problem (geloest)**: Alter Swap-Block prüfte `/mnt/swap/swapfile` — existierte nach dem ext4-Umbau nicht mehr (Swap-Partition aus disko entfernt) → OOM-Schutz war kaputt
-- **Loesung**: `install.sh` legt jetzt ein **temporaeres Swapfile** auf `/mnt/.install-swapfile` an (2x RAM, max 16G), aktiviert es per `swapon` und entfernt es via `trap cleanup_swap EXIT` nach der Installation wieder
-- **Wichtig**: Swapfile landet **nie** im installierten System — disko-Configs haben weiterhin keinen Swap, System laeuft ZRAM-only (`zramSwap` in `boot-common.nix` / `boot-nex.nix`)
+- `install.sh` legt ein **temporaeres Swapfile** auf `/mnt/.install-swapfile` an (2x RAM, max 16G), aktiviert es per `swapon` und entfernt es via `trap cleanup_swap EXIT` nach der Installation wieder
+- Swapfile landet **nie** im installierten System — disko-Configs haben weiterhin keinen Swap, System laeuft ZRAM-only
+- Wenn `swapon` fehlschlaegt (z.B. in QEMU), laeuft der Installer mit Warnung weiter
