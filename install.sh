@@ -61,21 +61,17 @@ echo "Erkannte Laufwerke:"
 echo "----------------------------------------------------------"
 
 # NVMe, SATA/SAS/USB (sd*), VirtIO (vd*), IDE (hd*), eMMC (mmcblk*)
-# lsblk JSON verwenden, weil Modellnamen Leerzeichen enthalten.
-# Ausgabeformat: NAME|SIZE|MODEL|SERIAL|LABEL
-mapfile -t INSTALL_DEVICES < <(lsblk -J -d -o NAME,SIZE,MODEL,SERIAL,LABEL,TYPE | python3 -c '
-import json, sys
-data = json.load(sys.stdin)
-for dev in data.get("blockdevices", []):
-    name = dev.get("name", "")
-    dtype = dev.get("type") or ""
-    if dtype == "disk" and name.startswith(("nvme", "sd", "vd", "hd", "mmcblk")):
-        size = dev.get("size", "")
-        model = dev.get("model") or ""
-        serial = dev.get("serial") or ""
-        label = dev.get("label") or ""
-        print(f"{name}|{size}|{model}|{serial}|{label}")
-')
+# lsblk -P gibt KEY="value"-Paare aus (Leerzeichen in Werten sind quoted).
+# Hier ohne Python/JQ parsen, weil die ISO die nicht mitbringt.
+INSTALL_DEVICES=()
+while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    # shellcheck disable=SC2046
+    eval $(echo "$line" | grep -oE 'NAME="[^"]*"|SIZE="[^"]*"|MODEL="[^"]*"|SERIAL="[^"]*"|LABEL="[^"]*"|TYPE="[^"]*"')
+    if [ "${TYPE}" = "disk" ] && [[ "$NAME" =~ ^(nvme|sd|vd|hd|mmcblk) ]]; then
+        INSTALL_DEVICES+=("${NAME}|${SIZE}|${MODEL}|${SERIAL}|${LABEL}")
+    fi
+done < <(lsblk -d -P -o NAME,SIZE,MODEL,SERIAL,LABEL,TYPE)
 
 if [ ${#INSTALL_DEVICES[@]} -eq 0 ]; then
     error "Keine installierbaren Laufwerke gefunden! Abgebrochen."
