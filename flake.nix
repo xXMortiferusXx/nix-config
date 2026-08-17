@@ -47,8 +47,20 @@
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
+
+      # Disko-Configs fuer den Installer (--flake .#<host> --argstr device /dev/nvmeXn1)
+      # device wird vom Installer per --argstr device uebergeben.
+      # Default nur fuer normales Rebuild, wenn kein Device uebergeben wird.
+      diskoConfigurations.nex = { device ? "/dev/nvme0n1", ... }:
+        import ./hosts/nex/disk-config.nix { inherit device; };
+      diskoConfigurations.styx = { device ? "/dev/nvme0n1", ... }:
+        import ./modules/system/disko-basic.nix { inherit device; };
+      diskoConfigurations.test = { device ? "/dev/nvme0n1", ... }:
+        import ./hosts/test/disk-config.nix { inherit device; };
     in
     {
+      inherit diskoConfigurations;
+
       nixosConfigurations."nex" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
@@ -76,5 +88,28 @@
           }
         ];
       };
+
+      # Test-Host: minimal fuer Installer-Testing (QEMU-VM)
+      nixosConfigurations."test" = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          disko.nixosModules.disko
+          ./hosts/test/configuration.nix
+        ];
+      };
+
+      # Installer ISO fuer QEMU-Testing
+      packages.${system}.installer-iso = let
+        iso = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+            ({ pkgs, ... }: {
+              nix.settings.experimental-features = [ "nix-command" "flakes" ];
+              environment.systemPackages = with pkgs; [ git curl wget vim parted ];
+            })
+          ];
+        };
+      in iso.config.system.build.isoImage;
     };
 }
