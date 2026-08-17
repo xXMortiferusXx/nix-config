@@ -13,6 +13,7 @@
     "kernel.nmi_watchdog" = 0;              # Deaktiviert (spart Strom/CPU-Zyklen)
     "kernel.kptr_restrict" = 2;             # Kernel-Pointer nur für root sichtbar
     "kernel.printk" = "3 3 3 3";           # Nur kritische Meldungen auf Konsole
+    "kernel.unprivileged_userns_clone" = 1; # Unprivileged User-Namespaces für Flatpak/Container
   };
 
   services.udev.extraRules = ''
@@ -82,6 +83,7 @@
   # CachyOS 20-audio.conf: @audio Gruppe Echtzeit-Priorität 99
   security.pam.loginLimits = [
     { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
+    { domain = "@audio"; item = "nice"; type = "-"; value = "11"; }
   ];
 
   # CachyOS rtkit-daemon override: Log-Level auf info

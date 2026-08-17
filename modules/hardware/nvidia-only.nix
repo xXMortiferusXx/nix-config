@@ -34,8 +34,12 @@
   };
 
   # CachyOS modprobe.d/nvidia.conf: NVIDIA Memory Clearing deaktivieren (Performance)
+  # + DynamicPowerManagement (GPU spart Strom bei Leerlauf)
+  # + EnableS0ixPowerManagement (S0ix Idle-Power fuer AMD Ryzen Laptops)
   boot.extraModprobeConfig = ''
-    options nvidia NVreg_InitializeSystemMemoryAllocations=0
+    options nvidia NVreg_InitializeSystemMemoryAllocations=0 \
+        NVreg_DynamicPowerManagement=0x02 \
+        NVreg_EnableS0ixPowerManagement=1
   '';
 
   hardware.nvidia = {
@@ -47,7 +51,9 @@
     open = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
-    # Power Management: bei NVIDIA-only kein feingranuliertes PM nötig
+    # Power Management: grundsaetzlich aktiviert.
+    # Finegrained geht nicht ohne PRIME-Offload (NixOS-Assertion).
+    # DynamicPowerManagement + S0ix laufen ueber Modprobe-Parameter auf Treiber-Ebene.
     powerManagement.enable = true;
     powerManagement.finegrained = false;
 
