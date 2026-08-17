@@ -27,10 +27,11 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 MODE="${1:-iso}"
 
 usage() {
-    echo "Usage: $0 [iso|vm]"
+    echo "Usage: $0 [iso|vm|clean]"
     echo ""
     echo "  iso   - Baut NixOS ISO und bootet mit 2 NVMe Disks (Installer-Test)"
     echo "  vm    - Baut und bootet den Test-Host direkt (Config-Test)"
+    echo "  clean - Loescht alle temporaeren QEMU-Dateien (${VM_DIR})"
     echo ""
     exit 1
 }
@@ -38,6 +39,16 @@ usage() {
 case "$MODE" in
     iso) ;;
     vm)  ;;
+    clean)
+        if [ -d "$VM_DIR" ]; then
+            info "Loesche ${VM_DIR}..."
+            rm -rf "$VM_DIR"
+            info "Aufgeraeumt."
+        else
+            info "Nichts aufzuraeumen (${VM_DIR} existiert nicht)."
+        fi
+        exit 0
+        ;;
     *)   usage ;;
 esac
 
