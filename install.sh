@@ -29,8 +29,9 @@ echo ""
 echo "Welches System soll installiert werden?"
 echo "  1) nex (Haupt-PC / mortiferus)"
 echo "  2) styx (Office-PC / backbone)"
+echo "  3) test (QEMU-Test / test)"
 echo ""
-read -p "Auswahl [1-2]: " HOST_CHOICE
+read -p "Auswahl [1-3]: " HOST_CHOICE
 
 if [[ "$HOST_CHOICE" == "1" ]]; then
     HOSTNAME="nex"
@@ -38,6 +39,9 @@ if [[ "$HOST_CHOICE" == "1" ]]; then
 elif [[ "$HOST_CHOICE" == "2" ]]; then
     HOSTNAME="styx"
     USERNAME="backbone"
+elif [[ "$HOST_CHOICE" == "3" ]]; then
+    HOSTNAME="test"
+    USERNAME="test"
 else
     error "Ungültige Auswahl."
 fi
