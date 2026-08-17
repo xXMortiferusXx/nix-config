@@ -8,7 +8,7 @@ pkgs: with pkgs; [
   yazi
   btop
   kitty
-  nautilus
+  thunar
   zathura
   loupe
 ]

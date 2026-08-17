@@ -8,6 +8,8 @@
 - `system/environment-nex.nix` – nex-spezifische Env (NVIDIA Shader-Cache, Explicit-Sync, Flipping)
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
+  - PAM: `@audio rtprio 99` + `@audio nice -11`
+  - sysctl: `kernel.unprivileged_userns_clone=1` (Flatpak/Container)
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
 - `system/boot-nex.nix` – zen-Kernel (seit 2026-08-14), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
@@ -15,7 +17,6 @@
 - `desktop/desktop.nix` – shared desktop config (reduziert)
 - `desktop/polkit.nix` – Polkit-Regeln
 - `desktop/fonts.nix` – Fonts
-- `desktop/nautilus-emblems.nix` – Nautilus Emblems
 - `desktop/noctalia-greeter.nix` – zentraler greeter (nicht per-host)
 - `desktop/niri.nix` – niri via sodiboo/niri-flake (Flake-Paket + niri-unstable + niri.cachix.org Cache)
 
@@ -44,7 +45,10 @@
     - Aktivierung via `ENABLE_VKBASALT=1 %command%` in Steam
 - `hardware/nvidia-only.nix` – **NVIDIA-only Modus für nex** (2026-08-12)
   - Kein PRIME-Block, kein `amdgpu` in `boot.initrd.kernelModules`
-  - `powerManagement.finegrained = false` (nicht nötig ohne PRIME)
+  - `powerManagement.finegrained = false` (geht nicht ohne PRIME-Offload, NixOS-Assertion)
+  - `NVreg_InitializeSystemMemoryAllocations=0` (Performance)
+  - `NVreg_DynamicPowerManagement=0x02` (GPU spart Strom bei Leerlauf)
+  - `NVreg_EnableS0ixPowerManagement=1` (S0ix Idle-Power fuer AMD Ryzen)
   - Wayland-Optimierungen: `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `__GL_VRR_ALLOWED=1`
   - `LIBVA_DRIVER_NAME=nvidia` + `VDPAU_DRIVER=nvidia` für Hardware-Decoding
   - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland
