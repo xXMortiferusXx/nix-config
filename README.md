@@ -52,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) with `niri.cachix.org` binary cache (`niri-unstable` branch) and **Hyprland** available on both
-- **Xanmod** kernel (`linuxPackages_xanmod_latest`) with **scx scheduler** on nex (currently evaluating lavd vs. bpfland) + CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **Zen** kernel (`linuxPackages_zen`) on nex — currently testing without scx scheduler. scx_bpfland was previously evaluated and disabled. CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -146,7 +146,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) mit `niri.cachix.org` Binary Cache (`niri-unstable` Branch) und **Hyprland** auf beiden verfügbar
-- **Xanmod**-Kernel (`linuxPackages_xanmod_latest`) mit **scx Scheduler** auf nex (aktuell lavd vs. bpfland im Test) + CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **Zen**-Kernel (`linuxPackages_zen`) auf nex — aktuell ohne scx Scheduler im Test. scx_bpfland wurde zuvor evaluiert und deaktiviert. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
