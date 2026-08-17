@@ -1,13 +1,26 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.file.".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
-
   xdg.configFile = {
     "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
     "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
     "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
     "hypr".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/hypr";
+
+    # GTK/QT Theme-Einstellungen (live editierbar via nwg-look / qt5ct / qt6ct)
+    "gtk-3.0/settings.ini".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/gtk-3.0/settings.ini";
+    "gtk-4.0/settings.ini".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/gtk-4.0/settings.ini";
+    "xsettingsd/xsettingsd.conf".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/xsettingsd/xsettingsd.conf";
+    "qt5ct/qt5ct.conf".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/qt5ct/qt5ct.conf";
+    "qt6ct/qt6ct.conf".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/qt6ct/qt6ct.conf";
+  };
+
+  home.file = {
+    ".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
+
+    # GTK 2.0 / Default-Icon-Theme (live editierbar)
+    ".gtkrc-2.0".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/gtkrc-2.0";
+    ".icons/default/index.theme".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/icons/default/index.theme";
   };
   # Noctalia v5 verwaltet alle Daten (Config, State, Plugins) unter ~/.local/state/noctalia.
   # ~/.config/noctalia wird von v5 nicht mehr genutzt.
