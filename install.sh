@@ -125,6 +125,21 @@ info "Bereite Festplatte vor (löse bestehende Sperren)..."
 sudo umount -R /mnt 2>/dev/null || true
 sudo swapoff -a 2>/dev/null || true
 
+if [[ "$HOSTNAME" == "nex" ]]; then
+    DISKO_CONFIG="${PWD}/hosts/nex/disk-config.nix"
+elif [[ "$HOSTNAME" == "styx" ]]; then
+    DISKO_CONFIG="${PWD}/modules/system/disko-basic.nix"
+elif [[ "$HOSTNAME" == "test" ]]; then
+    DISKO_CONFIG="${PWD}/hosts/test/disk-config.nix"
+fi
+
+# Temporaere disko-Config mit dem gewaehlten Device erzeugen.
+# Das ist zuverlaessiger als --argstr device bei Flakes (wird ignoriert).
+TEMP_DISKO_CONFIG="/tmp/disko-${HOSTNAME}.nix"
+cat > "$TEMP_DISKO_CONFIG" <<EOF
+(import ${DISKO_CONFIG} { device = "${DISK_DEVICE}"; })
+EOF
+
 info "Partitioniere und mounte ${DISK_DEVICE}..."
 
 sudo nix --experimental-features "nix-command flakes" \
@@ -132,8 +147,7 @@ sudo nix --experimental-features "nix-command flakes" \
     --option connect-timeout 20 \
     run github:nix-community/disko -- \
     --mode destroy,format,mount \
-    --argstr device "$DISK_DEVICE" \
-    --flake ".#$HOSTNAME"
+    "$TEMP_DISKO_CONFIG"
 
 # --- TEMPORÄRER SWAP GEGEN OOM (nur für die Installation) ---
 # Die disko-Configs haben KEINEN dauerhaften Swap (System läuft ZRAM-only).
