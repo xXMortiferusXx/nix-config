@@ -37,8 +37,9 @@
 
   # Home-Manager's writeBoundary setzt bei nix-switch die ACL-Mask auf Home auf ---
   # (chmod synchronisiert Mask mit Unix-Gruppenrechten). Das blockiert greeter/accounts-daemon.
-  # Daher: Nach writeBoundary die Mask wieder auf r-x setzen (greeter darf Home betreten).
+  # Daher: Nach writeBoundary dem greeter-User Execute-Recht auf $HOME geben (damit er
+  # ~/.face erreicht), und die Mask auf r-x setzen.
   home.activation.fixHomeAclMask = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    ${pkgs.acl}/bin/setfacl -m m::r-x "$HOME"
+    ${pkgs.acl}/bin/setfacl -m u:greeter:x,m::r-x "$HOME"
   '';
 }
