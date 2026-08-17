@@ -2,7 +2,7 @@ local mainMod = "SUPER"
 
 -- Program Variables
 local terminal = "kitty"
-local fileManager = "nautilus"
+local fileManager = "thunar"
 local menu = "noctalia msg panel-toggle launcher"
 local editor = "nvim"
 local browser = "zen-beta"
