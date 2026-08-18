@@ -146,7 +146,7 @@
 - FMOD in PoE1 upmixt 7.1 auf 12 Kanäle
 - In-Game-Auswahl "GameSink" nötig für 7.1.4-Modus
 
-### Atlas Air EQ
+### Atlas Air EQ (DEAKTIVIERT – Atlas Air als Garantie zurück, 2026-08-18)
 - **EQ komplett neutral** (0 dB) – SADIE braucht keine Korrektur, klingt pur perfekt
 - Ursprüngliche Atlas Air EQ-Kurve (Dolby Smile + Korrektur) war für andere HRTFs gedacht
 
@@ -188,12 +188,13 @@
 - **Preis**: ~20-40€, Einbau: 1 Schraube M.2 2230
 - **Status**: Nicht dringend, aber als Plan B festhalten
 
-### Atlas Air: Physischer Mute-Schalter stört Audio-Output
+### Atlas Air: Physischer Mute-Schalter stört Audio-Output (DEAKTIVIERT – Garantie-Rücksendung, 2026-08-18)
 - **Problem**: Wird der Flip-to-Mute Schalter am Headset benutzt, fällt der Ton am Output aus und wieder ein
 - **Ursache**: Headset-Firmware unterbricht beim Muten kurz den Wireless-Link zwischen Headset und Dongle (kein HID-Event, kein ALSA-Control-Change, kein USB-Reset in Linux sichtbar)
 - **Workaround**: Mute nur per Software (`wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle`) und physischen Schalter ignorieren
 - **Keybind**: `Mod+Shift+M` in Niri (`keybinds.kdl`)
 - **USB Autosuspend** wurde als Ursache ausgeschlossen (udev-Regel in `atlas-air.nix` hat nichts gebracht)
+- **Status**: Atlas Air als Garantiefall zurückgeschickt (2026-08-18), Ersatz steht noch aus
 
 ## Noctalia v5
 
@@ -463,7 +464,7 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `vulkan-tools` | GOverlay Live-Preview (vkcube) + Vulkan-Debugging |
 | `vkbasalt` | Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen) |
 
-## Audio / ChatMixer (2026-08-13)
+## Audio / ChatMixer (2026-08-13, DEAKTIVIERT 2026-08-18)
 
 ### Problem
 Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio entsteht Detailverlust, weil Game dauerhaft leiser gestellt werden muss, damit Chat durchkommt.
@@ -471,11 +472,15 @@ Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio
 ### Alte Lösung (archiviert): `chatduck`
 Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
 
-### ChatSink jetzt sauber (2026-08-16)
+### ChatSink jetzt sauber (2026-08-16, DEAKTIVIERT 2026-08-18 – Atlas Air zurück)
 - **KU100-SOFA-HRTF entfernt** (taugte laut Einschaetzung nichts, Pruefung abgeschlossen)
 - **Atmos/Convolver komplett entfernt** (atmos.wav) — GameSink + ChatSink sind reine Loopbacks direkt aufs Headset
 - **Kein HRTF/EQ/Kompressor mehr** — Spiele klingen so, wie die Entwickler es vorgesehen haben (kein Risiko doppelter HRTF oder Atmos-Routing)
-- Aktuelles Modell:
+- **Status (2026-08-18)**: ChatMixer-Config temporaer deaktiviert (`.conf.disabled`), da kein Headset vorhanden
+  - `atlas-air.nix` Import in `nex/configuration.nix` auskommentiert
+  - WirePlumber-Rename und udev-Regel nicht aktiv
+  - Bei neuem Headset: `chatmixer.conf.disabled` wieder aktivieren + `atlas-air.nix` anpassen (udev Vendor/Product + WirePlumber-Match)
+- Aktuelles Modell (DEAKTIVIERT – kein Headset vorhanden):
   - `GameSink` (8 Kanäle) → Headset — separat regelbar für Spiele-Lautstärke
   - `ChatSink` (Stereo) → Headset — separat regelbar für Chat-Lautstärke
   - Balance über Noctalia/`wpctl`: z.B. Atlas-Air-Master 50%, GameSink 60%, ChatSink 100% → Chat bleibt verständlich, Spiel separat abgesenkt
@@ -497,11 +502,11 @@ Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-0
 - `home/mortiferus/scripts/test-chatsink.sh`: 5-Sekunden 1kHz Sine-Wave an ChatSink
   - Nutzung: `PULSE_SINK=ChatSink speaker-test -t sine -f 1000 -c 2 -l 1 -d 5`
 
-### Files
-- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf` — Game + Chat DSP Chains
-- `modules/hardware/audio.nix` — `clock.quantum = 512` + LADSPA_PATH Fix
-- `modules/home/mortiferus/autostart.nix` — chatduck entfernt
-- `home/mortiferus/scripts/test-chatsink.sh` — ChatSink Test-Script
+### Files (2026-08-18: alle deaktiviert bis neuem Headset)
+- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
+- `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
+- `modules/hardware/atlas-air.nix` — WirePlumber-Rename + udev (nicht importiert)
+- `modules/hardware/audio.nix` — `clock.quantum = 512` + LADSPA_PATH Fix (aktiv, unabhängig vom Headset)
 
 ### Archivierte Experimente (PipeWire 1.6.8 Limits)
 - LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
