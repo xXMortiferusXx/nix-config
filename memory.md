@@ -146,9 +146,28 @@
 - FMOD in PoE1 upmixt 7.1 auf 12 Kanäle
 - In-Game-Auswahl "GameSink" nötig für 7.1.4-Modus
 
-### Atlas Air EQ (DEAKTIVIERT – Atlas Air als Garantie zurück, 2026-08-18)
-- **EQ komplett neutral** (0 dB) – SADIE braucht keine Korrektur, klingt pur perfekt
-- Ursprüngliche Atlas Air EQ-Kurve (Dolby Smile + Korrektur) war für andere HRTFs gedacht
+### SteelSeries Arctis Nova Pro GameDAC (seit 2026-08-18, ersetzt Atlas Air)
+- **USB ID**: 1038:1282 (Audio) + 1038:1280 (HID/Controls)
+- **Modus**: Pro Audio — zwei separate USB-Audio-Interfaces (Game + Chat) hardwareseitig
+- **Output-Bezeichnung ist vertauscht zur Realität**:
+  - `SteelSeries GameDAC Pro` (pro-output-0, 2ch) = **Chat** (Discord, Voice)
+  - `SteelSeries GameDAC Pro 1` (pro-output-1, 6ch) = **Game** (Spiele, Medien, HW-Lautstärkewheel)
+- **Mic**: `pro-input-0` (1ch 48kHz Mono)
+- **USB-C nur**: Anschluss über USB-C hinten am Laptop (Adapter nötig)
+  - **PROBLEM**: An internen USB-A Ports (Genesys Logic Hub 05e3) crasht der GameDAC bei Mic-Aktivierung
+  - Ursache: Bidirektional-Wechsel löst USB-Reset aus, Genesys-Hub propagiert auf alle Downstream-Ports
+  - Externer USB-Hub funktioniert ebenfalls (anderer Hub-Chip)
+- **5.1 Loopback** (seit 2026-08-19):
+  - **Problem**: Wine/Proton's PulseAudio-Layer verhandelt nur Stereo mit dem GameDAC (2ch PortConfig), obwohl PoE2 intern 5.1 (6ch) ausgibt
+  - **Ursache**: GameDAC nutzt non-stadard Channel-Names (`AUX0-AUX5`), Wine erwartet Standard-Namen (`FL FR FC LFE RL RR`)
+  - **Lösung**: `libpipewire-module-loopback` in `~/.config/pipewire/pipewire.conf.d/gamedac-5.1.conf`
+    - Capture (Sink): `FL FR FC LFE RL RR` (6ch, Wine/PulseAudio erkennt "normales 5.1")
+    - Playback: `AUX0-AUX5` (6ch, routet auf `pro-output-1`)
+    - Kein DSP, kein Resampling — nur Channel-Rename
+  - **Default-Sink**: `gamedac-game-5.1` — alle Apps nutzen automatisch 5.1
+  - **Sichtbare Devices**: 3 Stück (GameDAC Pro Chat, GameDAC Pro 1 Game, GameDAC 5.1 Loopback)
+  - **Verstecken nicht möglich**: `node.disabled = true` würde den Node komplett deaktivieren → Loopback-Input bricht. Kein WirePlumber-Mechanismus um "nur vor PulseAudio" zu verstecken
+  - **Config**: `/etc/nixos/home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf` (via HM-Symlink nach `~/.config/pipewire/`)
 
 ## Bekannte Probleme
 
@@ -188,13 +207,17 @@
 - **Preis**: ~20-40€, Einbau: 1 Schraube M.2 2230
 - **Status**: Nicht dringend, aber als Plan B festhalten
 
-### Atlas Air: Physischer Mute-Schalter stört Audio-Output (DEAKTIVIERT – Garantie-Rücksendung, 2026-08-18)
-- **Problem**: Wird der Flip-to-Mute Schalter am Headset benutzt, fällt der Ton am Output aus und wieder ein
-- **Ursache**: Headset-Firmware unterbricht beim Muten kurz den Wireless-Link zwischen Headset und Dongle (kein HID-Event, kein ALSA-Control-Change, kein USB-Reset in Linux sichtbar)
-- **Workaround**: Mute nur per Software (`wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle`) und physischen Schalter ignorieren
-- **Keybind**: `Mod+Shift+M` in Niri (`keybinds.kdl`)
-- **USB Autosuspend** wurde als Ursache ausgeschlossen (udev-Regel in `atlas-air.nix` hat nichts gebracht)
-- **Status**: Atlas Air als Garantiefall zurückgeschickt (2026-08-18), Ersatz steht noch aus
+### SteelSeries GameDAC: USB-Port-Problem (2026-08-18)
+- **Problem**: GameDAC (1038:1282) stuerzt bei Bidirektional-Wechsel (Mic-Aktivierung) an internen USB-A Ports ab
+- **Symptom**: Beide Audio-Outputs gehen stumm, USB-Device wird komplett neu enumeriert (~8 Sek.Ausfall)
+- **Ursache**: GameDAC-Firmware löst USB-Reset aus beim Mode-Wechsel (Output-only → Bidirektional). Der Genesys-Logics-Hub (05e3) an Port 2 propagiert den Reset auf alle Downstream-Geraete
+- **USB-Topologie nex**:
+  - Port 1 (TI Hub 12M, direkt): GameDAC funktioniert NICHT (Hub-Reset bei Mic)
+  - Port 2 (Genesys 480M → TI 12M): GameDAC funktioniert NICHT (Hub-Reset propagiert)
+  - **USB-C hinten**: Funktioniert einwandfrei (kein problematischer Hub im Pfad)
+  - Externer USB-Hub: Funktioniert ebenfalls (anderer Hub-Chip)
+- **Lösung**: GameDAC muss an USB-C angeschlossen werden (Adapter nötig, USB-A auf USB-C)
+- **Hinweis**: Das Problem ist laptop-spezifisch (interne Hub-Topologie). An Desktop-PCs mit direkten USB-Ports dürfte es nicht auftreten
 
 ## Noctalia v5
 
@@ -472,20 +495,12 @@ Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio
 ### Alte Lösung (archiviert): `chatduck`
 Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
 
-### ChatSink jetzt sauber (2026-08-16, DEAKTIVIERT 2026-08-18 – Atlas Air zurück)
-- **KU100-SOFA-HRTF entfernt** (taugte laut Einschaetzung nichts, Pruefung abgeschlossen)
-- **Atmos/Convolver komplett entfernt** (atmos.wav) — GameSink + ChatSink sind reine Loopbacks direkt aufs Headset
-- **Kein HRTF/EQ/Kompressor mehr** — Spiele klingen so, wie die Entwickler es vorgesehen haben (kein Risiko doppelter HRTF oder Atmos-Routing)
-- **Status (2026-08-18)**: ChatMixer-Config temporaer deaktiviert (`.conf.disabled`), da kein Headset vorhanden
-  - `atlas-air.nix` Import in `nex/configuration.nix` auskommentiert
-  - WirePlumber-Rename und udev-Regel nicht aktiv
-  - Bei neuem Headset: `chatmixer.conf.disabled` wieder aktivieren + `atlas-air.nix` anpassen (udev Vendor/Product + WirePlumber-Match)
-- Aktuelles Modell (DEAKTIVIERT – kein Headset vorhanden):
-  - `GameSink` (8 Kanäle) → Headset — separat regelbar für Spiele-Lautstärke
-  - `ChatSink` (Stereo) → Headset — separat regelbar für Chat-Lautstärke
-  - Balance über Noctalia/`wpctl`: z.B. Atlas-Air-Master 50%, GameSink 60%, ChatSink 100% → Chat bleibt verständlich, Spiel separat abgesenkt
-- **Gleiches Setup auf backbone** (beide Configs identisch aufgebaut, nur anderer ALSA-Device-Name)
-- **Nachteil**: Spiele ohne eigene Audio-Geraeteauswahl nutzen den Default-Sink; wer Atmos- oder GameSink-Routing will, muss den Default-Sink auf GameSink stellen
+### SteelSeries GameDAC: Hardware-Chatmix (2026-08-18)
+- **Kein Software-Chatmix mehr nötig** — GameDAC bietet hardwareseitig zwei separate Ausgänge
+- `Pro` (2ch) = Chat, `Pro 1` (6ch) = Game — Lautstärkewheel steuert Game-Ausgang
+- **ChatMixer-Config deaktiviert** (`.conf.disabled`), da GameDAC die Trennung hardwareseitig übernimmt
+  - `atlas-air.nix` Import in `nex/configuration.nix` auskommentiert (WirePlumber-Rename + udev nicht aktiv)
+  - Bei Bedarf: `chatmixer.conf.disabled` wieder aktivieren + `atlas-air.nix` auf GameDAC anpassen (udev Vendor/Product + WirePlumber-Match)
 
 ### Alte ChatFilter-Chain (archiviert, entfernt 2026-08-16)
 - ~~KU100-SOFA-Spatializer (frontal)~~ — entfernt, natuerlicher Klang gewuenscht
@@ -502,10 +517,10 @@ Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-0
 - `home/mortiferus/scripts/test-chatsink.sh`: 5-Sekunden 1kHz Sine-Wave an ChatSink
   - Nutzung: `PULSE_SINK=ChatSink speaker-test -t sine -f 1000 -c 2 -l 1 -d 5`
 
-### Files (2026-08-18: alle deaktiviert bis neuem Headset)
-- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
+### Files (2026-08-18)
+- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert, GameDAC übernimmt hardwareseitig)
 - `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
-- `modules/hardware/atlas-air.nix` — WirePlumber-Rename + udev (nicht importiert)
+- `modules/hardware/atlas-air.nix` — WirePlumber-Rename + udev (nicht importiert, Atlas Air zurück)
 - `modules/hardware/audio.nix` — `clock.quantum = 512` + LADSPA_PATH Fix (aktiv, unabhängig vom Headset)
 
 ### Archivierte Experimente (PipeWire 1.6.8 Limits)
