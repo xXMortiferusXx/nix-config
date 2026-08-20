@@ -76,6 +76,10 @@
 - **Commits**: opencode darf commits und pushes ausführen, aber **erst nach erfolgreichem Test und explizitem "Grünem Licht" von mortiferus**. Damit bleiben Änderungen auf GitHub nachvollziehbar und plausibel für Dritte, die das Repo betrachten.
 - **Saubere History**: Trial-and-Error-Commits werden vor dem Push entfernt oder gesquashed. Nur funktionierende, sinnvolle Commits landen auf GitHub. Bei größeren Experimenten: lokalen Branch nutzen und erst nach Erfolg in `main` rebasen/mergen.
 - **Home-Manager vs. Systemweit**: Home-Manager nur für **User-spezifische** Configs (nur ein Benutzer betroffen). Alles was systemweit gilt (alle User, Compositor, Dateimanager, Tools) wird über `environment.etc` oder NixOS-Module konfiguriert. Store-Symlinks aus HM werden von vielen Apps nicht korrekt gelesen (siehe MangoHud, Thunar).
+- **FHS-Sandbox-Problem (gelöst 2026-08-20)**: `mkOutOfStoreSymlink` (Symlinks auf `/etc/nixos/...`) funktionieren **nicht** in FHS-Sandbox-Apps (Steam, etc.), weil bubblewrap `/etc` als tmpfs mounted und `/etc/nixos` nicht existiert.
+  - **Lösung**: System-level Bind-Mounts via `systemd.mounts` (`hosts/<host>/config-mounts.nix`). `systemd.tmpfiles.rules` erstellt Ziel-Verzeichnisse, `systemd.mounts` mountet Repo-Config-Ordner direkt nach `~/.config/`. Keine Symlink-Auflösung nötig → FHS-Sandbox-Apps funktionieren universell.
+  - **Wichtig**: Kein `Requires`/`After` auf `systemd-tmpfiles-setup.service` setzen — erzeugt einen Dependency-Cycle (`local-fs.target` → mount → tmpfiles → local-fs.target). Einfach `WantedBy = [ "multi-user.target" ]` reicht.
+  - Home-Manager `xdg.configFile`-Einträge für `.config`-Ordner wurden entfernt. `home.file` (`.icons`, `.gtkrc-2.0`) und `home.activation` bleiben als HM-Symlinks (liegen in `$HOME`, nicht `.config`).
 
 ## Git / GitHub (2026-08-16)
 - SSH-Key: `~/.ssh/github_ed25519` (ed25519, Kommentar `mortiferus@nex`), bei GitHub hinterlegt
@@ -158,16 +162,20 @@
   - Ursache: Bidirektional-Wechsel löst USB-Reset aus, Genesys-Hub propagiert auf alle Downstream-Ports
   - Externer USB-Hub funktioniert ebenfalls (anderer Hub-Chip)
 - **5.1 Loopback** (seit 2026-08-19):
-  - **Problem**: Wine/Proton's PulseAudio-Layer verhandelt nur Stereo mit dem GameDAC (2ch PortConfig), obwohl PoE2 intern 5.1 (6ch) ausgibt
-  - **Ursache**: GameDAC nutzt non-stadard Channel-Names (`AUX0-AUX5`), Wine erwartet Standard-Namen (`FL FR FC LFE RL RR`)
+  - **Hintergrund**: Spiele (z.B. PoE2) geben native 5.1 (6ch) aus — das GameDAC unterstützt 5.1 ebenfalls. Das Problem ist die **Channel-Namensgebung**: GameDAC nutzt non-standard Names (`AUX0-AUX5`), Wine/Proton erwartet Standard-Names (`FL FR FC LFE RL RR`) und verhandelt sonst nur 2ch (Stereo)
   - **Lösung**: `libpipewire-module-loopback` in `~/.config/pipewire/pipewire.conf.d/gamedac-5.1.conf`
     - Capture (Sink): `FL FR FC LFE RL RR` (6ch, Wine/PulseAudio erkennt "normales 5.1")
     - Playback: `AUX0-AUX5` (6ch, routet auf `pro-output-1`)
-    - Kein DSP, kein Resampling — nur Channel-Rename
+    - Kein DSP, kein Resampling — nur Channel-Rename für Wine/Proton-Kompatibilität
   - **Default-Sink**: `gamedac-game-5.1` — alle Apps nutzen automatisch 5.1
   - **Sichtbare Devices**: 3 Stück (GameDAC Pro Chat, GameDAC Pro 1 Game, GameDAC 5.1 Loopback)
   - **Verstecken nicht möglich**: `node.disabled = true` würde den Node komplett deaktivieren → Loopback-Input bricht. Kein WirePlumber-Mechanismus um "nur vor PulseAudio" zu verstecken
   - **Config**: `/etc/nixos/home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf` (via HM-Symlink nach `~/.config/pipewire/`)
+- **Firmware** (DTS:X, Stand 2026-08-19):
+  - OLED zeigt: `DSP: 4.91.39.44 | MCU: 1.40.0 | Headset: 2.3`
+  - USB bcdDevice: Audio `0003` (0.03), HID `0140` (= MCU 1.40)
+  - Letztes öffentlich dokumentiertes FW-Update: Engine 3.12.11 (Sep 2018) — DTS Headphone:X v2.0. Kein einziges Update seitdem in den GG-Release Notes
+  - **DTS:X Bug**: Bekannter GameDAC Firmware-Bug — DTS:X Processing bricht bei Signaländerung ab (z.B. Spielstart, Format-Wechsel). Toggle off/on am GameDAC ist der einzige Workaround. Auf Windows "hilft" GG, macht den Sound aber generell schlechter (LTT, Aug 2023). Auf Linux: Known Limitation
 
 ## Bekannte Probleme
 
@@ -323,9 +331,10 @@
   - `ExecStart = "${steamPackage}/bin/steam -cef-disable-gpu-compositing -cef-disable-gpu"` im systemd-Service (`autostart.nix`)
 - **Nicht verwenden**: `STEAM_DISABLE_HARDWARE_CURSORS = "1"` blockiert das System-Cursor-Theme (Bibata) in Steam — entfernt (2026-08-13, korrigiert).
 
-**Problem**: Cursor-Theme (Bibata-Modern-Ice) in Steam nicht überall sichtbar (2026-08-13)
-- **Ursache**: Steam's CEF-Teil (steamwebhelper, Chromium-basiert) nutzt GTK für Cursor-Rendering. `XCURSOR_THEME` reicht für native X11/Wayland-Apps, CEF/Chromium liest aber GTK-Settings (`~/.config/gtk-3.0/settings.ini`). Ohne GTK-Config zeigt CEF den Standard-Cursor.
-- **Lösung**: `xdg.configFile."gtk-3.0/settings.ini"` in `home/mortiferus/config.nix` mit `gtk-cursor-theme-name=Bibata-Modern-Ice` und `gtk-cursor-theme-size=24`.
+**Problem**: Cursor-Theme (Bibata-Modern-Ice) in Steam nicht überall sichtbar (gelöst 2026-08-20)
+- **Ursache**: Steam's CEF-Teil (steamwebhelper, Chromium-basiert) nutzt GTK für Cursor-Rendering. `XCURSOR_THEME` reicht für native X11/Wayland-Apps, CEF/Chromium liest aber GTK-Settings (`~/.config/gtk-3.0/settings.ini`).
+- **FHS-Sandbox-Problem**: Home-Manager legte `~/.config/gtk-3.0` als Symlink auf `/etc/nixos/...` an. Im Steam-FHS-Sandbox (bubblewrap) war `/etc` ein tmpfs → Symlink kaputt → CEF fand `settings.ini` nicht.
+- **Lösung (final)**: `~/.config/gtk-3.0` wird jetzt als system-level Bind-Mount bereitgestellt (`hosts/nex/config-mounts.nix`). Die Config-Datei liegt direkt am erwarteten Pfad, kein Symlink-Auflösung nötig → CEF findet `settings.ini` in der FHS-Umgebung. `extraProfile`-Hack in `steam.nix` und `autostart.nix` wurde entfernt.
 
 **Avatar/Profilbild im Greeter (2026-08-13)**
 - `~/.face` wird von `accounts-daemon` automatisch erkannt und im Login-Screen (Noctalia-Greeter) angezeigt.

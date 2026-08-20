@@ -18,6 +18,7 @@
       ../../modules/programs/ideamaker.nix
       ../../modules/users/mortiferus.nix
       ../../modules/home/mortiferus
+      ./config-mounts.nix
     ];
 
   networking.hostName = "nex";

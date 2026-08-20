@@ -12,6 +12,7 @@
       ../../modules/hardware/laptop-common.nix
       ../../modules/users/backbone.nix
       ../../modules/home/backbone
+      ./config-mounts.nix
     ];
 
   networking.hostName = "styx";

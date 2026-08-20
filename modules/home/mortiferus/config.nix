@@ -1,19 +1,10 @@
 { config, pkgs, lib, ... }:
 
 {
-  xdg.configFile = {
-    "niri".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/niri";
-    "pipewire".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/pipewire";
-    "nvim".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/nvim";
-    "hypr".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/hypr";
-
-    # GTK/QT Theme-Einstellungen (live editierbar via nwg-look / qt5ct / qt6ct)
-    "gtk-3.0".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/gtk-3.0";
-    "gtk-4.0".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/gtk-4.0";
-    "xsettingsd".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/xsettingsd";
-    "qt5ct".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/qt5ct";
-    "qt6ct".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/mortiferus/config/qt6ct";
-  };
+  # xdg.configFile-Einträge entfernt (2026-08-20):
+  # ~/.config-Verzeichnisse werden jetzt als system-level bind-mounts bereitgestellt
+  # (hosts/nex/config-mounts.nix). Damit funktionieren FHS-Sandbox-Apps (Steam etc.)
+  # ohne Symlink-Auflösung über /etc/nixos.
 
   home.file = {
     ".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";

@@ -29,6 +29,7 @@ let
     extraEnv = {
       XCURSOR_THEME = "Bibata-Modern-Ice";
       XCURSOR_SIZE = "24";
+      XCURSOR_PATH = "/usr/share/icons:/usr/local/share/icons:$HOME/.icons:$HOME/.local/share/icons";
     };
     extraProfile = "unset TZ";
   };
