@@ -52,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) with `niri.cachix.org` binary cache (`niri-unstable` branch) and **Hyprland** available on both
-- **Zen** kernel (`linuxPackages_zen`) on nex — currently testing without scx scheduler. scx_bpfland was previously evaluated and disabled. CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **CachyOS** kernel (`cachyos-latest`) on nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with `attic.xuyh0120.win/lantian` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -88,6 +88,7 @@ Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 - [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) with binary cache, saving hours of local compiling
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
+- [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with pre-built CachyOS kernels and binary cache
 - All the NixOS community for endless inspiration
 
 ---
@@ -146,7 +147,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) mit `niri.cachix.org` Binary Cache (`niri-unstable` Branch) und **Hyprland** auf beiden verfügbar
-- **Zen**-Kernel (`linuxPackages_zen`) auf nex — aktuell ohne scx Scheduler im Test. scx_bpfland wurde zuvor evaluiert und deaktiviert. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **CachyOS**-Kernel (`cachyos-latest`) auf nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit `attic.xuyh0120.win/lantian` Binary Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
@@ -182,4 +183,5 @@ Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 - [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) mit Binary Cache, der stundenlanges lokales Kompilieren erspart
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
+- [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit fertigen CachyOS-Kernels und Binary Cache
 - Der gesamten NixOS-Community für endlose Inspiration

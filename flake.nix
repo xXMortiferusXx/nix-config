@@ -41,6 +41,14 @@
       url = "github:sodiboo/niri-flake";
     };
 
+    # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
+    # - Binary Cache: https://attic.xuyh0120.win/lantian
+    # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
+    # - Packages: pkgs.cachyosKernels.linuxPackages-cachyos-latest
+    nix-cachyos-kernel = {
+      url = "github:xddxdd/nix-cachyos-kernel/release";
+    };
+
   };
   
   outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, ... }@inputs:

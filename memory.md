@@ -396,6 +396,7 @@
 - `cache.nixos.org` – Offizieller NixOS Cache
 - `nix-community.cachix.org` – Nix-Community Cache
 - `noctalia.cachix.org` – Noctalia v5 Binaries (Flake-Input: `github:noctalia-dev/noctalia/cachix`)
+- `attic.xuyh0120.win/lantian` – CachyOS Kernel Binaries (Flake-Input: `github:xddxdd/nix-cachyos-kernel/release`)
 
 ## bpftune
 - `services.bpftune.enable = true` in `cachyos-tuning.nix`
@@ -419,8 +420,9 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex**: `boot.kernelPackages = pkgs.linuxPackages_zen` (seit 2026-08-14)
-  - `scx_bpfland` **deaktiviert** (auskommentiert in `boot-nex.nix`) — Zen-Kernel wird pur getestet; Aktivierung per `systemd.services.scx-scheduler` reaktivierbar
+- **nex**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` (seit 2026-08-20, vorher `linuxPackages_zen`)
+  - CachyOS Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (pinned Overlay + Binary Cache)
+  - `scx_bpfland` **deaktiviert** — CachyOS-Kernel wird pur getestet
 - **styx**: `boot.kernelPackages = pkgs.linuxPackages_latest`
 - CachyOS-Kernel am 2026-08-06 entfernt (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
 - `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
