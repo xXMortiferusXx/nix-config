@@ -1,4 +1,4 @@
-config_version = 12
+config_version = 13
 
 [bar.default]
 background_opacity = 0.60999998636543751
@@ -133,7 +133,7 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
 layer = "overlay"
 
 [plugin_settings."avivbintangaringga/nix-monitor"]
-update_command = "nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#nex"
+update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#nex"
 
 [plugins]
 enabled = [ "avivbintangaringga/nix-monitor" ]
@@ -181,13 +181,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-l86p8q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-l86p8q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-l86p8q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
 
 [widget.battery]
 show_label = false
