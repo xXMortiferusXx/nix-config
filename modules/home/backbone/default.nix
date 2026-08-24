@@ -5,7 +5,6 @@ let
 in {
   home-manager.users.backbone = { config, ... }: {
     imports = [
-      inputs.noctalia.homeModules.default
       ./config.nix
       ./autostart.nix
     ];

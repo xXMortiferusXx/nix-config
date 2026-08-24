@@ -18,11 +18,6 @@
     lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
     lsfg-vk-src.flake = false;
 
-    # Noctalia v5 (cachix-Branch = letzter gecachter Commit)
-    noctalia = {
-      url = "github:noctalia-dev/noctalia/cachix";
-    };
-
     # Noctalia Greeter (ohne follows für Cachix)
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
@@ -51,7 +46,7 @@
 
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia, noctalia-greeter, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
