@@ -2,7 +2,6 @@
 
 let
   game-performance = pkgs.writeShellScriptBin "game-performance" ''
-    GAMODERUN="${pkgs.gamemode}/bin/gamemoderun"
     SMI="/run/current-system/sw/bin/nvidia-smi"
     PCTL="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"
     BCTL="${pkgs.brightnessctl}/bin/brightnessctl"
@@ -14,9 +13,8 @@ let
     echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference > /dev/null 2>&1
 
     echo "--- BEAST MODE: 130W TDP + Legion Performance ---"
-    echo "--- GameMode uebernimmt CPU-Governor, I/O, Renice, GPU-Perf-Mode ---"
 
-    systemd-inhibit --why "game-performance running" $GAMODERUN "$@"
+    systemd-inhibit --why "game-performance running" "$@"
 
     $PCTL set balanced 2>/dev/null
     sudo $SMI -pm 0 2>/dev/null

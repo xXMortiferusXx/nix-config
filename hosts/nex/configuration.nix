@@ -6,6 +6,7 @@
       ./hardware-configuration.nix
       ./disk-config.nix
       ../../modules/system/common.nix
+      ../../modules/system/ananicy.nix
       ../../modules/system/lsfg-vk-dev.nix
       ../../modules/system/boot-nex.nix
       ../../modules/system/environment-nex.nix

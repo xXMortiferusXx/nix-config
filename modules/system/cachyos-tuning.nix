@@ -87,7 +87,6 @@
   # CachyOS 20-audio.conf: @audio Gruppe Echtzeit-Priorität 99
   security.pam.loginLimits = [
     { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
-    { domain = "@audio"; item = "nice"; type = "-"; value = "11"; }
   ];
 
   # CachyOS rtkit-daemon override: Log-Level auf info
