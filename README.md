@@ -53,6 +53,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Niri** (scrollable-tiling Wayland compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) with `niri.cachix.org` binary cache (`niri-unstable` branch) and **Hyprland** available on both
 - **CachyOS** kernel (`cachyos-latest`) on nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with `attic.xuyh0120.win/lantian` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **ananicy-cpp** with [CachyOS rules](https://github.com/CachyOS/ananicy-rules) for automatic per-process nice/ionice/sched prioritization
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
 
@@ -73,7 +74,6 @@ nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU per
 - Steam (with Proton-GE, hardware decoding)
 - Lutris (custom wrapper with steam-run)
 - Gamescope session
-- Feral Gamemode
 - Sunshine (streaming)
 - Lossless Scaling FG Vulkan layer (built from git)
 - MangoHud
@@ -88,6 +88,7 @@ Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 - [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) with binary cache, saving hours of local compiling
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
+- [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – process priority rules
 - [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with pre-built CachyOS kernels and binary cache
 - All the NixOS community for endless inspiration
 
@@ -148,6 +149,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Niri** (scrollable-tiling Wayland Compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) mit `niri.cachix.org` Binary Cache (`niri-unstable` Branch) und **Hyprland** auf beiden verfügbar
 - **CachyOS**-Kernel (`cachyos-latest`) auf nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit `attic.xuyh0120.win/lantian` Binary Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **ananicy-cpp** mit [CachyOS-Regeln](https://github.com/CachyOS/ananicy-rules) für automatische per-Prozess nice/ionice/sched Priorisierung
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
@@ -168,7 +170,6 @@ nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale 
 - Steam (mit Proton-GE, Hardware-Dekodierung)
 - Lutris (custom Wrapper mit steam-run)
 - Gamescope-Session
-- Feral Gamemode
 - Sunshine (Streaming)
 - Lossless Scaling FG Vulkan Layer (aus Git gebaut)
 - MangoHud
@@ -183,5 +184,6 @@ Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 - [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) mit Binary Cache, der stundenlanges lokales Kompilieren erspart
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
+- [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – Prozess-Priorisierungs-Regeln
 - [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit fertigen CachyOS-Kernels und Binary Cache
 - Der gesamten NixOS-Community für endlose Inspiration
