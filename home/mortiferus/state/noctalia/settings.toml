@@ -14,13 +14,14 @@ end = [
     "clipboard",
     "network",
     "bluetooth",
+    "status",
     "volume",
     "brightness",
     "battery",
     "control-center",
     "session"
 ]
-start = [ "launcher", "wallpaper", "workspaces", "active_window" ]
+start = [ "launcher", "wallpaper", "launcher_2", "workspaces", "active_window" ]
 
 [calendar]
 enabled = true
@@ -133,6 +134,13 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
 [notification]
 layer = "overlay"
 
+[plugin_settings."alexander/game-launcher"]
+steampoacher_enabled = true
+
+[plugin_settings."aristides/udiskie"]
+auto_open_filemanager = true
+file_manager_cmd = "thunar"
+
 [plugin_settings."avivbintangaringga/nix-monitor"]
 update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#nex"
 
@@ -140,7 +148,7 @@ update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch
 discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice" ]
+enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "alexander/game-launcher", "aristides/udiskie" ]
 
     [[plugins.source]]
     auto_update = true
@@ -185,13 +193,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-e89kek_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-e89kek_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-e89kek_1920x1080.png"
 
 [widget.bar]
 type = "raycursive/discord-voice:bar"
@@ -205,12 +213,18 @@ show_label = false
 [widget.clock]
 format = "{:%H:%M} -- {:%d.%m.%y}"
 
+[widget.launcher_2]
+type = "alexander/game-launcher:launcher"
+
 [widget.network]
 show_label = false
 
 [widget.nix-monitor]
 show_text = false
 type = "avivbintangaringga/nix-monitor:nix-monitor"
+
+[widget.status]
+type = "aristides/udiskie:status"
 
 [widget.volume]
 show_label = false

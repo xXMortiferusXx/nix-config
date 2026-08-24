@@ -11,4 +11,5 @@ pkgs: with pkgs; [
   thunar
   zathura
   loupe
+  udiskie
 ]

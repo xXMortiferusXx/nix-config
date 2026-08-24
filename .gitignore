@@ -7,6 +7,9 @@ __pycache__/
 
 # Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
 home/mortiferus/state/noctalia/state.toml
+# Noctalia Discord-Voice Plugin: enthält Discord-OAuth-Tokens (nie committen!)
+home/mortiferus/state/noctalia/discord-voice/
+home/backbone/state/noctalia/discord-voice/
 # Noctalia Theme Files: werden automatisch bei Hintergrundbild-Wechsel neu generiert
 home/mortiferus/config/hypr/noctalia.lua
 home/mortiferus/config/niri/noctalia.kdl
