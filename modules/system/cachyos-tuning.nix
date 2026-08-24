@@ -14,6 +14,10 @@
     "kernel.kptr_restrict" = 2;             # Kernel-Pointer nur für root sichtbar
     "kernel.printk" = "3 3 3 3";           # Nur kritische Meldungen auf Konsole
     "kernel.unprivileged_userns_clone" = 1; # Unprivileged User-Namespaces für Flatpak/Container
+
+    # BBR TCP Congestion Control + fq Queue
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_congestion_control" = "bbr";
   };
 
   services.udev.extraRules = ''

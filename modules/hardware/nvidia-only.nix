@@ -49,7 +49,7 @@
 
     # Moderner Open-Source-Kernel-Modul (Open-GPU-Kernel-Modules)
     open = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
 
     # Power Management: grundsaetzlich aktiviert.
     # Finegrained geht nicht ohne PRIME-Offload (NixOS-Assertion).

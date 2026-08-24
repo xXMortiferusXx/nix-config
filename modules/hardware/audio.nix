@@ -15,8 +15,11 @@
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.quantum" = 512;
-        "default.clock.min-quantum" = 64;
+        "default.clock.min-quantum" = 256;
         "default.clock.max-quantum" = 2048;
+      };
+      "pulse.properties" = {
+        "pulse.min.quantum" = "256/48000";
       };
     };
   };
