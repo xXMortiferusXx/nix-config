@@ -24,7 +24,7 @@
     ACTION=="change", KERNEL=="zram0", ATTR{initstate}=="1", SYSCTL{vm.swappiness}="150", \
       RUN+="/bin/sh -c 'echo N > /sys/module/zswap/parameters/enabled'"
 
-    ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="kyber"
+    ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="adios"
     ACTION=="add|change", KERNEL=="sd*|mmcblk*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
     ACTION=="add|change", KERNEL=="sd*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 
