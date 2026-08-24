@@ -10,6 +10,7 @@
     ./security.nix
     ./nix-settings.nix
     ./nix-ld.nix
+    ./ananicy.nix
     ../programs/zen-policies.nix
     ../hardware/audio.nix
     ../services/printing.nix
