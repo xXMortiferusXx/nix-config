@@ -8,6 +8,7 @@ capsule_thickness = 0.79999998584389687
 end = [
     "media",
     "tray",
+    "bar",
     "nix-monitor",
     "notifications",
     "clipboard",
@@ -135,8 +136,11 @@ layer = "overlay"
 [plugin_settings."avivbintangaringga/nix-monitor"]
 update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#nex"
 
+[plugin_settings."raycursive/discord-voice"]
+discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
+
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor" ]
+enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice" ]
 
     [[plugins.source]]
     auto_update = true
@@ -188,6 +192,9 @@ transition_on_startup = true
 
     [wallpaper.monitors.eDP-1]
     path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-dgee2g_1920x1080.png"
+
+[widget.bar]
+type = "raycursive/discord-voice:bar"
 
 [widget.battery]
 show_label = false
