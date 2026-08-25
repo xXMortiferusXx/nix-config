@@ -8,8 +8,11 @@
 - `system/environment-nex.nix` – nex-spezifische Env (NVIDIA Shader-Cache, Explicit-Sync, Flipping)
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
 - `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
-  - PAM: `@audio rtprio 99` + `@audio nice -11`
+  - PAM: `@audio rtprio 99`
   - sysctl: `kernel.unprivileged_userns_clone=1` (Flatpak/Container)
+- `system/ananicy.nix` – ananicy-cpp (Auto-Nice-Daemon) mit CachyOS-Regeln, cgroups deaktiviert (Konflikt mit bpftune)
+  - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
+  - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
 - `system/boot-nex.nix` – zen-Kernel (seit 2026-08-14), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
@@ -23,7 +26,7 @@
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
 - `programs/ideamaker.nix` – ideaMaker Desktop-Entry
-- `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `lutris`, `gamemode`, `gamescope`, `sunshine`, `scripts`
+- `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `lutris`, `gamescope`, `sunshine`, `scripts`
 - **Lutris**: `lutris-unwrapped` aus nixpkgs + `steam-run` Wrapper für FHS-Umgebung
   - **Font-Problem**: Schriften erscheinen als kleine Quadrate (Fontconfig findet Fonts nicht in FHS-Umgebung)
   - **Lösung**: Eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts)
