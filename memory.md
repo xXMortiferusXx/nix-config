@@ -14,7 +14,7 @@
   - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
   - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – zen-Kernel (seit 2026-08-14), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-nex.nix` – CachyOS-Kernel (seit 2026-08-20), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
