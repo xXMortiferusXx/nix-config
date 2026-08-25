@@ -36,10 +36,12 @@
   # CachyOS modprobe.d/nvidia.conf: NVIDIA Memory Clearing deaktivieren (Performance)
   # + DynamicPowerManagement (GPU spart Strom bei Leerlauf)
   # + EnableS0ixPowerManagement (S0ix Idle-Power fuer AMD Ryzen Laptops)
+  # + TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
   boot.extraModprobeConfig = ''
     options nvidia NVreg_InitializeSystemMemoryAllocations=0 \
         NVreg_DynamicPowerManagement=0x02 \
-        NVreg_EnableS0ixPowerManagement=1
+        NVreg_EnableS0ixPowerManagement=1 \
+        NVreg_TemporaryFilePath=/var/tmp
   '';
 
   hardware.nvidia = {

@@ -24,9 +24,8 @@
     conf-sync  = "pushd /etc/nixos && git add . && git commit -m \"Update: $(date +'%Y-%m-%d %H:%M')\" && git push origin main; popd";
     conf       = "cd /etc/nixos";
 
-    # Tools & Gaming
-    nv-prime   = "nvidia-offload";
-    scx-status = "scxtop";
+     # Tools & Gaming
+     scx-status = "scxtop";
   };
 
   programs.fish.interactiveShellInit = ''
