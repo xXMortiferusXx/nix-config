@@ -60,6 +60,51 @@
     # Kein PRIME-Block — reine dGPU-Ausgabe
   };
 
+  # NVIDIA VRAM-Heap-Fix: GLVidHeapReuseRatio=0
+  # Treiber gibt freigegebenes VRAM nicht zurueck an den Pool
+  # Siehe: https://github.com/niri-wm/niri/wiki/Nvidia#high-vram-usage-fix
+  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-vram-fix.json".text = builtins.toJSON {
+    rules = [
+      # Wayland-Compositor
+      {
+        pattern = {
+          feature = "procname";
+          matches = "niri";
+        };
+        profile = "No VidMem Reuse";
+      }
+      # Electron Apps (VRAM-Freezing bekannt)
+      {
+        pattern = {
+          feature = "procname";
+          matches = "steamwebhelper";
+        };
+        profile = "No VidMem Reuse";
+      }
+      {
+        pattern = {
+          feature = "procname";
+          matches = "Discord";
+        };
+        profile = "No VidMem Reuse";
+      }
+      {
+        pattern = {
+          feature = "procname";
+          matches = "vesktop";
+        };
+        profile = "No VidMem Reuse";
+      }
+    ];
+    profiles = [{
+      name = "No VidMem Reuse";
+      settings = [{
+        key = "GLVidHeapReuseRatio";
+        value = 0;
+      }];
+    }];
+  };
+
   # Wayland-spezifische NVIDIA-Optimierungen
   environment.sessionVariables = {
     # GBM-Backend für NVIDIA (Wayland-Compositor + Apps)
