@@ -97,6 +97,13 @@
         };
         profile = "No VidMem Reuse";
       }
+      {
+        pattern = {
+          feature = "procname";
+          matches = "heroic";
+        };
+        profile = "No VidMem Reuse";
+      }
     ];
     profiles = [{
       name = "No VidMem Reuse";
