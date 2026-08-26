@@ -119,21 +119,18 @@
 2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
 3. `niri-unstable` zu instabil → Auf `inputs.niri.packages.${system}.niri-stable` wechseln (älterer, getaggter Release)
 
-## Virtual Surround / HRTF (2026-07-31, EINGESTELLT 2026-08-16)
+## Virtual Surround / HRTF (EINGESTELLT 2026-08-16)
 
-### Setup (aktuell, ab 2026-08-16)
-- **Kein Virtual Surround / kein HRTF / kein Convolver mehr** — komplett deaktiviert
+- **Kein Virtual Surround / kein HRTF / kein Convolver** — komplett deaktiviert
 - Spiele und Chat klingen so, wie die Entwickler es vorgesehen haben (unverfaelscht)
-- `GameSink` (8 Kanäle) + `ChatSink` (Stereo) sind reine Loopbacks direkt aufs Headset, separat regelbar
-- Hintergrund: Atmos-Routing war unvorhersehbar (Spiele ohne Geraeteauswahl nutzen Default), plus Risiko doppelter HRTF-Verarbeitung
-- **Quantum 512** (`modules/hardware/audio.nix`) bleibt — guter Kompromiss aus Latenz und Stabilität, schadet nicht
+- GameDAC bietet hardwareseitig räumliches Audio (DTS:X oder interner DSP) — GameDAC erzeugt Surround aus Stereo-Eingang
+- **Quantum 512** (`modules/hardware/audio.nix`) bleibt — guter Kompromiss aus Latenz und Stabilität
 
 ### Verworfen (chronologisch)
 - ~~SADIE II D2 (KEMAR, 256 Taps)~~ — generische HRTF passt nicht zu den Ohren
-- ~~SOFA-Spatializer fuer Game~~ — Knacken unter CPU-Last, schlechtere Ortung
-- ~~Quantum 1024~~ — haette das Knacken nicht behoben (Ursache war SOFA)
-- ~~Convolver mit atmos.wav (Dolby Atmos IR)~~ — entfernt (2026-08-16): Routing/Risiko-Problem
-- ~~KU100_dry.sofa fuer Chat~~ — taugte nichts, entfernt (2026-08-16)
+- ~~SOFA-Spatializer~~ — Knacken unter CPU-Last, schlechtere Ortung
+- ~~Convolver mit atmos.wav (Dolby Atmos IR)~~ — Routing/Risiko-Problem
+- ~~KU100_dry.sofa~~ — taugte nichts
 
 ### Bekannter PipeWire-Bug: `bqeq` Label
 - `bqeq` existiert **nicht** in PipeWire 1.6.8 → muss `bq_lowshelf` / `bq_peaking` (mit Unterstrich) verwenden
@@ -148,39 +145,42 @@
 - **Empfohlener Gain**: 2-6 dB für Stereo→Binaural, wir brauchen **-18 dB** für 12-Kanal→Binaural
 - **Finaler Wert**: `-18.0 dB` via `bq_peaking` (Q=0.1, Breitband-Dämpfung) als Gain Compensation
 
-### PoE1 Audio-Output
-- PoE1 gibt tatsächlich **alle 12 Kanäle** aus (nicht nur Stereo!)
-- `PathOfExileSteam.exe:output_FL` bis `output_TRR` → `GameSink:playback_*`
-- FMOD in PoE1 upmixt 7.1 auf 12 Kanäle
-- In-Game-Auswahl "GameSink" nötig für 7.1.4-Modus
+### PoE1 Audio-Output (alter Stand, Loopback-Ära)
+- PoE1 gab tatsächlich alle 12 Kanäle aus (FMOD upmixt 7.1 auf 12 Kanäle)
+- Im aktuellen ACP-Profile-Setup: PoE1 sieht analog-game (6ch) + analog-chat (2ch) — getestet nötig
 
-### SteelSeries Arctis Nova Pro GameDAC (seit 2026-08-18, ersetzt Atlas Air)
-- **USB ID**: 1038:1282 (Audio) + 1038:1280 (HID/Controls)
-- **Modus**: Pro Audio — zwei separate USB-Audio-Interfaces (Game + Chat) hardwareseitig
-- **Output-Bezeichnung ist vertauscht zur Realität**:
-  - `SteelSeries GameDAC Pro` (pro-output-0, 2ch) = **Chat** (Discord, Voice)
-  - `SteelSeries GameDAC Pro 1` (pro-output-1, 6ch) = **Game** (Spiele, Medien, HW-Lautstärkewheel)
-- **Mic**: `pro-input-0` (1ch 48kHz Mono)
+### SteelSeries GameDAC Gen1 (seit 2026-08-18, ersetzt Atlas Air)
+- **USB ID**: 1038:1282 (Audio/Status) + 1038:1280 (HID/Controls)
+- **Modus**: ALSA Card Profile — Custom Profile in `audio.nix` via `environment.etc`
+  - Ersetzt das Pro-Audio Profil mit Chat + Game + Mic Mapping
+  - WirePlumber-Config setzt `device.profile-set` + `device.profile` automatisch
+  - Profile-Set: `steelseries-gamedac-usb-audio.conf` (aus [rockofox/steelseries-gamedac-pulseaudio](https://github.com/rockofox/steelseries-gamedac-pulseaudio), angepasst)
+  - Path-Files: `steelseries-gamedac-output-game.conf`, `...-chat.conf`, `...-input.conf`
+- **Output-Bezeichnung** (vertauscht zur Realität):
+  - `SteelSeries GameDAC Spiel` (analog-game, 6ch) = **Game** (Spiele, Medien)
+  - `SteelSeries GameDAC Unterhaltung` (analog-chat, 2ch) = **Chat** (Discord, Voice)
+  - `SteelSeries GameDAC Mic` (analog-mic, 1ch) = **Mic** (48kHz Mono)
+- **5.1 Audio**: Funktioniert — Spiele (Helldivers 2, PoE2) senden auf allen 6 Kanälen (FL FR FC LFE RL RR)
+- **Channel-Namen**: Standard-Names (FL FR FC LFE RL RR) statt AUX0-AUX5 — Wine/Proton erkennt 5.1 korrekt
+- **Volume-Default**: 100% (kein `volume = merge` — GameDAC hat keine ALSA Volume-Controls, nur Mute-Switches)
 - **USB-C nur**: Anschluss über USB-C hinten am Laptop (Adapter nötig)
   - **PROBLEM**: An internen USB-A Ports (Genesys Logic Hub 05e3) crasht der GameDAC bei Mic-Aktivierung
   - Ursache: Bidirektional-Wechsel löst USB-Reset aus, Genesys-Hub propagiert auf alle Downstream-Ports
   - Externer USB-Hub funktioniert ebenfalls (anderer Hub-Chip)
-- **5.1 Loopback** (seit 2026-08-19):
-  - **Hintergrund**: Spiele (z.B. PoE2) geben native 5.1 (6ch) aus — das GameDAC unterstützt 5.1 ebenfalls. Das Problem ist die **Channel-Namensgebung**: GameDAC nutzt non-standard Names (`AUX0-AUX5`), Wine/Proton erwartet Standard-Names (`FL FR FC LFE RL RR`) und verhandelt sonst nur 2ch (Stereo)
-  - **Lösung**: `libpipewire-module-loopback` in `~/.config/pipewire/pipewire.conf.d/gamedac-5.1.conf`
-    - Capture (Sink): `FL FR FC LFE RL RR` (6ch, Wine/PulseAudio erkennt "normales 5.1")
-    - Playback: `AUX0-AUX5` (6ch, routet auf `pro-output-1`)
-    - Kein DSP, kein Resampling — nur Channel-Rename für Wine/Proton-Kompatibilität
-  - **Default-Sink**: `gamedac-game-5.1` — alle Apps nutzen automatisch 5.1
-  - **Sichtbare Devices**: 3 Stück (GameDAC Pro Chat, GameDAC Pro 1 Game, GameDAC 5.1 Loopback)
-  - **Verstecken nicht möglich**: `node.disabled = true` würde den Node komplett deaktivieren → Loopback-Input bricht. Kein WirePlumber-Mechanismus um "nur vor PulseAudio" zu verstecken
-  - **Config**: `/etc/nixos/home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf` (via HM-Symlink nach `~/.config/pipewire/`)
-- **Firmware** (DTS:X, Stand 2026-08-19):
+- **Firmware**:
   - OLED zeigt: `DSP: 4.91.39.44 | MCU: 1.40.0 | Headset: 2.3`
   - USB bcdDevice: Audio `0003` (0.03), HID `0140` (= MCU 1.40)
-  - Letztes öffentlich dokumentiertes FW-Update: Engine 3.12.11 (Sep 2018) — DTS Headphone:X v2.0. Kein einziges Update seitdem in den GG-Release Notes
-  - **DTS:X Bug**: Bekannter GameDAC Firmware-Bug — DTS:X Processing bricht bei Signaländerung ab (z.B. Spielstart, Format-Wechsel). Toggle off/on am GameDAC ist der einzige Workaround. Auf Windows "hilft" GG, macht den Sound aber generell schlechter (LTT, Aug 2023). Auf Linux: Known Limitation
-  - **DTS:X Theorie (2026-08-25, in Beobachtung)**: Möglicherweise wird der DTS:X-Bug durch instabile USB-Stromversorgung ausgelöst. GameDAC verbraucht viel Strom (OLED + DAC + Verstärker + DTS:X-Processing). Ohne externen Hub mit Stromversorgung kann die USB-Spannung bei Lastspitzen (GPU/CTL) einbrechen → DTS:X-Processor resetzt → Mono. **Seit USB-2-Hub mit externer Stromversorgung tritt der Bug nicht mehr auf** — der Hub liefert stabile 500mA, egal was das Laptop macht. Hersteller erwähnt diese Empfehlung nirgends (kein Hinweis auf externen Hub in Dokumentation/Support).
+  - Letztes öffentlich dokumentiertes FW-Update: Engine 3.12.11 (Sep 2018) — DTS Headphone:X v2.0
+  - **DTS:X Bug**: Bekannter Firmware-Bug — DTS:X Processing crasht bei Signaländerung (Spielstart, Format-Wechsel). Toggle off/on am GameDAC = einziger Workaround. Auf Linux: Known Limitation.
+  - **DTS:X Ursache (2026-08-25)**: Fehlende SteelSeries GG Keep-Alive HID-Befehle. Ohne GG (Linux) crasht DTS:X-DSP. Auf Windows mit GG: Keep-Alive stabilisiert DTS:X. Toggle-Befehl (`0x51`) für Gen1 nicht reverse-engineered.
+  - **DTS:X USB-Strom-Theorie**: Möglicherweise instabile USB-Spannung bei Lastspitzen. Seit USB-2-Hub mit externer Stromversorgung tritt der Bug nicht mehr auf.
+- **HID-Interface** (teilweise reverse-engineered):
+  - `hidraw6` (PID 1280, interface 0): Command `0x20` (Status) funktioniert — 64-Byte Frame, Byte 6 = DTS:X State
+  - `hidraw7/8` (PID 1280, interface 1/2): Keine Antwort
+  - `hidraw5` (PID 1282): BrokenPipeError (falsches Interface)
+  - Command `0x51` (Surround-Toggle): Keine Antwort auf Gen1 — nur Arctis Pro Wireless dokumentiert
+- **Mic**: Separate Features (Noise Gate, NC, EQ) fehlen auf Linux. Sidetone funktioniert via HID `0x39`.
+- **Open-Source-Projekte** (keines hat Gen1 DTS:X Support): Arctis-Sound-Manager, steelseriesgg-rs, HeadsetControl, steelclock-go, Linux-Arctis-Manager
 
 ## Bekannte Probleme
 
@@ -503,45 +503,43 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `vulkan-tools` | GOverlay Live-Preview (vkcube) + Vulkan-Debugging |
 | `vkbasalt` | Vulkan-Post-Processing-Layer (Visuelle Effekte in Spielen) |
 
-## Audio / ChatMixer (2026-08-13, DEAKTIVIERT 2026-08-18)
+## Audio / ChatMixer
 
-### Problem
-Bei gleichzeitigem Game-Audio (7.1 H3-SOFA spatialisiert) und Discord/Chat-Audio entsteht Detailverlust, weil Game dauerhaft leiser gestellt werden muss, damit Chat durchkommt.
+### GameDAC Custom ALSA Profile (2026-08-27, final)
+- **Ansatz**: ALSA Card Profile (ACP) aus [rockofox/steelseries-gamedac-pulseaudio](https://github.com/rockofox/steelseries-gamedac-pulseaudio), angepasst und in NixOS-Config integriert
+- **Warum ACP**: PipeWire nutzt ACP (`api.alsa.use-acp = true`) als Back-End. Es gibt kein PipeWire-native Äquivalent — ACP ist der einzige Layer der ALSA-Karten Channel-Mappings und Profile zuweisen kann
+- **Warum nicht Loopback**: Loopback routete auf AUX0-AUX5 (non-standard Names). Wine/Proton erwartet FL FR FC LFE RL RR. Das ACP-Profile gibt dem GameDAC korrekte Channel-Names am PulseAudio-Layer
+- **Implementation** (`modules/hardware/audio.nix`, `environment.etc`):
+  - Profile-Set: `steelseries-gamedac-usb-audio.conf` (Chat + Game + Mic Mappings)
+  - Path-Files: `steelseries-gamedac-output-game.conf`, `...-chat.conf`, `...-input.conf`
+  - WirePlumber-Config: `51-gamedac-profiles.conf` (setzt `device.profile-set` + `device.profile`)
+  - **Kein `volume = merge`** — GameDAC ALSA-Mixer hat nur Mute-Switches, kein Volume-Control. Ohne `merge` setzt PipeWire 100% als Software-Default
+- **Default-Sink**: `alsa_output.usb-SteelSeries_SteelSeries_GameDAC_000000000000-00.analog-game`
+- **Nach Rebuild**: Files stehen in `/etc/alsa-card-profile/...` + `/etc/wireplumber/...` (systemweit, survives Reinstall)
+- **pavucontrol**: Unterhaltung-Ausgabe + Spiel-Ausgabe + Mic-Eingang (nicht Pro-Audio)
 
-### Alte Lösung (archiviert): `chatduck`
-Pegel-basiertes Auto-Ducking via `python3 + pw-record + wpctl`. Entfernt (2026-08-13), da generelles Leiser-machen von Game nicht zufriedenstellend war und die Audio-Qualität litt.
+### Alte Ansätze (verworfen)
+- ~~5.1 Loopback~~ (`gamedac-5.1.conf`) — Channel-Names AUX0-AUX5, Proton erkannte nur Stereo
+- ~~Pro-Audio Profil~~ — Kanäle nicht korrekt gemappt, Channel-Namen falsch
+- ~~HeSuVi / Virtual Surround~~ — GameDAC DSP macht räumliches Audio aus Stereo-Eingang
+- ~~Artenic-ASM / Software-ChatMix~~ — GameDAC hardwareseitig besser (separate Outputs)
 
-### SteelSeries GameDAC: Hardware-Chatmix (2026-08-18)
+### ChatMixer (deaktiviert 2026-08-18)
 - **Kein Software-Chatmix mehr nötig** — GameDAC bietet hardwareseitig zwei separate Ausgänge
-- `Pro` (2ch) = Chat, `Pro 1` (6ch) = Game — Lautstärkewheel steuert Game-Ausgang
 - **ChatMixer-Config deaktiviert** (`.conf.disabled`), da GameDAC die Trennung hardwareseitig übernimmt
-  - `atlas-air.nix` Import in `nex/configuration.nix` auskommentiert (WirePlumber-Rename + udev nicht aktiv)
-  - Bei Bedarf: `chatmixer.conf.disabled` wieder aktivieren + `atlas-air.nix` auf GameDAC anpassen (udev Vendor/Product + WirePlumber-Match)
-
-### Alte ChatFilter-Chain (archiviert, entfernt 2026-08-16)
-- ~~KU100-SOFA-Spatializer (frontal)~~ — entfernt, natuerlicher Klang gewuenscht
-- ~~EQ bq_peaking 3000 Hz +6 dB~~ — entfernt
-- ~~LADSPA sc1 Kompressor~~ — entfernt
-- ~~Atmos Convolver (atmos.wav, Dolby Atmos IR)~~ — entfernt (2026-08-16), Spiele klingen unverfaelscht
 
 ### LADSPA_PATH Fix (NixOS pipewire-Modul Bug)
 - Das NixOS `pipewire`-Modul setzt `LADSPA_PATH` hardcoded auf `${pkgs.pipewire.ladspa-plugins}/lib/ladspa` — dieses Paket ist **leer**.
 - **Fix**: `systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";` in `audio.nix`.
 - `lib.mkForce` ist noetig, weil das NixOS-Modul den gleichen Option-Pfad definiert und sonst ein Konflikt entsteht.
 
-### Test-Script
-- `home/mortiferus/scripts/test-chatsink.sh`: 5-Sekunden 1kHz Sine-Wave an ChatSink
-  - Nutzung: `PULSE_SINK=ChatSink speaker-test -t sine -f 1000 -c 2 -l 1 -d 5`
-
-### Files (2026-08-18)
-- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert, GameDAC übernimmt hardwareseitig)
+### Files (2026-08-27)
+- `modules/hardware/audio.nix` — GameDAC Profile + WirePlumber + `environment.etc` (aktiv)
+- `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
 - `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
-- `modules/hardware/atlas-air.nix` — WirePlumber-Rename + udev (nicht importiert, Atlas Air zurück)
-- `modules/hardware/audio.nix` — `clock.quantum = 512` + LADSPA_PATH Fix (aktiv, unabhängig vom Headset)
-
-### Archivierte Experimente (PipeWire 1.6.8 Limits)
-- LADSPA/LV2 Sidechain: PipeWire `filter-chain` unterstuetzt keinen externen Sidechain
-- EasyEffects: Sidechain auf Hardware-Inputs beschraenkt, inkompatibel mit HRTF-Chain
+- ~~`home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf.disabled`~~ — gelöscht (2026-08-27)
+- ~~`~/.config/alsa-card-profile/`~~ — user-local Files gelöscht, via `environment.etc` ersetzt (2026-08-27)
+- ~~`~/.config/wireplumber/wireplumber.conf.d/51-gamedac-profiles.conf`~~ — user-local File gelöscht, via `environment.etc` ersetzt (2026-08-27)
 
 ## Installation (2026-08-15, aktualisiert 2026-08-17)
 
