@@ -180,6 +180,7 @@
   - USB bcdDevice: Audio `0003` (0.03), HID `0140` (= MCU 1.40)
   - Letztes öffentlich dokumentiertes FW-Update: Engine 3.12.11 (Sep 2018) — DTS Headphone:X v2.0. Kein einziges Update seitdem in den GG-Release Notes
   - **DTS:X Bug**: Bekannter GameDAC Firmware-Bug — DTS:X Processing bricht bei Signaländerung ab (z.B. Spielstart, Format-Wechsel). Toggle off/on am GameDAC ist der einzige Workaround. Auf Windows "hilft" GG, macht den Sound aber generell schlechter (LTT, Aug 2023). Auf Linux: Known Limitation
+  - **DTS:X Theorie (2026-08-25, in Beobachtung)**: Möglicherweise wird der DTS:X-Bug durch instabile USB-Stromversorgung ausgelöst. GameDAC verbraucht viel Strom (OLED + DAC + Verstärker + DTS:X-Processing). Ohne externen Hub mit Stromversorgung kann die USB-Spannung bei Lastspitzen (GPU/CTL) einbrechen → DTS:X-Processor resetzt → Mono. **Seit USB-2-Hub mit externer Stromversorgung tritt der Bug nicht mehr auf** — der Hub liefert stabile 500mA, egal was das Laptop macht. Hersteller erwähnt diese Empfehlung nirgends (kein Hinweis auf externen Hub in Dokumentation/Support).
 
 ## Bekannte Probleme
 
