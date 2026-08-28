@@ -14,8 +14,8 @@
     # Deine zusätzlichen Inputs
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
 
-    # lsfg-vk GitHub-Version (automatisch develop branch)
-    lsfg-vk-src.url = "github:PancakeTAS/lsfg-vk/develop";
+    # lsfg-vk (neue Quelle: git.lsfg-vk.dev statt GitHub; master = laufende Entwicklung)
+    lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
     # Noctalia Greeter (ohne follows für Cachix)

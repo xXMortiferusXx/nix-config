@@ -3,14 +3,20 @@
 { config, pkgs, lib, inputs, ... }:
 
 let
-  lsfg-vk = pkgs.stdenv.mkDerivation rec {
+  # WICHTIG: Clang als Compiler (wie die offizielle CI/Anleitung).
+  # Mit GCC (stdenv-Default) bricht der Build an vulkan-hpp "ambiguous overload for operator=".
+  # llvmPackages = Default-LLVM von nixpkgs (folgt automatisch, nicht extra gepinnt).
+  stdenv = pkgs.llvmPackages.stdenv;
+
+  lsfg-vk = stdenv.mkDerivation rec {
     pname = "lsfg-vk";
-    version = "2.0.0-dev";
+    version = "2.0.0-rc1";
 
     src = inputs.lsfg-vk-src;
 
     nativeBuildInputs = with pkgs; [
       cmake
+      ninja
       pkg-config
       qt6.wrapQtAppsHook
     ];
@@ -24,10 +30,11 @@ let
     ];
 
     cmakeFlags = [
-      "-DLSFGVK_BUILD_VK_LAYER=ON"
+      "-G Ninja"
+      "-DLSFGVK_BUILD_LAYER=ON"
       "-DLSFGVK_BUILD_UI=ON"
       "-DLSFGVK_BUILD_CLI=ON"
-      "-DLSFGVK_INSTALL_XDG_FILES=ON"
+      "-DLSFGVK_MANAGED=ON"
       "-DLSFGVK_LAYER_LIBRARY_PATH=${placeholder "out"}/lib/liblsfg-vk-layer.so"
     ];
 
@@ -37,8 +44,8 @@ let
 
     meta = with lib; {
       description = "Lossless Scaling Frame Generation on Linux - Vulkan layer";
-      homepage = "https://github.com/PancakeTAS/lsfg-vk";
-      license = licenses.gpl3Plus;
+      homepage = "https://lsfg-vk.dev";
+      license = licenses.cc-by-nc-nd-40;
       platforms = platforms.linux;
     };
   };

@@ -182,6 +182,30 @@
 - **Mic**: Separate Features (Noise Gate, NC, EQ) fehlen auf Linux. Sidetone funktioniert via HID `0x39`.
 - **Open-Source-Projekte** (keines hat Gen1 DTS:X Support): Arctis-Sound-Manager, steelseriesgg-rs, HeadsetControl, steelclock-go, Linux-Arctis-Manager
 
+## lsfg-vk (Frame Generation Layer, seit 2026-08-27)
+
+### Quelle: Umzug von GitHub auf git.lsfg-vk.dev
+- **Flake-Input**: `lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";` (`flake = false`)
+- **Codebasis neu aufgebaut** (v2): `helper/`/`pipeline/`/`config/` statt altem `backend/`/`common/`
+- CMake-Option umbenannt: `LSFGVK_BUILD_VK_LAYER` → `LSFGVK_BUILD_LAYER`; neu: `LSFGVK_MANAGED`
+- Manifest: `VkLayer_LSFGVK_frame_generation.json`; Config: `~/.config/lsfg-vk/conf.toml`
+- **Auto-Update**: Wird bei `nix flake update` (dokumentierter Update-Weg, README) mit allen Inputs aktualisiert — holt dann den neuesten master-HEAD und pinnt ihn neu im flake.lock
+
+### Lizenz
+- **CC BY-NC-ND 4.0** (nicht GPLv3). Eigenbau für persönliche Nutzung erlaubt; Redistribuierung/Derivate verboten. Daher Selbstbau aus offizieller Quelle, kein Community-Flake (lizenzverletzend)
+
+### Build-Fix: Clang statt GCC (WICHTIG, 2026-08-27)
+- **Problem**: Build bricht mit GCC (stdenv-Default) an `hooks.cpp:343` (`ambiguous overload for 'operator='`, `vk::Extent2D` bei brace-`operator=`) sowie `wrapper.cpp:193` (`m_syncSemaphore`)
+- **Ursache**: GCC-abhängige vulkan-hpp-Mehrdeutigkeit. Der gleiche Quellcode baut in der offiziellen CI (Prebuild `lsfg-vk-2.0.0-rc1.r2.g60c7a5b` = genau master-HEAD `60c7a5b`) → **kein Code-Fehler, sondern Compiler-Problem des lokalen stdenv**
+- **Lösung**: `stdenv = pkgs.llvmPackages.stdenv;` (Clang, Default-LLVM von nixpkgs, aktuell v21; NICHT extra gepinnt auf _19). Verifiziert: System-Build end-to-end EXIT=0
+- **Modul**: `modules/system/lsfg-vk-dev.nix` (importiert in `hosts/nex/configuration.nix`)
+
+### DLL-Abhängigkeit (Steam, 2026-08-28)
+- lsfg-vk ist nur der Vulkan-Layer; der Frame-Gen-Algorithmus steckt in der DLL aus der **Steam-Installation von Definite Lossless Scaling**
+- `lsfg-vk-cli benchmark` → `Unable to find lsfg-vk.dll` = erwartet, solange die DLL fehlt/alt ist
+- **Lösung (User-Befund)**: In Steam bei Lossless Scaling den **Beta-Zweig** wählen — die Standard-Version hat noch die alte DLL, der Beta-Zweig liefert die neue `lsfg-vk.dll`
+- **Verifiziert (2026-08-28)**: Benchmark läuft — 6368 Iterationen/10s, Base 636.80 fps → Output 1273.60 fps. Umzug funktional abgeschlossen
+
 ## Bekannte Probleme
 
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)

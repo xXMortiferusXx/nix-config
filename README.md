@@ -75,7 +75,7 @@ nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU per
 - Lutris (custom wrapper with steam-run)
 - Gamescope session
 - Sunshine (streaming)
-- Lossless Scaling FG Vulkan layer (built from git)
+- Lossless Scaling FG Vulkan layer (built from `git.lsfg-vk.dev`, auto-updates with `nix flake update`; needs the Steam version's DLL via the Beta branch)
 - MangoHud
 - DLSS Swapper / Zink wrappers
 
@@ -171,7 +171,7 @@ nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale 
 - Lutris (custom Wrapper mit steam-run)
 - Gamescope-Session
 - Sunshine (Streaming)
-- Lossless Scaling FG Vulkan Layer (aus Git gebaut)
+- Lossless Scaling FG Vulkan Layer (aus `git.lsfg-vk.dev` gebaut, folgt dem `master`-Zweig und wird bei `nix flake update` automatisch mit aktualisiert; benötigt die DLL der Steam-Version über den Beta-Zweig)
 - MangoHud
 - DLSS Swapper / Zink-Wrapper
 
