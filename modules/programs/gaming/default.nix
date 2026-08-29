@@ -3,7 +3,6 @@
 {
   imports = [
     ./steam.nix
-    ./lutris.nix
     ./gamescope.nix
     ./sunshine.nix
     ./scripts.nix
@@ -17,9 +16,10 @@
   '';
 
   users.users.mortiferus.packages = with pkgs; [
+    lutris
     heroic
     gamescope
-    umu-launcher
+    #umu-launcher
     protonplus
   ];
 }
