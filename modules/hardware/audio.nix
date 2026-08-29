@@ -4,6 +4,9 @@
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 
+  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround
+  services.arctis-sound-manager.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -37,9 +40,12 @@
     alsa-utils
   ];
 
-  # SteelSeries GameDAC: Custom ALSA Card Profile
-  # Ersetzt das Pro-Audio Profil mit Chat + Game + Mic Mapping
-  # GameDAC hat keine ALSA Volume-Controls, daher keine volume = merge Einträge
+  # ===========================================================================
+  # TEMPORÄR DEAKTIVIERT (2026-08-29): Custom GameDAC-ALSA-Profil.
+  # Grund: Test des Arctis-Sound-Manager (verwaltet EQ/ChatMix/Surround selbst).
+  # Zum Reaktivieren den /* ... */ Block-Kommentar entfernen.
+  # ===========================================================================
+  /*
   environment.etc = {
     "alsa-card-profile/mixer/profile-sets/steelseries-gamedac-usb-audio.conf".text = ''
       [General]
@@ -118,4 +124,5 @@
       ]
     '';
   };
+  */
 }

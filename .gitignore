@@ -49,3 +49,6 @@ home/backbone/state/noctalia/recently_used.json
 home/backbone/state/noctalia/usage_counts.json
 home/backbone/state/noctalia/instance.id
 home/backbone/state/noctalia/.setup-complete
+
+# Arctis Sound Manager: runtime-generierte PipeWire filter-chain Configs (Daemon verwaltet sie selbst)
+home/mortiferus/config/pipewire/filter-chain.conf.d/

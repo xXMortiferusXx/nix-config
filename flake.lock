@@ -33,6 +33,28 @@
         "type": "github"
       }
     },
+    "arctis-sound-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "nix",
+        "lastModified": 1787992675,
+        "narHash": "sha256-Ei8kqRbWtVDvEzTA00Tssdn4AYdtsJMQAOK9LX8Z98o=",
+        "owner": "loteran",
+        "repo": "Arctis-Sound-Manager",
+        "rev": "03aaf6d5e5bf180aae61392e3137e0cd6f68bd9f",
+        "type": "github"
+      },
+      "original": {
+        "dir": "nix",
+        "owner": "loteran",
+        "repo": "Arctis-Sound-Manager",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -723,6 +745,7 @@
     },
     "root": {
       "inputs": {
+        "arctis-sound-manager": "arctis-sound-manager",
         "disko": "disko",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
