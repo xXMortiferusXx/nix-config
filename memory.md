@@ -26,15 +26,10 @@
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
 - `programs/ideamaker.nix` – ideaMaker Desktop-Entry
-- `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `lutris`, `gamescope`, `sunshine`, `scripts`
-- **Lutris**: `lutris-unwrapped` aus nixpkgs + `steam-run` Wrapper für FHS-Umgebung
-  - **Font-Problem**: Schriften erscheinen als kleine Quadrate (Fontconfig findet Fonts nicht in FHS-Umgebung)
-  - **Lösung**: Eigene `lutris-fontconfig` Derivation mit allen Font-Packages (Noto, Corefonts, Nerd Fonts)
-  - `FONTCONFIG_FILE` zeigt auf Nix-Store-Pfad (nicht `/etc/fonts/fonts.conf`, das ist in steam-run nicht erreichbar)
-  - `fc-cache -fs` baut Cache vor Lutris-Start neu
-  - **PROTONPATH-Problem**: umu-launcher versucht GE-Proton von GitHub zu laden (Codename `GE-Proton`), schlägt fehl
-   - **Lösung**: Wrapper erstellt Symlink `~/.local/share/Steam/compatibilitytools.d/GE-Proton11-1` → Nix-Store (`proton-ge-bin.steamcompattool`)
-  - umu-launcher findet GE-Proton lokal via `_get_from_compat` als Fallback
+- `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `gamescope`, `sunshine`, `scripts`
+- **Lutris**: Standard-nixpkgs-Paket (`lutris`, buildFHSEnv) in `mortiferus.packages` (seit 2026-08-29)
+  - Vorher: `lutris-unwrapped` + eigener `steam-run`-Wrapper in eigener `lutris.nix` — entfernt (Doppel-Sandbox: steam-run + UMU/pressure-vessel)
+  - `lutris.nix` gelöscht, kein Font-Wrapper/`FONTCONFIG_FILE`-Hack mehr nötig
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)
@@ -377,6 +372,39 @@
 - `proton-ge-bin` aus nixpkgs (aktuell GE-Proton11-1)
 - Output: `steamcompattool` enthält `compatibilitytool.vdf` + Proton-Scripts
 - Pfad: `/nix/store/*-proton-ge-bin-GE-Proton*-steamcompattool/`
+
+## Heroic / Lutris / UMU (RDR2 Epic, 2026-08-29)
+
+### RDR2 (Epic) über Heroic — Status: läuft
+- Läuft über den offiziellen `fix.bat`-Workaround (UMU aktiv, Patches erhalten), **nicht** deklarativ in Nix:
+  1. fake `EpicGamesLauncher.exe` (heroic-epic-integration, von Heroic gebündelt) ins Spielverzeichnis kopieren (neben `PlayRDR2.exe`)
+  2. `fix.bat` anlegen: `start "" EpicGamesLauncher.exe PlayRDR2.exe %*` (CRLF-Zeilenende!)
+  3. In Heroic "Alternative EXE" (`targetExe` in `GamesConfig/Heather.json`) auf `fix.bat` setzen
+  4. `USE_FAKE_EPIC_EXE=true` als Env-Variable
+- Die fake `EpicGamesLauncher.exe` macht **zwei** Dinge (`main.c`):
+  1. `SetEnvironmentVariable("SteamAppId", NULL)` → entfernt SteamAppId → kein Steam-Check
+  2. startet `PlayRDR2.exe` als Parent-Prozess → RGL erkennt Epic → Ownership ok
+- Achtung: bei Heroic-Update/Game-Reinstall muss `fix.bat` + `targetExe` ggf. neu angelegt werden.
+
+### UMU SteamAppId-Injektion (Root-Cause des Steam-Checks)
+- `umu-launcher` injiziert `SteamAppId=<numerisch>` aus `GAMEID=umu-<numerisch>` (`umu_run.py set_env`): RDR2 → `GAMEID=umu-1174180` → `SteamAppId=1174180`
+- **Beabsichtigt** (umu-database: numerische Steam-ID, damit Valve-Proton-Fixes auf Nicht-Steam-Versionen wirken)
+- Rockstar-Launcher liest `SteamAppId` → "Steam konnte nicht initialisiert werden" (wenn kein Steam läuft)
+- Passiert auf **allen** Distros (identischer Code in nixpkgs 1.4.4 und GitHub main) → **kein NixOS-spezifisches Problem**
+
+### USE_FAKE_EPIC_EXE (Automatik) kaputt — überall, nicht nur NixOS
+- Heroics `USE_FAKE_EPIC_EXE` setzt `LEGENDARY_WRAPPER_EXE=C:\windows\command\EpicGamesLauncher.exe`
+- **Aber**: `legendary-gl` 0.21.0 hat `LEGENDARY_WRAPPER_EXE` **nicht** (nur `LGDRY_WRAPPER` für `--wrapper`)
+- Heroic bündelt selbst `legendary-gl` 0.21.0 (`meta/downloadHelperBinaries.ts`, `RELEASE_TAGS.legendary = '0.21.0'`) — nixpkgs bündelt **dasselbe** → **kein falscher Fork**
+- Folge: Automatik greift nicht, `PlayRDR2.exe` startet direkt → Steam-Check + Ownership beide kaputt
+- Der `fix.bat`-Weg ist die offizielle, auf allen Distros nötige Lösung (Wiki "Rockstar Games from Epic Games")
+
+### Lutris (RDR2) — offen
+- Gleiche UMU-SteamAppId-Injektion, aber **kein** fake-`EpicGamesLauncher.exe`-Mechanismus
+- Steam-Check bleibt bestehen. Fix-Optionen (nicht umgesetzt):
+  - `UMU_ID=0` + `SteamAppId=0` (bisheriger Workaround, verliert UMU-Patches)
+  - lokale protonfixes-Gamefix `~/.config/protonfixes/localfixes/umu-1174180.py` mit `util.del_environment('SteamAppId')` / `del_environment('SteamGameId')`
+- Nicht priorisiert (Heroic reicht zum Spielen)
 
 ## MangoHud & GOverlay
 
