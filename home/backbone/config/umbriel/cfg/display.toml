@@ -1,0 +1,8 @@
+# Outputs – Übersetzung aus cfg/display.kdl
+# Anzeigename prüfen mit `umbriel outputs`.
+[output."eDP-1"]
+mode = "1920x1080@165.010"
+scale = 1.0
+vrr = "disabled"    # Kein globales VRR (flackerte auf Electron-Fenstern wie Zen).
+                    # VRR aktiviert sich stattdessen nur per window_rule.vrr (Games/mpv in rules.toml).
+workspaces = 4    # statische Workspaces wie in niri (1=Browser, 2=Chat, 3=Gaming, 4=Sonstiges)

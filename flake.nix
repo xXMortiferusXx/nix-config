@@ -23,19 +23,6 @@
       url = "github:noctalia-dev/noctalia-greeter";
     };
 
-    # Hyprland (offizieller Flake mit Binary Cache)
-    # - Binary Cache: https://hyprland.cachix.org
-    # - Paket: inputs.hyprland.packages.${system}.hyprland
-    hyprland.url = "github:hyprwm/Hyprland";
-
-    # sodiboo/niri-flake (Community-Flake mit Binary Cache)
-    # - niri-stable / niri-unstable verfügbar
-    # - Binary Cache: https://niri.cachix.org
-    # - Overlay: inputs.niri.overlays.niri
-    niri = {
-      url = "github:sodiboo/niri-flake";
-    };
-
     # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
     # - Binary Cache: https://attic.xuyh0120.win/lantian
     # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned

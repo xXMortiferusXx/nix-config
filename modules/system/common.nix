@@ -25,8 +25,6 @@
     ../desktop/fonts.nix
     ../desktop/thunar.nix
     ../desktop/noctalia-greeter.nix
-    ../desktop/niri.nix
-    ../desktop/hyprland.nix
-    ../desktop/quiet-sessions.nix
+    ../desktop/umbriel.nix
   ];
 }

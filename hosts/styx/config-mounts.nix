@@ -11,8 +11,7 @@ let
 
   # Alle Config-Verzeichnisse die per bind-mount bereitgestellt werden
   configDirs = [
-    "hypr"
-    "niri"
+    "umbriel"
     "nvim"
     "pipewire"
   ];

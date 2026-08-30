@@ -67,11 +67,11 @@
   # Siehe: https://github.com/niri-wm/niri/wiki/Nvidia#high-vram-usage-fix
   environment.etc."nvidia/nvidia-application-profiles-rc.d/50-vram-fix.json".text = builtins.toJSON {
     rules = [
-      # Wayland-Compositor
+      # Umbriel (primäre Session, wlroots)
       {
         pattern = {
           feature = "procname";
-          matches = "niri";
+          matches = "umbriel";
         };
         profile = "No VidMem Reuse";
       }

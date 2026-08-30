@@ -1,0 +1,121 @@
+# Window/Layer Rules – Übersetzung aus cfg/rules.kdl
+# Unterschiede zu niri:
+# - Kein per-Fenster-Border/Focus-Ring aus (Umbriel: nur global) → Browser haben Border
+# - Corner-Radius ist global ([appearance].corner_radius), nicht pro Window
+# - `umbriel windows --json` zeigt xdg_tag/content_type für bessere Matches
+
+# ── Generell: Blur für alle Fenster ──
+# Catch-all ohne Selectors = jedes Fenster; spezifischere Regeln gewinnen pro Feld,
+# damit bleibt deren workspace/floating/vrr unangetastet. Sichtbar nur bei Transparenz.
+[[window_rule]]
+blur = true
+
+# ── Portal-/System-Dialoge floating ──
+[[window_rule]]
+match.app_id = "^(xdg-desktop-portal-gnome|xdg-desktop-portal-kde|xdg-desktop-portal-gtk|xdg-desktop-portal-wlr|zenity|blueman-manager|org.gnome.Settings|nm-connection-editor)$"
+default_floating = true
+
+[[window_rule]]
+match.app_id = "^org.pulseaudio.pavucontrol$"
+default_floating = true
+default_size = [800, 600]
+
+# ── Workspace 1: Browser ──
+[[window_rule]]
+match.app_id = "^zen-beta$"
+default_workspace = 1
+default_width = 1.0
+opacity = 0.95
+
+[[window_rule]]
+match.app_id = "^zen-beta$"
+match.title = "^Picture-in-Picture$"
+default_floating = true
+
+# ── Workspace 2: Kommunikation ──
+[[window_rule]]
+match.app_id = "^[Ll]egcord$"
+default_workspace = 2
+default_width = 1.0
+opacity = 0.95
+
+[[window_rule]]
+match.app_id = "^discord$"
+default_workspace = 2
+default_width = 1.0
+opacity = 0.95
+blur = true
+
+# ── Workspace 3: Gaming (Launcher) ──
+[[window_rule]]
+match.app_id = "^steam$"
+default_workspace = 3
+default_width = 1.0
+opacity = 0.95
+
+# Alle Steam-Fenster ausser Hauptfenster ("Steam") floating
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^(?!Steam$).*"
+default_floating = true
+
+[[window_rule]]
+match.app_id = "^(net.lutris.Lutris|com.heroicgameslauncher.hgl|io.github.krawek.cartridges|faugus-launcher|heroic|page.kramo.Cartridges)$"
+default_workspace = 3
+default_width = 1.0
+
+# Steam Overlay & Chat floating
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^(Freunde|Steam-Einstellungen|Friends|Chat|Settings|Server Browser)"
+default_floating = true
+default_size = [1272, 830]
+
+# Steam-Notifications: unten rechts, ohne Fokus-Klau
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^notificationtoasts_[0-9]+_desktop$"
+default_floating = true
+default_position = { x = 10, y = 10, anchor = "bottom_right" }
+default_focused = false
+default_pinned = true
+
+# ── Workspace 4: Spiele ──
+[[window_rule]]
+match.app_id = "^steam_app_.*$"
+default_workspace = 4
+vrr = "always"
+
+[[window_rule]]
+match.app_id = "^pathofexilesteam.*$"
+default_workspace = 4
+vrr = "always"
+
+# Spiele außerhalb von Steam (Heroic, Lutris, ...) über Gamescope:
+# das Gamescope-Fenster hat immer die App-ID "gamescope".
+[[window_rule]]
+match.app_id = "^gamescope$"
+default_workspace = 4
+default_fullscreen = true
+vrr = "always"
+
+# ── Terminal ──
+[[window_rule]]
+match.app_id = "^kitty$"
+opacity = 0.9
+
+# ── Sonstiges ──
+[[window_rule]]
+match.app_id = "^mpv$"
+vrr = "always"
+
+[[window_rule]]
+match.app_id = "^(org.gnome.Nautilus|thunar)$"
+default_width = 0.5
+
+# ── Layer: Noctalia-Flächen bluren ──
+[[layer_rule]]
+match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
+blur = true
+blur_ignore_alpha = 0.5
+blur_optimized = false

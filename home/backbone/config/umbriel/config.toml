@@ -1,0 +1,37 @@
+# Umbriel-Konfiguration für backbone (styx)
+#
+# Portierung aus config.kdl (niri → Umbriel). Layout: alle Workspaces scrolling
+# – Mischlayout später per [[workspace]] layout.mode oder live per
+# Mod+Shift+T (workspace-set-layout:toggle).
+#
+# Autostarts laufen NICHT hier: general.autostart bleibt leer. Alles startet über
+# systemd-user-Services an graphical-session.target (siehe autostart.nix) –
+# Umbriels umbriel-session.target bindet an graphical-session.target.
+
+[include]
+files = [
+  "cfg/appearance.toml",
+  "cfg/display.toml",
+  "cfg/input.toml",
+  "cfg/keybinds.toml",
+  "cfg/layout.toml",
+  "cfg/rules.toml",
+]
+
+[general]
+xwayland = true
+autostart = []
+show_cheatsheet = false
+focus_on_activate = false
+honor_restored_maximize = false
+# mod_key = "Super" # Standard (wie in niri)
+
+# Session-Env, die Umbriel vor umbriel-session.target an die systemd-user-Services
+# und gestartete Apps weiterreicht (XDG_CURRENT_DESKTOP setzt Umbriel selbst).
+[environment]
+ELECTRON_OZONE_PLATFORM_HINT = "auto"
+QT_QPA_PLATFORM = "wayland"
+QT_QPA_PLATFORMTHEME = "qt6ct"
+QT_WAYLAND_DISABLE_WINDOWDECORATION = "1"
+XCURSOR_THEME = "Bibata-Modern-Ice"
+XCURSOR_SIZE = "24"

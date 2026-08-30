@@ -15,7 +15,7 @@
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
     nix-update = "pushd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && sudo nixos-rebuild switch --flake .#(hostname) && popd";
-    night-update = "niri msg action power-off-monitors && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
+    night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
     # Aufräumen
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";

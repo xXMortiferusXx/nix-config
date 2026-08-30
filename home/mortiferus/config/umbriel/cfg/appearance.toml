@@ -1,0 +1,26 @@
+# Erscheinung – Struktur-Werte hier, Farben kommen von Noctalia (noctalia.toml):
+# border_focused/border_unfocused/insert_hint_color etc. NICHT hier setzen,
+# sonst überstimmen sie die Noctalia-Palette.
+[appearance]
+prefer_no_csd = true
+border_width = 2
+outer_border_width = 0
+corner_radius = 12
+animation_ms = 250
+
+[appearance.blur]
+enabled = true
+optimized = true
+passes = 2
+radius = 3
+noise = 0.03
+brightness = 0.9
+contrast = 0.9
+saturation = 1.0
+
+[appearance.shadow]
+enabled = true
+softness = 15
+offset_x = 2
+offset_y = 2
+color = "#0000007F"

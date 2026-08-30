@@ -21,7 +21,12 @@
 - `desktop/polkit.nix` – Polkit-Regeln
 - `desktop/fonts.nix` – Fonts
 - `desktop/noctalia-greeter.nix` – zentraler greeter (nicht per-host)
-- `desktop/niri.nix` – niri via sodiboo/niri-flake (Flake-Paket + niri-unstable + niri.cachix.org Cache)
+- `desktop/umbriel.nix` – **Umbriel** (wlroots 0.20 + SceneFX) als einzige Wayland-Session (seit 2026-08-30)
+  - Paket aus nixpkgs (`pkgs.umbriel`, PR #555208), Binaries aus `cache.nixos.org`
+  - Session: `start-umbriel → umbriel.service → umbriel-session.target` (BindsTo graphical-session.target) — Autostarts (noctalia/steam/discord) laufen unverändert
+  - xdg-Desktop-Portal: umbriel-Implementierung + GTK + gnome-keyring (Portal-Config kommt vom Modul, nicht überschreiben)
+  - Details + Upstream-Tracking → `umbriel.md`
+- niri **komplett entfernt** (2026-08-31): Modul, Flake-Input, niri.cachix-Cache, Config-Mounts. Alte Configs unter `archive/` (z.B. `archive/home/<user>/config/niri/`) + Git-History als Fallback
 
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
@@ -50,7 +55,7 @@
   - Wayland-Optimierungen: `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `__GL_VRR_ALLOWED=1`
   - `LIBVA_DRIVER_NAME=nvidia` + `VDPAU_DRIVER=nvidia` für Hardware-Decoding
   - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland
-  - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` für niri, steamwebhelper, Discord, vesktop (50-vram-fix.json)
+  - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` für steamwebhelper, Discord, vesktop, umbriel (50-vram-fix.json)
   - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
   - **Treiber**: `nvidiaPackages.stable` = 595.91.07 (seit 2026-08-16; vorher `latest` = 610.57.04, NVIDIA nennt 610 jetzt `new_feature`/`bleeding_edge`, 595 ist der `production`-Zweig)
 
@@ -87,7 +92,7 @@
 - Remote: `git@github.com:xXMortiferusXx/nix-config.git` (SSH)
 - `.git`-Ownership war nach Installation `root` (nixos-enter) → auf `mortiferus:users` gefixt
 
-## Niri Quelle & Binary Cache (2026-07-27)
+## Niri Quelle & Binary Cache (2026-07-27, HISTORISCH – niri entfernt 2026-08-31)
 
 ### Warum sodiboo/niri-flake statt nixpkgs oder offiziellem Flake
 - **nixpkgs (vorher)**: `libdisplay-info` 0.4.0 brach niri-Build (Rust-Crate fordert `< 0.4.0`). Temporärer upstream-Bug.
@@ -95,7 +100,7 @@
 - **sodiboo/niri-flake**: Community-Flake mit `niri.cachix.org` Cache + automatisierte CI-Builds
   - Cache-Public-Key: `niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=`
   - `niri-stable` (letztes getaggtes Release) und `niri-unstable` (aktueller main)
-  - Wir nutzen `niri-unstable` für aktuellsten Stand (war vorher auch main)
+  - Genutzt wurde `niri-unstable` (aktueller main)
 
 ### Setup
 - `flake.nix`: Input `github:sodiboo/niri-flake`
@@ -299,6 +304,37 @@
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
+
+## Umbriel (Wayland-Compositor, seit 2026-08-30)
+
+### Session & Paket
+- Paket: **nixpkgs** `pkgs.umbriel` (PR #555208) → `umbriel-0-unstable-2026-08-25`, Source-Rev `af351dfa7564eaa0e73d215d057eb0b209cba057`, Binaries aus `cache.nixos.org`
+- Start: `start-umbriel` (.desktop) → `umbriel.service` → `umbriel-session.target` (BindsTo graphical-session.target). Units kommen aus dem nixpkgs-Modul (`programs.umbriel.enable = true`)
+- `general.autostart` bewusst NICHT gesetzt (kein Doppelstart, da noctalia.service über graphical-session.target läuft)
+- XWayland: `xwayland-satellite` im PATH, Umbriel startet es selbst (`general.xwayland = true`) — kein separater service
+- Beide Hosts via `system/common.nix` (importiert ebenfalls `desktop/niri.nix` mit `enable = false`)
+
+### Config — live == Repo (Bind-Mount)
+- `hosts/<host>/config-mounts.nix`: `home/<user>/config/umbriel` → `~/.config/umbriel` (systemd.mounts). Änderung im Repo = sofort live, kein Rebuild nötig
+- Struktur: `config.toml` mit `[include] files = ["cfg/*.toml"]` (`appearance`, `display`, `input`, `keybinds`, `layout`, `rules`)
+- `cfg/.../noctalia.toml` wird von Noctalia beim Login neu geschrieben (Farben/Theme) — nicht manuell editieren
+- **Auto-Reload** bei Dateiänderung (Watcher). Prüfen: `journalctl --user -u umbriel | rg 'config reloaded'` — `sections: <x>` zeigt was sich geändert hat, `sections: none` = nichts Neues
+
+### Diagnose (WICHTIG)
+- `umbriel validate` → `config: ok` = sauber. Zeigt auch unbekannte Config-Keys.
+- **Unbekannte Keys erscheinen NICHT im Journal** — nur im Start-Banner bzw. `umbriel validate`. Nach Config-Edits immer selbst validieren, das Journal allein reicht nicht!
+- Verbindliche Action-Liste: `umbriel msg --help` (der laufenden Version); weitere CLI: `umbriel layers`, `umbriel windows`, `umbriel outputs`
+- **Actions-Namen können zwischen Builds wechseln**: main-Doku nutzt `column-*`, Build 2026-08-25 nutzt `window-*` → siehe `umbriel.md`
+
+### Stand (2026-08-31)
+- Beide Hosts `validate → config: ok`, sauberer Start ohne Warning-Banner
+- **niri komplett entfernt** (Modul/Flake-Input/Cache/Mounts; Configs unter `archive/`)
+- Optik: **Blur global** via Catch-all-Regel (`[[window_rule]] blur = true`; sichtbar nur bei transparenten Fenstern), Opacity 0.95 für Discord/Steam/Legcord, kitty 0.9
+- **VRR**: nur noch pro Fenster («`window_rule.vrr`», Werte `disabled|always|fullscreen`) – `output.eDP-1.vrr = "disabled"`. Globales VRR war Flacker-Ursache auf Electron-Fenstern (Zen)
+- Zen-/Discord-Flackern: durch globales VRR verursacht → mit Output-`disabled` weg; Blur selbst verursachte kein Flackern
+- Keybinds u.a. `Mod+Wheel` = Workspace-Wechsel, `Mod+Shift+Wheel` = Fenster in andere Workspace
+- Numlock: aktuell aus beim Start (Feature fehlt im Build → `umbriel.md`)
+- `xdg.desktop-portal-gtk` bleibt nötig: umbriel-portal deckt nur ScreenCast/Screenshot ab (siehe `desktop/umbriel.nix`)
 
 ## Steam & Proton-GE
 

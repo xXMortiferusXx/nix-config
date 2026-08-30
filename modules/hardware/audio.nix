@@ -4,8 +4,7 @@
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 
-  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround
-  services.arctis-sound-manager.enable = true;
+  # Arctis Sound Manager ist nex-only → Aktivierung in hosts/nex/configuration.nix
 
   services.pipewire = {
     enable = true;

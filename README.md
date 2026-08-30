@@ -30,7 +30,7 @@ hosts/
 ├── nex/               # Gaming laptop config + disko partitioning
 └── styx/              # Office laptop config + disko partitioning
 modules/
-├── desktop/           # Compositors (niri, hyprland), greeter, polkit, fonts
+├── desktop/           # Compositor (umbriel), greeter, polkit, fonts
 ├── hardware/          # GPU drivers, audio, laptop features, legion, touchpad
 ├── home/              # Home-Manager per user (mortiferus + backbone)
 ├── programs/          # Gaming stack, tools, shell, terminal, editor, zen-browser
@@ -39,6 +39,7 @@ modules/
 └── users/             # User definitions
 home/                  # Raw dotfiles (linked via home-manager xdg.configFile)
 memory.md              # Dev notes (current state, IPC commands, systemd services)
+umbriel.md             # Umbriel version/feature tracker (upstream dev watch)
 ```
 
 ### Design Principle
@@ -51,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Home Manager** for per-user dotfiles and services
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
-- **Niri** (scrollable-tiling Wayland compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) with `niri.cachix.org` binary cache (`niri-unstable` branch) and **Hyprland** available on both
+- **Umbriel** (wlroots-based Wayland compositor) from nixpkgs (`pkgs.umbriel`) as the only session; niri and Hyprland are removed (configs archived under `archive/`)
 - **CachyOS** kernel (`cachyos-latest`) on nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with `attic.xuyh0120.win/lantian` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **ananicy-cpp** with [CachyOS rules](https://github.com/CachyOS/ananicy-rules) for automatic per-process nice/ionice/sched prioritization
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
@@ -59,7 +60,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 
 ## Desktop / Compositor
 
-Both hosts use Noctalia as the shell (started via `systemd --user`). The login manager is the Noctalia Greeter (`--session niri`). All user services (Discord, Steam, udiskie, …) run as `systemd.user.services`.
+Both hosts use Noctalia as the shell (started via `systemd --user`). The login manager is the Noctalia Greeter; Umbriel registers the session itself via its `.desktop` entry. All user services (Discord, Steam, udiskie, …) run as `systemd.user.services`.
 
 ### Noctalia IPC Commands
 
@@ -84,8 +85,7 @@ Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 ## Acknowledgements
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – desktop shell
-- [niri](https://github.com/YaLTeR/niri) – scrollable-tiling Wayland compositor
-- [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) with binary cache, saving hours of local compiling
+- [Umbriel](https://github.com/noctalia-dev/umbriel) – wlroots-based Wayland compositor
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – process priority rules
@@ -126,7 +126,7 @@ hosts/
 ├── nex/               # Gaming-Laptop Konfig + Disko Partitionierung
 └── styx/              # Büro-Laptop Konfig + Disko Partitionierung
 modules/
-├── desktop/           # Compositor (niri, hyprland), Greeter, Polkit, Fonts
+├── desktop/           # Compositor (umbriel), Greeter, Polkit, Fonts
 ├── hardware/          # GPU-Treiber, Audio, Laptop-Features, Legion, Touchpad
 ├── home/              # Home-Manager pro User (mortiferus + backbone)
 ├── programs/          # Gaming-Stack, Tools, Shell, Terminal, Editor, Zen-Browser
@@ -135,6 +135,7 @@ modules/
 └── users/             # Benutzerdefinitionen
 home/                  # Rohe Dotfiles (via home-manager xdg.configFile verlinkt)
 memory.md              # Entwickler-Notizen (aktueller Stand, IPC, systemd)
+umbriel.md             # Umbriel-Versions-/Feature-Tracker (Upstream-Entwicklung)
 ```
 
 ### Design-Prinzip
@@ -147,7 +148,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Home Manager** für User-Dotfiles und -Services
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
-- **Niri** (scrollable-tiling Wayland Compositor) via [sodiboo/niri-flake](https://github.com/sodiboo/niri-flake) mit `niri.cachix.org` Binary Cache (`niri-unstable` Branch) und **Hyprland** auf beiden verfügbar
+- **Umbriel** (wlroots-basierter Wayland Compositor) aus nixpkgs (`pkgs.umbriel`) als einzige Session; niri und Hyprland sind entfernt (Configs unter `archive/`)
 - **CachyOS**-Kernel (`cachyos-latest`) auf nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit `attic.xuyh0120.win/lantian` Binary Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **ananicy-cpp** mit [CachyOS-Regeln](https://github.com/CachyOS/ananicy-rules) für automatische per-Prozess nice/ionice/sched Priorisierung
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
@@ -155,7 +156,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 
 ## Desktop / Compositor
 
-Beide Hosts nutzen Noctalia als Shell (gestartet via `systemd --user`). Der Login-Manager ist der Noctalia Greeter (`--session niri`). Alle User-Services (Discord, Steam, udiskie, …) laufen als `systemd.user.services`.
+Beide Hosts nutzen Noctalia als Shell (gestartet via `systemd --user`). Der Login-Manager ist der Noctalia Greeter; Umbriel registriert die Session selbst über seinen `.desktop`-Eintrag. Alle User-Services (Discord, Steam, udiskie, …) laufen als `systemd.user.services`.
 
 ### Noctalia IPC-Befehle
 
@@ -180,8 +181,7 @@ Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 ## Danksagungen
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – Desktop-Shell
-- [niri](https://github.com/YaLTeR/niri) – Scrollable-Tiling Wayland Compositor
-- [sodiboo](https://github.com/sodiboo) – [niri-flake](https://github.com/sodiboo/niri-flake) mit Binary Cache, der stundenlanges lokales Kompilieren erspart
+- [Umbriel](https://github.com/noctalia-dev/umbriel) – wlroots-basierter Wayland Compositor
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – Prozess-Priorisierungs-Regeln

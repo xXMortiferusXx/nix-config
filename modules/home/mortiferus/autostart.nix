@@ -39,7 +39,7 @@ in
   # (per-user-Profil: /etc/profiles/per-user/mortiferus/etc/xdg/autostart).
   # Der Tray-Applet wird hier über polychromatic-tray.service gestartet, das die
   # waitForTray-Reihenfolge + Restart über systemd bekommt. Der XDG-Eintrag liefe
-  # zeitgleich über xdg-desktop-autostart.target (hyprland.service: Wants) und
+  # zeitgleich über xdg-desktop-autostart.target (umbriel-session.target: Wants) und
   # würde per PID-Lock den systemd-verwalteten Applet killen (Restart-Kampf).
   # Hidden=true ist der XDG-Spec-Override: gleicher Name in ~/.config/autostart
   # hat Vorrang vor dem Profil-Pfad.

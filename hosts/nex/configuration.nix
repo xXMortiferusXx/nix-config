@@ -22,6 +22,10 @@
 
   networking.hostName = "nex";
 
+  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround.
+  # Nur für nex (Headset); styx läuft ohne.
+  services.arctis-sound-manager.enable = true;
+
   system.stateVersion = "26.05"; 
   
 }

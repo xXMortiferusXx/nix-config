@@ -1,0 +1,90 @@
+# Keybinds – Übersetzung aus cfg/keybinds.kdl (Mod = Super wie in niri)
+# Screenshots über Noctalia (Clipboard/OSD); Fenster-Capture via grim kann
+# später ergänzt werden (umbriel windows --json für Geometrie).
+
+[keybinds]
+
+# ────────────── System & UI ──────────────
+"Mod+Shift+ESCAPE"  = "cheatsheet-toggle"
+"Mod+O"             = "overview-toggle"
+"CTRL+ALT+Delete"   = "session-quit:skip-confirmation"
+
+# ─── Programme ───
+"Mod+Return" = "spawn:kitty"
+"Mod+B"      = "spawn:zen-beta"
+"Mod+E"      = "spawn:thunar"
+"Mod+S"      = "spawn:pavucontrol"
+
+# ─── Noctalia IPC ───
+"Mod+CTRL+Return" = "spawn:noctalia msg panel-toggle launcher"
+"Mod+Shift+Q"     = "spawn:noctalia msg panel-toggle session"
+"Mod+ALT+L"       = "spawn:noctalia msg session lock"
+
+# ─── Media & Brightness ───
+"XF86AudioRaiseVolume"  = "spawn:noctalia msg volume-up || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+"XF86AudioLowerVolume"  = "spawn:noctalia msg volume-down || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+"XF86AudioMute"         = "spawn:noctalia msg volume-mute || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+"Mod+Shift+M"           = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+"XF86MonBrightnessUp"   = "spawn:noctalia msg brightness-up || brightnessctl set 5%+"
+"XF86MonBrightnessDown" = "spawn:noctalia msg brightness-down || brightnessctl set 5%-"
+
+"Mod+Alt+U" = "dpms-off"
+
+# ─── Navigation (Fokus) ───
+"Mod+Left"    = "window-focus-left"
+"Mod+Right"   = "window-focus-right"
+"Mod+Up"      = "window-focus-up"
+"Mod+Down"    = "window-focus-down"
+"Mod+Comma"   = "workspace-previous"
+"Mod+Period"  = "workspace-next"
+
+# ─── Verschieben ───
+"Mod+CTRL+Left"  = "column-move-left"
+"Mod+CTRL+Right" = "column-move-right"
+"Mod+CTRL+Up"    = "window-move-up"
+"Mod+CTRL+Down"  = "window-move-down"
+
+# ─── Fenster-Management ───
+"Mod+Q"       = "window-close"
+"Mod+F"       = "window-toggle-fullscreen"
+"Mod+M"       = "window-toggle-maximize"
+"Mod+T"       = "window-toggle-floating"
+"Mod+C"       = "window-center"
+"Mod+Shift+T" = "workspace-set-layout:toggle"
+
+# ─── Workspace Wechsel (Scroll-Rad) ───
+"Mod+WheelDown"      = "workspace-next"
+"Mod+WheelUp"        = "workspace-previous"
+"Mod+CTRL+WheelDown" = "window-move-to-workspace-next"
+"Mod+CTRL+WheelUp"   = "window-move-to-workspace-previous"
+"Mod+Shift+WheelDown" = "window-move-to-workspace-next"
+"Mod+Shift+WheelUp"   = "window-move-to-workspace-previous"
+
+# 1=Browser, 2=Chat, 3=Gaming, 4=Sonstiges
+"Mod+1" = "workspace-switch:1"
+"Mod+2" = "workspace-switch:2"
+"Mod+3" = "workspace-switch:3"
+"Mod+4" = "workspace-switch:4"
+"Mod+5" = "workspace-switch:5"
+"Mod+6" = "workspace-switch:6"
+"Mod+7" = "workspace-switch:7"
+"Mod+8" = "workspace-switch:8"
+"Mod+9" = "workspace-switch:9"
+
+"Mod+CTRL+1" = "window-move-to-workspace:1"
+"Mod+CTRL+2" = "window-move-to-workspace:2"
+"Mod+CTRL+3" = "window-move-to-workspace:3"
+"Mod+CTRL+4" = "window-move-to-workspace:4"
+"Mod+CTRL+5" = "window-move-to-workspace:5"
+"Mod+CTRL+6" = "window-move-to-workspace:6"
+"Mod+CTRL+7" = "window-move-to-workspace:7"
+"Mod+CTRL+8" = "window-move-to-workspace:8"
+"Mod+CTRL+9" = "window-move-to-workspace:9"
+
+# ─── Resize ───
+"Mod+R" = "window-cycle-width"
+
+# ─── Screenshot ───
+"Print"     = "spawn:noctalia msg screenshot-region"
+"Mod+Print" = "spawn:noctalia msg screenshot-fullscreen"
+"Alt+Print" = "spawn:noctalia msg screenshot-fullscreen"

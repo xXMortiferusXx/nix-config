@@ -1,0 +1,16 @@
+# Erscheinung – Struktur-Werte hier; Farben sind bewusst nicht gesetzt
+# (Standard-Palette von Umbriel; Noctalia-Farben können später über eine
+# noctalia.toml + [include]-Eintrag dazukommen).
+[appearance]
+prefer_no_csd = true
+border_width = 2
+outer_border_width = 0
+corner_radius = 12
+animation_ms = 250
+
+[appearance.shadow]
+enabled = true
+softness = 15
+offset_x = 2
+offset_y = 2
+color = "#0000007F"

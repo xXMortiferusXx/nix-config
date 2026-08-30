@@ -1,0 +1,14 @@
+# Layout – Parität zu niri (Gap 8, alle Workspaces scrolling).
+# Mischlayout später pro Workspace: [[workspace]] layout.mode = "dwindle" / "master"
+# (live umschalten: Mod+Shift+T).
+[layout]
+mode = "scrolling"
+gap = 8
+width_presets = [0.333, 0.5, 0.667]
+
+[layout.scrolling]
+default_width_fraction = 0.5
+center_underfull_strip = true
+
+[workspaces]
+back_and_forth = true    # niri: workspace-auto-back-and-forth

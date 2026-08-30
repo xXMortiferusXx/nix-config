@@ -13,8 +13,7 @@ let
   configDirs = [
     "gtk-3.0"
     "gtk-4.0"
-    "hypr"
-    "niri"
+    "umbriel"
     "nvim"
     "pipewire"
     "qt5ct"

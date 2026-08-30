@@ -1,0 +1,17 @@
+# Input – Übersetzung aus cfg/input.kdl
+[input.keyboard]
+layout = "de"
+repeat_rate = 25
+repeat_delay = 600
+
+[input.touchpad]
+tap = true
+natural_scroll = true
+
+[input.cursor]
+theme = "Bibata-Modern-Ice"
+size = 24
+hardware_cursor = true
+
+[input.focus]
+follows_mouse = false
