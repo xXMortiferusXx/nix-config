@@ -4,12 +4,6 @@
 # - Corner-Radius ist global ([appearance].corner_radius), nicht pro Window
 # - `umbriel windows --json` zeigt xdg_tag/content_type für bessere Matches
 
-# ── Generell: Blur für alle Fenster ──
-# Catch-all ohne Selectors = jedes Fenster; spezifischere Regeln gewinnen pro Feld,
-# damit bleibt deren workspace/floating/vrr unangetastet. Sichtbar nur bei Transparenz.
-[[window_rule]]
-blur = true
-
 # ── Portal-/System-Dialoge floating ──
 [[window_rule]]
 match.app_id = "^(xdg-desktop-portal-gnome|xdg-desktop-portal-kde|xdg-desktop-portal-gtk|xdg-desktop-portal-wlr|zenity|blueman-manager|org.gnome.Settings|nm-connection-editor)$"
@@ -26,6 +20,7 @@ match.app_id = "^zen-beta$"
 default_workspace = 1
 default_width = 1.0
 opacity = 0.95
+blur = true
 
 [[window_rule]]
 match.app_id = "^zen-beta$"
@@ -44,7 +39,6 @@ match.app_id = "^discord$"
 default_workspace = 2
 default_width = 1.0
 opacity = 0.95
-blur = true
 
 # ── Workspace 3: Gaming (Launcher) ──
 [[window_rule]]
