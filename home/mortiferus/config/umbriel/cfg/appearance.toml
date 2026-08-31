@@ -6,6 +6,7 @@ prefer_no_csd = true
 border_width = 2
 outer_border_width = 0
 corner_radius = 12
+drag_opacity = 0.9
 
 [appearance.blur]
 enabled = true
