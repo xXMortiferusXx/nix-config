@@ -44,6 +44,7 @@ pkgs: with pkgs; [
     loupe
     gimp
     naps2
+    qalculate-gtk
 
     # --- Development & 3D Printing ---
     opencode

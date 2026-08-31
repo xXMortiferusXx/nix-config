@@ -14,6 +14,12 @@ match.app_id = "^org.pulseaudio.pavucontrol$"
 default_floating = true
 default_size = [800, 600]
 
+# ── Taschenrechner: schwebt direkt parat ──
+[[window_rule]]
+match.app_id = "^qalculate-gtk$"
+default_floating = true
+default_size = [440, 560]
+
 # ── Workspace 1: Browser ──
 [[window_rule]]
 match.app_id = "^zen-beta$"

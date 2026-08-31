@@ -32,6 +32,7 @@
 "Mod+Shift+M"           = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true }
 "XF86MonBrightnessUp"   = { action = "spawn:noctalia msg brightness-up || brightnessctl set 5%+", allow_when_locked = true }
 "XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down || brightnessctl set 5%-", allow_when_locked = true }
+"XF86Calculator"        = "spawn:qalculate-gtk"
 
 "Mod+Alt+U" = "dpms-off"
 
