@@ -50,7 +50,7 @@ blur = true
 [[window_rule]]
 match.app_id = "^steam$"
 default_workspace = 3
-default_width = 1.0
+default_width = 0.85
 opacity = 0.95
 
 # Alle Steam-Fenster ausser Hauptfenster ("Steam") floating
@@ -64,12 +64,20 @@ match.app_id = "^(net.lutris.Lutris|com.heroicgameslauncher.hgl|io.github.krawek
 default_workspace = 3
 default_width = 1.0
 
-# Steam Overlay & Chat floating
+# Steam Overlay & Chat floating (Freundesliste ist getiled, siehe unten)
 [[window_rule]]
 match.app_id = "^steam$"
-match.title = "^(Freunde|Steam-Einstellungen|Friends|Chat|Settings|Server Browser)"
+match.title = "^(Steam-Einstellungen|Chat|Settings|Server Browser)"
 default_floating = true
 default_size = [1272, 830]
+
+# Steam-Freundesliste: getiled neben dem Hauptfenster (20 % Breite)
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^(Freunde|Friends)"
+default_workspace = 3
+default_floating = false
+default_width = 0.15
 
 # Steam-Notifications: unten rechts, ohne Fokus-Klau
 [[window_rule]]
