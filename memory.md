@@ -258,6 +258,12 @@
 
 ## Noctalia v5
 
+### GTK-Theme-Anbindung (GTK4)
+- Noctalia generiert bei Login den GTK4-Farbkatalog `~/.config/gtk-4.0/noctalia.css` (`@define-color`-Variablen)
+- `gtk.css` lädt: `noctalia.css` (Farben) → `libadwaita-tweaks.css` (optische Tweaks, gewinnt bei Konflikten)
+- Tweaks-Hook: `home/mortiferus/config/gtk-4.0/libadwaita-tweaks.css` (Headerbar-Glas via Umbriel-Blur, Backdrop-Dim, Nautilus-Sidebar-Radius). Kein Rebuild nötig (Bind-Mount)
+- 2026-08-31: `libadwaita.css`-Import entfernt (redundant zu noctalia.css) → Theme-Parser-Warnungen bei Nautilus/Loupe weg
+
 ### Config-Struktur (wichtig: v5 ≠ v4)
 - **GUI-State** (automatisch geschrieben): `~/.local/state/noctalia/` (Symlink aufs Repo)
   - `settings.toml` – alle Settings-UI-Änderungen (Greeter-Sync, Auto-Sync, etc.)
@@ -621,8 +627,22 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 - **Fix**: `systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";` in `audio.nix`.
 - `lib.mkForce` ist noetig, weil das NixOS-Modul den gleichen Option-Pfad definiert und sonst ein Konflikt entsteht.
 
+### GameDAC stabil halten – Liedwechsel-Knacken (2026-08-31)
+- **Symptom**: kleines "Knacken" bei jedem Liedwechsel (als würde das Gerät neu starten), YouTube + andere Quellen
+- **Signalweg**: `Zen → sonar-media-eq (LADSPA-EQ) → hesuvi-media (Virtual 7.1/HRTF-Convolution) → Downmix → GameDAC`
+- **Ausgeschlossen**: USB-Autosuspend (`power/control=on`), WirePlumber-Suspend (5 s; Kette suspendet nicht), `clock.force-quantum` (1024 half nicht), ASM-`pipewire_quantum` (war 0/auto)
+- **Ursache (bewiesen)**: Bei jedem Titelwechsel öffnet Chromium einen **neuen** Stream; die Kette fällt kurz in `idle` und die HeSuVi/Sonar-Convolution erzeugt beim Wiederanlaufen einen Transienten. Spatial-Audio für Media AUS → Knacken weg → Convolution ist der Übeltäter.
+- **Fix (persistent)**: ASM-Paket gepatcht → Filter-Ketten werden mit `node.pause-on-idle = false` generiert (alle 7 Ketten, capture+playback). Die Kette pumpt im Leerlauf Stille weiter und fällt nie in `idle` → Convolution behält ihren Zustand, kein Transient. Überlebt jede ASM-Regeneration.
+  - Patch: `scripts/asm-pause-on-idle.py` (fügt die Zeile nach jedem `node.name` in `sonar_to_pipewire.py` ein)
+  - Override: `hosts/nex/configuration.nix` → `services.arctis-sound-manager.package = ... .overrideAttrs (postPatch ...)`
+- **Erste (vorläufige) Fixes** (`51-gamedac-stable.conf` in `audio.nix`): `session.suspend-timeout-seconds = 0` auf dem GameDAC-Sink (bleibt, schadet nicht) + Rate-Pin 48k/2ch (Enum bleibt S16LE)
+- **Wartungs-Falle**: verwaiste User-Unit `~/.config/systemd/user/arctis-manager.service` (Symlink auf alten Store-Pfad) überschattete die NixOS-Unit und hielt den alten Daemon am Leben → entfernt (Backup `/tmp/opencode/`). Nach Paket-Override immer prüfen, dass der Daemon auf dem neuen Pfad läuft.
+- **Status**: eingebaut, gepatcht, verifiziert (alle Ketten `pause-on-idle: False`, Spatial-Media wieder an)
+
 ### Files (2026-08-27)
 - `modules/hardware/audio.nix` — GameDAC Profile + WirePlumber + `environment.etc` (aktiv)
+- `modules/hardware/audio.nix` (`51-gamedac-stable.conf`) — Nie-Suspend + fixe hw_params (2026-08-31)
+- `scripts/asm-pause-on-idle.py` — Patch für ASM-Paket (pause-on-idle in Filter-Ketten-Props) (2026-08-31)
 - `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
 - `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
 - ~~`home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf.disabled`~~ — gelöscht (2026-08-27)
