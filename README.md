@@ -52,7 +52,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Home Manager** for per-user dotfiles and services
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
-- **Umbriel** (wlroots-based Wayland compositor) from nixpkgs (`pkgs.umbriel`) as the only session; niri and Hyprland are removed (configs archived under `archive/`)
+- **Umbriel** (wlroots-based Wayland compositor) directly from the Umbriel flake (`inputs.umbriel`) as the only session; niri and Hyprland are removed (configs archived under `archive/`)
 - **CachyOS** kernel (`cachyos-latest`) on nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with `attic.xuyh0120.win/lantian` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **ananicy-cpp** with [CachyOS rules](https://github.com/CachyOS/ananicy-rules) for automatic per-process nice/ionice/sched prioritization
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
@@ -85,6 +85,7 @@ Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 ## Acknowledgements
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – desktop shell
+- [Noctalia Greeter](https://github.com/noctalia-dev/noctalia-greeter) – login manager
 - [Umbriel](https://github.com/noctalia-dev/umbriel) – wlroots-based Wayland compositor
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
@@ -148,7 +149,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Home Manager** für User-Dotfiles und -Services
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
-- **Umbriel** (wlroots-basierter Wayland Compositor) aus nixpkgs (`pkgs.umbriel`) als einzige Session; niri und Hyprland sind entfernt (Configs unter `archive/`)
+- **Umbriel** (wlroots-basierter Wayland Compositor) direkt vom Umbriel-Flake (`inputs.umbriel`) als einzige Session; niri und Hyprland sind entfernt (Configs unter `archive/`)
 - **CachyOS**-Kernel (`cachyos-latest`) auf nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit `attic.xuyh0120.win/lantian` Binary Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **ananicy-cpp** mit [CachyOS-Regeln](https://github.com/CachyOS/ananicy-rules) für automatische per-Prozess nice/ionice/sched Priorisierung
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
@@ -181,6 +182,7 @@ Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 ## Danksagungen
 
 - [Noctalia](https://github.com/noctalia-dev/noctalia) – Desktop-Shell
+- [Noctalia Greeter](https://github.com/noctalia-dev/noctalia-greeter) – Login-Manager
 - [Umbriel](https://github.com/noctalia-dev/umbriel) – wlroots-basierter Wayland Compositor
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
