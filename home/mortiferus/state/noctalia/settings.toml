@@ -52,6 +52,12 @@ margin_edge = 0
 reserve_space = false
 smart_auto_hide = true
 
+[hot_corners]
+enabled = true
+
+    [hot_corners.top_left]
+    action = "launcher"
+
 [idle]
 behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
 
@@ -209,13 +215,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-8g3reo_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-8g3reo_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-8g3reo_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-d8xz8g_1920x1080.png"
 
 [widget.bar]
 type = "raycursive/discord-voice:bar"
