@@ -124,4 +124,48 @@
     '';
   };
   */
+
+  # ===========================================================================
+  # GameDAC stabil halten (2026-08-31)
+  # Grund: kleines "Knacken" bei jedem Liedwechsel (als würde das Gerät neu
+  # starten). Zwei Maßnahmen gegen die Kandidaten:
+  #  - suspend-timeout 0: Der Sink schläft nie ein -> kein "Aufwach"-Knacken
+  #    (PipeWire-Standard suspendet Knoten nach 5 s Stille).
+  #  - Rate/Format-Pin 48k/2ch: hw_params bleiben konstant -> keine erneute
+  #    Device-Negotiation (Format-Enum bleibt S16LE; Nie-Suspend ist der
+  #    wirksame Teil gegen Re-Open).
+  # ASM-unabhängig: wirkt nur auf den Hardware-Node, nicht auf die virtuellen
+  # Sinks/Filter-Ketten des Arctis Sound Manager (der speist eh 2ch/48k ein).
+  # ===========================================================================
+  environment.etc."wireplumber/wireplumber.conf.d/51-gamedac-stable.conf".text = ''
+    monitor.alsa.rules = [
+      {
+        matches = [
+          {
+            device.name = "~alsa_card.usb-SteelSeries_SteelSeries_GameDAC*"
+          }
+        ]
+        actions = {
+          update-props = {
+            audio.format = "S32LE"
+            audio.samplerate = 48000
+            audio.channels = 2
+            audio.position = [ FL FR ]
+          }
+        }
+      }
+      {
+        matches = [
+          {
+            node.name = "~alsa_output.usb-SteelSeries_SteelSeries_GameDAC*"
+          }
+        ]
+        actions = {
+          update-props = {
+            session.suspend-timeout-seconds = 0
+          }
+        }
+      }
+    ]
+  '';
 }
