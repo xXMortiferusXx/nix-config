@@ -3,6 +3,7 @@
 layout = "de"
 repeat_rate = 25
 repeat_delay = 600
+numlock_toggle = true
 
 [input.touchpad]
 tap = true

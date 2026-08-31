@@ -10,6 +10,7 @@
 
 [include]
 files = [
+  "cfg/animation.toml",
   "cfg/appearance.toml",
   "cfg/display.toml",
   "cfg/input.toml",

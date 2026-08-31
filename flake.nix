@@ -23,6 +23,14 @@
       url = "github:noctalia-dev/noctalia-greeter";
     };
 
+    # Umbriel Compositor – direkt vom Repo statt nixpkgs, damit Fixes zeitnah
+    # ankommen (nixpkgs pinnt oft lange alte Revs). git+https statt github:,
+    # weil das Repo das Submodule subprojects/scenefx braucht.
+    umbriel = {
+      url = "git+https://github.com/noctalia-dev/umbriel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
     # - Binary Cache: https://attic.xuyh0120.win/lantian
     # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
