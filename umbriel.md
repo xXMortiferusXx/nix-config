@@ -12,6 +12,15 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
+## Wann zurück zu nixpkgs?
+- Solange auf dem Flake bleiben, bis nixpkgs den Fix-/Feature-Stand eingeholt hat
+  (`nix eval nixpkgs#umbriel.src.rev` ≥ Flake-Rev bzw. enthält Suspend/Resume-Fix #27,
+  Numlock, `[animation]`) **und** die Entwicklung sich beruhigt hat (aktuell ~40 Commits/Tag;
+  ein Tag-Release wäre das klarste Zeichen).
+- Kosten Flake: lokaler Rust-Build (~Minuten) bei jedem Rev-Bump.
+- Wechsel zurück: Flake-Input + Overlay (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
+  prüfen, Config ggf. re-migrieren (falls nixpkgs-Rev anders steht).
+
 ## WICHTIG – Namens-Instabilität
 - Ab Rev 2026-08-31 existieren **beide** Action-Familien: `window-*` (Fenster) UND
   `column-*` (Spalten). `workspace-set-layout` kann jetzt zusätzlich `master`.
