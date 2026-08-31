@@ -56,7 +56,8 @@ smart_auto_hide = true
 enabled = true
 
     [hot_corners.top_left]
-    action = "launcher"
+    action = "command"
+    command = "umbriel msg overview-open"
 
 [idle]
 behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
@@ -83,7 +84,7 @@ auto_locate = true
 [lockscreen_widgets]
 enabled = true
 schema_version = 2
-widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-0000000000000001", "lockscreen-widget-0000000000000002" ]
+widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-0000000000000001" ]
 
     [lockscreen_widgets.grid]
     cell_size = 16
@@ -93,8 +94,8 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
     [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
     box_height = 196.0
     box_width = 720.0
-    cx = 976.0
-    cy = 1007.0
+    cx = 992.0
+    cy = 970.0
     output = "eDP-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -134,23 +135,6 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-widget-00000000000000
         clock_style = "digital"
         color = "primary"
         font_family = "Courier New"
-
-    [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
-    box_height = 160.0
-    box_width = 464.0
-    cx = 976.0
-    cy = 844.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
-    rotation = 0.0
-    type = "weather"
-
-        [lockscreen_widgets.widget.lockscreen-widget-0000000000000002.settings]
-        background_opacity = 0.59999999999999998
-        color = "primary"
-        font_family = "Comic Sans MS"
-        show_forecast = true
 
 [notification]
 layer = "overlay"
@@ -215,13 +199,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gpv58q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwpv7l_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gpv58q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwpv7l_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gpv58q_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwpv7l_1920x1080.png"
 
 [widget.bar]
 type = "raycursive/discord-voice:bar"

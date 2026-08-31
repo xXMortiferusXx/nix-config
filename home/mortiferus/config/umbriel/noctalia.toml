@@ -2,18 +2,18 @@
 background = "#eeeeeeF0"
 text_primary = "#1b1b1bFF"
 text_muted = "#474747FF"
-accent_primary = "#006686FF"
-accent_secondary = "#4d616cFF"
-warning = "#5e5a7dFF"
+accent_primary = "#944a01FF"
+accent_secondary = "#755845FF"
+warning = "#5f6135FF"
 error = "#ba1a1aFF"
 
 [appearance]
-border_focused = "#006686FF"
+border_focused = "#944a01FF"
 border_unfocused = "#e2e2e2FF"
-scratchpad_border_focused = "#5e5a7dFF"
-scratchpad_border_unfocused = "#e4dfffFF"
+scratchpad_border_focused = "#5f6135FF"
+scratchpad_border_unfocused = "#e5e6aeFF"
 outer_border_color = "#f9f9f9FF"
-insert_hint_color = "#5e5a7d80"
+insert_hint_color = "#5f613580"
 backdrop_color = "#e2e2e2FF"
 
 [overview]
