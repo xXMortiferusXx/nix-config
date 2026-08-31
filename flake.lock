@@ -83,11 +83,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787797243,
-        "narHash": "sha256-8+Q7NOB7RPajRjA4pbCDLzqH+MTjnG9x6LUPLfL2joA=",
+        "lastModified": 1788146656,
+        "narHash": "sha256-XmJmvk9rytTb7dCotO/aqR+YysB8HOqnprlOdv+LAF4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "99c9ec63390f1d8c14d95d9e8b17cc29cfbd4e11",
+        "rev": "82c265faf4e3161d6015db07c9b0f1ee36a9029b",
         "type": "github"
       },
       "original": {
@@ -120,11 +120,11 @@
     "lsfg-vk-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1788025149,
-        "narHash": "sha256-K0eFiEJo5qMFwMzVFqV0e3c+ktPWO3o89R/bIz37PFg=",
+        "lastModified": 1788122514,
+        "narHash": "sha256-ndQ7LE4+6vSGk7BsSOp0e6Olsbb3behBSn5vOYwjXYk=",
         "ref": "master",
-        "rev": "9d10aae00bcc3fa3ed0f86d602b67c35011d47a2",
-        "revCount": 90,
+        "rev": "a89098be1a4c1230090d5ea79d52da9501135917",
+        "revCount": 91,
         "type": "git",
         "url": "https://git.lsfg-vk.dev/lsfg-vk.git"
       },
@@ -267,11 +267,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1788076699,
-        "narHash": "sha256-7/xv7BWHPqFZOdJJJkXoNnGDG/lznobSpwLtj2fr73A=",
+        "lastModified": 1788149125,
+        "narHash": "sha256-GueAv4789rOV70hixnL9+uN4tiDKJm7s92DnTejdpuE=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "8d0d0f036b0104699e60ec0d549d36a24d6e8637",
+        "rev": "5fe00f38d41ced9a5c0ba1cbf2127d7e8b3e3d56",
         "type": "github"
       },
       "original": {
