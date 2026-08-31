@@ -7,5 +7,6 @@
     noto-fonts
     noto-fonts-color-emoji
     corefonts
+    gyre-fonts
   ];
 }
