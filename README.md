@@ -44,7 +44,7 @@ umbriel.md             # Umbriel version/feature tracker (upstream dev watch)
 
 ### Design Principle
 
-One file = one topic. Large files get split into submodules (e.g., `programs/gaming/` contains `steam.nix`, `lutris.nix`, `gamescope.nix`, …).
+One file = one topic. Large files get split into submodules (e.g., `programs/gaming/` contains `steam.nix`, `gamescope.nix`, `sunshine.nix`, `scripts.nix`, …).
 
 ## Key Technologies
 
@@ -73,8 +73,8 @@ See `memory.md` for the full list.
 nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU performance. It has a dedicated gaming module stack:
 
 - Steam (with Proton-GE, hardware decoding)
-- Lutris (custom wrapper with steam-run)
-- Gamescope session
+- Lutris & Heroic (installed as per-user packages)
+- Gamescope (compositor wrapper used to run non-Steam games)
 - Sunshine (streaming)
 - Lossless Scaling FG Vulkan layer (built from `git.lsfg-vk.dev`, auto-updates with `nix flake update`; needs the Steam version's DLL via the Beta branch)
 - MangoHud
@@ -141,7 +141,7 @@ umbriel.md             # Umbriel-Versions-/Feature-Tracker (Upstream-Entwicklung
 
 ### Design-Prinzip
 
-Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `programs/gaming/` enthält `steam.nix`, `lutris.nix`, `gamescope.nix`, …).
+Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `programs/gaming/` enthält `steam.nix`, `gamescope.nix`, `sunshine.nix`, `scripts.nix`, …).
 
 ## Wichtige Technologien
 
@@ -170,8 +170,8 @@ Die vollständige Liste steht in `memory.md`.
 nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale dGPU-Performance. Er hat einen dedizierten Gaming-Modul-Stack:
 
 - Steam (mit Proton-GE, Hardware-Dekodierung)
-- Lutris (custom Wrapper mit steam-run)
-- Gamescope-Session
+- Lutris & Heroic (als User-Pakete installiert)
+- Gamescope (Compositor-Wrapper für Nicht-Steam-Spiele)
 - Sunshine (Streaming)
 - Lossless Scaling FG Vulkan Layer (aus `git.lsfg-vk.dev` gebaut, folgt dem `master`-Zweig und wird bei `nix flake update` automatisch mit aktualisiert; benötigt die DLL der Steam-Version über den Beta-Zweig)
 - MangoHud
