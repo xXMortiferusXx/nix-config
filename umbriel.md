@@ -42,17 +42,20 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (beide Hosts `true`, 2026-08-31) |
 | `[animation]`-Sektion | Animations-Optionen (ersetzt `appearance.animation_ms`) | **MIGRIERT** → `cfg/animation.toml` (beide Hosts, 2026-08-31) |
-| `appearance.drag_opacity` | Fenster-Transparenz beim Drag | verfügbar, nicht gesetzt (Default) |
-| `keybinds.*.allow_when_locked` | Keys auch im Lock nutzbar | verfügbar, nicht genutzt |
+| `appearance.drag_opacity` | Fenster-Transparenz beim Drag | **GESETZT** (`0.9` in `cfg/appearance.toml`, 2026-08-31) |
+| `keybinds.*.allow_when_locked` | Keys auch im Lock nutzbar | **EINGESETZT** (Volume/Brightness/Mikro/Media-Tasten, beide Hosts, 2026-08-31) |
 | `layout.scrolling.center_focused` | Scroll-Layout: Fokus-Zentrierung | verfügbar, nicht gesetzt |
 | `layout.scrolling.expand_single_column` | Einzelspalte auf Strecken | verfügbar, nicht gesetzt |
 | `layout.struts` | Struts/Reservierung | verfügbar, nicht gesetzt (Noctalia regelt) |
 | `workspaces.empty_above` | Leere Workspaces über dem aktuellen | verfügbar, nicht gesetzt |
 | `input.touchpad.disable_on_external_mouse` | Touchpad bei Maus deaktivieren | IRRELEVANT (Touchpad systemweit aus) |
-| `window-toggle-scratchpad` / `window-cycle-width-back` / `workspace-move-up/down` | neue Actions | verfügbar, nicht gebunden |
+| `window-toggle-scratchpad` / `window-cycle-width-back` / `workspace-move-up/down` | neue Actions | **TEILWEISE EINGESETZT** (2026-08-31): `window-move-up/down` (Mod+CTRL+Pfeile), `window-cycle-width` (Mod+R); `window-toggle-scratchpad` u. `workspace-move-*` weiterhin ungebunden |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
 
 ## Zuletzt gecheckt
+- **2026-09-01** (Nacharbeit): aus dem Feature-Tracker übernommen — `appearance.drag_opacity = 0.9`;
+  `keybinds.*.allow_when_locked` für Volume/Brightness/Mikro/Media-Tasten; neue Actions
+  `window-move-up/down` (Mod+CTRL+Pfeile) u. `window-cycle-width` (Mod+R) gebunden.
 - **2026-08-31** (Umstieg auf Flake-Rev `e677dbbe`): beide Hosts `validate` = `config: ok`
   gegen das neue Binary. Migriert: `animation_ms` → `[animation]`-Sektion; `numlock_toggle = true` eingebaut.
   - Umsetzungen (bestehen weiter): **Blur global** via Catch-all `[[window_rule]] blur = true`;
