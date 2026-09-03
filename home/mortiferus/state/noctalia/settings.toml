@@ -180,7 +180,7 @@ update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch
 discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "alexander/game-launcher", "aristides/udiskie" ]
+enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "aristides/udiskie" ]
 
     [[plugins.source]]
     auto_update = true
@@ -227,13 +227,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yjp5gd_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yjp5gd_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yjp5gd_1920x1080.png"
 
 [weather]
 effects = true

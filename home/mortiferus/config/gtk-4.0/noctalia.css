@@ -4,8 +4,8 @@
 * stylelint-disable at-rule-no-unknown
 */
 
-@define-color accent_color #666000;
-@define-color accent_bg_color #666000;
+@define-color accent_color #855300;
+@define-color accent_bg_color #855300;
 @define-color accent_fg_color #ffffff;
 
 @define-color destructive_bg_color #ba1a1a;
@@ -57,8 +57,8 @@
 @define-color theme_unfocused_selected_fg_color @accent_fg_color;
 
 :root {
-    --accent-color: #666000;
-    --accent-bg-color: #666000; 
+    --accent-color: #855300;
+    --accent-bg-color: #855300; 
     --accent-fg-color: #ffffff;
 
     --destructive-bg-color: #ba1a1a;
@@ -95,13 +95,13 @@
     --sidebar-backdrop-color: @window_bg_color;
     --sidebar-border-color: @window_bg_color;
 
-    --warning-bg-color: #c1ecd5;
-    --warning-fg-color: #274e3d;
-    --warning-color: #3f6654;
+    --warning-bg-color: #d7e9b9;
+    --warning-fg-color: #3d4c28;
+    --warning-color: #54643d;
 
-    --success-color: #625f42;
-    --success-bg-color: #e9e4be;
-    --success-fg-color: #4a482c;
+    --success-color: #715a41;
+    --success-bg-color: #fcddbd;
+    --success-fg-color: #57432b;
     
     --shade-color: rgba(0, 0, 0, 0.36);
 }

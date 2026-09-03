@@ -342,6 +342,22 @@
 - Numlock: aktuell aus beim Start (Feature fehlt im Build → `umbriel.md`)
 - `xdg.desktop-portal-gtk` bleibt nötig: umbriel-portal deckt nur ScreenCast/Screenshot ab (siehe `desktop/umbriel.nix`)
 
+### Native Wayland & Workspace-4-Regeln (2026-09-03)
+- **Verifikation** `umbriel windows --json` (XWayland, ohne PROTON_ENABLE_WAYLAND):
+  - `app_id = steam_app_2828860`, `content_type = "none"`, `xdg_tag = ""`, `xwayland = true`
+  - → `content_type`/`xdg_tag`-Matches greifen bei XWayland/Proton **nicht** (nur `app_id = ^steam_app_.*$` funktioniert)
+- **`PROTON_ENABLE_WAYLAND=1 %command%`** (Proton-Laufzeitoption pro Spiel, nativer Wayland-Treiber statt XWayland):
+  - `app_id = foreverwinter-win64-shipping.exe`, `content_type = "game"`, `xdg_tag = "proton-game"`, `xwayland = false`
+  - → `content_type`/`xdg_tag` greifen jetzt korrekt
+  - **Risiko**: Steam Overlay kaputt, experimentell, manche Spiele mögen es nicht → nur pro Spiel setzen, nicht global
+- **Window-Rules beide Hosts** (`cfg/rules.toml`, Workspace 4):
+  - `content_type = "game"` → `default_workspace = 4` + `vrr = "always"` (native Wayland)
+  - `xdg_tag = "^proton-game$"` → Match-Anker für native Wayland-Proton-Spiele (erweiterbar, z.B. HDR)
+  - `app_id = "^steam_app_.*$"` → Fallback für XWayland-Spiele (ohne PROTON_ENABLE_WAYLAND) + `default_workspace = 4` + `vrr = "always"`
+  - `app_id = "^gamescope$"` → `default_workspace = 4` + `vrr = "always"`
+  - `pathofexilesteam.*`-Regel entfernt (redundant, wird von `steam_app_.*` abgedeckt)
+  - **Kein `default_fullscreen`** in den Spiel-Regeln → Spiele starten getilted auf W4, anderes Fenster (z.B. Build-Planer) kann daneben getiled werden
+
 ## Steam & Proton-GE
 
 ### Konfiguration

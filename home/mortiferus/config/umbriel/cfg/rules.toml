@@ -89,14 +89,22 @@ default_focused = false
 default_pinned = true
 
 # ── Workspace 4: Spiele ──
+# Native Wayland (PROTON_ENABLE_WAYLAND=1): content_type + xdg_tag
+[[window_rule]]
+match.content_type = "game"
+default_workspace = 4
+default_floating = false
+vrr = "always"
+
+# Native Wayland: Proton-Games per xdg_tag (Erweiterbar, z.B. HDR)
+[[window_rule]]
+match.xdg_tag = "^proton-game$"
+
+# Fallback XWayland (ohne PROTON_ENABLE_WAYLAND): app_id
 [[window_rule]]
 match.app_id = "^steam_app_.*$"
 default_workspace = 4
-vrr = "always"
-
-[[window_rule]]
-match.app_id = "^pathofexilesteam.*$"
-default_workspace = 4
+default_floating = false
 vrr = "always"
 
 # Spiele außerhalb von Steam (Heroic, Lutris, ...) über Gamescope:
@@ -104,7 +112,7 @@ vrr = "always"
 [[window_rule]]
 match.app_id = "^gamescope$"
 default_workspace = 4
-default_fullscreen = true
+default_floating = false
 vrr = "always"
 
 # ── Terminal ──
