@@ -20,7 +20,6 @@ files = [
   "cfg/keybinds.toml",
   "cfg/layout.toml",
   "cfg/rules.toml",
-  "noctalia.toml",
 ]
 
 [general]

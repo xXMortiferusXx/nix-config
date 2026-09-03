@@ -43,12 +43,17 @@
 "Mod+Down"    = "window-focus-down"
 "Mod+Comma"   = "workspace-previous"
 "Mod+Period"  = "workspace-next"
+"Alt+Tab"     = "spawn:noctalia msg window-switcher"
 
 # ─── Verschieben ───
 "Mod+CTRL+Left"  = "column-move-left"
 "Mod+CTRL+Right" = "column-move-right"
 "Mod+CTRL+Up"    = "window-move-up"
 "Mod+CTRL+Down"  = "window-move-down"
+
+# ─── Fenster tauschen (in der Spalte) ───
+"Mod+Shift+Up"   = "window-swap-previous"
+"Mod+Shift+Down" = "window-swap-next"
 
 # ─── Fenster-Management ───
 "Mod+Q"       = "window-close"
@@ -89,6 +94,11 @@
 
 # ─── Resize ───
 "Mod+R" = "window-cycle-width"
+
+# ─── Scratchpad ───
+"Mod+Tab"       = "scratchpad-toggle"
+"Mod+Shift+Tab" = "window-move-to-scratchpad"
+"Mod+Ctrl+Tab"  = "window-restore-from-scratchpad"
 
 # ─── Screenshot ───
 "Print"     = "spawn:noctalia msg screenshot-region"

@@ -632,14 +632,12 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 - **Signalweg**: `Zen → sonar-media-eq (LADSPA-EQ) → hesuvi-media (Virtual 7.1/HRTF-Convolution) → Downmix → GameDAC`
 - **Ausgeschlossen**: USB-Autosuspend (`power/control=on`), WirePlumber-Suspend (5 s; Kette suspendet nicht), `clock.force-quantum` (1024 half nicht), ASM-`pipewire_quantum` (war 0/auto)
 - **Ursache (bewiesen)**: Bei jedem Titelwechsel öffnet Chromium einen **neuen** Stream; die Kette fällt kurz in `idle` und die HeSuVi/Sonar-Convolution erzeugt beim Wiederanlaufen einen Transienten. Spatial-Audio für Media AUS → Knacken weg → Convolution ist der Übeltäter.
-- **Fix (persistent)**: ASM-Paket gepatcht → Filter-Ketten werden mit `node.pause-on-idle = false` generiert (alle 7 Ketten, capture+playback). Die Kette pumpt im Leerlauf Stille weiter und fällt nie in `idle` → Convolution behält ihren Zustand, kein Transient. Überlebt jede ASM-Regeneration.
-  - Patch: `scripts/asm-pause-on-idle.py` (fügt die Zeile nach jedem `node.name` in `sonar_to_pipewire.py` ein)
-  - Override: `hosts/nex/configuration.nix` → `services.arctis-sound-manager.package = ... .overrideAttrs (postPatch ...)`
+- **Fix (persistent, ersetzt durch Upstream 2026-09-02)**: ASM-Paket war lokal gepatcht → Filter-Ketten mit `node.pause-on-idle = false`. Die Kette pumpt im Leerlauf Stille weiter und fällt nie in `idle` → Convolution behält ihren Zustand, kein Transient. Überlebte jede ASM-Regeneration.
+  - **Upstream aufgenommen in v1.4.14 (2026-09-01)**: Issue **#223** https://github.com/loteran/Arctis-Sound-Manager/issues/223 → Commit `de79748` „keep Media HeSuVi convolver warm across track changes". `node.pause-on-idle = false` nun **Media-only** (andere Kanäle behalten Idle-Suspend aus #180). In-place-Repair patcht bestehende Installs automatisch.
+  - **Lokaler Patch entfernt (2026-09-02)**: `scripts/asm-pause-on-idle.py` gelöscht, `overrideAttrs` in `hosts/nex/configuration.nix` entfernt. Voraussetzung: ASM-Version ≥ v1.4.14 im Flake.
 - **Erste (vorläufige) Fixes** (`51-gamedac-stable.conf` in `audio.nix`): `session.suspend-timeout-seconds = 0` auf dem GameDAC-Sink (bleibt, schadet nicht) + Rate-Pin 48k/2ch (Enum bleibt S16LE)
 - **Wartungs-Falle**: verwaiste User-Unit `~/.config/systemd/user/arctis-manager.service` (Symlink auf alten Store-Pfad) überschattete die NixOS-Unit und hielt den alten Daemon am Leben → entfernt (Backup `/tmp/opencode/`). Nach Paket-Override immer prüfen, dass der Daemon auf dem neuen Pfad läuft.
-- **Upstream gemeldet** (2026-08-31): Issue **#223** https://github.com/loteran/Arctis-Sound-Manager/issues/223 — inkl. Diagnose-Dump + Patch-Referenz.
-  - **Folgeaufgabe**: prüfen, ob der Fix aufgenommen wird. Falls ja (z.B. als Option „keep chain warm" oder natives `node.pause-on-idle`), unseren lokalen Patch `scripts/asm-pause-on-idle.py` + den `overrideAttrs` in `hosts/nex/configuration.nix` entfernen bzw. auf die neue Option umstellen.
-- **Status**: eingebaut, gepatcht, verifiziert (alle Ketten `pause-on-idle: False`, Spatial-Media wieder an)
+- **Status**: lokal gefixt → upstream aufgenommen → lokaler Patch entfernt. Verifiziert, solange Flake auf v1.4.14+ ist.
 
 ### Files (2026-08-27)
 - `modules/hardware/audio.nix` — GameDAC Profile + WirePlumber + `environment.etc` (aktiv)

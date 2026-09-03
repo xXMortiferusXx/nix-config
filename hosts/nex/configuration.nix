@@ -1,17 +1,5 @@
-{ config, pkgs, inputs, ... }:
+{ config, ... }:
 
-let
-  # GameDAC-Knacken-Fix (Titelwechsel): ASM-Filter-Ketten mit
-  # "node.pause-on-idle = false" erzeugen, damit die HeSuVi/Sonar-Convolution
-  # beim Stream-Neustart nicht in "idle" faellt und ihren Zustand behaelt
-  # (kein Transient/Knacken am Liedanfang). Patch aufs Upstream-Paket,
-  # damit er jede ASM-Regeneration uebersteht.
-  arctis-sound-manager = inputs.arctis-sound-manager.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-    postPatch = (old.postPatch or "") + ''
-      ${pkgs.python3}/bin/python3 ${../../scripts/asm-pause-on-idle.py} src/arctis_sound_manager/sonar_to_pipewire.py
-    '';
-  });
-in
 {
   imports =
     [ 
@@ -36,8 +24,9 @@ in
 
   # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround.
   # Nur für nex (Headset); styx läuft ohne.
+  # Fix fürs Liedwechsel-Knacken ist seit v1.4.14 upstream (issue #223),
+  # der lokale Patch (asm-pause-on-idle.py) wurde entfernt.
   services.arctis-sound-manager.enable = true;
-  services.arctis-sound-manager.package = arctis-sound-manager;
 
   system.stateVersion = "26.05"; 
   

@@ -8,7 +8,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `e677dbbe2728ee65156bdbcc6775b0b36b388b64` (2026-08-31), Version `0.1.0`
+- Aktuelle Rev: `06de3bfacc1c4bd4d29619e36ba5dbb8a5eef90d` (2026-09-02), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -51,8 +51,13 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `input.touchpad.disable_on_external_mouse` | Touchpad bei Maus deaktivieren | IRRELEVANT (Touchpad systemweit aus) |
 | `window-toggle-scratchpad` / `window-cycle-width-back` / `workspace-move-up/down` | neue Actions | **TEILWEISE EINGESETZT** (2026-08-31): `window-move-up/down` (Mod+CTRL+Pfeile), `window-cycle-width` (Mod+R); `window-toggle-scratchpad` u. `workspace-move-*` weiterhin ungebunden |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
+| `output.<NAME>.layout.scrolling.default_width_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-02** (Update auf Rev `06de3bfa`): 17 Commits seit `e677dbbe`, davon **1 neuer Config-Key**:
+  `output.<NAME>.layout.scrolling.default_width_fraction` (per-Output-Startspaltenbreite, `7597236`);
+  Rest sind Fix/Perf/Refactor (Blur, umbrielfx, renderer, IPC). **Nicht übernommen** (1 Monitor).
+  Lock ist bereits auf `06de3bfa`; Build/validate und Switch noch ausstehend.
 - **2026-09-01** (Nacharbeit): aus dem Feature-Tracker übernommen — `appearance.drag_opacity = 0.9`;
   `keybinds.*.allow_when_locked` für Volume/Brightness/Mikro/Media-Tasten; neue Actions
   `window-move-up/down` (Mod+CTRL+Pfeile) u. `window-cycle-width` (Mod+R) gebunden.

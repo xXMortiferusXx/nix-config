@@ -6,7 +6,6 @@ capsule = true
 capsule_opacity = 0.74999998323619366
 capsule_thickness = 0.79999998584389687
 end = [
-    "media",
     "tray",
     "bar",
     "nix-monitor",
@@ -21,7 +20,7 @@ end = [
     "control-center",
     "session"
 ]
-start = [ "launcher", "wallpaper", "launcher_2", "workspaces", "active_window" ]
+start = [ "launcher", "wallpaper", "launcher_2", "workspaces", "active_window", "media" ]
 
 [calendar]
 enabled = true
@@ -65,17 +64,17 @@ behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
     [idle.behavior.lock]
     action = "lock"
     enabled = true
-    timeout = 600
+    timeout = 600.0
 
     [idle.behavior.lock-and-suspend]
     action = "lock_and_suspend"
     enabled = true
-    timeout = 900
+    timeout = 900.0
 
     [idle.behavior.screen-off]
     action = "screen_off"
     enabled = true
-    timeout = 660
+    timeout = 660.0
 
 [location]
 address = "Barsinghausen"
@@ -208,6 +207,7 @@ telemetry_enabled = true
 
     [shell.screenshot]
     directory = "/home/mortiferus/Bilder/Screenshots"
+    show_cursor = true
 
 [theme]
 community_palette = "Zenbones"
@@ -216,7 +216,7 @@ source = "wallpaper"
 wallpaper_scheme = "m3-rainbow"
 
     [theme.templates]
-    builtin_ids = [ "gtk3", "gtk4", "qt", "umbriel" ]
+    builtin_ids = [ "gtk3", "gtk4", "qt" ]
 
 [wallpaper]
 directory = "/home/mortiferus/Bilder/Wallpaper-NSFW"
@@ -227,13 +227,13 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwwvod_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwwvod_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-gwwvod_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-w5yv66_1920x1080.png"
 
 [weather]
 effects = true
