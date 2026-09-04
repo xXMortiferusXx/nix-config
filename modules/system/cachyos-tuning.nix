@@ -80,9 +80,7 @@
   services.bpftune.enable = true;
 
   # CachyOS journald.conf.d: Journal auf 50M begrenzen
-  services.journald.extraConfig = ''
-    SystemMaxUse=50M
-  '';
+  services.journald.settings.Journal.SystemMaxUse = "50M";
 
   # CachyOS 20-audio.conf: @audio Gruppe Echtzeit-Priorität 99
   security.pam.loginLimits = [

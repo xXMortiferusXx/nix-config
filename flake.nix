@@ -31,6 +31,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Noctalia v5 – wie Umbriel direkt vom Repo (main, ungepinnt), statt nixpkgs
+    # (dort hängt der Tag v5.0.0-beta.10 fest). Overlay in services/noctalia.nix
+    # registriert das Repo-Paket als pkgs.noctalia (builds gegen den Repo-eigenen
+    # Lock → gleicher Store-Path wie der noctalia.cachix.org-Prebuild).
+    # KEIN follows auf nixpkgs: die noctalia-CI baut gegen den Repo-eigenen
+    # nixpkgs (channels.nixos.org-Tarball); mit follows entstünden andere
+    # Store-Paths als der Prebuild → unnötiger Lokal-Build.
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+    };
+
     # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
     # - Binary Cache: https://attic.xuyh0120.win/lantian
     # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned

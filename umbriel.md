@@ -8,7 +8,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `06de3bfacc1c4bd4d29619e36ba5dbb8a5eef90d` (2026-09-02), Version `0.1.0`
+- Aktuelle Rev: `786c237c516af2fc9befbc72e5e303979c82b647` (2026-09-04), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -37,7 +37,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    `home/{mortiferus,backbone}/config/umbriel/` (gleiche Dateien, gleicher Stand).
 5. `switch` + **Login-Neustart** auf nex, erst dann styx.
 
-## Feature-Tracker (Stand: Rev e677dbbe / 2026-08-31)
+## Feature-Tracker (Stand: Rev 786c237 / 2026-09-04)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (beide Hosts `true`, 2026-08-31) |
@@ -54,6 +54,19 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `output.<NAME>.layout.scrolling.default_width_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-04** (Update auf Rev `786c237`): 45 Commits seit `06de3bfa`. **Ein Breaking Refactor**:
+  `refactor(config)!` (`5a7cc8a2`) – alle Farb-Keys aus `[appearance]`/`[overview]` nach `[colors]` verschoben
+  (`colors.border.*`, `colors.insert_hint`, `colors.backdrop`, `colors.shadow`, `colors.overview.*`).
+  Alte Keys gelten jetzt als **unbekannt** (werden ignoriert, nur Warnung in `umbriel validate`).
+  **Unser Config nicht betroffen**: `appearance.toml` setzt keine Farben, und `noctalia.toml` ist nicht
+  in `[include]` gelistet → kein Fremd-Farb-Key möglich. **Visual nach Login-Pruefen** (Noctalia-Template muesste
+  auf `[colors]` umgestellt sein, sonst Fallbacks). Sonstiges Neues: Default-`Mod+Q`=`window-close` (wir setzen
+  die Bindung eh selbst, kein Handlungsbedarf); CLI `umbriel outputs --json`; perf `umbrielfx` (HDR-Buffer-
+  Sharing + Output-LUT-Cache). Fixes: `allow empty regex match in window rules` (#65, betrifft Rules), Struts-
+  Scrolling-Gaps (#91), Resize past neighbor minimum (#96), Floating-Resize-Animation (#102), Dialog-Stacking
+  (#138), Cursor folgt verschobenen Fenstern (#134), uniform Corner-Rounding (#109), Clipboard legacy data-
+  control (#104), `dbus-run-session`-Fallback im Start. **Lock bereits auf `06de3bfa`→`786c237`; Build/validate
+  und Switch ausstehend (user macht das selbst).**
 - **2026-09-02** (Update auf Rev `06de3bfa`): 17 Commits seit `e677dbbe`, davon **1 neuer Config-Key**:
   `output.<NAME>.layout.scrolling.default_width_fraction` (per-Output-Startspaltenbreite, `7597236`);
   Rest sind Fix/Perf/Refactor (Blur, umbrielfx, renderer, IPC). **Nicht übernommen** (1 Monitor).
