@@ -40,3 +40,11 @@ QT_QPA_PLATFORMTHEME = "qt6ct"
 QT_WAYLAND_DISABLE_WINDOWDECORATION = "1"
 XCURSOR_THEME = "Bibata-Modern-Ice"
 XCURSOR_SIZE = "24"
+
+[overview]
+background_blur = false
+workspace_wallpaper = false
+
+[colors.overview]
+background_tint = "#f9f9f900"        # Schleier komplett weg → Wallpaper unangetastet
+workspace_background = "#00000044"  # leere Workspaces transparent
