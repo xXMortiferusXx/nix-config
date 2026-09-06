@@ -11,4 +11,4 @@ default_width_fraction = 0.5
 center_underfull_strip = true
 
 [workspaces]
-back_and_forth = true    # niri: workspace-auto-back-and-forth
+back_and_forth = true   # niri: workspace-auto-back-and-forth
