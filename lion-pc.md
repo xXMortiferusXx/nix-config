@@ -1,8 +1,8 @@
 # lion-pc – Implementierungsplan (Gaming-Rechner für lion)
 
 Zweck: Plan für den neuen NixOS-Host **lion-pc** (Gaming-Desktop, AMD CPU + AMD Radeon RX 580 8GB)
-festhalten, bevor implementiert wird. Der Plan ist **noch nicht umgesetzt** — hier wird der Stand der
-Entscheidungen dokumentiert. Die App-Liste ist **festgelegt** (siehe Abschnitt unten).
+festhalten, bevor und während implementiert wird. **Umsetzungsstand: fertig gebaut & verifiziert
+(Build erfolgreich), Tests stehen aus** — lion soll beim Testen dabei sein.
 
 Referenz: `umbriel.md` (Format/Versionstracking). Host-Muster: `hosts/nex`, `hosts/styx`.
 
@@ -27,6 +27,34 @@ Referenz: `umbriel.md` (Format/Versionstracking). Host-Muster: `hosts/nex`, `hos
 | eigene Nix-Pakete | **keine** für lion | nur Flatpak |
 | dmemcg-VRAM (Valve-Fix) | **ausgelassen + TODO-Vermerk** | siehe unten |
 | sudo auf lion-pc | **Passwort nötig** (`security.sudo.wheelNeedsPassword = true`, Override auf common) | Bazaar bleibt polkit-passwordlos, aber eine bösartige App kann nicht zu Root eskalieren; kein SSH auf dem Host → lokal unkritisch |
+
+## Umsetzungsstand (2026-09)
+
+### Implementiert (alle Dateien angelegt, `nix build`-Toplevel verifiziert Exit 0)
+- Module: `modules/hardware/amdgpu.nix`, `modules/system/boot-lion.nix`, `modules/system/environment-lion.nix`,
+  `modules/users/lion.nix`, `modules/services/flatpak-lion.nix`, `modules/programs/gaming/lion.nix` (Steam/Gamescope/Skripte/udev, **ohne sunshine**), `modules/programs/gaming/udev.nix` (aus default.nix extrahiert; Controller-Regel `ID_INPUT_JOYSTICK` → `LIBINPUT_IGNORE_DEVICE`).
+- Host: `hosts/lion-pc/` komplett (hardware-configuration.nix, disk-config.nix, config-mounts.nix, configuration.nix).
+  - config-mounts: gtk-3.0/gtk-4.0/umbriel/nvim/qt5ct/qt6ct/xsettingsd (ohne pipewire/HRIR — nex-headset-spezifisch).
+  - `security.sudo.wheelNeedsPassword = lib.mkForce true;` (Override common) — Bazaar passwordlos via Polkit-Regel, Eskalation blockiert.
+- Home lion: `modules/home/lion/` (default.nix, packages.nix, config.nix, autostart.nix). `home/lion/config/*` 1:1 von mortiferus; `home/lion/state/noctalia/settings.toml` von mortiferus übernommen.
+- flake.nix: `diskoConfigurations.lion-pc` + `nixosConfigurations."lion-pc"`. install.sh: Menüpunkt 4, HTTPS-Remote, temporärer Swap.
+- Discord-Autostart **auskommentiert** (lion nutzt es noch nicht, vorsichtige Einführung); Paket bleibt im Launcher.
+- `.face` = `home/lion/assets/face.png` (kopiert aus Ventoy-Sicherung `Lion-Profilbild.png`), via activation-Script → accounts-daemon/Greeter lesbar.
+- Gaming-udev: `ENV{ID_INPUT_JOYSTICK}=="?*", ENV{LIBINPUT_IGNORE_DEVICE}="1"` — Controller funktionieren in Spielen, libinput ignoriert sie als Maus.
+
+### Übernahme von mortiferus (Umbriel + Noctalia 1:1, gem. Entscheidung)
+- Umbriel-Config: `home/lion/config/umbriel/` 1:1 von nex übernommen (bar, dock, lockscreen-widgets, plugins, theme, weather, idle). Nur Host-Anpassungen:
+  - `settings.toml`: Pfade → `#lion-pc` (nix-monitor), discord/`~` → lion, Screenshots-Dir → `/home/lion/Bilder/Screenshots`.
+  - Wallpaper: **NSFW-Ordner entfernt** (`directory = "/home/lion/Bilder/Wallpaper"`, automation/transition bleiben) — lion installiert eigene Bilder.
+  - Lockscreen-Widgets an `@DP-1` statt `@eDP-1` (lion: FullHD-Monitor am DisplayPort + einer am HDMI).
+  - Umbriel `display.toml`: `DP-1` + `HDMI-A-1` (je 1920x1080, workspaces=4; Refresh-Raten offen, `umbriel outputs` prüfen).
+- Noctalia-State: `home/lion/state/noctalia/settings.toml` (mit allen gutgefundenen Einstellungen; s. o.).
+
+### Noch offen / Testing
+- [ ] **Installation + Tests auf realer Hardware** (Warten auf lion — er soll dabei sein).
+- [ ] `nix-instantiate --parse` + `nix build` wurden lokal ausgeführt (OK); Hardware-Test steht aus.
+- [ ] GameDrive (GamingDrive-Mount) existiert auf lion-pc (noch) nicht — nach Installation separat prüfen.
+- [ ] Discord nach Einführung aktivieren (autostart.nix entkommentieren).
 
 ---
 
@@ -189,16 +217,18 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 
 ## Offene Punkte (TODO)
 
-- [ ] **Bazaar/Flatpak-Setup UMSETZEN** (Konzept entschieden, 2026-09): Bazaar = nixpkgs-Package
-(`pkgs.bazaar`, wird per `nixos-rebuild` mitgeupdatet) + Flatpak-Infrastruktur + Flathub deklarativ.
-  lion installiert eigenständig über Bazaar; seine **Flatpak-Apps** (Roblox=Sober, etc.) aktualisiert der
-  deklarative `flatpak-update`-systemd-Timer (und Bazaar kann zusätzlich updaten).
-  **Scope gelöst:** kein `--user`-Scope — Flatpak-Polkit-Regel für wheel (polkit.nix) macht systemweite
-  Installation passwordlos; sudo-Trennschicht (Passwort) bleibt als Eskalationsblockade.
-  **Erwartung:** Bazaar zeigt ganzes Flathub (kein Altersfilter) —
-  "kinderfreundlich" = einfacher für lion als CLI.
-- [ ] **Gaming/App-Module scharf auf lion-Packung prüfen** — sicherstellen, dass Raus-Apps (IdeaMaker,
-  OrcaSlicer, PrusaSlicer, PathOfBuilding, Polychromatic, Sunshine, Arctis) NICHT via gemeinsamen Modulen
-  auf lion-pc landen (Modul-Trennung vs. Host-Ausschluss).
-- [ ] **User/Home lion**: Umbriel-Config → **1:1 von nex übernehmen** (Config von nex/mortiferus ist alltagstauglich und wird übernommen — Umbriel + Noctalia-Einstellungen identisch). Nur host-spezifische Anpassungen wenn unbedingt nötig.
+- [x] **Bazaar/Flatpak-Setup UMSETZEN** (Konzept entschieden, 2026-09): Bazaar = nixpkgs-Package
+(`pkgs.bazaar`, wird per `nixos-rebuild` mitgeupdatet) + Flatpak-Infrastruktur + Flathub deklarativ
+(`modules/system/flatpak-lion.nix`). lion installiert eigenständig über Bazaar; seine **Flatpak-Apps**
+(Roblox=Sober, etc.) aktualisiert der deklarative `flatpak-update`-systemd-Timer.
+**Scope gelöst:** kein `--user`-Scope — Flatpak-Polkit-Regel für wheel (polkit.nix) macht systemweite
+Installation passwordlos; sudo-Trennschicht (Passwort) bleibt als Eskalationsblockade.
+**Erwartung:** Bazaar zeigt ganzes Flathub (kein Altersfilter).
+- [x] **Gaming/App-Module scharf auf lion-Packung prüfen**: `gaming/lion.nix` nutzt nur Steam/Gamescope/
+Skripte/udev (ohne sunshine); Polychromatic/3D-Druck/PoB-Sachen sind in `modules/home/lion/packages.nix`
+bewusst nicht enthalten; gemeinsame common/system-Module bleiben deklarativ aktiv.
+- [x] **User/Home lion**: Umbriel-Config 1:1 von nex übernommen (Umbriel + Noctalia-Einstellungen identisch),
+  nur host-spezifische Anpassungen (Monitore, Pfade, Wallpaper-Ordner) — siehe "Übernahme von mortiferus".
+- [ ] **Installation + Tests auf realer Hardware** (Warten auf lion — er soll dabei sein).
+- [ ] GameDrive (GamingDrive-Mount) auf lion-pc einrichten (nach Installation separat prüfen).
 - [ ] dmemcg nachrüsten (siehe TODO oben)
