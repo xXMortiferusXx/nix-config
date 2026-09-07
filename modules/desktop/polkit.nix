@@ -2,6 +2,9 @@
 # - noctalia-greeter: apply-appearance passwordlos für wheel-Mitglieder
 #   (Fallback für inactive Sessions, z.B. während Lockscreen)
 # - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
+# - Flatpak/Bazaar: wheel kann Flatpak-Apps installieren ohne Passwort
+#   (konsistent zu wheelNeedsPassword = false; lion-pc nutzt das für Bazaar,
+#    auf nex/styx ohne Flatpak-Dienst wirkungslos)
 { config, pkgs, lib, ... }:
 
 {
@@ -31,6 +34,18 @@
         "org.freedesktop.NetworkManager.wifi.share.protected"
       ];
       if (network_actions.indexOf(action.id) >= 0 &&
+          subject.isInGroup("wheel"))
+      {
+        return polkit.Result.YES;
+      }
+    });
+
+    // Flatpak: wheel darf installieren/aktualisieren (Bazaar auf lion-pc)
+    // Bazaar bleibt so passwordlos, WÄHREND auf lion-pc sudo ein Passwort verlangt
+    // (security.sudo.wheelNeedsPassword = true) — bösartige Flatpak-App kann so
+    // nicht über sandboxlosen/passwordlosen sudo zu Root eskalieren.
+    polkit.addRule(function (action, subject) {
+      if (action.id.indexOf("org.freedesktop.Flatpak.") === 0 &&
           subject.isInGroup("wheel"))
       {
         return polkit.Result.YES;

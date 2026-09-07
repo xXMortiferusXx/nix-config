@@ -6,14 +6,8 @@
     ./gamescope.nix
     ./sunshine.nix
     ./scripts.nix
+    ./udev.nix
   ];
-
-  # Controller-Touchpads als libinput ignorieren (DualSense/DualShock/Xbox)
-  services.udev.extraRules = ''
-    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*DualSense*Touchpad*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*Wireless Controller Touchpad*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-    ACTION=="add|change", SUBSYSTEM=="input", ATTRS{name}=="*Xbox*Controller*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-  '';
 
   users.users.mortiferus.packages = with pkgs; [
     lutris

@@ -74,6 +74,8 @@
         import ./modules/system/disko-basic.nix { inherit device; };
       diskoConfigurations.test = { device ? "/dev/nvme0n1", ... }:
         import ./hosts/test/disk-config.nix { inherit device; };
+      diskoConfigurations.lion-pc = { device ? "/dev/nvme0n1", ... }:
+        import ./hosts/lion-pc/disk-config.nix { inherit device; };
     in
     {
       inherit diskoConfigurations;
@@ -113,6 +115,22 @@
         modules = [
           disko.nixosModules.disko
           ./hosts/test/configuration.nix
+        ];
+      };
+
+      # lion-pc: Gaming-PC fuer lion (AMD CPU + Radeon RX 580), Umbriel-DE,
+      # Flatpak-Bazaar fuer eigenstaendige Roblox-Installation (Sober/Vinegar)
+      nixosConfigurations."lion-pc" = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          disko.nixosModules.disko
+          ./hosts/lion-pc/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit inputs; };
+          }
         ];
       };
 

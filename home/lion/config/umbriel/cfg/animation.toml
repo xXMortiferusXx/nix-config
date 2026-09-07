@@ -1,0 +1,35 @@
+# Animationen – eigene [animation]-Sektion (ersetzt das frühere
+# appearance.animation_ms; in der neueren Umbriel-Version existiert
+# animation_ms nicht mehr).
+[animation]
+enabled = true
+duration_ms = 250
+curve = "easeout"
+
+[animation.windows_in]
+enabled = true
+duration_ms = 150
+curve = "easeout"
+style = "popin"
+scale = 0.85
+
+[animation.windows_out]
+enabled = true
+duration_ms = 150
+curve = "easeout"
+style = "fade"
+
+[animation.windows_move]
+enabled = true
+duration_ms = 250
+curve = "snappy"
+
+[animation.workspaces]
+enabled = true
+duration_ms = 250
+curve = "easeout"
+
+[animation.overview]
+enabled = true
+duration_ms = 250
+curve = "easeout"

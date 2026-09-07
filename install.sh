@@ -30,8 +30,9 @@ echo "Welches System soll installiert werden?"
 echo "  1) nex (Haupt-PC / mortiferus)"
 echo "  2) styx (Office-PC / backbone)"
 echo "  3) test (QEMU-Test / test)"
+echo "  4) lion-pc (Gaming-PC / lion)"
 echo ""
-read -p "Auswahl [1-3]: " HOST_CHOICE
+read -p "Auswahl [1-4]: " HOST_CHOICE
 
 if [[ "$HOST_CHOICE" == "1" ]]; then
     HOSTNAME="nex"
@@ -42,6 +43,9 @@ elif [[ "$HOST_CHOICE" == "2" ]]; then
 elif [[ "$HOST_CHOICE" == "3" ]]; then
     HOSTNAME="test"
     USERNAME="test"
+elif [[ "$HOST_CHOICE" == "4" ]]; then
+    HOSTNAME="lion-pc"
+    USERNAME="lion"
 else
     error "Ungültige Auswahl."
 fi
@@ -143,6 +147,8 @@ elif [[ "$HOSTNAME" == "styx" ]]; then
     DISKO_CONFIG="${PWD}/modules/system/disko-basic.nix"
 elif [[ "$HOSTNAME" == "test" ]]; then
     DISKO_CONFIG="${PWD}/hosts/test/disk-config.nix"
+elif [[ "$HOSTNAME" == "lion-pc" ]]; then
+    DISKO_CONFIG="${PWD}/hosts/lion-pc/disk-config.nix"
 fi
 
 # Temporaere disko-Config mit dem gewaehlten Device erzeugen.
@@ -262,6 +268,8 @@ REMOTE_URL="https://github.com/xXMortiferusXx/nix-config.git"
 if [[ "$HOSTNAME" == "nex" ]]; then
     REMOTE_URL="git@github.com:xXMortiferusXx/nix-config.git"
 fi
+
+# Initialize Git im Zielsystem, damit Flakes sofort funktionieren
 sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git branch -M main && git remote add origin $REMOTE_URL && git add ."
 
 echo ""
@@ -284,8 +292,13 @@ echo "=========================================================="
 echo ""
 echo "Nächste Schritte nach dem Reboot:"
 echo "  1. Einloggen als $USERNAME"
-echo "  2. SSH-Key erstellen und bei GitHub hinterlegen"
-echo "  3. Config ist bereits unter /etc/nixos als Git-Repo bereit"
+if [[ "$REMOTE_URL" == https://* ]]; then
+    echo "  2. Config ist bereits unter /etc/nixos als Git-Repo bereit (HTTPS-Remote)"
+    echo "     → Bei HTTPS kein SSH-Key nötig; ggf. Token/Anmeldedaten hinterlegen"
+else
+    echo "  2. SSH-Key erstellen und bei GitHub hinterlegen"
+fi
+echo "  3. nixos-rebuild (falls nötig) und los geht's"
 echo ""
 echo "Du kannst jetzt 'reboot' tippen."
 echo "=========================================================="
