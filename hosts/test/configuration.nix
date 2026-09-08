@@ -42,6 +42,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Zen Kernel (immer aktuelle Version)
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+
   # Basis-Pakete
   environment.systemPackages = with pkgs; [
     vim

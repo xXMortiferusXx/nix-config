@@ -42,14 +42,6 @@
       url = "github:noctalia-dev/noctalia";
     };
 
-    # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
-    # - Binary Cache: https://attic.xuyh0120.win/lantian
-    # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
-    # - Packages: pkgs.cachyosKernels.linuxPackages-cachyos-latest
-    nix-cachyos-kernel = {
-      url = "github:xddxdd/nix-cachyos-kernel/release";
-    };
-
     # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)
     # - Modul: inputs.arctis-sound-manager.nixosModules.default
     # - Option: services.arctis-sound-manager.enable

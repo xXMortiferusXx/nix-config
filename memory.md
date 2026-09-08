@@ -14,7 +14,9 @@
   - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
   - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – CachyOS-Kernel (seit 2026-08-20), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-nex.nix` – **Zen-Kernel** (`pkgs.linuxPackages_zen`, immer die aktuelle Version; seit 2026-09-08, vorher CachyOS), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-styx.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher `linuxPackages_latest`)
+- `system/boot-lion.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher CachyOS), AMD-PStates aktiv, ZRAM 100%
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -124,7 +126,7 @@
 - **Kein Virtual Surround / kein HRTF / kein Convolver** — komplett deaktiviert
 - Spiele und Chat klingen so, wie die Entwickler es vorgesehen haben (unverfaelscht)
 - GameDAC bietet hardwareseitig räumliches Audio (DTS:X oder interner DSP) — GameDAC erzeugt Surround aus Stereo-Eingang
-- **Quantum 512** (`modules/hardware/audio.nix`) bleibt — guter Kompromiss aus Latenz und Stabilität
+- ~~**Quantum 512** (global, `modules/hardware/audio.nix`)~~ — entfernt (2026-09-08): globales Quantum/Clock-Low-Latency überflüssig, ASM regelt die Latency seiner filter-chain-Kette selbst (`node.latency`/`node.lock-quantum`, `pipewire_quantum`-Setting). Notebook-Speaker laufen auf PipeWire-Standard.
 
 ### Verworfen (chronologisch)
 - ~~SADIE II D2 (KEMAR, 256 Taps)~~ — generische HRTF passt nicht zu den Ohren
@@ -511,7 +513,6 @@
 - `cache.nixos.org` – Offizieller NixOS Cache
 - `nix-community.cachix.org` – Nix-Community Cache
 - `noctalia.cachix.org` – Noctalia v5 Binaries (Flake-Input: `github:noctalia-dev/noctalia/cachix`)
-- `attic.xuyh0120.win/lantian` – CachyOS Kernel Binaries (Flake-Input: `github:xddxdd/nix-cachyos-kernel/release`)
 
 ## bpftune
 - `services.bpftune.enable = true` in `cachyos-tuning.nix`
@@ -535,11 +536,14 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` (seit 2026-08-20, vorher `linuxPackages_zen`)
-  - CachyOS Kernel via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) (pinned Overlay + Binary Cache)
-  - `scx_bpfland` **deaktiviert** — CachyOS-Kernel wird pur getestet
-- **styx**: `boot.kernelPackages = pkgs.linuxPackages_latest`
-- CachyOS-Kernel am 2026-08-06 entfernt (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
+- **Alle Hosts (nex, styx, lion-pc, test)**: `boot.kernelPackages = pkgs.linuxPackages_zen` (seit 2026-09-08)
+  - Zen-Kernel = **immer die aktuelle Version** (kein LTS-Variant in nixpkgs, nur `linux_zen`), aktuell `7.2.3-zen1`, kommt aus dem offiziellen `cache.nixos.org` Binary-Cache → **kein langer Lokal-Build** bei frischen Installationen
+  - **Wechsel-Grund**: CachyOS-Kernel musste bei neuer Hardware (lion-pc) von Source gebaut werden (zu lange); Zen-Kernel ist sofort verfügbar
+  - CachyOS hatte per `7.2/gaming-sched`-Branch das Feature "flatten the pick" (Zen/XanMod bekommen es erst mit Kernel 7.3)
+  - Flake-Input `nix-cachyos-kernel` + Binary-Cache `attic.xuyh0120.win/lantian` **entfernt** (2026-09-08)
+  - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
+- Vorher: nex + lion-pc CachyOS (`cachyos-latest`, seit 2026-08-20), styx `linuxPackages_latest`
+- CachyOS-Kernel am 2026-08-06 bereits einmal entfernt gewesen (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
 - `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
 - `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
 - **nex NVIDIA-only** (2026-08-12):
@@ -651,13 +655,13 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 - **Fix (persistent, ersetzt durch Upstream 2026-09-02)**: ASM-Paket war lokal gepatcht → Filter-Ketten mit `node.pause-on-idle = false`. Die Kette pumpt im Leerlauf Stille weiter und fällt nie in `idle` → Convolution behält ihren Zustand, kein Transient. Überlebte jede ASM-Regeneration.
   - **Upstream aufgenommen in v1.4.14 (2026-09-01)**: Issue **#223** https://github.com/loteran/Arctis-Sound-Manager/issues/223 → Commit `de79748` „keep Media HeSuVi convolver warm across track changes". `node.pause-on-idle = false` nun **Media-only** (andere Kanäle behalten Idle-Suspend aus #180). In-place-Repair patcht bestehende Installs automatisch.
   - **Lokaler Patch entfernt (2026-09-02)**: `scripts/asm-pause-on-idle.py` gelöscht, `overrideAttrs` in `hosts/nex/configuration.nix` entfernt. Voraussetzung: ASM-Version ≥ v1.4.14 im Flake.
-- **Erste (vorläufige) Fixes** (`51-gamedac-stable.conf` in `audio.nix`): `session.suspend-timeout-seconds = 0` auf dem GameDAC-Sink (bleibt, schadet nicht) + Rate-Pin 48k/2ch (Enum bleibt S16LE)
+- **Erste (vorläufige) Fixes** (`51-gamedac-stable.conf` in `audio.nix`): `session.suspend-timeout-seconds = 0` auf dem GameDAC-Sink + Rate-Pin 48k/2ch (Enum bleibt S16LE) — **entfernt (2026-09-08)**, Workaround-Überbleibsel, durch Upstream-#223 abgegolten
 - **Wartungs-Falle**: verwaiste User-Unit `~/.config/systemd/user/arctis-manager.service` (Symlink auf alten Store-Pfad) überschattete die NixOS-Unit und hielt den alten Daemon am Leben → entfernt (Backup `/tmp/opencode/`). Nach Paket-Override immer prüfen, dass der Daemon auf dem neuen Pfad läuft.
 - **Status**: lokal gefixt → upstream aufgenommen → lokaler Patch entfernt. Verifiziert, solange Flake auf v1.4.14+ ist.
 
 ### Files (2026-08-27)
 - `modules/hardware/audio.nix` — GameDAC Profile + WirePlumber + `environment.etc` (aktiv)
-- `modules/hardware/audio.nix` (`51-gamedac-stable.conf`) — Nie-Suspend + fixe hw_params (2026-08-31)
+- ~~`modules/hardware/audio.nix` (`51-gamedac-stable.conf`)~~ — Nie-Suspend + fixe hw_params (2026-08-31), entfernt (2026-09-08)
 - `scripts/asm-pause-on-idle.py` — Patch für ASM-Paket (pause-on-idle in Filter-Ketten-Props) (2026-08-31)
 - `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
 - `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)

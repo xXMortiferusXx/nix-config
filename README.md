@@ -1,6 +1,6 @@
 # Mortiferus NixOS Configuration
 
-This is my personal NixOS flake managing two machines with a shared module system.
+This is my personal NixOS flake managing multiple machines with a shared module system.
 
 ## Hosts
 
@@ -8,8 +8,10 @@ This is my personal NixOS flake managing two machines with a shared module syste
 |------|----------|------|
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only mode), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
+| **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC for lion (kid) |
+| **test** | QEMU VM | Minimal installer-testing host |
 
-Both share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
+All share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
 
 ## Quick Start
 
@@ -17,6 +19,7 @@ Both share a common base via `modules/system/common.nix` – only hardware-speci
 # Build / switch for a host
 sudo nixos-rebuild switch --flake .#nex
 sudo nixos-rebuild switch --flake .#styx
+sudo nixos-rebuild switch --flake .#lion-pc
 
 # Update flake inputs
 nix flake update
@@ -28,7 +31,9 @@ nix flake update
 flake.nix              # Inputs (nixpkgs, home-manager, disko, noctalia, ...)
 hosts/
 ├── nex/               # Gaming laptop config + disko partitioning
-└── styx/              # Office laptop config + disko partitioning
+├── styx/              # Office laptop config + disko partitioning
+├── lion-pc/           # Gaming-PC config + disko partitioning
+└── test/              # Minimal QEMU test host (installer testing)
 modules/
 ├── desktop/           # Compositor (umbriel), greeter, polkit, fonts
 ├── hardware/          # GPU drivers, audio, laptop features, legion, touchpad
@@ -53,7 +58,7 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Umbriel** (wlroots-based Wayland compositor) directly from the Umbriel flake (`inputs.umbriel`) as the only session; niri and Hyprland are removed (configs archived under `archive/`)
-- **CachyOS** kernel (`cachyos-latest`) on nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with `attic.xuyh0120.win/lantian` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **Zen** kernel (`linuxPackages_zen`, always the latest version, no LTS pinning) on all hosts, served from the official `cache.nixos.org` binary cache. CachyOS-derived sysctl/udev/PAM/bpftune tuning
 - **ananicy-cpp** with [CachyOS rules](https://github.com/CachyOS/ananicy-rules) for automatic per-process nice/ionice/sched prioritization
 - **Cachix**: `noctalia.cachix.org` for pre-built Noctalia binaries
 - **PipeWire** audio with low-latency config
@@ -68,7 +73,7 @@ Used for keybind shortcuts. Example: `noctalia msg spotlight toggle`, `noctalia 
 
 See `memory.md` for the full list.
 
-## Gaming (nex only)
+## Gaming (nex + lion-pc)
 
 nex runs in **NVIDIA-only mode** (no iGPU/PRIME offloading) for maximum dGPU performance. It has a dedicated gaming module stack:
 
@@ -90,14 +95,14 @@ Plus a dedicated `/gaming` partition (ext4) on a separate NVMe.
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – process priority rules
-- [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) with pre-built CachyOS kernels and binary cache
+- [zen-kernel](https://github.com/zen-kernel/zen-kernel) – gaming/desktop-optimised kernel
 - All the NixOS community for endless inspiration
 
 ---
 
 # 🇩🇪 Mortiferus NixOS Konfiguration
 
-Meine persönliche NixOS-Flake, die zwei Rechner mit einem gemeinsamen Modulsystem verwaltet.
+Meine persönliche NixOS-Flake, die mehrere Rechner mit einem gemeinsamen Modulsystem verwaltet.
 
 ## Hosts
 
@@ -105,8 +110,10 @@ Meine persönliche NixOS-Flake, die zwei Rechner mit einem gemeinsamen Modulsyst
 |------|----------|-------|
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only Modus), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
+| **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC für lion (Kind) |
+| **test** | QEMU-VM | Minimaler Installer-Test-Host |
 
-Beide teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.
+Alle teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.
 
 ## Schnellstart
 
@@ -114,8 +121,7 @@ Beide teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur 
 # Build / Switch für einen Host
 sudo nixos-rebuild switch --flake .#nex
 sudo nixos-rebuild switch --flake .#styx
-
-# Flake-Inputs aktualisieren
+sudo nixos-rebuild switch --flake .#lion-pc
 nix flake update
 ```
 
@@ -125,7 +131,9 @@ nix flake update
 flake.nix              # Inputs (nixpkgs, home-manager, disko, noctalia, ...)
 hosts/
 ├── nex/               # Gaming-Laptop Konfig + Disko Partitionierung
-└── styx/              # Büro-Laptop Konfig + Disko Partitionierung
+├── styx/              # Büro-Laptop Konfig + Disko Partitionierung
+├── lion-pc/           # Gaming-PC Konfig + Disko Partitionierung
+└── test/              # Minimaler QEMU-Test-Host (Installer-Tests)
 modules/
 ├── desktop/           # Compositor (umbriel), Greeter, Polkit, Fonts
 ├── hardware/          # GPU-Treiber, Audio, Laptop-Features, Legion, Touchpad
@@ -150,7 +158,7 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Umbriel** (wlroots-basierter Wayland Compositor) direkt vom Umbriel-Flake (`inputs.umbriel`) als einzige Session; niri und Hyprland sind entfernt (Configs unter `archive/`)
-- **CachyOS**-Kernel (`cachyos-latest`) auf nex via [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit `attic.xuyh0120.win/lantian` Binary Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **Zen**-Kernel (`linuxPackages_zen`, immer die aktuelle Version, kein LTS-Pinning) auf allen Hosts, aus dem offiziellen `cache.nixos.org` Binary-Cache. CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
 - **ananicy-cpp** mit [CachyOS-Regeln](https://github.com/CachyOS/ananicy-rules) für automatische per-Prozess nice/ionice/sched Priorisierung
 - **Cachix**: `noctalia.cachix.org` für fertige Noctalia-Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
@@ -165,7 +173,7 @@ Für Tastenkürzel. Beispiele: `noctalia msg spotlight toggle`, `noctalia msg cl
 
 Die vollständige Liste steht in `memory.md`.
 
-## Gaming (nur nex)
+## Gaming (nex + lion-pc)
 
 nex läuft im **NVIDIA-only Modus** (keine iGPU/PRIME Offloading) für maximale dGPU-Performance. Er hat einen dedizierten Gaming-Modul-Stack:
 
@@ -187,5 +195,5 @@ Plus eine dedizierte `/gaming`-Partition (ext4) auf einer separaten NVMe.
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – Prozess-Priorisierungs-Regeln
-- [xddxdd](https://github.com/xddxdd) – [nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) mit fertigen CachyOS-Kernels und Binary Cache
+- [zen-kernel](https://github.com/zen-kernel/zen-kernel) – Gaming/Desktop-optimierter Kernel
 - Der gesamten NixOS-Community für endlose Inspiration

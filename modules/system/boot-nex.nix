@@ -1,17 +1,12 @@
-# Boot-Konfiguration fuer nex (CachyOS Kernel)
+# Boot-Konfiguration fuer nex (Zen Kernel)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
-# CachyOS Kernel via xddxdd/nix-cachyos-kernel (2026-08-20) — bessere Latenz + Performance fuer Gaming.
-{ config, pkgs, lib, inputs, ... }:
+# Zen Kernel (pkgs.linuxPackages_zen) — Gaming/Desktop-optimiert, immer aktuelle Version.
+{ config, pkgs, lib, ... }:
 
 {
   imports = [ ./boot-common.nix ];
 
-  # CachyOS Kernel Overlay (xddxdd) — pkgs.cachyosKernels.* verfügbar machen
-  nixpkgs.overlays = [
-    inputs.nix-cachyos-kernel.overlays.pinned
-  ];
-
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   boot.kernelParams = [
