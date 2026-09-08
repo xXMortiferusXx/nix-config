@@ -18,9 +18,11 @@ let
 in
 {
   # Ziel-Verzeichnisse beim Boot erstellen (vor den Mounts)
-  systemd.tmpfiles.rules = map (dir:
+  systemd.tmpfiles.rules = [
+    "d ${homeDir}/.config 0755 ${user} users -"
+  ] ++ (map (dir:
     "d ${homeDir}/.config/${dir} 0755 ${user} users -"
-  ) configDirs;
+  ) configDirs);
 
   # Bind-Mounts: Repo-Config → ~/.config/
   systemd.mounts = map (dir: {
