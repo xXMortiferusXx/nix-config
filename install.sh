@@ -234,11 +234,15 @@ sudo rm -rf /mnt/etc/nixos/.git
 
 # --- SCHRITT 6: Installation ---
 info "Starte NixOS-Installation für $HOSTNAME..."
+# Extra-Substituter: holt Prebuilds (noctalia, nix-community) statt lokal zu bauen;
+# cache.nixos.org ist immer dabei. Muss zu modules/system/nix-settings.nix passen.
 sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" \
     --option max-jobs "$MAX_JOBS" \
     --option cores "$CORES" \
     --option download-buffer-size 268435456 \
     --option connect-timeout 20 \
+    --option extra-substituters 'https://nix-community.cachix.org https://noctalia.cachix.org' \
+    --option extra-trusted-public-keys 'nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=' \
     --no-root-passwd --no-channel-copy
 
 # --- WLAN-VERBINDUNGEN VOM LIVE-SYSTEM ÜBERNEHMEN ---
