@@ -19,8 +19,13 @@
 
   networking.hostName = "lion-pc";
 
-  # DDC/CI (ddcutil): i2c-dev Kernel-Modul
+  # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
   boot.kernelModules = [ "i2c-dev" ];
+  users.groups.i2c = {};
+  services.udev.extraRules = ''
+    # /dev/i2c-* für die i2c-Gruppe freigeben (ddcutil braucht rw-Zugriff)
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
 
   # SSH: Lokaler Zugriff von nex (Key-basiert, kein Passwort)
   services.openssh = {
