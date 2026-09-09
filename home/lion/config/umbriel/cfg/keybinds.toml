@@ -96,9 +96,9 @@
 "Mod+R" = "window-cycle-width"
 
 # ─── Scratchpad ───
-"Mod+Tab"       = "scratchpad-toggle"
-"Mod+Shift+Tab" = "window-move-to-scratchpad"
-"Mod+Ctrl+Tab"  = "window-restore-from-scratchpad"
+"Mod+Tab"       = "scratchpad-toggle:default"
+"Mod+Shift+Tab" = "window-move-to-scratchpad:default"
+"Mod+Ctrl+Tab"  = "window-restore-from-scratchpad:default"
 
 # ─── Screenshot ───
 "Print"     = "spawn:noctalia msg screenshot-region"

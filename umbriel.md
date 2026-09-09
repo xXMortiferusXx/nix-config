@@ -8,15 +8,15 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `786c237c516af2fc9befbc72e5e303979c82b647` (2026-09-04), Version `0.1.0`
+- Aktuelle Rev: `a588733d97bd136ad1c5b66ce18420a3b05e7870` (2026-09-09, revCount 874), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
 ## Wann zurück zu nixpkgs?
 - Solange auf dem Flake bleiben, bis nixpkgs den Fix-/Feature-Stand eingeholt hat
   (`nix eval nixpkgs#umbriel.src.rev` ≥ Flake-Rev bzw. enthält Suspend/Resume-Fix #27,
-  Numlock, `[animation]`) **und** die Entwicklung sich beruhigt hat (aktuell ~40 Commits/Tag;
-  ein Tag-Release wäre das klarste Zeichen).
+  Numlock, `[animation]`, named scratchpads) **und** die Entwicklung sich beruhigt hat
+  (aktuell ~40 Commits/Tag; ein Tag-Release wäre das klarste Zeichen).
 - Kosten Flake: lokaler Rust-Build (~Minuten) bei jedem Rev-Bump.
 - Wechsel zurück: Flake-Input + Overlay (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
   prüfen, Config ggf. re-migrieren (falls nixpkgs-Rev anders steht).
@@ -24,6 +24,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 ## WICHTIG – Namens-Instabilität
 - Ab Rev 2026-08-31 existieren **beide** Action-Familien: `window-*` (Fenster) UND
   `column-*` (Spalten). `workspace-set-layout` kann jetzt zusätzlich `master`.
+- Ab Rev 2026-09-07: Scratchpad-Actions brauchen `[<scratchpad>]` Suffix (z.B.
+  `scratchpad-toggle:default`). Bare Actions ohne Argument greifen auf den impliciten
+  `"default"` Scratchpad.
 - Maßgeblich ist `umbriel msg --help` der LAUFENDEN Version, nicht die main-Doku.
   Gegenprobe: `umbriel validate`.
 
@@ -33,27 +36,40 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 3. Config gegen das NEUE Binary validieren (vor dem Switch!):
    `nix build '.#nixosConfigurations.nex.config.programs.umbriel.package' --no-link` →
    `<out>/bin/umbriel validate -c <config>` (beide Hosts).
-4. Keys/Actions unten abhaken und ggf. in beiden Hosts eintragen:
-   `home/{mortiferus,backbone}/config/umbriel/` (gleiche Dateien, gleicher Stand).
-5. `switch` + **Login-Neustart** auf nex, erst dann styx.
+4. Keys/Actions unten abhaken und ggf. in allen Hosts eintragen:
+   `home/{mortiferus,backbone,lion}/config/umbriel/` (gleiche Dateien, gleicher Stand).
+5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 786c237 / 2026-09-04)
+## Feature-Tracker (Stand: Rev a588733d / 2026-09-09)
 | Config-Key | Zweck | Status |
 |---|---|---|
-| `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (beide Hosts `true`, 2026-08-31) |
-| `[animation]`-Sektion | Animations-Optionen (ersetzt `appearance.animation_ms`) | **MIGRIERT** → `cfg/animation.toml` (beide Hosts, 2026-08-31) |
+| `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
+| `[animation]`-Sektion | Animations-Optionen (ersetzt `appearance.animation_ms`) | **MIGRIERT** → `cfg/animation.toml` (alle Hosts, 2026-08-31) |
 | `appearance.drag_opacity` | Fenster-Transparenz beim Drag | **GESETZT** (`0.9` in `cfg/appearance.toml`, 2026-08-31) |
-| `keybinds.*.allow_when_locked` | Keys auch im Lock nutzbar | **EINGESETZT** (Volume/Brightness/Mikro/Media-Tasten, beide Hosts, 2026-08-31) |
-| `layout.scrolling.center_focused` | Scroll-Layout: Fokus-Zentrierung | verfügbar, nicht gesetzt |
-| `layout.scrolling.expand_single_column` | Einzelspalte auf Strecken | verfügbar, nicht gesetzt |
+| `keybinds.*.allow_when_locked` | Keys auch im Lock nutzbar | **EINGESETZT** (Volume/Brightness/Mikro/Media-Tasten, alle Hosts, 2026-08-31) |
+| `layout.scrolling.center_focused` | Scroll-Layout: Fokus-Zentrierung (jetzt String: `"never"`, `"always"`, `"on_overflow"`) | verfügbar, nicht gesetzt (Default `"never"` passt) |
+| `layout.scrolling.expand_single_column` | Einzelspalte auf Strecken | **ENTFERNT** (Rev `a588733d`), ersetzt durch `match.is_alone` Window-Rule — nicht genutzt |
 | `layout.struts` | Struts/Reservierung | verfügbar, nicht gesetzt (Noctalia regelt) |
 | `workspaces.empty_above` | Leere Workspaces über dem aktuellen | verfügbar, nicht gesetzt |
 | `input.touchpad.disable_on_external_mouse` | Touchpad bei Maus deaktivieren | IRRELEVANT (Touchpad systemweit aus) |
-| `window-toggle-scratchpad` / `window-cycle-width-back` / `workspace-move-up/down` | neue Actions | **TEILWEISE EINGESETZT** (2026-08-31): `window-move-up/down` (Mod+CTRL+Pfeile), `window-cycle-width` (Mod+R); `window-toggle-scratchpad` u. `workspace-move-*` weiterhin ungebunden |
+| `match.is_alone` (window_rule) | Fenster-Regel: matched wenn einzige geteilte Spalte auf Workspace | verfügbar, nicht genutzt |
+| `default_scratchpad` (window_rule) | Fenster automatisch in Scratchpad stecken beim Öffnen | verfügbar, nicht genutzt |
+| Named Workspaces in `default_workspace` | String-Workspace-Targets (`"CHAT"`) neben Integer | verfügbar, nutzen Integer (bevorzugt) |
+| Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
 | `output.<NAME>.layout.scrolling.default_width_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-09** (Update auf Rev `a588733d`): ~91 Commits seit `786c237`. **3 Breaking Changes**, alle geprüft:
+  1. `center_focused` von Boolean zu String (`"never"`/`"always"`/`"on_overflow"`) — nicht gesetzt, kein Handlungsbedarf.
+  2. `expand_single_column` entfernt — nicht genutzt, kein Handlungsbedarf.
+  3. Scratchpads global + named (statt per-output): Bare Actions brauchen jetzt `[<scratchpad>]` Suffix.
+     **Gefixt**: `scratchpad-toggle` → `scratchpad-toggle:default` in allen 3 Hosts (mortiferus/backbone/lion).
+  Neue Features: `match.is_alone` Window-Rule (Fenster-Breite abhängig ob allein), named workspace targets
+  (`default_workspace = "CHAT"`), `default_scratchpad` Window-Rule. Fixes: Input strands (#160/#191),
+  Suspend/Resume Workspaces (#27), Overview badges (#158), overview opacity clamp (#195), sRGB auf SDR,
+  fullscreen exit tiled size, border shader highp (#171), config array merge (#175).
+  `umbriel validate` = `config: ok` auf allen Hosts.
 - **2026-09-04** (Update auf Rev `786c237`): 45 Commits seit `06de3bfa`. **Ein Breaking Refactor**:
   `refactor(config)!` (`5a7cc8a2`) – alle Farb-Keys aus `[appearance]`/`[overview]` nach `[colors]` verschoben
   (`colors.border.*`, `colors.insert_hint`, `colors.backdrop`, `colors.shadow`, `colors.overview.*`).
