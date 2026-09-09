@@ -7,7 +7,7 @@
   imports = [
     ./steam.nix
     ./gamescope.nix
-    ./scripts.nix
+    ./scripts-lion.nix # lion-spezifisch: DDC/CI statt brightnessctl (externe Monitore)
     ./udev.nix
   ];
 
