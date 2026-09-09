@@ -6,16 +6,13 @@
     wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
   };
   # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP.
-  # `networking.wireless.regulatoryDomain` existiert nicht mehr → per systemd-Service.
-  systemd.services.wifi-regdomain = {
-    description = "Set wireless regulatory domain (DE)";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-pre.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.iw}/bin/iw reg set DE";
-    };
-  };
+  # `networking.wireless.regulatoryDomain` existiert nicht mehr. udev-Regel setzt
+  # DE bei jeder Interface-Initialisierung (auch nach Suspend/Reconnect), weil
+  # wpa_supplicant (via NetworkManager) die Domain sonst nach dem AP-Country
+  # überschreiben kann.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="ieee80211", RUN+="${pkgs.iw}/bin/iw reg set DE"
+  '';
   networking.firewall.enable = true;
   services.udisks2.enable = true;
 #  networking.search = [ "lan" ];
