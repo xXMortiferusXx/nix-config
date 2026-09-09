@@ -6,7 +6,7 @@
   users.users.lion = {
     isNormalUser = true;
     description = "Lion";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "greeter" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "greeter" "i2c" ];
     shell = pkgs.fish;
 
     packages = with pkgs; [

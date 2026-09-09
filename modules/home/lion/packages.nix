@@ -19,6 +19,7 @@ pkgs: with pkgs; [
   wl-clipboard
   cliphist
   udiskie
+  ddcutil    # Monitor-Helligkeit per DDC/CI
 
   # --- System Monitoring & Terminal ---
   btop

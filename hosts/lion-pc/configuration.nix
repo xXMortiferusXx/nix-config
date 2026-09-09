@@ -19,6 +19,9 @@
 
   networking.hostName = "lion-pc";
 
+  # DDC/CI (ddcutil): i2c-dev Kernel-Modul
+  boot.kernelModules = [ "i2c-dev" ];
+
   # SSH: Lokaler Zugriff von nex (Key-basiert, kein Passwort)
   services.openssh = {
     enable = true;
