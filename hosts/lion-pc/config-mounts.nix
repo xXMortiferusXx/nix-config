@@ -22,8 +22,14 @@ let
   ];
 in
 {
-  # Ziel-Verzeichnisse beim Boot erstellen (vor den Mounts)
+  # Ziel-Verzeichnisse beim Boot erstellen (vor den Mounts).
+  # WICHTIG: ~/.config selbst zuerst, sonst legt systemd-tmpfiles den
+  # fehlenden Zwischen-Pfad als root:root an → Home Manager (läuft als ${user})
+  # kann danach keine eigenen Dirs mehr darin anlegen ("Keine Berechtigung").
   systemd.tmpfiles.rules = [
+    # Gaming-Drive gehört dem User, sonst kann Steam (läuft als ${user})
+    # dort keine SteamLibrary anlegen.
+    "z /gaming 0755 ${user} users -"
     "d ${homeDir}/.config 0755 ${user} users -"
   ] ++ (map (dir:
     "d ${homeDir}/.config/${dir} 0755 ${user} users -"

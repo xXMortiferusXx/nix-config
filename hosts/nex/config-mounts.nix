@@ -22,7 +22,10 @@ let
   ];
 in
 {
-  # Ziel-Verzeichnisse beim Boot erstellen (vor den Mounts)
+  # Ziel-Verzeichnisse beim Boot erstellen (vor den Mounts).
+  # WICHTIG: ~/.config selbst zuerst, sonst legt systemd-tmpfiles den
+  # fehlenden Zwischen-Pfad als root:root an → Home Manager (läuft als ${user})
+  # kann danach keine eigenen Dirs mehr darin anlegen ("Keine Berechtigung").
   systemd.tmpfiles.rules = [
     "d ${homeDir}/.config 0755 ${user} users -"
   ] ++ (map (dir:

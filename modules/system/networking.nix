@@ -1,7 +1,11 @@
 { config, pkgs, ... }:
 
 {
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
+  };
+  networking.wirelessRegulatoryDomain = "DE";  # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP
   networking.firewall.enable = true;
   services.udisks2.enable = true;
 #  networking.search = [ "lan" ];

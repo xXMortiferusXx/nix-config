@@ -34,7 +34,9 @@
     description = "Weekly Flatpak update";
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "weekly";
+      # 2× die Woche (Mo + Fr) statt wöchentlich – Sober/Vinegar sollen zeitnah
+      # Roblox-Fix-Updates bekommen, falls Sohnemann nicht manuell prüft.
+      OnCalendar = "Mon,Fri 00:00";
       Persistent = true;
     };
   };
