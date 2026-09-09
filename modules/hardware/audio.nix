@@ -6,35 +6,22 @@
 
   # Arctis Sound Manager ist nex-only → Aktivierung in hosts/nex/configuration.nix
 
+  # Kein globales 99-lowlatency (Clock/Quantum) mehr: ASM regelt die Latency
+  # seiner eigenen filter-chain-Kette selbst (node.latency/node.lock-quantum,
+  # pipewire_quantum-Setting). Globales Quantum 512/48k zog nur alle Sinks
+  # (notebook-speakers) unnötig runter — die laufen jetzt auf PipeWire-Standard.
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
     wireplumber.enable = true;
-
-    extraConfig.pipewire."99-lowlatency" = {
-      "context.properties" = {
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 512;
-        "default.clock.min-quantum" = 256;
-        "default.clock.max-quantum" = 2048;
-      };
-      "pulse.properties" = {
-        "pulse.min.quantum" = "256/48000";
-      };
-    };
   };
 
-  # LADSPA_PATH fuer PipeWire filter-chain (LADSPA-Plugins wie Kompressor)
-  # WICHTIG: Das NixOS pipewire-Modul setzt LADSPA_PATH hardcoded auf sein eigenes
-  # leeres pipewire-ladspa-plugins Paket. Wir überschreiben das hier explizit
-  # in der systemd Unit, damit Steve Harris Plugins (sc2_1426) geladen werden.
-  systemd.user.services.pipewire.environment.LADSPA_PATH = lib.mkForce "${pkgs.ladspaPlugins}/lib/ladspa";
+  
 
   environment.systemPackages = with pkgs; [
     pavucontrol
-    qpwgraph
     ladspaPlugins
     alsa-utils
   ];
@@ -123,49 +110,5 @@
       ]
     '';
   };
-  */
-
-  # ===========================================================================
-  # GameDAC stabil halten (2026-08-31)
-  # Grund: kleines "Knacken" bei jedem Liedwechsel (als würde das Gerät neu
-  # starten). Zwei Maßnahmen gegen die Kandidaten:
-  #  - suspend-timeout 0: Der Sink schläft nie ein -> kein "Aufwach"-Knacken
-  #    (PipeWire-Standard suspendet Knoten nach 5 s Stille).
-  #  - Rate/Format-Pin 48k/2ch: hw_params bleiben konstant -> keine erneute
-  #    Device-Negotiation (Format-Enum bleibt S16LE; Nie-Suspend ist der
-  #    wirksame Teil gegen Re-Open).
-  # ASM-unabhängig: wirkt nur auf den Hardware-Node, nicht auf die virtuellen
-  # Sinks/Filter-Ketten des Arctis Sound Manager (der speist eh 2ch/48k ein).
-  # ===========================================================================
-  environment.etc."wireplumber/wireplumber.conf.d/51-gamedac-stable.conf".text = ''
-    monitor.alsa.rules = [
-      {
-        matches = [
-          {
-            device.name = "~alsa_card.usb-SteelSeries_SteelSeries_GameDAC*"
-          }
-        ]
-        actions = {
-          update-props = {
-            audio.format = "S32LE"
-            audio.samplerate = 48000
-            audio.channels = 2
-            audio.position = [ FL FR ]
-          }
-        }
-      }
-      {
-        matches = [
-          {
-            node.name = "~alsa_output.usb-SteelSeries_SteelSeries_GameDAC*"
-          }
-        ]
-        actions = {
-          update-props = {
-            session.suspend-timeout-seconds = 0
-          }
-        }
-      }
-    ]
-  '';
+*/
 }
