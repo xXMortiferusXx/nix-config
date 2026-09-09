@@ -124,18 +124,33 @@ default_width = 1.0
 vrr = "always"
 
 # ── Roblox Studio (Vinegar/XWayland) ──
-# Auf nex live verifiziert: alle robloxstudiobeta.exe-Fenster (Hauptfenster +
-# die 3 "RobloxStudio"-Hilfsfenster 100x100) getiled auf W4 → Studio bleibt
-# normal bedienbar.
-# WICHTIG: Nur auf app_id matchen. KEIN match.title und KEIN
-# default_focused/focus_on_activate — beides löste auf nex das
-# "dauerhaft Links"-Eingabe-Grabbing aus und title-Filter griff auf
-# XWayland-Fenster nicht (Titel wird erst nach dem Mapping gesetzt).
+# Auf nex live verifiziert: Studio bleibt normal bedienbar, wenn alle
+# robloxstudiobeta.exe-Fenster getiled auf W4 liegen.
+#
+# WICHTIG (aus dem Live-Test): Die 3 Hilfsfenster ("RobloxStudio") sind
+# Wine-Menü-Fenster. Sie versuchen beim Öffnen aktiv Fokus zu klauen →
+# Fokus-Optionen auf ALLE Fenster erzeugten Eingabe-Grabbing
+# ("dauerhaft Links"), default_maximize aufs Hauptfenster machte vinegar
+# unbedienbar. Daher: Nur Basis-Tiling per app_id, plus gezielte
+# Fokusblockade nur auf die Hilfsfenster.
 [[window_rule]]
 match.app_id = "^robloxstudiobeta\\.exe$"
 default_workspace = 4
 default_floating = false
 vrr = "always"
+
+# Hauptfenster ("... - Roblox Studio"): maximiert (volle Breite) starten.
+[[window_rule]]
+match.app_id = "^robloxstudiobeta\\.exe$"
+match.title = "Roblox Studio"
+default_maximize = true
+
+# Hilfsfenster ("RobloxStudio" 100x100): keinen Fokus klauen.
+[[window_rule]]
+match.app_id = "^robloxstudiobeta\\.exe$"
+match.title = "^RobloxStudio$"
+default_focused = false
+focus_on_activate = false
 
 # ── Terminal ──
 [[window_rule]]
