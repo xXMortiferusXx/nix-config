@@ -20,7 +20,7 @@ end = [
     "control-center",
     "session"
 ]
-start = [ "launcher", "wallpaper", "launcher_2", "workspaces", "active_window", "media" ]
+start = [ "launcher", "wallpaper", "wallhaven", "launcher_2", "workspaces", "active_window", "media" ]
 
 [calendar]
 enabled = true
@@ -48,6 +48,7 @@ background_opacity = 0.79999998211860657
 enabled = true
 icon_size = 36
 margin_edge = 0
+pinned = [ "zen-beta", "io.github.kolunmi.Bazaar", "org.vinegarhq.Sober", "org.vinegarhq.Vinegar" ]
 reserve_space = false
 smart_auto_hide = true
 
@@ -89,7 +90,12 @@ tint_intensity = 0.20000000000000001
 [lockscreen_widgets]
 enabled = true
 schema_version = 2
-widget_order = [ "lockscreen-widget-0000000000000001", "lockscreen-widget-0000000000000003", "lockscreen-login-box@DP-1" ]
+widget_order = [
+    "lockscreen-login-box@HDMI-A-1",
+    "lockscreen-widget-0000000000000001",
+    "lockscreen-widget-0000000000000003",
+    "lockscreen-login-box@DP-1"
+]
 
     [lockscreen_widgets.grid]
     cell_size = 16
@@ -97,8 +103,8 @@ widget_order = [ "lockscreen-widget-0000000000000001", "lockscreen-widget-000000
     visible = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
-    box_height = 220.0
-    box_width = 520.0
+    box_height = 150.0
+    box_width = 720.0
     cx = 960.0
     cy = 820.0
     output = "DP-1"
@@ -120,6 +126,33 @@ widget_order = [ "lockscreen-widget-0000000000000001", "lockscreen-widget-000000
         show_login_button = false
         show_media = false
         show_session_buttons = false
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 960.0
+    cy = 898.0
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
 
@@ -180,7 +213,7 @@ update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch
 discord_binary = "/etc/profiles/per-user/lion/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "aristides/udiskie" ]
+enabled = [ "avivbintangaringga/nix-monitor", "aristides/udiskie", "noctalia/wallhaven" ]
 
     [[plugins.source]]
     auto_update = true
@@ -205,11 +238,15 @@ telemetry_enabled = true
     auto_sync = true
     privilege_command = "pkexec"
 
+    [shell.launcher]
+    pinned = [ "io.github.kolunmi.Bazaar" ]
+
     [shell.screenshot]
     directory = "/home/lion/Bilder/Screenshots"
     show_cursor = true
 
 [theme]
+builtin = "Noctalia"
 community_palette = "Zenbones"
 mode = "light"
 source = "wallpaper"
@@ -219,12 +256,22 @@ wallpaper_scheme = "m3-rainbow"
     builtin_ids = [ "gtk3", "gtk4", "qt", "umbriel" ]
 
 [wallpaper]
-directory = "/home/lion/Bilder/Wallpaper"
 transition_on_startup = true
 
     [wallpaper.automation]
-    enabled = true
     order = "alphabetical"
+
+    [wallpaper.default]
+    path = "/home/lion/Pictures/wallhaven-rr1v1m.png"
+
+    [wallpaper.last]
+    path = "/home/lion/Pictures/wallhaven-9okxwk.png"
+
+    [wallpaper.monitors.DP-1]
+    path = "/home/lion/Pictures/wallhaven-9okxwk.png"
+
+    [wallpaper.monitors.HDMI-A-1]
+    path = "/home/lion/Pictures/wallhaven-rr1v1m.png"
 
 [weather]
 effects = true
@@ -259,3 +306,6 @@ type = "aristides/udiskie:status"
 
 [widget.volume]
 show_label = false
+
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"
