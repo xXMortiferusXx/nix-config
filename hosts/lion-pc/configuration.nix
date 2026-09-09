@@ -9,6 +9,7 @@
       ../../modules/system/boot-lion.nix
       ../../modules/system/environment-lion.nix
       ../../modules/hardware/amdgpu.nix
+      ../../modules/hardware/power-lion.nix
       ../../modules/programs/gaming/lion.nix
       ../../modules/programs/tools.nix
       ../../modules/services/flatpak-lion.nix
