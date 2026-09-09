@@ -11,8 +11,10 @@
 
   boot.kernelParams = [
     "transparent_hugepage=madvise"
-    # AMD CPU P-State Treiber (ZEN-basiert)
-    "amd_pstate=active"
+    # AMD P-State NICHT verwenden: Ryzen 1500X (Zen 1) unterstützt es nicht.
+    # Kernel fällt sonst auf acpi-cpufreq zurueck; explizit deaktivieren,
+    # damit power-profiles-daemon das performance-Profil anbietet.
+    "amd_pstate=disable"
   ];
 
   boot.kernel.sysctl = {
