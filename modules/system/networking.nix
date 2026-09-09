@@ -5,7 +5,17 @@
     enable = true;
     wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
   };
-  networking.wirelessRegulatoryDomain = "DE";  # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP
+  # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP.
+  # `networking.wireless.regulatoryDomain` existiert nicht mehr → per systemd-Service.
+  systemd.services.wifi-regdomain = {
+    description = "Set wireless regulatory domain (DE)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-pre.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.iw}/bin/iw reg set DE";
+    };
+  };
   networking.firewall.enable = true;
   services.udisks2.enable = true;
 #  networking.search = [ "lan" ];
