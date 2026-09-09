@@ -115,6 +115,19 @@ default_workspace = 4
 default_floating = false
 vrr = "always"
 
+# ── Roblox Studio (Vinegar/XWayland) ──
+# Ergebnis vom Live-Test: Studio bleibt normal bedienbar, wenn alle
+# robloxstudiobeta.exe-Fenster getiled auf W4 liegen.
+# WICHTIG: Nur auf app_id matchen, KEIN title-Filter und KEIN
+# default_focused/focus_on_activate — die haben das Eingabe-Grabbing
+# ("dauerhaft Links") bei den Hilfsfenstern ausgelöst.
+[[window_rule]]
+match.app_id = "^robloxstudiobeta\\.exe$"
+default_workspace = 4
+default_floating = false
+
+
+
 # ── Terminal ──
 [[window_rule]]
 match.app_id = "^kitty$"

@@ -34,6 +34,7 @@ pkgs: with pkgs; [
 
   # --- Gaming ---
   rusty-path-of-building
+  vinegar         # Roblox Studio native (Wine) — zum Testen der 3 Quadrate auf nex
 
   # --- Office & Media ---
   thunderbird-latest

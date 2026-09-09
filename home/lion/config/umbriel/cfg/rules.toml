@@ -123,25 +123,19 @@ default_floating = false
 default_width = 1.0
 vrr = "always"
 
+# ── Roblox Studio (Vinegar/XWayland) ──
+# Auf nex live verifiziert: alle robloxstudiobeta.exe-Fenster (Hauptfenster +
+# die 3 "RobloxStudio"-Hilfsfenster 100x100) getiled auf W4 → Studio bleibt
+# normal bedienbar.
+# WICHTIG: Nur auf app_id matchen. KEIN match.title und KEIN
+# default_focused/focus_on_activate — beides löste auf nex das
+# "dauerhaft Links"-Eingabe-Grabbing aus und title-Filter griff auf
+# XWayland-Fenster nicht (Titel wird erst nach dem Mapping gesetzt).
 [[window_rule]]
 match.app_id = "^robloxstudiobeta\\.exe$"
-match.title = "Roblox Studio"
 default_workspace = 4
 default_floating = false
-default_maximize = true
-default_width = 1.0
 vrr = "always"
-default_focused = false
-focus_on_activate = false
-
-# Wine/WebView2-Helferfenster von Studio ("RobloxStudio" 100x100):
-# nicht versteckbar per Rule → fest auf Workspace 4 und ohne Fokus-Klau
-[[window_rule]]
-match.app_id = "^robloxstudiobeta\\.exe$"
-match.title = "^RobloxStudio$"
-default_workspace = 4
-default_focused = false
-focus_on_activate = false
 
 # ── Terminal ──
 [[window_rule]]
