@@ -12,6 +12,17 @@
     # GTK 2.0 / Default-Icon-Theme (live editierbar)
     ".gtkrc-2.0".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/lion/config/gtkrc-2.0";
     ".icons/default".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/lion/config/icons/default";
+
+    # ddcutil: weniger Retries, damit der Boot nicht blockiert.
+    # Der Samsung-HDMI-Monitor antwortet beim Boot (während Umbriel's Modeset)
+    # nicht auf DDC/CI. Standardmaessig macht ddcutil dann 10 write-read-Retries
+    # (~54s), Noctalia ruft ddcutil synchron auf → Event-Loop blockiert →
+    # HTTP-Downloads timeouten → wait-for-tray (Steam) timeoutet → weisser Bildschirm.
+    # Mit 2 tries (1 Retry) gibt ddcutil nach ~10s auf; nach dem Boot laeuft es normal.
+    ".config/ddcutil/ddcutilrc".text = ''
+      [global]
+      options = --maxtries "2,2,2"
+    '';
   };
 
   # Noctalia v5 verwaltet alle Daten (Config, State, Plugins) unter ~/.local/state/noctalia.
