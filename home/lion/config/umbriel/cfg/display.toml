@@ -2,12 +2,14 @@
 # lion: zwei FullHD-Monitore, einer an DP, einer an HDMI.
 # Anzeigenamen prüfen mit `umbriel outputs`; ggf. Refresh-Raten ergänzen.
 [output."DP-1"]
+mode = "1920x1080@143.981"    # LG ULTRAGEAR, 144 Hz (live via `umbriel outputs` geprüft)
 scale = 1.0
 vrr = "disabled"    # Kein globales VRR (flackerte auf Electron-Fenstern wie Zen).
                     # VRR aktiviert sich stattdessen nur per window_rule.vrr (Games/mpv in rules.toml).
 workspaces = 4    # statische Workspaces wie in niri (1=Browser, 2=Chat, 3=Gaming, 4=Sonstiges)
 
 [output."HDMI-A-1"]
+mode = "1920x1080@60.000"    # Samsung S24F350, 60 Hz (live via `umbriel outputs` geprüft)
 scale = 1.0
 vrr = "disabled"
 workspaces = 4

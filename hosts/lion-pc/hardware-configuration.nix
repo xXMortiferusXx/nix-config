@@ -4,7 +4,16 @@
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
   boot.kernelModules = [ "kvm-amd" ];
 
-  # KEIN GameDrive auf lion-pc (SSD via install.sh dynamisch; GameDrive später nachrüstbar)
+  # Gaming-Platte via Label (identisch zu nex)
+  fileSystems."/gaming" = {
+    device = "/dev/disk/by-label/GamingDrive";
+    fsType = "ext4";
+    options = [
+      "defaults"
+      "noatime"
+      "nofail"
+    ];
+  };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

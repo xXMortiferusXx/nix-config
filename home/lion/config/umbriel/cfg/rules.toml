@@ -115,6 +115,34 @@ default_workspace = 4
 default_floating = false
 vrr = "always"
 
+# ── Roblox-Clients: Sober + Vinegar getiled auf Workspace 4 ──
+[[window_rule]]
+match.app_id = "^org\\.vinegarhq\\.Sober$"
+default_workspace = 4
+default_floating = false
+default_width = 1.0
+vrr = "always"
+
+[[window_rule]]
+match.app_id = "^robloxstudiobeta\\.exe$"
+match.title = "Roblox Studio"
+default_workspace = 4
+default_floating = false
+default_maximize = true
+default_width = 1.0
+vrr = "always"
+default_focused = false
+focus_on_activate = false
+
+# Wine/WebView2-Helferfenster von Studio ("RobloxStudio" 100x100):
+# nicht versteckbar per Rule → fest auf Workspace 4 und ohne Fokus-Klau
+[[window_rule]]
+match.app_id = "^robloxstudiobeta\\.exe$"
+match.title = "^RobloxStudio$"
+default_workspace = 4
+default_focused = false
+focus_on_activate = false
+
 # ── Terminal ──
 [[window_rule]]
 match.app_id = "^kitty$"
