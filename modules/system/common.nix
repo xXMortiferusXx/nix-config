@@ -26,5 +26,6 @@
     ../desktop/thunar.nix
     ../desktop/noctalia-greeter.nix
     ../desktop/umbriel.nix
+    ./appimage.nix
   ];
 }

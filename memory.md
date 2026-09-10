@@ -32,7 +32,6 @@
 
 ### Programs
 - `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
-- `programs/ideamaker.nix` – ideaMaker Desktop-Entry
 - `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `gamescope`, `sunshine`, `scripts`
 - **Lutris**: Standard-nixpkgs-Paket (`lutris`, buildFHSEnv) in `mortiferus.packages` (seit 2026-08-29)
   - Vorher: `lutris-unwrapped` + eigener `steam-run`-Wrapper in eigener `lutris.nix` — entfernt (Doppel-Sandbox: steam-run + UMU/pressure-vessel)
@@ -365,6 +364,15 @@
   - `pathofexilesteam.*`-Regel entfernt (redundant, wird von `steam_app_.*` abgedeckt)
   - **Kein `default_fullscreen`** in den Spiel-Regeln → Spiele starten getilted auf W4, anderes Fenster (z.B. Build-Planer) kann daneben getiled werden
 
+## xwayland-satellite (main statt nixpkgs-Tag, seit 2026-09-10)
+
+- **Problem**: nixpkgs pinnt Tag `v0.8.2` (22.07.), der Popup-X11-Bugs enthält — u.a. Steam-Dropdowns schließen sofort (#468). Fix kam erst mit PR #494 (09.09.) auf `main`.
+- **Verteilungslage**: Fedora (43/44/Rawhide), CachyOS/Arch (extra) und openSUSE hängen seit 22./23.07. auf `v0.8.2` — neue Releases brauchen bei allen Distros Monate. AUR `xwayland-satellite-git` ist tot (Stand `0.6.r19` vom 2025-07-29, hinter v0.8.2). niri.cachix.org-Pin (sodiboo-Flake) ebenfalls veraltet (22.07.). Kein Binär-Cache für main.
+- **Setup**: Flake-Input `xwayland-satellite` (git+https, main) + Overlay in `modules/desktop/umbriel.nix` ersetzt `pkgs.xwayland-satellite` für alle Hosts (via `system/common.nix`). Lock initial `add2795134` (= exakt der #494-Merge). Version: `0.8.2-add2795`.
+- **Update**: regulär per `nix flake update` (wie Umbriel/noctalia) — kein vorgeschaltetes Reset.
+- **Build**: ~3 min lokaler Rust-Build pro main-Änderung (nur das Binary, ≈ selten).
+- **Rückkehr zu nixpkgs**: sobald nixpkgs eine Release ≥ v0.8.2 mitführt (neue Tag-Version) → Overlay in `modules/desktop/umbriel.nix` entfernen. Sinnvoll nach Test auf allen Hosts (Steam-Dropdowns, Launcher).
+
 ## Steam & Proton-GE
 
 ### Konfiguration
@@ -612,7 +620,7 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 | `samba` | Netzwerk-Zugriff zwischen allen Rechnern gewünscht |
 | `brightnessctl` | Fallback in Niri-Keybinds (`keybinds.kdl`) + Hyprland + Gaming-Scripts |
 | `dlss-swapper` / `dlss-swapper-dll` | DLSS-Preset-Override + NGX-Updater |
-| `prusa-slicer` / `orca-slicer` / `ideaMaker` | Verschiedene UIs, jeder Slicer hat andere Features |
+| `prusa-slicer` / `orca-slicer` | Verschiedene UIs, jeder Slicer hat andere Features |
 | `slurp` | Region-Selection für manuelle Screenshots |
 | `grim` | Screenshot-Tool (Wayland-nativ) |
 | `libsForQt5.qt5ct` | Qt5-Legacy, behalten für Kompatibilität |
@@ -704,3 +712,19 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 - `install.sh` legt ein **temporaeres Swapfile** auf `/mnt/.install-swapfile` an (2x RAM, max 16G), aktiviert es per `swapon` und entfernt es via `trap cleanup_swap EXIT` nach der Installation wieder
 - Swapfile landet **nie** im installierten System — disko-Configs haben weiterhin keinen Swap, System laeuft ZRAM-only
 - Wenn `swapon` fehlschlaegt (z.B. in QEMU), laeuft der Installer mit Warnung weiter
+
+## AppImage (2026-09-10, getestet aber ideeMaker-Route verworfen)
+
+### binfmt_misc via `programs.appimage` (AKTIV)
+- `modules/system/appimage.nix` (importiert in `system/common.nix`, beide Hosts):
+  - `programs.appimage.enable = true` + `binfmt = true` → Kernel routet `.AppImage` automatisch durch `appimage-run` (Magische Zahl `\x7fELF...AI\x02`). Kein `appimage-run`-Prefix mehr nötig.
+  - `package = pkgs.appimage-run.override { extraPkgs = ... }` mit: `libnghttp2`, `libidn2`, `libpsl`, `lz4`, `zstd`, `libtasn1`, `sqlite` (Libs, die ideaMaker brauchte; grundsätzlich universell nützlich)
+- **Grenze**: binfmt kann **keine ENV-Variablen** injizieren. Apps, die Env brauchen (z.B. `QT_QPA_PLATFORM=xcb`), brauchen weiterhin einen Wrapper.
+- **Debug-Hilfe**: Alle fehlenden Libs auf einmal via `APPIMAGE_DEBUG_EXEC=/tmp/opencode/ldd-ideamaker.sh` im FHS-Sandbox (skript setzt AppImage-eigene `LD_LIBRARY_PATH` + ruft `ldd ... | grep "not found"`).
+
+### ideaMaker (VERWORFEN 2026-09-10)
+- **Entfernt**: `modules/programs/ideamaker.nix` (Desktop-Entry), Shell-Alias in `shell.nix`, Import in `hosts/nex/configuration.nix`.
+- **Eigentliche Ursache (User-Befund)**: Die **neue** ideaMaker-Version lief mit **keinem** Weg (weder alter Alias `LD_LIBRARY_PATH=""` noch binfmt/appimage-run). Das `ldd`-Debug zeigte: Sie bündelt nicht mehr alle Libs → braucht externe `libnghttp2`/`libidn2`/`libpsl`/`lz4`/`zstd`/`libtasn1`/`sqlite3`, darf aber zugleich keine fremden Qt-Libs im Pfad haben (gebündeltes Qt) → jedes pauschal leeren ODER alles rein crasht still.
+- **`qt.qpa.plugin: Could not load ... "wayland"` ist irreführend**: Plugin ist im AppImage vorhanden und wird gefunden, lädt nur nicht (Lib-Konflikt). "Plugin hinzufügen" hilft deshalb nicht.
+- **Verworfen**: wrapType2 (Online-Abhängigkeit der URL, Build bricht wenn Raise3D offline), Distrobox (zu nervig bei Neuinstallation).
+- **Stand**: `appimage.nix` mit binfmt + extraPkgs bleibt aktiv (funktioniert bei vielen anderen AppImages out-of-the-box; ideaMaker ist ein Spezialfall), ideaMaker ist komplett raus.
