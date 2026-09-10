@@ -22,7 +22,6 @@
       # Vulkan-Infrastruktur
       vulkan-loader
       vulkan-tools
-      vulkan-extension-layer
 
       # Native Videobeschleunigung für NVIDIA (Firefox/Discord/Chromium)
       nvidia-vaapi-driver
@@ -33,16 +32,8 @@
     ];
   };
 
-  # CachyOS modprobe.d/nvidia.conf: NVIDIA Memory Clearing deaktivieren (Performance)
-  # + DynamicPowerManagement (GPU spart Strom bei Leerlauf)
-  # + EnableS0ixPowerManagement (S0ix Idle-Power fuer AMD Ryzen Laptops)
-  # + TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
-  boot.extraModprobeConfig = ''
-    options nvidia NVreg_InitializeSystemMemoryAllocations=0 \
-        NVreg_DynamicPowerManagement=0x02 \
-        NVreg_EnableS0ixPowerManagement=1 \
-        NVreg_TemporaryFilePath=/var/tmp
-  '';
+  # TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
+  boot.extraModprobeConfig = "options nvidia NVreg_TemporaryFilePath=/var/tmp";
 
   hardware.nvidia = {
     # Essential für Wayland/KMS
@@ -55,7 +46,6 @@
 
     # Power Management: grundsaetzlich aktiviert.
     # Finegrained geht nicht ohne PRIME-Offload (NixOS-Assertion).
-    # DynamicPowerManagement + S0ix laufen ueber Modprobe-Parameter auf Treiber-Ebene.
     powerManagement.enable = true;
     powerManagement.finegrained = false;
 
@@ -118,8 +108,6 @@
   environment.sessionVariables = {
     # GBM-Backend für NVIDIA (Wayland-Compositor + Apps)
     "GBM_BACKEND" = "nvidia-drm";
-    # GLX Vendor für korrekte NVIDIA-Nutzung unter Wayland/XWayland
-    "__GLX_VENDOR_LIBRARY_NAME" = "nvidia";
     # VRR/G-Sync erlauben
     "__GL_VRR_ALLOWED" = "1";
     # Electron/Chromium Apps nativ auf Wayland
