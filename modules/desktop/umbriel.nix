@@ -13,8 +13,14 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache)
-  nixpkgs.overlays = [ inputs.umbriel.overlays.default ];
+  # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache);
+  # xwayland-satellite ebenfalls von main (nixpkgs pinnt v0.8.2 mit Popup-Bugs,
+  # u.a. Steam-Dropdowns #468; Fix durch PR #494). Beide folgen normaler
+  # `nix flake update`-Weg → neueste Rev bei jedem regulären Update.
+  nixpkgs.overlays = [
+    inputs.umbriel.overlays.default
+    inputs.xwayland-satellite.overlays.default
+  ];
 
   programs.umbriel = {
     enable = true;
