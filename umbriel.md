@@ -8,7 +8,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `a588733d97bd136ad1c5b66ce18420a3b05e7870` (2026-09-09, revCount 874), Version `0.1.0`
+- Aktuelle Rev: `293724d3a81847ad4ff4214611c426316d7f45d9` (2026-09-10, revCount 893), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -35,12 +35,14 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 2. Neue Rev prüfen: `nix eval --raw '.#nixosConfigurations.nex.config.programs.umbriel.package.version'`
 3. Config gegen das NEUE Binary validieren (vor dem Switch!):
    `nix build '.#nixosConfigurations.nex.config.programs.umbriel.package' --no-link` →
-   `<out>/bin/umbriel validate -c <config>` (beide Hosts).
+   `<out>/bin/umbriel validate -c <config>` (alle Hosts).
 4. Keys/Actions unten abhaken und ggf. in allen Hosts eintragen:
    `home/{mortiferus,backbone,lion}/config/umbriel/` (gleiche Dateien, gleicher Stand).
+   **Immer alle 3 Hosts pruefen** – lion ist aktiver im Einsatz als backbone und wird
+   ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev a588733d / 2026-09-09)
+## Feature-Tracker (Stand: Rev 293724d / 2026-09-10)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -60,6 +62,19 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `output.<NAME>.layout.scrolling.default_width_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-10** (Update auf Rev `293724d`, `nix flake update`): seit `a588733d` ~19 Commits (RevCount 874→893).
+  **Keine Breaking Changes / keine Config-Umbenennungen.** Kernthema = **PR #214: `xdg-foreign-unstable-v2`**
+  (Server-Protokoll): Dialoge werden jetzt über dem Parent platziert (auch „center a dialog over what shows
+  of its parent", „float dialogs whose parents are still opening"). Relevant für sandboxed Clients (Steam FHS,
+  Electron), läuft automatisch, kein Config-Key nötig.
+  - Sonstige Neue (automatisch, kein Handlungsbedarf): `ipc`-Workspace-Occupancy, Overview-Touchpad-Nav (2 Achsen),
+    Animation Shader-Feedback/Random-Seeds, sRGB-Erhalt auf SDR-Outputs, Output-Mode-Fallback (#188),
+    `center_focused = "on_overflow"` (Rework #110), Hot-Corners-Fix bei Fullscreen, Keyboard-Restore nach Entfernung,
+    Decoration-Drag-Pointer-Lock-Fix (fix #201).
+  - Tracker-Status unverändert: `match.is_alone`, `default_scratchpad`, named Workspaces weiterhin „verfügbar/ungenutzt" –
+    wir nutzen Integer-Workspaces + `:default`-Scratchpad (kein Handlungsbedarf).
+  - Host-Configs (mortiferus/backbone/lion) gecleant: gleiche Keys, lion mit eigenen Display/Rule-Anpassungen.
+    Validate gegen NEUES Binary ausstehend → beim nächsten Switch mit prüfen (`umbriel validate`).
 - **2026-09-09** (Update auf Rev `a588733d`): ~91 Commits seit `786c237`. **3 Breaking Changes**, alle geprüft:
   1. `center_focused` von Boolean zu String (`"never"`/`"always"`/`"on_overflow"`) — nicht gesetzt, kein Handlungsbedarf.
   2. `expand_single_column` entfernt — nicht genutzt, kein Handlungsbedarf.
