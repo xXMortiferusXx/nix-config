@@ -713,18 +713,25 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 - Swapfile landet **nie** im installierten System — disko-Configs haben weiterhin keinen Swap, System laeuft ZRAM-only
 - Wenn `swapon` fehlschlaegt (z.B. in QEMU), laeuft der Installer mit Warnung weiter
 
-## AppImage (2026-09-10, getestet aber ideeMaker-Route verworfen)
+## AppImage (binfmt aktiv; ideaMaker-Ursache ungeklärt, Stand 2026-09-11)
 
 ### binfmt_misc via `programs.appimage` (AKTIV)
 - `modules/system/appimage.nix` (importiert in `system/common.nix`, beide Hosts):
   - `programs.appimage.enable = true` + `binfmt = true` → Kernel routet `.AppImage` automatisch durch `appimage-run` (Magische Zahl `\x7fELF...AI\x02`). Kein `appimage-run`-Prefix mehr nötig.
-  - `package = pkgs.appimage-run.override { extraPkgs = ... }` mit: `libnghttp2`, `libidn2`, `libpsl`, `lz4`, `zstd`, `libtasn1`, `sqlite` (Libs, die ideaMaker brauchte; grundsätzlich universell nützlich)
+  - `package = pkgs.appimage-run.override { extraPkgs = ... }` mit: `libnghttp2`, `libidn2`, `libpsl`, `lz4`, `zstd`, `libtasn1`, `sqlite` (universell für AppImages), plus `icu`, `xsel`, `webkitgtk_4_1` (für .NET/Avalonia-AppImages z.B. Sidekick)
 - **Grenze**: binfmt kann **keine ENV-Variablen** injizieren. Apps, die Env brauchen (z.B. `QT_QPA_PLATFORM=xcb`), brauchen weiterhin einen Wrapper.
 - **Debug-Hilfe**: Alle fehlenden Libs auf einmal via `APPIMAGE_DEBUG_EXEC=/tmp/opencode/ldd-ideamaker.sh` im FHS-Sandbox (skript setzt AppImage-eigene `LD_LIBRARY_PATH` + ruft `ldd ... | grep "not found"`).
 
-### ideaMaker (VERWORFEN 2026-09-10)
-- **Entfernt**: `modules/programs/ideamaker.nix` (Desktop-Entry), Shell-Alias in `shell.nix`, Import in `hosts/nex/configuration.nix`.
-- **Eigentliche Ursache (User-Befund)**: Die **neue** ideaMaker-Version lief mit **keinem** Weg (weder alter Alias `LD_LIBRARY_PATH=""` noch binfmt/appimage-run). Das `ldd`-Debug zeigte: Sie bündelt nicht mehr alle Libs → braucht externe `libnghttp2`/`libidn2`/`libpsl`/`lz4`/`zstd`/`libtasn1`/`sqlite3`, darf aber zugleich keine fremden Qt-Libs im Pfad haben (gebündeltes Qt) → jedes pauschal leeren ODER alles rein crasht still.
-- **`qt.qpa.plugin: Could not load ... "wayland"` ist irreführend**: Plugin ist im AppImage vorhanden und wird gefunden, lädt nur nicht (Lib-Konflikt). "Plugin hinzufügen" hilft deshalb nicht.
-- **Verworfen**: wrapType2 (Online-Abhängigkeit der URL, Build bricht wenn Raise3D offline), Distrobox (zu nervig bei Neuinstallation).
-- **Stand**: `appimage.nix` mit binfmt + extraPkgs bleibt aktiv (funktioniert bei vielen anderen AppImages out-of-the-box; ideaMaker ist ein Spezialfall), ideaMaker ist komplett raus.
+### ideaMaker (Stand 2026-09-11, Ursache UNGEKLÄRT)
+- **Entfernt** (Desktop-Entry aus config): `modules/programs/ideamaker.nix`, Shell-Alias in `shell.nix`, Import in `hosts/nex/configuration.nix`.
+- **Verifiziert**:
+  - `5.4.1.8750` (AppImage, ~Mai) läuft unter NixOS mit `QT_QPA_PLATFORM=xcb` + NVIDIA 610.57.04.
+  - `5.5.0.8810` (AppImage, ~Sep) crasht deterministisch: **SIGSEGV in `libnvidia-glcore.so.610.57.04`** bei `DrawShader::init` (via `GLMainWidget::initializeGL` → Qt `QOpenGLWidget`). Byte-identisch trotz `QT_OPENGL=software`, `MESA_LOADER_DRIVER_OVERRIDE=llvmpipe`, `__GL_THREADED_OPTIMIZATIONS=0`, leerer `LD_LIBRARY_PATH` u.a.
+  - `glmark2` läuft fehlerfrei → NVIDIA-GL-Strecke/NixOS-GL-Layer funktioniert grundsätzlich.
+  - Ohne `QT_QPA_PLATFORM=xcb`: separater Fehler (SIGABRT, Qt-Platform-Plugin nicht gefunden) — zwei getrennte Todesarten, nicht verwechseln.
+- **Ursache NICHT geklärt** — kein Fakt, sondern offene Hypothesen (Treiber-Crash *in* `libnvidia-glcore` beweist keinen Treiber-Bug; Speicher-Korruption von außen möglich):
+  1. Treiber-Bug 610.57.04 auf 5.5.0-Shader-Code (distro-unabhängig).
+  2. NixOS-spezifisch (appimage-run-FHS/glibc 2.42/GLVND) → Treiber-Crash nur Symptom.
+  3. Latenter Treiber-Bug, nur unter NixOS-Umgebung sichtbar.
+  - Entscheidend wäre `5.5.0 + 610.57.04` auf anderer Distro (CachyOS) — **noch nicht durchgeführt**.
+- **Frühere `ldd`/"gebündeltes Qt"-These war ein Irrweg** (2026-09-10 korrigiert) — nicht mehr als Ursache dokumentieren.
