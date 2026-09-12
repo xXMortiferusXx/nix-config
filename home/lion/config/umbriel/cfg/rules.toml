@@ -152,6 +152,24 @@ match.title = "^RobloxStudio$"
 default_focused = false
 focus_on_activate = false
 
+# ── PrismLauncher + Minecraft (Workspace 3/4) ──
+# Launcher → W3 (wie übrige Launcher). Minecraft-Fenster (via Prism, XWayland)
+# → W4 maximiert. Titel-Match "^Minecraft" ist robust, weil Prism das
+# Spielfenster wahlweise im Launcher einbettet oder separat öffnet.
+[[window_rule]]
+match.app_id = "^(org\\.prismlauncher\\.PrismLauncher|prismlauncher)$"
+match.title = "^(?!Minecraft).*"
+default_workspace = 3
+default_width = 1.0
+opacity = 0.95
+
+[[window_rule]]
+match.title = "^Minecraft"
+default_workspace = 4
+default_floating = false
+default_maximize = true
+vrr = "always"
+
 # ── Terminal ──
 [[window_rule]]
 match.app_id = "^kitty$"
