@@ -1,5 +1,11 @@
 # Noctalia Login-Greeter (DE-Tastatur, merkt letzte Session via sync.toml)
 # Workaround: tmpfiles kann .toml-Symlink nicht kopieren → fix-noctalia-greeter-toml
+#
+# Passwordloser Sync läuft jetzt über die Modul-Option
+# `services.displayManager.noctalia-greeter.passwordless-sync-users` (je Host gesetzt),
+# die eine Rule für die neue Action `org.noctalia.greeter.sync-appearance` generiert.
+# Die alte `apply-appearance`-Policy ist damit obsolet (und passwordlos zu lassen
+# laut Noctalia-Docs unsicher, da sie auch den Legacy-Helper-Mode autorisiert).
 { config, pkgs, lib, inputs, ... }:
 let
   greeterPkg = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
@@ -9,28 +15,6 @@ in
     enable = true;
     package = greeterPkg;
   };
-
-  # Polkit-Policy überschreiben: aktive Benutzer dürfen den Greeter-Apply-Helper
-  # ohne Passwort ausführen. Die mitgelieferte Policy verlangt sonst auth_admin.
-  environment.etc."polkit-1/actions/org.noctalia.greeter.apply-appearance.policy".text = ''
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE policyconfig PUBLIC
-     "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
-     "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
-    <policyconfig>
-      <action id="org.noctalia.greeter.apply-appearance">
-        <description>Apply Noctalia Shell appearance to the greeter</description>
-        <message>Authentication is required to sync wallpaper and colors to the login greeter</message>
-        <defaults>
-          <allow_any>no</allow_any>
-          <allow_inactive>no</allow_inactive>
-          <allow_active>yes</allow_active>
-        </defaults>
-        <annotate key="org.freedesktop.policykit.exec.path">${greeterPkg}/bin/noctalia-greeter-apply-appearance</annotate>
-        <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
-      </action>
-    </policyconfig>
-  '';
 
   environment.etc."noctalia-greeter.toml".text = ''
     [keyboard]

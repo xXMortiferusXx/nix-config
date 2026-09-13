@@ -1,6 +1,6 @@
 # Polkit-Regeln
-# - noctalia-greeter: apply-appearance passwordlos für wheel-Mitglieder
-#   (Fallback für inactive Sessions, z.B. während Lockscreen)
+# - noctalia-greeter: passwordloser Sync via Modul-Option `passwordless-sync-users`
+#   (generiert Rule für `org.noctalia.greeter.sync-appearance`; je Host gesetzt)
 # - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
 # - Flatpak/Bazaar: wheel kann Flatpak-Apps installieren ohne Passwort
 #   (konsistent zu wheelNeedsPassword = false; lion-pc nutzt das für Bazaar,
@@ -13,14 +13,6 @@
   security.polkit.enablePkexecWrapper = true;
 
   security.polkit.extraConfig = ''
-    polkit.addRule(function (action, subject) {
-      if (action.id == "org.noctalia.greeter.apply-appearance" &&
-          subject.isInGroup("wheel"))
-      {
-        return polkit.Result.YES;
-      }
-    });
-
     polkit.addRule(function (action, subject) {
       var network_actions = [
         "org.freedesktop.NetworkManager.enable-disable-network",

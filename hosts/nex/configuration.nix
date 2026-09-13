@@ -28,6 +28,9 @@
   # der lokale Patch (asm-pause-on-idle.py) wurde entfernt.
   services.arctis-sound-manager.enable = true;
 
+  # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
+  services.displayManager.noctalia-greeter.passwordless-sync-users = [ "mortiferus" ];
+
   system.stateVersion = "26.05"; 
   
 }

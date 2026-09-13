@@ -52,5 +52,8 @@
   # kann damit nicht über passwordloses sudo zu Root eskalieren.
   security.sudo.wheelNeedsPassword = lib.mkForce true;
 
+  # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
+  services.displayManager.noctalia-greeter.passwordless-sync-users = [ "lion" ];
+
   system.stateVersion = "26.05";
 }
