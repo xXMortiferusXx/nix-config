@@ -5,7 +5,7 @@ let
   greeterPkg = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  programs.noctalia-greeter = {
+  services.displayManager.noctalia-greeter = {
     enable = true;
     package = greeterPkg;
   };
