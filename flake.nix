@@ -53,17 +53,9 @@
       url = "github:noctalia-dev/noctalia";
     };
 
-    # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)
-    # - Modul: inputs.arctis-sound-manager.nixosModules.default
-    # - Option: services.arctis-sound-manager.enable
-    arctis-sound-manager = {
-      url = "github:loteran/Arctis-Sound-Manager?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, arctis-sound-manager, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -87,7 +79,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          arctis-sound-manager.nixosModules.default
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {

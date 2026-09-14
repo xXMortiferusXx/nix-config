@@ -160,7 +160,8 @@
 - **Modus**: ALSA Card Profile — Custom Profile in `audio.nix` via `environment.etc`
   - Ersetzt das Pro-Audio Profil mit Chat + Game + Mic Mapping
   - WirePlumber-Config setzt `device.profile-set` + `device.profile` automatisch
-  - Profile-Set: `steelseries-gamedac-usb-audio.conf` (aus [rockofox/steelseries-gamedac-pulseaudio](https://github.com/rockofox/steelseries-gamedac-pulseaudio), angepasst)
+  - Profile-Set: `steelseries-gamedac-usb-audio.conf` (aus [kilofox/steelseries-gamedac-pulseaudio](https://github.com/kilofox/steelseries-gamedac-pulseaudio), angepasst)
+  - **Mic-Fix**: Profilname war fälschlich `input:analog-chat` (Upstream-Bug) → korrigiert zu `input:analog-mic` (matcht die echte `input-mappings = analog-mic`)
   - Path-Files: `steelseries-gamedac-output-game.conf`, `...-chat.conf`, `...-input.conf`
 - **Output-Bezeichnung** (vertauscht zur Realität):
   - `SteelSeries GameDAC Spiel` (analog-game, 6ch) = **Game** (Spiele, Medien)
@@ -179,7 +180,6 @@
   - Letztes öffentlich dokumentiertes FW-Update: Engine 3.12.11 (Sep 2018) — DTS Headphone:X v2.0
   - **DTS:X Bug**: Bekannter Firmware-Bug — DTS:X Processing crasht bei Signaländerung (Spielstart, Format-Wechsel). Toggle off/on am GameDAC = einziger Workaround. Auf Linux: Known Limitation.
   - **DTS:X Ursache (2026-08-25)**: Fehlende SteelSeries GG Keep-Alive HID-Befehle. Ohne GG (Linux) crasht DTS:X-DSP. Auf Windows mit GG: Keep-Alive stabilisiert DTS:X. Toggle-Befehl (`0x51`) für Gen1 nicht reverse-engineered.
-  - **DTS:X USB-Strom-Theorie**: Möglicherweise instabile USB-Spannung bei Lastspitzen. Seit USB-2-Hub mit externer Stromversorgung tritt der Bug nicht mehr auf.
 - **HID-Interface** (teilweise reverse-engineered):
   - `hidraw6` (PID 1280, interface 0): Command `0x20` (Status) funktioniert — 64-Byte Frame, Byte 6 = DTS:X State
   - `hidraw7/8` (PID 1280, interface 1/2): Keine Antwort
@@ -632,24 +632,31 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 
 ## Audio / ChatMixer
 
-### GameDAC Custom ALSA Profile (2026-08-27, final)
-- **Ansatz**: ALSA Card Profile (ACP) aus [rockofox/steelseries-gamedac-pulseaudio](https://github.com/rockofox/steelseries-gamedac-pulseaudio), angepasst und in NixOS-Config integriert
-- **Warum ACP**: PipeWire nutzt ACP (`api.alsa.use-acp = true`) als Back-End. Es gibt kein PipeWire-native Äquivalent — ACP ist der einzige Layer der ALSA-Karten Channel-Mappings und Profile zuweisen kann
-- **Warum nicht Loopback**: Loopback routete auf AUX0-AUX5 (non-standard Names). Wine/Proton erwartet FL FR FC LFE RL RR. Das ACP-Profile gibt dem GameDAC korrekte Channel-Names am PulseAudio-Layer
-- **Implementation** (`modules/hardware/audio.nix`, `environment.etc`):
-  - Profile-Set: `steelseries-gamedac-usb-audio.conf` (Chat + Game + Mic Mappings)
-  - Path-Files: `steelseries-gamedac-output-game.conf`, `...-chat.conf`, `...-input.conf`
-  - WirePlumber-Config: `51-gamedac-profiles.conf` (setzt `device.profile-set` + `device.profile`)
-  - **Kein `volume = merge`** — GameDAC ALSA-Mixer hat nur Mute-Switches, kein Volume-Control. Ohne `merge` setzt PipeWire 100% als Software-Default
-- **Default-Sink**: `alsa_output.usb-SteelSeries_SteelSeries_GameDAC_000000000000-00.analog-game`
-- **Nach Rebuild**: Files stehen in `/etc/alsa-card-profile/...` + `/etc/wireplumber/...` (systemweit, survives Reinstall)
-- **pavucontrol**: Unterhaltung-Ausgabe + Spiel-Ausgabe + Mic-Eingang (nicht Pro-Audio)
+### GameDAC Pro-Audio + Wine-ALSA 5.1 (2026-09-14, final)
+- **Ansatz**: Pro-Audio (roh AUX0–5, knackfrei) + Wine/Proton über ALSA-Backend für 5.1.
+- **Devices (pro-audio, roh)**:
+  - `pro-output-0` : 2ch  (Chat, `hw:0,0`)
+  - `pro-output-1` : 6ch  (Game, `hw:1,0`) = 5.1 (AUX0–AUX5, kein chmap)
+  - `pro-input-0`  : 1ch  (Mic,  `hw:0,0`)
+- **Knacken-Ursache (bewiesen)**: Der Treiber meldet `chmap-fixed=FL,FR,FC,LFE,RL,RR`. Sobald PipeWire die 6 Kanäle **semantisch** führt (egal wie: ACP, `audio.position`, `use-chmap`, `channelmix.disable`, virtueller Sink) → **Knacken** (GameDAC-Firmware). Nur rohes `AUX0-5` ist knackfrei. Nicht USB, nicht quantum, nicht suspend — rein die semantische Channel-Map.
+- **5.1-Lösung für Spiele**: Wine's **ALSA-Backend (`winealsa`) erkennt 5.1 anhand der KANALZAHL** (`get_channel_mask`: `case 6: return KSAUDIO_SPEAKER_5POINT1`), nicht anhand der semantischen Map. Das Pulse-Backend (`winepulse`) ist das Problem. Global gesetzt in `modules/home/mortiferus/default.nix`:
+  - `home.sessionVariables.WINEALSA_CHANNELS = "6"` (braucht GE-Proton 10-27+)
+  - `home.sessionVariables.WINEDLLOVERRIDES = "winepulse.drv=d"`
+  - Weg: Wine → ALSA `default` → PipeWire → `AUX0-5` (roh, sauber) → GameDAC. Verifiziert: PoE2 läuft `F32LE 6 48000`.
+  - Stereo-Spiele: laufen normal (FL/FR + Stille). Kein Upmix.
+- **Implementation** (`modules/hardware/gamedac.nix`, nur nex): `51-gamedac-profiles.conf` (pro-audio), `52-gamedac-stable.conf` (suspend-timeout 0), `99-lowlatency`.
+- **WICHTIG (Match-Syntax)**: WirePlumber-Matches sind **Regex** (`~`-Präfix), kein Glob! `.*` für Serial-Teil, `$` End-Anker.
+- **Nur normaler Modus**: Hi-Res (0x1283) liefert nur Stereo-PCM + Mono-Mic → kein 5.1. Hi-Res am GameDAC auslassen.
 
 ### Alte Ansätze (verworfen)
 - ~~5.1 Loopback~~ (`gamedac-5.1.conf`) — Channel-Names AUX0-AUX5, Proton erkannte nur Stereo
-- ~~Pro-Audio Profil~~ — Kanäle nicht korrekt gemappt, Channel-Namen falsch
+- ~~Pro-Audio + Kanal-Mapping (`audio.position = FL FR FC LFE RL RR`)~~ — Knacken (GameDAC-Firmware)
+- ~~Custom ACP-Profil (kilofox, mit/ohne skip-probe)~~ — Knacken
+- ~~`channelmix.disable`~~ — Knacken (Knacken kommt nicht vom Mixer)
+- ~~`use-chmap = true`~~ — Knacken
+- ~~Virtueller 5.1-Sink (Loopback)~~ — Knacken
 - ~~HeSuVi / Virtual Surround~~ — GameDAC DSP macht räumliches Audio aus Stereo-Eingang
-- ~~Artenic-ASM / Software-ChatMix~~ — GameDAC hardwareseitig besser (separate Outputs)
+- ~~Arctis Sound Manager (ASM, 2026-08-30 → 2026-09-14)~~ — getestet, wieder entfernt: EQ/Presets nett, aber kein Hardware-ChatMix-Dial, Mikro/Default-Sink-Frickelei (redirect_audio_on_connect), Generic-Mode-Verwirrung. Hardware-ChatMix (separate Outputs) ist uns lieber.
 
 ### ChatMixer (deaktiviert 2026-08-18)
 - **Kein Software-Chatmix mehr nötig** — GameDAC bietet hardwareseitig zwei separate Ausgänge
@@ -662,25 +669,23 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 
 ### GameDAC stabil halten – Liedwechsel-Knacken (2026-08-31)
 - **Symptom**: kleines "Knacken" bei jedem Liedwechsel (als würde das Gerät neu starten), YouTube + andere Quellen
-- **Signalweg**: `Zen → sonar-media-eq (LADSPA-EQ) → hesuvi-media (Virtual 7.1/HRTF-Convolution) → Downmix → GameDAC`
-- **Ausgeschlossen**: USB-Autosuspend (`power/control=on`), WirePlumber-Suspend (5 s; Kette suspendet nicht), `clock.force-quantum` (1024 half nicht), ASM-`pipewire_quantum` (war 0/auto)
-- **Ursache (bewiesen)**: Bei jedem Titelwechsel öffnet Chromium einen **neuen** Stream; die Kette fällt kurz in `idle` und die HeSuVi/Sonar-Convolution erzeugt beim Wiederanlaufen einen Transienten. Spatial-Audio für Media AUS → Knacken weg → Convolution ist der Übeltäter.
-- **Fix (persistent, ersetzt durch Upstream 2026-09-02)**: ASM-Paket war lokal gepatcht → Filter-Ketten mit `node.pause-on-idle = false`. Die Kette pumpt im Leerlauf Stille weiter und fällt nie in `idle` → Convolution behält ihren Zustand, kein Transient. Überlebte jede ASM-Regeneration.
-  - **Upstream aufgenommen in v1.4.14 (2026-09-01)**: Issue **#223** https://github.com/loteran/Arctis-Sound-Manager/issues/223 → Commit `de79748` „keep Media HeSuVi convolver warm across track changes". `node.pause-on-idle = false` nun **Media-only** (andere Kanäle behalten Idle-Suspend aus #180). In-place-Repair patcht bestehende Installs automatisch.
-  - **Lokaler Patch entfernt (2026-09-02)**: `scripts/asm-pause-on-idle.py` gelöscht, `overrideAttrs` in `hosts/nex/configuration.nix` entfernt. Voraussetzung: ASM-Version ≥ v1.4.14 im Flake.
-- **Erste (vorläufige) Fixes** (`51-gamedac-stable.conf` in `audio.nix`): `session.suspend-timeout-seconds = 0` auf dem GameDAC-Sink + Rate-Pin 48k/2ch (Enum bleibt S16LE) — **entfernt (2026-09-08)**, Workaround-Überbleibsel, durch Upstream-#223 abgegolten
-- **Wartungs-Falle**: verwaiste User-Unit `~/.config/systemd/user/arctis-manager.service` (Symlink auf alten Store-Pfad) überschattete die NixOS-Unit und hielt den alten Daemon am Leben → entfernt (Backup `/tmp/opencode/`). Nach Paket-Override immer prüfen, dass der Daemon auf dem neuen Pfad läuft.
-- **Status**: lokal gefixt → upstream aufgenommen → lokaler Patch entfernt. Verifiziert, solange Flake auf v1.4.14+ ist.
+- **ASM-Ära-Ursache** (bewiesen): Bei jedem Titelwechsel öffnet Chromium einen **neuen** Stream; die ASM-HeSuVi-Convolution fiel kurz in `idle` und erzeugte beim Wiederanlaufen einen Transienten. (→ Upstream issue #223, `node.pause-on-idle = false`, mittlerweile irrelevant da ASM entfernt.)
+- **kilofox-Ära-Fix** (aktuell): `52-gamedac-stable.conf` → `session.suspend-timeout-seconds = 0` auf den GameDAC-Ausgangs-Sinks. Der Hardware-Node suspendet nie → kein "Aufwach"-Knacken bei Stream-Neustart.
+- **Wartungs-Falle**: verwaiste User-Unit `~/.config/systemd/user/arctis-manager.service` (Symlink auf alten Store-Pfad) überschattete die NixOS-Unit und hielt den alten Daemon am Leben → entfernt (Backup `/tmp/opencode/`).
+- **Status**: Pro-Audio (AUX0-5) + Nie-Suspend aktiv. 5.1 über Wine-ALSA. Kein ASM mehr.
 
-### Files (2026-08-27)
-- `modules/hardware/audio.nix` — GameDAC Profile + WirePlumber + `environment.etc` (aktiv)
-- ~~`modules/hardware/audio.nix` (`51-gamedac-stable.conf`)~~ — Nie-Suspend + fixe hw_params (2026-08-31), entfernt (2026-09-08)
-- `scripts/asm-pause-on-idle.py` — Patch für ASM-Paket (pause-on-idle in Filter-Ketten-Props) (2026-08-31)
+### Files (2026-09-14)
+- `modules/hardware/audio.nix` — Basis-PipeWire (enable/alsa/pulse/wireplumber) für **alle Hosts** (common.nix)
+- `modules/hardware/gamedac.nix` — GameDAC Pro-Audio (AUX0-5) + Low-Latency + WirePlumber (`51-gamedac-profiles.conf`, `52-gamedac-stable.conf`) — **nur nex** (import in `hosts/nex/configuration.nix`)
+- `modules/home/mortiferus/default.nix` — `home.sessionVariables` = `WINEALSA_CHANNELS=6` + `WINEDLLOVERRIDES=winepulse.drv=d` (Wine-ALSA 5.1)
 - `home/mortiferus/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
 - `home/backbone/config/pipewire/pipewire.conf.d/chatmixer.conf.disabled` — Game + Chat DSP Chains (deaktiviert)
+- ~~`scripts/asm-pause-on-idle.py`~~ — gelöscht (2026-09-02, ASM entfernt)
 - ~~`home/mortiferus/config/pipewire/pipewire.conf.d/gamedac-5.1.conf.disabled`~~ — gelöscht (2026-08-27)
 - ~~`~/.config/alsa-card-profile/`~~ — user-local Files gelöscht, via `environment.etc` ersetzt (2026-08-27)
 - ~~`~/.config/wireplumber/wireplumber.conf.d/51-gamedac-profiles.conf`~~ — user-local File gelöscht, via `environment.etc` ersetzt (2026-08-27)
+- ~~`~/.config/autostart/arctis-manager.desktop`~~ — entfernt (2026-09-14, ASM raus)
+- ~~`~/.config/arctis_manager/`, `~/.config/arctis-sound-manager/`, `~/.config/pipewire/filter-chain.conf.d/`~~ — ASM-Runtime-Reste entfernt (2026-09-14)
 
 ## Installation (2026-08-15, aktualisiert 2026-08-17)
 

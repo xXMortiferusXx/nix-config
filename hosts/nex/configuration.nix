@@ -12,6 +12,7 @@
       ../../modules/hardware/nvidia-only.nix
       ../../modules/hardware/legion.nix
       ../../modules/hardware/touchpad.nix
+      ../../modules/hardware/gamedac.nix
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
       
@@ -21,12 +22,6 @@
     ];
 
   networking.hostName = "nex";
-
-  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround.
-  # Nur für nex (Headset); styx läuft ohne.
-  # Fix fürs Liedwechsel-Knacken ist seit v1.4.14 upstream (issue #223),
-  # der lokale Patch (asm-pause-on-idle.py) wurde entfernt.
-  services.arctis-sound-manager.enable = true;
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
   services.displayManager.noctalia-greeter.passwordless-sync-users = [ "mortiferus" ];
