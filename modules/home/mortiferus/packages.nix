@@ -48,7 +48,7 @@ pkgs: with pkgs; [
     qalculate-gtk
 
     # --- Development & 3D Printing ---
-    opencode
+    #opencode
     prusa-slicer
     orca-slicer
 
