@@ -8,7 +8,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `293724d3a81847ad4ff4214611c426316d7f45d9` (2026-09-10, revCount 893), Version `0.1.0`
+- Aktuelle Rev: `2f2e4e3a693dea7c83850e1aa20037799ee3c8be` (2026-09-16, revCount 953), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -42,7 +42,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 293724d / 2026-09-10)
+## Feature-Tracker (Stand: Rev 2f2e4e3a / 2026-09-16)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -59,9 +59,26 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Named Workspaces in `default_workspace` | String-Workspace-Targets (`"CHAT"`) neben Integer | verfügbar, nutzen Integer (bevorzugt) |
 | Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
-| `output.<NAME>.layout.scrolling.default_width_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
+| `output.<NAME>.layout.scrolling.default_extent_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-17** (Update auf Rev `2f2e4e3a`, `nix flake update`): seit `6ca1d08` 8 Commits (RevCount 945→953).
+  **3 Breaking Changes, alle = „extent-based sizing vocabulary" (Width/Height → Primary/Secondary Extent):**
+  1. `feat(config)!: rename layout.scrolling default width to extent` (`32cc131`):
+     `layout.scrolling.default_width_fraction` → **`default_extent_fraction`** (auch `output.<NAME>.layout.scrolling.*`).
+  2. `Default Size Refactor #229` (`8a2c591`): Window-Rules umbenannt —
+     `default_size = [w,h]` → **`default_floating_size_px = { width, height }`**;
+     `default_width` (tiled scrolling) → **`default_scrolling_extent`**;
+     `default_height` → `default_floating_size` (nicht genutzt).
+  3. `feat(layout)!: adopt extent-based sizing vocabulary` (`2f2e4e3`): Actions + `width_presets` umbenannt —
+     `layout.width_presets` → **`extent_presets`**;
+     `window-cycle-width` → **`window-cycle-primary-extent`** (analog `-height` → `-secondary-extent`,
+     `window-modify-width/height` → `window-modify-primary/secondary-extent`, `window-set-*` ebenso).
+  **Alle 3 Hosts migriert** (layout.toml, keybinds.toml `Mod+R`, rules.toml) → `umbriel validate` = `config: ok`
+  gegen die laufende (neue) Binary auf nex; backbone/lion per `-c` validiert. Sonstiges Neues (automatisch):
+  `new_exits_fullscreen` (#240), `layout.master.new_becomes_master` (#174), center-master (#140), per-axis
+  Touchpad-Scroll-Factor (#222), resize-from-named-edge (#208), Keyboard-Shortcut-Inhibition (9453b67) —
+  kein Handlungsbedarf (optionale Keys).
 - **2026-09-10** (Update auf Rev `293724d`, `nix flake update`): seit `a588733d` ~19 Commits (RevCount 874→893).
   **Keine Breaking Changes / keine Config-Umbenennungen.** Kernthema = **PR #214: `xdg-foreign-unstable-v2`**
   (Server-Protokoll): Dialoge werden jetzt über dem Parent platziert (auch „center a dialog over what shows

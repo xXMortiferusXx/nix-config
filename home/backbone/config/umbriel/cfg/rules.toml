@@ -12,13 +12,13 @@ default_floating = true
 [[window_rule]]
 match.app_id = "^org.pulseaudio.pavucontrol$"
 default_floating = true
-default_size = [800, 600]
+default_floating_size_px = { width = 800, height = 600 }
 
 # ── Workspace 1: Browser ──
 [[window_rule]]
 match.app_id = "^zen-beta$"
 default_workspace = 1
-default_width = 1.0
+default_scrolling_extent = 1.0
 opacity = 0.95
 blur = true
 
@@ -31,20 +31,20 @@ default_floating = true
 [[window_rule]]
 match.app_id = "^[Ll]egcord$"
 default_workspace = 2
-default_width = 1.0
+default_scrolling_extent = 1.0
 opacity = 0.95
 
 [[window_rule]]
 match.app_id = "^discord$"
 default_workspace = 2
-default_width = 1.0
+default_scrolling_extent = 1.0
 opacity = 0.95
 
 # ── Workspace 3: Gaming (Launcher) ──
 [[window_rule]]
 match.app_id = "^(steam|net.lutris.Lutris|com.heroicgameslauncher.hgl|io.github.krawek.cartridges|faugus-launcher|heroic|page.kramo.Cartridges)$"
 default_workspace = 3
-default_width = 1.0
+default_scrolling_extent = 1.0
 opacity = 0.95
 
 # Steam Overlay & Chat floating
@@ -52,13 +52,13 @@ opacity = 0.95
 match.app_id = "^steam$"
 match.title = "^(Freunde|Steam-Einstellungen|Friends|Chat|Settings|Server Browser)"
 default_floating = true
-default_size = [1272, 830]
+default_floating_size_px = { width = 1272, height = 830 }
 
 # Steam-Benachrichtigungen & kleine Popups: floating, schmal, ohne Fokus-Klau
 [[window_rule]]
 match.title = "^(Steam - News|Freundesliste|notificationtoasts_.*)$"
 default_floating = true
-default_size = [300, 480]
+default_floating_size_px = { width = 300, height = 480 }
 default_focused = false
 
 # ── Workspace 4: Spiele ──
@@ -92,7 +92,7 @@ vrr = "always"
 
 [[window_rule]]
 match.app_id = "^(org.gnome.Nautilus|thunar)$"
-default_width = 0.5
+default_scrolling_extent = 0.5
 
 # ── Layer: Noctalia-Flächen bluren ──
 [[layer_rule]]

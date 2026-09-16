@@ -93,7 +93,7 @@
 "Mod+CTRL+9" = "window-move-to-workspace:9"
 
 # ─── Resize ───
-"Mod+R" = "window-cycle-width"
+"Mod+R" = "window-cycle-primary-extent"
 
 # ─── Scratchpad ───
 "Mod+Tab"       = "scratchpad-toggle:default"
