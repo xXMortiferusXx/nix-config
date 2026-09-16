@@ -146,6 +146,9 @@
 - **DTS:X**: ohne SteelSeries GG Keep-Alive (nicht auf Linux verfügbar) crasht der DTS:X-DSP → **kein DTS:X auf Linux** (Known Limitation). Räumliches Audio übernimmt ASM/HeSuVi.
 - **Mic**: Noise Gate/NC/EQ fehlen auf Linux; Sidetone via HID `0x39`.
 
+### TODO (backlog)
+- **Sidetone GUI-Regler funktionsfähig machen — rein software-seitig, OHNE HID**: GameDAC-Hardware-Sidetone ist deaktiviert (zuviel Hintergrundgeräusche, kein Filter auf der HW möglich). Ziel = Notebook-Rauschen beim Sprechen unterdrücken via Software-Pfad (vermutlich Mic-Backchannel durch PipeWire mit Noise-Suppression/Filter, bevor es als Input in die Chat-Kette geht). Der ASM-GUI-Sidetone-Regler bekommt genau dafür eine Funktion. Nicht jetzt — nur Gedankenzug festhalten.
+
 ### PipeWire-Fact für eigene Filter-Chains
 - `bqeq` existiert **nicht** in PipeWire 1.6.8 → `bq_lowshelf` / `bq_peaking` (mit Unterstrich) verwenden, sonst crasht die ganze Chain.
 
