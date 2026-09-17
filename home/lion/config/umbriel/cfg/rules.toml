@@ -123,34 +123,18 @@ default_floating = false
 default_scrolling_extent = 1.0
 vrr = "always"
 
-# ── Roblox Studio (Vinegar/XWayland) ──
-# Auf nex live verifiziert: Studio bleibt normal bedienbar, wenn alle
-# robloxstudiobeta.exe-Fenster getiled auf W4 liegen.
-#
-# WICHTIG (aus dem Live-Test): Die 3 Hilfsfenster ("RobloxStudio") sind
-# Wine-Menü-Fenster. Sie versuchen beim Öffnen aktiv Fokus zu klauen →
-# Fokus-Optionen auf ALLE Fenster erzeugten Eingabe-Grabbing
-# ("dauerhaft Links"), default_maximize aufs Hauptfenster machte vinegar
-# unbedienbar. Daher: Nur Basis-Tiling per app_id, plus gezielte
-# Fokusblockade nur auf die Hilfsfenster.
+# ── Roblox Studio (Vinegar/XWayland, virtual desktop) ──
+# Mit `virtual_desktop` erzeugt Wine genau EIN Top-Level-Fenster mit
+# app_id `explorer.exe` (Titel `<UUID> - Wine Desktop`). Studio-Hauptfenster
+# und die 3 Hilfsfenster ("RobloxStudio") sind nur noch wine-interne Fenster
+# darin und erscheinen nicht mehr als eigene X11-Fenster → nur dieses eine
+# Virtual-Desktop-Fenster matchen und nach W4 legen.
 [[window_rule]]
-match.app_id = "^robloxstudiobeta\\.exe$"
+match.app_id = "^explorer\\.exe$"
+match.title = "Wine Desktop$"
 default_workspace = 4
 default_floating = false
 vrr = "always"
-
-# Hauptfenster ("... - Roblox Studio"): maximiert (volle Breite) starten.
-[[window_rule]]
-match.app_id = "^robloxstudiobeta\\.exe$"
-match.title = "Roblox Studio"
-default_maximize = true
-
-# Hilfsfenster ("RobloxStudio" 100x100): keinen Fokus klauen.
-[[window_rule]]
-match.app_id = "^robloxstudiobeta\\.exe$"
-match.title = "^RobloxStudio$"
-default_focused = false
-focus_on_activate = false
 
 # ── PrismLauncher + Minecraft (Workspace 3/4) ──
 # Launcher → W3 (wie übrige Launcher). Minecraft-Fenster (via Prism, XWayland)
