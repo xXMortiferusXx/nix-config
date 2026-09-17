@@ -12,6 +12,7 @@
         mangohud
         bibata-cursors
         pulseaudio
+        libusb1
       ];
       extraEnv = {
         XCURSOR_THEME = "Bibata-Modern-Ice";
