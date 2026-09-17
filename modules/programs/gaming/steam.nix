@@ -11,6 +11,7 @@
       extraPkgs = pkgs: with pkgs; [
         mangohud
         bibata-cursors
+        pulseaudio
       ];
       extraEnv = {
         XCURSOR_THEME = "Bibata-Modern-Ice";
