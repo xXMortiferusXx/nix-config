@@ -14,9 +14,9 @@
   - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
   - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
 - `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – **Zen-Kernel** (`pkgs.linuxPackages_zen`, immer die aktuelle Version; seit 2026-09-08, vorher CachyOS), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter mehr** (NVIDIA-only)
+- `system/boot-nex.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter** (NVIDIA-only)
 - `system/boot-styx.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher `linuxPackages_latest`)
-- `system/boot-lion.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher CachyOS), AMD-PStates aktiv, ZRAM 100%
+- `system/boot-lion.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), AMD-PStates aktiv, ZRAM 100%
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -528,20 +528,29 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **Alle Hosts (nex, styx, lion-pc, test)**: `boot.kernelPackages = pkgs.linuxPackages_zen` (seit 2026-09-08)
-  - Zen-Kernel = **immer die aktuelle Version** (kein LTS-Variant in nixpkgs, nur `linux_zen`), aktuell `7.2.3-zen1`, kommt aus dem offiziellen `cache.nixos.org` Binary-Cache → **kein langer Lokal-Build** bei frischen Installationen
-  - **Wechsel-Grund**: CachyOS-Kernel musste bei neuer Hardware (lion-pc) von Source gebaut werden (zu lange); Zen-Kernel ist sofort verfügbar
-  - CachyOS hatte per `7.2/gaming-sched`-Branch das Feature "flatten the pick" (Zen/XanMod bekommen es erst mit Kernel 7.3)
-  - Flake-Input `nix-cachyos-kernel` + Binary-Cache `attic.xuyh0120.win/lantian` **entfernt** (2026-09-08)
-  - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
-- Vorher: nex + lion-pc CachyOS (`cachyos-latest`, seit 2026-08-20), styx `linuxPackages_latest`
-- CachyOS-Kernel am 2026-08-06 bereits einmal entfernt gewesen (alte Configs in `archive/cachyos-kernel/` für Wiederherstellung)
-- `nixpkgs-small` entfernt (war nur für CachyOS-Tests, wird nicht mehr benötigt)
+- **nex + lion-pc**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` (seit 2026-09-19), aktuell `linux-cachyos-latest-7.2.6`
+- **styx + test**: weiter `pkgs.linuxPackages_zen`
+- **Input** `nix-cachyos-kernel` (`github:xddxdd/nix-cachyos-kernel`, **keine Branch-Pin** → Default-Branch `master`):
+  - Warum master statt `release`: release-Branch ist **veraltet** (`444d135`, 09-12 = Kernel 7.2.4); master (`b4e1f53`, 09-19) = `7.2.6` (Hydra-Eval 1801, hydra.lantian.pub/eval/1801)
+  - Kein Branch-Pin → folgt automatisch den neuen Auto-Update-Ständen. Update: `nix flake update nix-cachyos-kernel`
+- **Binary-Cache** `attic.xuyh0120.win/lantian` wieder aktiv (`modules/system/nix-settings.nix`): Kernel + Komponenten substituierbar (narinfo 200) → **kein langer Lokal-Build**
+  - Cache ist privat gehostet und kann kurzzeitig langsam/unerreichbar sein (einmal NAR-Download failed) → Retry oder `--fallback`
+- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `cachyos-tuning.nix`, Zen konnte das nicht)
+- `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
+- Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
 - `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
 - **nex NVIDIA-only** (2026-08-12):
   - `amdgpu.dcfeaturemask`, `amdgpu.dcdebugmask`, `nvidia.NVreg_DynamicPowerManagement` entfernt
   - Alte `boot-nex.nix` mit PRIME-Parametern archiviert unter `archive/modules/system/boot-nex-prime.nix`
   - `amd_pstate=active` bleibt (AMD-CPU-PState, nicht GPU)
+
+## Log-Sauberkeit (2026-09-19/20, Fixes)
+- **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
+- **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
+- Nach Rebuilds: **0 failed Units** auf nex + lion-pc
+- **kvm_amd: SVM not supported** (lion-pc, rot): CPUID-Flag `svm` fehlt → AMD-V im UEFI deaktiviert. Entscheidung: **kvm-amd in kernelModules behalten**, User aktiviert SVM im BIOS → danach Eintrag weg. Kein Config-Fix
+- **mod.rt "could not set nice-level to -11"** (beide): **harmloser Boot-Race** — rtkit startet 1 s später und grantet nice -11 an alle Pipewire-Threads (rtkit-Log belegt). Kein Fix nötig
+- Restliche Meldungen nur kosmetisch (ACPI-Symbole/Bios nex, iwlwifi session-protection, amdgpu infoframe, sticky mixer USB, gkr-pam, accounts-daemon /etc/tcb, resolved DoT-degraded) — Hardware/Firmware, **nicht** per Config zu bereinigen
 
 ## Legion Conservation Mode (`hardware/legion.nix`)
 - `systemd.services.legion-conservation-mode`: setzt `conservation_mode = 1` bei jedem Boot
