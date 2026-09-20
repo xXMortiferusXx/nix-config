@@ -54,6 +54,9 @@ in
 
   systemd.user.tmpfiles.rules = [
     "L+ %h/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest - - - - ${lib.getOutput "steamcompattool" pkgs.proton-ge-bin}"
+    # obexd (BT-Dateiübertragung) braucht den Root-Ordner, sonst bricht er ab
+    # (exit 1 → start-limit-hit). Automatisch bei jedem Login / Neuinstallation anlegen.
+    "d %h/Downloads/Bluetooth 0755 - - -"
   ];
 
   systemd.user.services = {

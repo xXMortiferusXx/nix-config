@@ -20,6 +20,10 @@
 
   networking.hostName = "lion-pc";
 
+  # Bluetooth (Intel AX210): Dienst aktivieren — fehlte bisher, wodurch
+  # wireplumber ("BlueZ system service is not available") und der obex-Service meckerten.
+  hardware.bluetooth.enable = true;
+
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
   boot.kernelModules = [ "i2c-dev" ];
   users.groups.i2c = {};
