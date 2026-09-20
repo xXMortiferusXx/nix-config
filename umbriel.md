@@ -8,7 +8,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `2f2e4e3a693dea7c83850e1aa20037799ee3c8be` (2026-09-16, revCount 953), Version `0.1.0`
+- Aktuelle Rev: `8929c2d88f351ed33f8f5b39b69f79b190f8e89c` (2026-09-20, revCount ~981), Version `0.1.0`
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -42,7 +42,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 2f2e4e3a / 2026-09-16)
+## Feature-Tracker (Stand: Rev 8929c2d / 2026-09-20)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -62,6 +62,13 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `output.<NAME>.layout.scrolling.default_extent_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
 
 ## Zuletzt gecheckt
+- **2026-09-20** (Update auf Rev `8929c2d`, `nix flake update`): seit `2f2e4e3a` **28 Commits, keine Breaking Changes, kein Config-Schema-Wechsel** (Parser/Config unberührt) → keine Migration nötig.
+  **Kernthemen:**
+  1. **Animationen maßvoll überarbeitet**: Sammel-Revert `31601e0` („drop all recent animations work", zu viele Regressions) → danach gezielt neu eingeführt: `feat(layout) animate tiled windows + close ghosts` `3649a44`, `fix(animation) preserve tiled close lifetime` `8929c2d`, `distinguish built-in window slide`, `keep consume/expel transitions direct`. Overview: Spring-Tail-Fixes (`f0b3830`, `76cede1`). Falls visuelle Animationen komisch wirken → liefert diese Rev-Bewegung die Erklärung.
+  2. **`feat(output): support protocol-driven output disable`** (`61c580b`): Outputs per Protokoll de-/aktivierbar (z.B. Docking, wlr-randr/Ext-Management) — kein Config-Key.
+  3. **Scratchpad-/Fokus-Fixes**: `keep visible scratchpad focus on workspace switch` (#245, `a00cabf`); `scratchpad scope retention` (`2625236`); **Portal-Dialoge erben Scratchpad-Parent** (`42e7ef3`) — gut für Steam/Electron-Dialoge.
+  4. **Sonstiges** (automatisch): `fix(output) cover physical edges at fractional scales` (`bc95a27`), `fix(input) refresh hover after client fullscreen exit` (`aa9d523`), `perf(umbrielfx) disable implicit flush` (#228), Tests für Focus-Stealing/Scratchpad, Doku (Guix), `window-toggle-floating` mit optionalem Action-Arg (#252). Kein Handlungsbedarf.
+  **Status**: Laufender Stand sauber; `umbriel validate` = `config: ok` erwartet, Switch + Login-Neustart offen (user macht das).
 - **2026-09-17** (Update auf Rev `2f2e4e3a`, `nix flake update`): seit `6ca1d08` 8 Commits (RevCount 945→953).
   **3 Breaking Changes, alle = „extent-based sizing vocabulary" (Width/Height → Primary/Secondary Extent):**
   1. `feat(config)!: rename layout.scrolling default width to extent` (`32cc131`):

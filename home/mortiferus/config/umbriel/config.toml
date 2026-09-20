@@ -20,8 +20,7 @@ files = [
   "cfg/keybinds.toml",
   "cfg/layout.toml",
   "cfg/rules.toml",
-  "noctalia.toml",
-]
+  ]
 
 [general]
 xwayland = true
@@ -48,3 +47,6 @@ workspace_wallpaper = false
 [colors.overview]
 background_tint = "#f9f9f900"        # Schleier komplett weg → Wallpaper unangetastet
 workspace_background = "#00000044"  # leere Workspaces transparent
+
+[include.optional]
+files = ["noctalia.toml"]
