@@ -57,8 +57,10 @@
     # - Binary Cache: https://attic.xuyh0120.win/lantian
     # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
     # - Packages: pkgs.cachyosKernels.linuxPackages-cachyos-latest
+    # Keine Branch-Pin: folgt dem Default-Branch (master, Auto-Update).
+    # Kernel-Stand über flake.lock gepinnt; Update: nix flake update nix-cachyos-kernel
     nix-cachyos-kernel = {
-      url = "github:xddxdd/nix-cachyos-kernel/release";
+      url = "github:xddxdd/nix-cachyos-kernel";
     };
 
     # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)

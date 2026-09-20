@@ -1,10 +1,7 @@
-# Boot-Konfiguration fuer nex (Zen Kernel — TEMPORÄR, CachyOS-Umstellung pausiert)
+# Boot-Konfiguration fuer nex (CachyOS Kernel)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
 # CachyOS Kernel via xddxdd/nix-cachyos-kernel — bessere Latenz + Performance,
 # bringt den "adios" I/O-Scheduler mit (ff. udev-Regel in cachyos-tuning.nix).
-# TEMP-Zustand: kernelPackages auf Zen zurückgestellt, damit erst einmal ohne
-# Kernel-Wechsel gebaut wird (Cache aktivieren). Danach wieder:
-#   boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -15,7 +12,7 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   boot.kernelParams = [
