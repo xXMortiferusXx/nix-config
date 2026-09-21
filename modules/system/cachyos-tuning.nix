@@ -27,7 +27,7 @@
     # Scheduler nur auf ganze Block-Devices (DEVTYPE=disk) setzen —
     # Partitionen (nvme0n1p1, sda1, ...) haben kein queue/scheduler-Attribut
     # und erzeugen sonst udev-"Could not chase"-Fehler
-    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="adios"
+    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="kyber"
     ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="kyber"
     ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 

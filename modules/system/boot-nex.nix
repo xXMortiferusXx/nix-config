@@ -1,7 +1,11 @@
-# Boot-Konfiguration fuer nex (CachyOS Kernel)
+# Boot-Konfiguration fuer nex (Standard-Latest Kernel)
 # Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
-# CachyOS Kernel via xddxdd/nix-cachyos-kernel — bessere Latenz + Performance,
-# bringt den "adios" I/O-Scheduler mit (ff. udev-Regel in cachyos-tuning.nix).
+# CachyOS Kernel via xddxdd/nix-cachyos-kernel temporaer deaktiviert:
+# NVIDIA 615 scheitert am CachyOS __to_hwgpio-Patch. Overlay bleibt aktiv,
+# damit bei einem CachyOS-Kernel-Update einfach die Zeile wieder aktiviert
+# werden kann (siehe unten).
+# Hinweis: der "adios" I/O-Scheduler existiert nur im CachyOS-Kernel —
+# in cachyos-tuning.nix daher auf "kyber" umgestellt.
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -12,7 +16,9 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+  # CachyOS-Kernel deaktiviert (Fallback bei Kernel-Update): Zeile wieder aktivieren
+  # boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   boot.kernelParams = [
