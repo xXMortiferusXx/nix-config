@@ -8,11 +8,11 @@
       },
       "locked": {
         "dir": "nix",
-        "lastModified": 1789856203,
-        "narHash": "sha256-B2R+yIECarL60gkp1eJpDQD6XxztGCif12bsjh0h0yE=",
+        "lastModified": 1789973816,
+        "narHash": "sha256-+eHBr9fRxrrj8H+8I8KfAHo8GP4M8DKIt06Cj9HsWtU=",
         "owner": "xXMortiferusXx",
         "repo": "Arctis-Sound-Manager",
-        "rev": "dba1d82ae600ac5a266e683e1bd9b897a8ecf314",
+        "rev": "55a7470d9ca0e367eb5cb3d61bf3b91b1e3dbf00",
         "type": "github"
       },
       "original": {

@@ -125,17 +125,17 @@
 2. sodiboo-Flake broken → Zurück zu `pkgs.niri` aus nixpkgs (wenn upstream Bug gefixt)
 3. `niri-unstable` zu instabil → Auf `inputs.niri.packages.${system}.niri-stable` wechseln (älterer, getaggter Release)
 
-## Audio: Arctis Sound Manager (ASM) — aktueller Stand (2026-09-15, verifiziert)
+## Audio: Arctis Sound Manager (ASM) — aktueller Stand (2026-09-21, verifiziert)
 
 ### Setup
-- **ASM 1.4.26** aktiv, nur **nex**: `services.arctis-sound-manager.enable = true` in `hosts/nex/configuration.nix`; Flake-Input `github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix` (Fork, Main = Commit `38790d1`+) + `nixosModules.default`. stylx/lion laufen ohne. Upstream: `github:loteran/Arctis-Sound-Manager`.
+- **ASM 1.4.27+fork.1** aktiv (Backport von Upstream-Fixes auf den Fork), nur **nex**: `services.arctis-sound-manager.enable = true` in `hosts/nex/configuration.nix`; Flake-Input `github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix` (Fork, Main = Commit `55a7470d`, Fork-übernommene Patches: `348255f`/`38790d1`/`d67e88e`/`57f2b88` + Upstream-1.4.27-Backport) + `nixosModules.default`. stylx/lion laufen ohne. Upstream: `github:loteran/Arctis-Sound-Manager`.
+- Fork-Versionsschema: `1.4.27+fork.1` (PEP-440; `-fork.1` bricht Wheel-Build). Details zum Backport + ausgelassene Features (Clips/GUI-Umbau/Arctis-5) → `/home/mortiferus/Development/Arctis-Sound-Manager/memory.md`.
 - `modules/hardware/audio.nix` = **reines PipeWire** (enable/alsa/pulse/wireplumber) — keine Custom-ALSA-Profile, keine Custom-WirePlumber-Rules, kein Low-Latency-Quantum, kein Kanal-Mapping. Frühere LADSPA_PATH-/Quantum-Fixes entfernt; ASM steuert seine Ketten selbst.
 - **ASM-Sinks** (pw-loopback): Game/Media = **8ch 7.1** (Capture `channelmix.upmix=false`, `audio.position=[FL FR FC LFE RL RR SL SR]`), Chat = **2ch** (`audio.position=[FL FR]`). Fix-Kommits: `348255f` (8ch-Ankündigung), `38790d1` (Upmix statt Disable). `channelmix.upmix=false` verhindert den Stereo→7.1-Energie-Upmix am Sink, ohne den Mixer und Volume-Pfad zu brechen (Vergleich: `channelmix.disable=true` killt beides → kein Ton, kein Volume).
 - **HeSuVi Virtual Surround** (HRIR-Profile): `nahimic-` ist Gewinner (502 Samples, Core+Early-Reflections, neutralster Tilt 12.3). Immersion/Distance = per Sonar-GUI (z.B. 60/10). Verworfene Profiles: dtshx- (schlecht), atmos- (zu weit weg), gsx- (leise), sbx33/67/100 (falsches Klangbild).
 - **EQ**: Alle Bänder auf 0 dB (flach) — beide Media/Game identisch.
 - **Channel-Volumes**: Game/Media/Chat jeweils `70%` in `~/.config/arctis_manager/channel_volumes.json`. HeSuVi-Output-Regler: beide auf 100% (FW-1.0).
 - **WP-volume-restore-Falle (GELÖST, commit `d67e88e`)**: WirePlumber persistiert node-Volumes in `~/.local/state/wireplumber/stream-properties` und stellt sie beim Recreate wieder her — sehr versteckt. HeSuVi-Game-Output war einmal auf `0.2927` (−10.7 dB) hängen geblieben → Game dauerhaft leiser als Media, ohne sichtbare Ursache. Fix: ASM schreibt `93-asm-no-stream-restore.conf` mit `stream.rules` → `state.restore-props = "false"` für `effect_(input|output).virtual-surround-7.1-hesuvi*`. Damit speichert WP deren Volumes nie wieder (nur diese 4 internen Effect-Nodes; `Arctis_Game/Media/Chat` und HW-Sinks restorieren weiter normal). Die `stream.rules`-Sektion wird von `state-stream.lua` aus den gemergten `.conf.d`-Fragmenten gelesen — kein Allowlist-Eintrag nötig. Diagnose-Helfer: `grep -i "Virtual\|hesuvi" ~/.local/state/wireplumber/stream-properties` → jeder Wert ≠ 1.0 dort ist der Auslöser.
-- **Laufende Units** (user): `arctis-manager`, `arctis-stream-guard`, `arctis-video-router`, `arctis-firstrun-seed`. User-Unit ist der **korrekte Store-Symlink** (Wartungs-Falle damit endgültig gelöst).
 - **Laufende Units** (user): `arctis-manager`, `arctis-stream-guard`, `arctis-video-router`, `arctis-firstrun-seed`. User-Unit ist der **korrekte Store-Symlink** (Wartungs-Falle damit endgültig gelöst).
 - **Runtime-Dateien** (ASM-managed, NICHT im Repo): `~/.config/arctis_manager/`, `~/.config/arctis-sound-manager/`, `~/.config/pipewire/filter-chain.conf.d/`, `~/.config/wireplumber/wireplumber.conf.d/92-asm-no-suspend.conf`.
 
