@@ -238,6 +238,7 @@
   - Port 2 (Genesys 480M → TI 12M): GameDAC funktioniert NICHT (Hub-Reset propagiert)
   - **USB-C hinten**: Funktioniert einwandfrei (kein problematischer Hub im Pfad)
   - Externer USB-Hub: Funktioniert ebenfalls (anderer Hub-Chip)
+- **WICHTIG (2026-09-21 verifiziert)**: Das „TI Hub 12M" (0451:2036, TUSB2036) im Gerätebaum ist der **interne Splitter-Hub DES GameDAC** (ein Kabel, zwei Devices: Audio 1038:1282 + Control/HID 1038:1280, zwei Adressen kein Composite). Er ist bei JEDER Port-Wahl präsent, hat keine eigenen Buchsen und ist nie das Problem-Kriterium — elementar entscheidend ist nur der **Upstream-Hub** (interner Genesys = böse wegen Reset-Propagation; TetraHub/Cypress extern = ok; USB-C kein upstream Hub = ok). Aktuell (nex): GameDAC direkt auf Port 3 des externen Powered-Hubs (CY7C65640 TetraHub, 4p, 480M), dieser Zweig exklusiv für den GameDAC.
 - **Lösung**: GameDAC muss an USB-C angeschlossen werden (Adapter nötig, USB-A auf USB-C)
 - **Hinweis**: Das Problem ist laptop-spezifisch (interne Hub-Topologie). An Desktop-PCs mit direkten USB-Ports dürfte es nicht auftreten
 
