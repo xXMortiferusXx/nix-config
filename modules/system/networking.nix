@@ -15,8 +15,17 @@
   '';
   networking.firewall.enable = true;
   services.udisks2.enable = true;
+
+  # RFC 4821: MTU-Probing NUR für Verbindungen mit klassischem Blackhole-Verlust
+  # (z.B. Ubisoft Connect unter Proton) — Interface-MTU bleibt 1500, nichts anderes
+  # wird angefasst.
+  #
+  # Auskommentiert: Hat nichts am Ubisoft-Login geändert. Deaktiviert → Rückfall
+  # zum Kernel-Default (0). Wieder aktivieren nur, wenn ein Blackhole-Verlust
+  # nachweislich auftritt.
+  #boot.kernel.sysctl."net.ipv4.tcp_mtu_probing" = 1;
 #  networking.search = [ "lan" ];
-  
+
   # ────────────────── DNS CACHING ──────────────────
   # ASUS (192.168.50.1) macht DNS
   # Hier nur lokales Caching für schnellere Auflösung
