@@ -12,8 +12,11 @@
   users.users.mortiferus.packages = with pkgs; [
     lutris
     heroic
+    faugus-launcher
     gamescope
     #umu-launcher
     protonplus
+    winetricks
+    wineWow64Packages.stable
   ];
 }
