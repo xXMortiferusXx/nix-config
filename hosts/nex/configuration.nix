@@ -14,7 +14,6 @@
       ../../modules/hardware/touchpad.nix
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
-      
       ../../modules/users/mortiferus.nix
       ../../modules/home/mortiferus
       ./config-mounts.nix
