@@ -5,6 +5,13 @@
     enable = true;
     wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
   };
+  # WLAN-Backend iwd statt wpa_supplicant (2026-09-22):
+  # iwlwifi+wpa_supplicant verliert intermittierend die Assotiations-Sync →
+  # "verbunden, aber keine Konnektivität" bis zum manuellen Reconnect.
+  # iwd managt das Reassoziieren selbst und hält Suspend/Resume sauberer.
+  # HINWEIS: networking.wireless.iwd.enable wird vom NM-Modul automatisch
+  # gesetzt, sobald backend == "iwd".
+  networking.networkmanager.wifi.backend = "iwd";
   # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP.
   # `networking.wireless.regulatoryDomain` existiert nicht mehr. udev-Regel setzt
   # DE bei jeder Interface-Initialisierung (auch nach Suspend/Reconnect), weil

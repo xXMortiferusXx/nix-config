@@ -1,5 +1,67 @@
 # CachyOS-Rework Changelog
 
+## Garuda-Nix Abgleich (2026-09-22)
+
+Vergleich mit Garuda-Nix (`garuda-linux/garuda-nix-subsystem`): 71 `garuda.*`-Optionen
+geprüft. Ergebnis: Garuda-Nix portiert im Kern CachyOS-Wissen nach NixOS — zu ~90%
+deckungsgleich mit eigener Config. Übernommen/Nicht übernommen:
+
+### Übernommen (Netzwerk-Tweaks, `cachyos-tuning.nix` + `boot-nex.nix`)
+- ~~`net.core.default_qdisc` `fq → cake`~~ → **`fq` bleibt** (CAKE 2026-09-22
+  verworfen: am WLAN-Client nur Upload-Gewinn, Queue-Management gehört an den
+  ASUS-Router; `wlan0` mit `IFF_NO_QUEUE` ignoriert `default_qdisc` eh)
+- `net.ipv4.tcp_fin_timeout = 5` (vorher default 60)
+- `net.core.rmem_max = 2500000`
+- `boot.kernelModules` `tcp_bbr` wieder ergänzt (Garuda lädt es explizit; sysctl
+  griff sonst erst beim Modulload)
+- `networking.useDHCP = lib.mkDefault false` (`boot-nex.nix`, NM übernimmt DHCP)
+
+### Nicht übernommen (bewusst)
+- **Kein Kernel-Flip** auf Chaotic-Nyx (`linuxPackages_cachyos`): verlangt
+  Pendant-Treiber `nvidia_cachyos` **610.57.04** = Treiber-Downgrade ggü. nixpkgs
+  615 (CachyOS-Kernel-_`__to_hwgpio`_-Patch bricht 615). Kein wahrnehmbarer
+  Kernel-Gewinn vs. `linuxPackages_latest` → bleibt (`boot-nex.nix`).
+- **Kein `systemd.oomd`** (Garuda performance-tweaks): Druck-basierter Game-Killer
+  (CachyOS/Arch-Erfahrung), mit 100% ZRAM sogar frühanspringend. ZRAM bleibt OOM-Schutz.
+- **Chaotic-Nyx Input**: Endabrechnung 2026-09-22 → **nicht aufgenommen**.
+  Gründe: (1) `nvidia_cachyos` = 610.57.04, treibt wie xddxdd hinterher — nixpkgs
+  615 (unser Boot-Flip scheitert genau daran); (2) `mesa_git` bricht laut eigener
+  Warnung NVIDIAS libgbm; (3) Cache-Treffer nur bei Hash-Identität mit unserem
+  gepinnten nixpkgs-Rev (unstable driftet → oft Locally-Build); (4) einzig echte
+  Kandidaten (`gamescope_git`, `mangohud_git`, `latencyflex-vulkan`) sind
+  einzeln sinnvoller direkt als Flake-Input gepinnt — so wie zen/umbriel/lsfg-vk.
+  Kein weiterer Aufwand nötig; **für lion-pc (AMD/Radeon, ohne NVIDIA-Pairing)
+  bleibt Nyx ggf. interessant**.
+- `garuda.excludes`-Framework, impermanence, btrfs-maintenance (#beeesd):
+  irrelevant/nicht benötigt (ext4, kein impermanence).
+- xddxdd/nix-cachyos-kernel Overlay bleibt aktiv als Reserve.
+
+## WLAN-Backend iwd (2026-09-22)
+
+Symptom (WLAN, Intel iwlwifi): manchmal "verbunden, aber keine Konnektivität",
+behoben nur durch Trennen + Neuverbinden. Vormittagslog zeigte ~9 NM-Neustarts.
+Ursachen-Ablauf: iwlwifi+wpa_supplicant verlieren intermittierend die
+Assotiations-Sync (Link up, kein Verkehr).
+
+### Änderung (`modules/system/networking.nix`)
+- `networking.networkmanager.wifi.backend = "iwd"`
+- (NM-Modul aktiviert `networking.wireless.iwd.enable` selbst bei backend==iwd;
+  zusätzliche iwd-Settings weggelassen)
+- `wpa_supplicant.service` wird nicht mehr genutzt, User-/Gruppe entfernt.
+
+### Nebeneffekte (erwartet, ein Einmal-Aufwand)
+- **Interface-Umbenennung:** iwd benennt seine Default-Interface auf `wlan0` um
+  (vorher `wlp4s0`). Keine fest verdrahteten Namen im Repo.
+- **Einmalige Neu-Eintragung** der WLAN-Credentials nach dem ersten Wechsel
+  (bekannte NM↔iwd-PSK-Übertragungs-Quirk). Profile bleiben danach NM-verwaltet,
+  Autoconnect=yes → WLAN ist beim Boot verbunden (NM ist System-Service, kein
+  Login nötig).
+- iwd verbindet eigenen Standby/Reassociation-Management; Suspend/Resume soll
+  damit robuster sein (noch zu beobachten).
+- `wifi.powersave=false` bleibt; verifiziert: Autoconnect yes, DNS ok, 0% loss.
+
+---
+
 ## Post-Review Fixes (2026-06-21)
 
 ### cpupower zum System hinzugefügt

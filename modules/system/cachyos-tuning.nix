@@ -15,10 +15,17 @@
     "kernel.printk" = "3 3 3 3";           # Nur kritische Meldungen auf Konsole
     "kernel.unprivileged_userns_clone" = 1; # Unprivileged User-Namespaces für Flatpak/Container
 
-    # BBR TCP Congestion Control + fq Queue
+    # BBR TCP Congestion Control + fq Queue (cake verworfen 2026-09-22: bringt am
+    # WLAN-Client kaum etwas, Queue-Management besser am Router; default_qdisc
+    # greift bei wlan0 (iwd-rename, IFF_NO_QUEUE) ohnehin nicht)
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.ipv4.tcp_fin_timeout" = 5;
+    "net.core.rmem_max" = 2500000;
   };
+
+  # BBR-Modul sicher beim Boot laden (sonst greift die sysctl erst beim Modulload)
+  boot.kernelModules = [ "tcp_bbr" ];
 
   services.udev.extraRules = ''
     ACTION=="change", KERNEL=="zram0", ATTR{initstate}=="1", SYSCTL{vm.swappiness}="150", \
