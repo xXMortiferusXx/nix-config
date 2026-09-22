@@ -38,8 +38,10 @@
     "vm.max_map_count" = 16777216;
   };
 
-  # Legacy-DHCP aus — NetworkManager übernimmt (Garuda-Vergleich)
-  networking.useDHCP = lib.mkDefault false;
+  # Legacy-DHCP (dhcpcd) ist bei aktivem NetworkManager überflüssig — nixpkgs
+  # erzwingt im NM-Modul selbst useDHCP=false ("managed entirely by
+  # NetworkManager"). Explizite Option daher bewusst NICHT gesetzt (wäre nur
+  # Dokumentation und würde suggerieren, auf lion-pc/styx fehle etwas).
 
   zramSwap.memoryPercent = lib.mkForce 100;
 

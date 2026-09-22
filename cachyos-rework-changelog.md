@@ -14,7 +14,10 @@ deckungsgleich mit eigener Config. Übernommen/Nicht übernommen:
 - `net.core.rmem_max = 2500000`
 - `boot.kernelModules` `tcp_bbr` wieder ergänzt (Garuda lädt es explizit; sysctl
   griff sonst erst beim Modulload)
-- `networking.useDHCP = lib.mkDefault false` (`boot-nex.nix`, NM übernimmt DHCP)
+- ~~`networking.useDHCP = lib.mkDefault false`~~ → als Aktiv-Option **entfernt**:
+  Redundant — nixpkgs' NM-Modul erzwingt `useDHCP=false` selbst („managed
+  entirely by NetworkManager"); gilt damit für alle Hosts mit NM automatisch.
+  Kommentar in boot-nex.nix erklärt den Mechanismus.
 
 ### Nicht übernommen (bewusst)
 - **Kein Kernel-Flip** auf Chaotic-Nyx (`linuxPackages_cachyos`): verlangt
