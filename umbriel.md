@@ -8,7 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `8929c2d88f351ed33f8f5b39b69f79b190f8e89c` (2026-09-20, revCount ~981), Version `0.1.0`
+- Aktuelle Rev: `b83ccfd2029cc672ec3ee0bbeb10e3670df9299c` (2026-09-22, revCount 997), Version `0.1.0`
+  (Lock bereits per `nix flake update` gezogen — Stand 12:59 UTC)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -60,8 +61,28 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
 | `output.<NAME>.layout.scrolling.default_extent_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
+| `curve = "spring"` + `spring = { damping, stiffness }` (unter `animation.*`) | Spring-Physik statt zeitbasiert; Springs leiten Dauer selbst ab (`duration_ms` gilt dann nur für zeitbasierte Kurven) | verfügbar, nicht genutzt (easeout/snappy+duration_ms reicht; 2026-09-22) |
 
 ## Zuletzt gecheckt
+- **2026-09-22** (Lock-Update auf Rev `b83ccfd`, revCount 981→997): seit `8929c2d`
+  **16 Commits, KEINE Breaking Changes / kein Schema-Wandel** genau wie der
+  Lock-Stand verspricht. `umbriel validate` = `config: ok` auf allen 3 Hosts
+  (mortiferus/backbone/lion, gegen das neue Binary). **Kernthemen:**
+  1. **Animations-Rework („simpler")** `fb7ac63` + Spring-Physik `c6d7d57`/
+     `7869dab`: Defaults window → 200ms/150ms easeout; neue Config-Kurve
+     `curve = "spring"` mit `spring = { damping, stiffness }` (Spring leitet
+     seine Dauer selbst ab; `duration_ms` nur für zeitbasierte Kurven). Unsere
+     `cfg/animation.toml` (easeout/snappy + duration_ms) bleibt valide →
+     **kein Handlungsbedarf**; nur falls gewünscht: `windows_move` auf `"spring"`.
+  2. **Session**: `51e6528` startet gestartete Apps in **transienten
+     systemd-Scopes** (Isolation) — automatisch, passend zu unserem
+     systemd-user-Autostart gilt nichts zu tun.
+  3. **Fixes/Perf (automatisch)**: Overview-Karten-Reveal/Hide (`d60d3ab`,
+     `2bd2dfd`), IME-Keymaps-Sync (`30f8c8d`), Fullscreen-Open/Arten
+     (`b83ccfd`, `5eb49b6`). 3 reine Doku-Commits (`aece01c`, `9c1596a`,
+     `12f4123`) liegen bereits über dem Pin → holt der nächste `nix flake update`.
+  **Status**: Config unverändert sauber; `switch` lief heute bereits mit b83ccfd
+  → **Login-Neustart auf nex** holt das neue Binary in die Sitzung.
 - **2026-09-20** (Update auf Rev `8929c2d`, `nix flake update`): seit `2f2e4e3a` **28 Commits, keine Breaking Changes, kein Config-Schema-Wechsel** (Parser/Config unberührt) → keine Migration nötig.
   **Kernthemen:**
   1. **Animationen maßvoll überarbeitet**: Sammel-Revert `31601e0` („drop all recent animations work", zu viele Regressions) → danach gezielt neu eingeführt: `feat(layout) animate tiled windows + close ghosts` `3649a44`, `fix(animation) preserve tiled close lifetime` `8929c2d`, `distinguish built-in window slide`, `keep consume/expel transitions direct`. Overview: Spring-Tail-Fixes (`f0b3830`, `76cede1`). Falls visuelle Animationen komisch wirken → liefert diese Rev-Bewegung die Erklärung.
