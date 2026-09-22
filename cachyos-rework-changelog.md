@@ -18,6 +18,12 @@ deckungsgleich mit eigener Config. Übernommen/Nicht übernommen:
   Redundant — nixpkgs' NM-Modul erzwingt `useDHCP=false` selbst („managed
   entirely by NetworkManager"); gilt damit für alle Hosts mit NM automatisch.
   Kommentar in boot-nex.nix erklärt den Mechanismus.
+- **Coredumps deaktiviert** (`systemd.coredump.enable = false`, Garuda
+  services.nix-Standard): bisher nur tmpfiles-Cleanup nach 3d — Dumps können
+  trotzdem groß werden (Gaming-Absturz auf `.ext4`). Eingetragen in
+  cachyos-tuning.nix.
+- **`services.locate` mit plocate** (Garuda services.nix, hourly index):
+  Komfort (`locate` statt `find`), minimaler Ballast.
 
 ### Nicht übernommen (bewusst)
 - **Kein Kernel-Flip** auf Chaotic-Nyx (`linuxPackages_cachyos`): verlangt
@@ -26,6 +32,22 @@ deckungsgleich mit eigener Config. Übernommen/Nicht übernommen:
   Kernel-Gewinn vs. `linuxPackages_latest` → bleibt (`boot-nex.nix`).
 - **Kein `systemd.oomd`** (Garuda performance-tweaks): Druck-basierter Game-Killer
   (CachyOS/Arch-Erfahrung), mit 100% ZRAM sogar frühanspringend. ZRAM bleibt OOM-Schutz.
+- **Kein `programs.gamemode`** (Garuda gaming aktiviert es): CachyOS warnt
+  offiziell vor Kombination GameMode + ananicy-cpp (beide ajustieren `nice`,
+  ananicy rescant periodisch → Prioritäten pendeln, gemeldet als Microstutter;
+  CachyOS/ananicy-rules-README: "strongly advise against"). Unser Stack =
+  exakt die CachyOS-Empfehlung: ananicy-cpp (nice/IO) + `game-performance`-Script
+  (PPD/EPP-Governor) — laut CachyOS-Forum-Entscheidung keine
+  Funktionsüberschneidung, also kein Konflikt. GameMode würde nur duplizieren
+  (Governor) + den Nice-Fight bringen. Escape-Hatch falls je gewünscht:
+  `programs.gamemode = { enable = true; enableRenice = false; }` (NixOS-Option
+  lässt Governor/IOPrio, kippt nur das renice — genau der Konfliktpunkt).
+  Nebenbei: Garuda-Nix `handheld`-Preset aktiviert beide gleichzeitig, ohne das
+  zu warnen — CachyOS-Konflikthinweis dort nicht übernommen worden.
+- **Kein avahi/nss-mdns** (Garuda services.nix-GuI-Default): bewusst deaktiviert —
+  mDNS seitens des ASUS-Routers biss mit den Diensten, `ping lion-pc` ging
+  danach nicht mehr; ohne avahi funktioniert die Auflösung wieder (auch für
+  andere Geräte im Netz). Liste bleibt aus.
 - **Chaotic-Nyx Input**: Endabrechnung 2026-09-22 → **nicht aufgenommen**.
   Gründe: (1) `nvidia_cachyos` = 610.57.04, treibt wie xddxdd hinterher — nixpkgs
   615 (unser Boot-Flip scheitert genau daran); (2) `mesa_git` bricht laut eigener
@@ -38,6 +60,44 @@ deckungsgleich mit eigener Config. Übernommen/Nicht übernommen:
 - `garuda.excludes`-Framework, impermanence, btrfs-maintenance (#beeesd):
   irrelevant/nicht benötigt (ext4, kein impermanence).
 - xddxdd/nix-cachyos-kernel Overlay bleibt aktiv als Reserve.
+
+---
+
+## NixOS Gaming-Wiki + nix-gaming Abgleich (2026-09-22)
+
+Referenzen: `wiki.nixos.org/wiki/Gaming` (kanonische Gaming-Checkliste) und
+`github.com/fufexan/nix-gaming` (Gaming-Flake, NICHT nmNursery — Owner ist
+**fufexan**). Ergänzt den CachyOS/Garuda-Abgleich um die NixOS-native Perspektive.
+
+### Übernommen
+- **Coredumps-Notiz gilt unverändert** (siehe Garuda-Sektion).
+- `services.locate` mit plocate (hourly) — siehe Garuda-Sektion „Übernommen".
+
+### Nicht übernommen (bewusst)
+- **`vm.max_map_count = 2147483642`** (SteamOS-Wert): **nicht übernommen** —
+  nex/lion setzen mit **16777216 (16M, CachyOS-Wert)** bereits das 16×-Fache
+  des NixOS-Defaults (1048576) → reicht für Mods/Stabilität; SteamOS-Pendant
+  wäre wirkungsloser Overkill-Zusatz (und würde mit boot-nex/lion kollidieren).
+- **`split_lock_mitigate=0`** (Wiki-Tipp): SLD-"Misery-Mode"-Mitigation ist eine
+  **Intel**-Mechanik; Gaming-Hosts nex + lion-pc sind AMD (styx ist Intel, aber
+  kein Gaming-Rig) → wirkungslos dort, nur für Intel-Gaming-Hosts relevant.
+- **GameMode** (Wiki empfiehlt es): bereits 2026-09-22 abgelehnt — CachyOS-Konflikt
+  mit ananicy-cpp (siehe oben).
+- **nix-gaming-Flake**: nur Nischenpakete (osu-lazer-bin, rocket-league,
+  star-citizen, wine-discord-ipc-bridge, northstar-proton, wine-Forks) + Cache
+  `nix-gaming.cachix.org`. Für unser Steam/GE-Proton-Setup nichts Relevantes.
+  Einzig `wine-discord-ipc-bridge` wäre bei Discord-RPC-Wunsch in Proton-Spielen
+  ein Kandidat.
+
+### Bereits abgedeckt (kein Handlungsbedarf)
+- `nvidia-vaapi-driver` (Browser-HW-Decode auf NVIDIA) — vorhanden in
+  nvidia-only.nix (Garuda macht es gleich).
+- `programs.nix-ld` inkl. Steam-Runtime-Libs — vorhanden.
+- Steam + GameScope (`programs.steam`, `programs.gamescope`) — vorhanden,
+  gamescopeSession bewusst aus.
+- **Architektur-Referenz notiert**: `kronflux/nixos-gaming` — SteamOS-ähnliches
+  Boot-to-Steam-Big-Picture via gamescope-Session + Valve-Index-VR. Falls je ein
+  dedizierter Gaming-Session gewünscht (statt KDE booten), dort nachbauen.
 
 ## WLAN-Backend iwd (2026-09-22)
 
@@ -374,7 +434,7 @@ Styx (Intel-Office-Laptop) bekommt alle allgemeinen CachyOS-Einstellungen, ohne 
 
 ## Fallback-Plan bei Problemen
 
-1. **sysctl zurücksetzen**: `vm.swappiness=10`, `kernel.split_lock_mitigate=0`, alte printk-Werte
+1. **sysctl zurücksetzen**: `vm.swappiness=10`, alte printk-Werte
 2. **udev-Regel entfernen**: ZRAM-swappiness bleibt dann bei sysctl-Wert (100)
 3. **NVreg_InitializeSystemMemoryAllocations=1**: falls NVIDIA-Probleme auftreten
 4. **Kernel-Module wiederherstellen**: `tcp_bbr` wieder in boot.kernelModules

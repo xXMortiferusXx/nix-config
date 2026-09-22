@@ -71,6 +71,9 @@
     "e /var/lib/systemd/coredump - - - 3d"
   ];
 
+  # Garuda-Nix services.nix: Coredumps komplett deaktivieren (Storage none)
+  systemd.coredump.enable = false;
+
   # CachyOS systemd system.conf.d: kürzere Timeouts + höhere NOFILE-Limits
   systemd.settings.Manager = {
     DefaultTimeoutStartSec = "15s";
@@ -91,6 +94,13 @@
 
   # CachyOS journald.conf.d: Journal auf 50M begrenzen
   services.journald.settings.Journal.SystemMaxUse = "50M";
+
+  # Garuda-Nix services.nix: locate mit plocate, Index stündlich
+  services.locate = {
+    enable = true;
+    interval = "hourly";
+    package = pkgs.plocate;
+  };
 
   # CachyOS 20-audio.conf: @audio Gruppe Echtzeit-Priorität 99
   security.pam.loginLimits = [
