@@ -103,6 +103,7 @@ Erstelle `/etc/udev/rules.d/99-alc287-mic-gain.rules`:
 
 ```
 SUBSYSTEM=="sound", KERNEL=="controlC1", ACTION=="add", RUN+="/usr/local/bin/alc287-mic-gain.sh"
+SUBSYSTEM=="sound", KERNEL=="controlC1", ACTION=="change", RUN+="/usr/local/bin/alc287-mic-gain.sh"
 ```
 
 und lade sie neu:
@@ -112,7 +113,11 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=sound
 ```
 
-## Schritt 5 — WirePlumber-Conf (Volumen klemmmen / kein Route-Restore)
+> Hinweis: Diese Regeln fangen **Boot/Resume/Karten-Re-Add** ab. Den Replug
+> (Stecker ab/an) fängt nur der Timer in Schritt 6, weil dabei kein udev-Event
+> entsteht.
+
+## Schritt 5 — WirePlumber-Conf (Volumen klemmen / kein Route-Restore)
 
 Erstelle `~/.config/wireplumber/wireplumber.conf.d/94-alc287-mic.conf`:
 
@@ -130,7 +135,71 @@ Danach WirePlumber neu starten:
 systemctl --user restart wireplumber pipewire pipewire-pulse
 ```
 
-## Schritt 6 — Verifizieren
+## Schritt 6 — Periodischer Timer (Replug-Schutz)
+
+**Das ist der wichtigste Schritt** und wurde auf NixOS erst nach einigem
+Nachmessen gefunden: Beim analogen **Replug** (Kopfhörer ab-/anstecken) erzeugt
+der Kernel **kein udev-Event** — die Karte bleibt am PCI-Bus, das input-Gerät
+existiert weiter, es ändert sich nur ein EV_SW-Switch und eine
+ALSA-kcontrol-Änderung. Deshalb feuern die Regeln aus Schritt 4 beim
+Ab-/Anstecken **nicht**, und zusätzlich setzt der ALC-Codec selbst die
+Capture-Volume auf das Maximum (63 = +30 dB) zurück.
+
+Deshalb ein idempotenter Timer, der den Arbeitspunkt alle 10 s wiederherstellt:
+
+Erstelle `~/.config/systemd/user/alc287-mic-gain-watchdog.service`:
+
+```ini
+[Unit]
+Description=Periodic ALC287 mic gain watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/alc287-mic-gain-quiet.sh
+```
+
+Erstelle `~/.config/systemd/user/alc287-mic-gain-watchdog.timer`:
+
+```ini
+[Unit]
+Description=Periodic ALC287 mic gain watchdog
+
+[Timer]
+OnBootSec=5s
+OnUnitActiveSec=10s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
+```
+
+Lege dazu eine **leise Variante** des Skripts an
+(`/usr/local/bin/alc287-mic-gain-quiet.sh`), damit das Journal nicht jede 10 s
+zugespammt wird:
+
+```bash
+#!/bin/bash
+amixer -q -c 1 sset 'Capture' 47 2>/dev/null
+amixer -q -c 1 sset 'Mic Boost' 1 2>/dev/null
+amixer -q -c 1 sset 'Internal Mic Boost' 0 2>/dev/null
+```
+
+```bash
+sudo chmod +x /usr/local/bin/alc287-mic-gain-quiet.sh
+systemctl --user daemon-reload
+systemctl --user enable --now alc287-mic-gain-watchdog.timer
+```
+
+Kontrolle:
+
+```bash
+systemctl --user list-timers alc287-mic-gain-watchdog.timer
+```
+
+Der Timer ist praktisch kostenlos: alle 10 s läuft kurz ein `amixer`-Prozess
+(einige Millisekunden), kein dauerhafter Daemon.
+
+## Schritt 7 — Verifizieren
 
 Zeige mir am Ende Ausgaben von:
 
@@ -138,10 +207,11 @@ Zeige mir am Ende Ausgaben von:
 amixer -c 1 sget 'Capture'
 amixer -c 1 sget 'Mic Boost'
 wpctl status
+systemctl --user list-timers alc287-mic-gain-watchdog.timer
 ```
 
 **Erwartung:** `Capture` auf 47, `Mic Boost` auf 1, Sink-Volume `1.00`,
-Quell-Volume ca. `0.20`.
+Quell-Volume ca. `0.20`, und der Watchdog-Timer aktiv (`enabled`).
 
 Ich mache dann zusätzlich eine Testaufnahme (ca. 10 s) vom Mikro. Wenn der
 Pegel nicht gut ist (zu leise/tief ausgesteuert), **mess ich nach und passe
@@ -158,5 +228,8 @@ Sprache hat — die Werte oben sind Startwerte, kein Dogma.
 - `device.restore-routes = false` verhindert, dass WirePlumber gespeicherte
   Routen/Volumes zurückspielt (Quelle des „volle Lautstärke geht verloren").
 - `default-sink-volume = 1.0` ersetzt den WP-Bug-Default von `0.064` (~6 %).
+- **Replug:** Der ALC-Codec setzt die Capture-Volume beim Ab-/Anstecken selbst
+  auf das Maximum (63 = +30 dB) zurück, und es gibt dafür kein udev-Event —
+  nur der Timer (Schritt 6) stellt den Wert danach zuverlässig wieder her.
 - Hinweis Discord: Falls es dort rauscht/verzerrt, Echo-/Rauschunterdrückung
   bzw. automatische Verstärkung ausschalten — Discord verstärkt sonst doppelt.
