@@ -167,6 +167,35 @@
 - `systemctl --user status arctis-manager arctis-stream-guard arctis-video-router pipewire wireplumber`
 - `pw-cli ls Node | rg 'node.name'` → zeigt aktive ASM-Chains (sonar-*, hesuvi) und Sinks (Arctis_*)
 
+### ALC287 Mic-Gain-Fix (MMX 330 Pro, 2026-09-25) — RÜCKGÄNGIG SOBALD EXTERNE USB-SOUNDKARTE DA!
+- **WICHTIG/OPEN TODO**: Der komplette ALC287-Mic-Fix in `modules/hardware/audio-alc287.nix`
+  (systemd-Service + udev-Regeln + WirePlumber-Conf `94-alc287-mic.conf` + Watchdog-Timer)
+  **muss rückgängig gemacht / entfernt werden, sobald die externe USB-Soundkarte da ist** —
+  dann läuft das Mic über USB (eigener Codec/Interface), und der analoge ALC287-Pfad ist obsolet.
+  **NICHT VERGESSEN.** Bei Rückbau auch den Import in `hosts/nex/configuration.nix` entfernen
+  und die Anleitung `alc287-mic-fix.md` (Repo-Root, für Freund auf CachyOS) ggf. archivieren.
+- **Problem**: Passives analoges TRRS-Headset (MMX 330 Pro) am ALC287 ist extrem leise, weil der
+  Codec-Preamp schwach ist; außerdem springt die Capture-Volume bei Replug/Neustart auf max (63 = +30 dB).
+- **Arbeitspunkt (empirisch am ALC287)**: `Capture 47` = +18 dB, `Mic Boost 1` = +10 dB analoge Vorstufe,
+  `Internal Mic Boost 0`. Nichtlineare Kennlinie: 0.05→0 (−17.25 dB), 0.10→23 (0 dB), 0.20→47 (+18 dB),
+  0.37→63 (+30 dB).
+- **Drei Absicherungen** in `modules/hardware/audio-alc287.nix`:
+  1. `systemd.services.alc287-mic-gain` (Boot) — wantedBy sound.target/multi-user.target.
+  2. udev-Regeln (controlC1 add/change + input-Jacks) — decken Boot/Resume/Karten-Re-Add ab.
+  3. `systemd.user.timer alc287-mic-gain-watchdog` (alle 10 s) — **der eigentliche Replug-Fix**.
+     Grund: Ein Jack-Replug erzeugt **kein udev-Event** (Karte bleibt am Bus, input-Gerät existiert weiter,
+     nur EV_SW + ALSA-kcontrol ändern sich) → udev kann Replugs prinzipbedingt nicht fangen, und der
+     ALC-Codec setzt die Capture-Volume selbst auf 63 zurück. Der Timer klemmt idempotent (leise Variante
+     `alc287-mic-gain-quiet` gegen Journal-Spam). Ressourcen: vernachlässigbar (alle 10 s ein `amixer`-Prozess).
+- **WirePlumber-Fallen (gefixt via `94-alc287-mic.conf`)**: `device.restore-routes = false` +
+  `device.routes.default-sink-volume = 1.0` (sonst WP-Default 0.064 → Ausgang fällt auf ~6 %) +
+  `device.routes.default-source-volume = 0.20` + `stream.rules` `state.restore-props = "false"`
+  für `~alsa_(input|output).pci-0000_06_00.6.*`. Anmerkung: die 0.58-Source-Volume nach WP-Restart war
+  ASM-unabhängig und ließ sich auch nicht aus den State-Dateien (`default-routes` 0.000125) erklären —
+  der Timer umgeht das Problem, statt es zu lösen (bewusst pragmatisch).
+- **Verifikation**: `amixer -c 1 sget 'Capture'` → 47; `systemctl --user list-timers alc287-mic-gain-watchdog.timer`.
+- Anleitung für Freund (CachyOS, kein ASM): `alc287-mic-fix.md` (Repo-Root), gepusht in Commit `253417a`.
+
 ## lsfg-vk (Frame Generation Layer, seit 2026-08-27)
 
 ### Quelle: Umzug von GitHub auf git.lsfg-vk.dev
