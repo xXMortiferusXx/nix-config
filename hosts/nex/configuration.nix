@@ -12,6 +12,7 @@
       ../../modules/hardware/nvidia-only.nix
       ../../modules/hardware/legion.nix
       ../../modules/hardware/touchpad.nix
+      ../../modules/hardware/audio-alc287.nix
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
       ../../modules/users/mortiferus.nix
