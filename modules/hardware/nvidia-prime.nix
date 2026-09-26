@@ -81,10 +81,41 @@
       # NVIDIA schlaeft, bis sie von prime-run / Offload-Cmd aufgeweckt wird
       offload = {
         enable = true;
-        enableOffloadCmd = true;
+        # Das upstream-Skript wird unten durch ein eigenes ersetzt, das zusaetzlich
+        # VK_DRIVER_FILES setzt. Sonst wuerde es doppelt im PATH liegen.
+        enableOffloadCmd = false;
       };
     };
   };
+
+  # Eigenes Offload-Skript statt des upstream-`nvidia-offload`.
+  #
+  # Warum: upstream setzt nur __NV_PRIME_RENDER_OFFLOAD, __GLX_VENDOR_LIBRARY_NAME
+  # und __VK_LAYER_NV_optimus. Der Optimus-Layer greift unter diesem nixpkgs
+  # allerdings nicht, weil das NVIDIA-Paket gar keine Vulkan-Layer mitbringt
+  # (nur share/vulkan/icd.d/nvidia_icd.json, kein explicit_layer.d).
+  # Folge: Vulkan-Apps sahen alle drei Treiber und nahmen den ersten —
+  # "AMD Radeon Graphics (RADV RENOIR)". Verifiziert 2026-09-26 mit vulkaninfo:
+  #   ohne VK_DRIVER_FILES -> RADV + NVIDIA + llvmpipe
+  #   mit    VK_DRIVER_FILES -> nur NVIDIA
+  # Das betraf native Linux-Spiele, Flatpak-Apps und jede System-Vulkan-App.
+  # Steam/Proton war nicht betroffen, weil vkd3d-proton im Prefix seinen eigenen
+  # Loader mitbringt — daher blieb es beim Alltags-Testen unentdeckt.
+  environment.systemPackages = [
+    (
+      pkgs.writeShellScriptBin "nvidia-offload" ''
+        export __NV_PRIME_RENDER_OFFLOAD=1
+        export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        # Erzwingt den NVIDIA-ICD, damit der Vulkan-Loader nicht die iGPU waehlt.
+        # Wird bewusst NICHT global gesetzt: der Compositor (Umbriel) laeuft auf
+        # der iGPU und braucht zwingend RADV.
+        export VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
+        exec "$@"
+      ''
+    )
+  ];
 
   # NVIDIA VRAM-Heap-Fix: GLVidHeapReuseRatio=0
   # Treiber gibt freigegebenes VRAM nicht zurueck an den Pool

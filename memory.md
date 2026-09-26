@@ -658,6 +658,19 @@
 - **Konsequenz:** Mehr FPS holt man hier nicht über mehr Watt. Wirksamer ist bessere Kühlung (Laptop anheben, Staub) und Undervolting (~1000 mV auf dem 5600H) — das löst die Klemmung am Power-Cap und senkt die Temperaturen gleichzeitig.
 - `HW Thermal Slowdown` war bei 70 °C Kern gesetzt, obwohl das unkritisch ist → deutet auf ein Junction-/Hotspot-Limit. Ohne `sensors` (nicht installiert) nicht sauber zuordenbar.
 
+## Vulkan-Apps liefen auf der iGPU statt auf der NVIDIA (nex, gefunden 2026-09-26)
+- **Symptom:** `nvidia-offload vkmark` lief laut eigener Ausgabe auf `AMD Radeon Graphics (RADV RENOIR)`, nicht auf der RTX 3070.
+- **Zwei verschiedene APIs, zwei verschiedene Mechanismen — nicht verwechseln:**
+  - **OpenGL** (glmark2, glxinfo): `__GLX_VENDOR_LIBRARY_NAME=nvidia` wirkt über GLVND. glmark2 lief damit **korrekt auf der NVIDIA** (verifiziert: `GL_RENDERER: NVIDIA GeForce RTX 3070 Laptop GPU/PCIe/SSE2`), zog aber nur ~44 W — als Lasttest für die 130-W-Frage **wertlos** (800×600, einfache Szenen, unthrottled).
+  - **Vulkan**: `__VK_LAYER_NV_optimus=NVIDIA_only` greift **nicht**, weil das NVIDIA-Paket unter diesem nixpkgs **gar keine Vulkan-Layer** mitbringt — nur `share/vulkan/icd.d/nvidia_icd.json`, **kein** `explicit_layer.d`. (Frühere Notiz im Chat, man müsse `nvidia_layers` nachziehen, war **falsch** — nachgemessen.)
+- **Echte Ursache:** Der Vulkan-Loader listete **alle drei** Treiber und Apps nahmen den ersten. Verifiziert mit `vulkaninfo --summary`:
+  - ohne `VK_DRIVER_FILES` → `RADV RENOIR` + `NVIDIA` + `llvmpipe`
+  - mit `VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json` → **nur** `NVIDIA`
+- **Fix:** `modules/hardware/nvidia-prime.nix` definiert ein **eigenes** `nvidia-offload`-Skript (mit `enableOffloadCmd = false`, damit upstream nicht doppelt im PATH liegt), das zusätzlich `VK_DRIVER_FILES` exportiert. Wirkt erst nach dem nächsten `nix-switch`.
+- **Bewusst NICHT global gesetzt:** Der Compositor Umbriel rendert auf der iGPU und braucht zwingend RADV. Ein globales `VK_DRIVER_FILES` würde ihn auf die NVIDIA zwingen.
+- **Betroffen von der Lücke:** native Linux-Spiele aus den Repos, Flatpak-Apps, jede System-Vulkan-App trotz `nvidia-offload`. **Nicht** betroffen: Steam/Proton-Spiele, weil vkd3d-proton im Prefix seinen eigenen Vulkan-Loader mitbringt — deshalb blieb es beim Alltagstest unentdeckt.
+- Merksatz: `nvidia-offload` allein garantiert **keinen** NVIDIA-Adapter bei Vulkan-Apps. Vorher prüfen mit `nvidia-offload vulkaninfo --summary | grep deviceName` — steht dort `AMD`, läuft es auf der iGPU.
+
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
 - **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
