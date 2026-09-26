@@ -380,15 +380,19 @@
 - Sachstand: Workspaces sind **pro Output unabhängig** (Umbriel-Doku: *"Each output has its own workspaces"*). lion-pc hat mit `DP-1` + `HDMI-A-1` also 4 + 4 = 8 Workspaces, nicht 4 gemeinsame.
 - Ein unscoped `default_workspace = 2` existiert damit auf **beiden** Outputs und ist mehrdeutig. Die Doku löst es so auf: *"Duplicate names resolve on the pointer-preferred output when possible. Otherwise the selector is ambiguous."* → **die App folgt dem Zeiger.**
 - **Das ist hier gewolltes Verhalten**, kein Bug: der Browser soll sich je nach Bedarf zwischen den Monitoren verschieben, beim Spielen auf einem Monitor läuft YouTube daneben. Ein `default_output` würde genau das wegnehmen.
-- Verifiziert funktionierend: „bisher sind alle Apps dort gestartet, wo sie starten sollen."
+- Verifiziert funktionierend: „bisher sind alle Apps dort gestartet, wo sie starten sollen." Alles startet auf dem Haupt-Display (LG/`DP-1`).
 - ** Anders als auf nex** gibt es hier aber auch **kein** „Position existiert nicht → fällt auf letzten Workspace"-Problem, weil `workspaces = 4` auf **beiden** Outputs gesetzt ist. Genau das war die Ursache des nex-Bugs.
-- Falls es je doch deterministisch werden soll: `default_output = "DP-1"` (Doku: *"`default_output` restricts either form to one output"*). Vorher aber das tatsächliche Verhalten prüfen — siehe unten.
+- `workspaces = 4` auf beiden Outputs ist gewollt, damit das Overview (`Mod+O`) **beide Seiten gleich breit** zeigt (Workspaces sind pro Output unabhängig).
+- Falls es je doch deterministisch werden soll: `default_output = "DP-1"` (Doku: *"`default_output` restricts either form to one output"*). Vorher aber das tatsächliche Verhalten prüfen — siehe oben.
 
-### Offen: Monitor-Zuordnung auf lion-pc widersprüchlich (2026-09-26)
-- `home/lion/config/umbriel/cfg/display.toml` behauptet: `DP-1` = **LG ULTRAGEAR 144 Hz** (`mode = 1920x1080@143.981`), `HDMI-A-1` = **Samsung S24F350 60 Hz** (`mode = 1920x1080@60.000`).
-- Der Nutzer beschreibt dagegen **DP-1 = Samsung**. Widerspruch ungeklärt.
-- Belastbar auflösbar nur vor Ort mit `umbriel outputs` (zeigt Konnektor → Monitor-Identität). Ein Samsung S24F350 kann max. 75 Hz — ein durchgesetztes `1920x1080@143.981` auf ihm wäre ein Fehler.
-- **Nicht** per Fernzugriff raten; die `mode`-Werte hängen an der Zuordnung.
+### Monitor-Bezeichnungen: „DP-1/DP-2" ist NICHT der Konnektor (lion-pc, 2026-09-26)
+- **Falle beim Lesen:** Der Nutzer schreibt **DP-1 / DP-2** als Kurzform für **Display 1 / Display 2** (Haupt- vs. Nebenmonitor). Das sind **nicht** die Konnektor-Namen der Config.
+- Tatsächliche Zuordnung in `home/lion/config/umbriel/cfg/display.toml`:
+  - `[output."DP-1"]` = **LG ULTRAGEAR 144 Hz** → `mode = 1920x1080@143.981` → **Haupt-Display**, alle Apps starten hier
+  - `[output."HDMI-A-1"]` = **Samsung S24F350 60 Hz** → `mode = 1920x1080@60.000` → **Neben-Display**, dorthin wird bewusst verschoben
+- Der Neben-Monitor heißt also Konnektor-seitig `HDMI-A-1`, mental aber „Display 2". **Nicht** verwechseln.
+- `workspaces = 4` steht **bewusst auf beiden** Outputs: die Workspaces sind pro Output unabhängig, und nur so sind im Overview (`Mod+O`) **beide Seiten gleich breit**. Das ist der Grund, nicht Zufall.
+- Bei künftigen Fragen zur Monitor-Zuordnung: `umbriel outputs` vor Ort (zeigt Konnektor → Monitor-Identität). Nicht aus dem Dateinamen oder Nutzer-Kürzel ableiten.
 
 ### Outputs lassen sich auch über die Monitor-Identität adressieren (2026-09-26)
 - Umbriel matcht `[output.…]` nicht nur auf den Konnektor, sondern auch auf Hersteller/Modell/Seriennummer. `umbriel outputs` zeigt den verfügbaren *Config name* (Beispiel nex: `AU Optronics 0xB69B`).
