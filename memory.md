@@ -669,14 +669,6 @@
   - `nvidia.NVreg_DynamicPowerManagement=0x02` nicht mehr als KernelParam — nixpkgs
     schreibt es bei `powerManagement.enable` automatisch in `/etc/modprobe.d/nixos.conf`
 
-## GPU-Power-Limit nex: 115 W ist fix, nicht änderbar (2026-09-26)
-- Die RTX 3070 Laptop (Max-Q) im Legion 5 15ACH6H hat ein **festes** Limit von **115 W**. `power.max_limit = 130 W` ist nur die vom Treiber gemeldete Silizium-Obergrenze, **kein** erreichbares Board-Limit.
-- **Das FN+Q-Plattformprofil ändert die GPU-TGP nicht.** Gemessen in `balanced` und in `performance`: `Current Power Limit` bleibt in beiden Fällen `115.00 W`, `Requested Power Limit` ebenfalls `115.00 W` — es wird nicht einmal mehr angefragt. Das Limit kommt aus der Firmware, nicht aus einer Policy.
-- `sudo nvidia-smi -pl 130` **schlägt fehl**: `Changing power management limit is not supported for GPU: 00000000:01:00.0. Treating as warning and moving on. All done.` → **Exit-Code 0 und "All done", obwohl nichts passiert.** Nach dem Befehl immer `nvidia-smi -q | grep "Current Power Limit"` prüfen, nie auf die Erfolgsmeldung verlassen.
-- Unter Last (The Forever Winter) real beobachtet: **~100–108 W** bei 74–85 % Auslastung, also ~7–15 W unter dem 115-W-Deckel. Throttle-Gründe: `SW Power Cap: Active` (der harte Limitierer) und `HW Thermal Slowdown: Active` bei 70 °C Kerntemperatur.
-- **Konsequenz:** Mehr FPS holt man hier nicht über mehr Watt. Wirksamer ist bessere Kühlung (Laptop anheben, Staub) und Undervolting (~1000 mV auf dem 5600H) — das löst die Klemmung am Power-Cap und senkt die Temperaturen gleichzeitig.
-- `HW Thermal Slowdown` war bei 70 °C Kern gesetzt, obwohl das unkritisch ist → deutet auf ein Junction-/Hotspot-Limit. Ohne `sensors` (nicht installiert) nicht sauber zuordenbar.
-
 ## Vulkan-Apps liefen auf der iGPU statt auf der NVIDIA (nex, gefunden 2026-09-26)
 - **Symptom:** `nvidia-offload vkmark` lief laut eigener Ausgabe auf `AMD Radeon Graphics (RADV RENOIR)`, nicht auf der RTX 3070.
 - **Zwei verschiedene APIs, zwei verschiedene Mechanismen — nicht verwechseln:**
@@ -689,6 +681,22 @@
 - **Bewusst NICHT global gesetzt:** Der Compositor Umbriel rendert auf der iGPU und braucht zwingend RADV. Ein globales `VK_DRIVER_FILES` würde ihn auf die NVIDIA zwingen.
 - **Betroffen von der Lücke:** native Linux-Spiele aus den Repos, Flatpak-Apps, jede System-Vulkan-App trotz `nvidia-offload`. **Nicht** betroffen: Steam/Proton-Spiele, weil vkd3d-proton im Prefix seinen eigenen Vulkan-Loader mitbringt — deshalb blieb es beim Alltagstest unentdeckt.
 - Merksatz: `nvidia-offload` allein garantiert **keinen** NVIDIA-Adapter bei Vulkan-Apps. Vorher prüfen mit `nvidia-offload vulkaninfo --summary | grep deviceName` — steht dort `AMD`, läuft es auf der iGPU.
+
+## GPU-Power-Limit nex: 115 W ist fix, 130 W laufen NICHT (2026-09-26, gemessen)
+- Die RTX 3070 Laptop (Max-Q) im Legion 5 15ACH6H hat ein **festes** Limit von **115 W**. Verhalten ist in `balanced` UND `performance` identisch — das FN+Q-Plattformprofil ändert die GPU-TGP **nicht**.
+- `power.default_limit = 115.00 W`, `power.max_limit = 130.00 W`, `Requested Power Limit = 115.00 W`. Der Wert 130 W ist der vom Treiber gemeldete **Silizium-Deckel**, kein aktives Limit. Er steht unverändert in jeder Messung, unabhängig von Profil und Last — sehr wahrscheinlich die Quelle der Annahme „unter Linux liefen mal 130 W".
+- `sudo nvidia-smi -pl 130` wird abgelehnt: `Changing power management limit is not supported for GPU` — aber **Exit-Code 0 und „All done."**, obwohl nichts passiert. Nach jedem `-pl`-Befehl `nvidia-smi -q | grep "Current Power Limit"` prüfen.
+- **Messungen (2026-09-26):**
+  | Last | Leistung | Temp | Bewertung |
+  |---|---|---|---|
+  | glmark2 800×600 | 44 W | 43 °C | Frame-Benchmark, **wertlos** |
+  | vkmark | 45 W | 47 °C | dito, gleiche Lastklasse |
+  | The Forever Winter | 100–108 W | 70 °C | echte Last |
+  | **Path of Exile 2** (AppID 2694490) | **113,8 W** | 67 °C | **höchster Wert, 99 % vom Limit** |
+- **Beweis, dass es das Power-Cap ist (PoE2, unter Last):** Throttle-Gründe — `SW Power Cap: Active`, alles andere **Not Active**: `HW Thermal Slowdown`, `HW Power Brake`, `Board Limit`, `Idle`. Bei 67 °C also **kein** thermisches Limit (eine frühere Notiz, `HW Thermal Slowdown` sei mit im Spiel, war falsch).
+- **Mechanik sichtbar im Takt:** Der GPU-Takt fällt unter Last von 1920 MHz auf **1665–1770 MHz**, um die 115 W einzuhalten — Strom gegen Frequenz, und der Strom ist limitiert.
+- **Konsequenz:** Mehr FPS holt man hier **nicht** über mehr Watt. Nicht verfolgen. Effektiver: bessere Kühlung und Undervolting (~1000 mV auf dem 5600H löst die Klemmung am Cap und senkt die Temperatur).
+- **FurMark vorhanden, aber unbrauchbar:** `pkgs.furmark` (2.10.2) startet unter XWayland nicht (sofort Exit-Code 1, kein Output, trotz intaktem GL-Kontext auf der NVIDIA). `vkmark`/`glmark2` sind als Watt-Test ungeeignet. **Für Leistungsmessungen gilt: das Spiel ist der einzige brauchbare Lastgenerator.**
 
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
