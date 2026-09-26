@@ -238,16 +238,23 @@
 - **Lösung (User-Befund)**: In Steam bei Lossless Scaling den **Beta-Zweig** wählen — die Standard-Version hat noch die alte DLL, der Beta-Zweig liefert die neue `lsfg-vk.dll`
 - **Verifiziert (2026-08-28)**: Benchmark läuft — 6368 Iterationen/10s, Base 636.80 fps → Output 1273.60 fps. Umzug funktional abgeschlossen
 
-### Layer wurde vom Vulkan-Loader abgelehnt — Lossless-Scaling-FG lief faktisch nie (2026-09-26)
-- **Symptom:** bei *jedem* Vulkan-Prozess `ERROR: loader_create_instance_chain: Failed to find 'vkGetInstanceProcAddr' in layer ".../liblsfg-vk-layer.so"`. Der Loader **überspringt** den Layer.
-- **Ursache:** Upstream-Manifest (`VkLayer_LSFGVK_frame_generation.json`) deklariert `"type": "GLOBAL"` — das ist ein *expliziter* Layer, für den der Loader `vkGetInstanceProcAddr` verlangt. Die gebaute Bibliothek exportiert aber **nur** `vkNegotiateLoaderLayerInterfaceVersion`, also die Schnittstelle für *implizite* Layer. Manifest und Bibliothek widersprechen sich.
-- **Verifikation:** Testmanifest mit `type: INSTANCE` unter eigenem Layernamen via `VK_LAYER_PATH` → Loader listet es **ohne** neue Fehlermeldung. **Das war eine Fehlschluss-Folgerung:** der Loader dedupliziert nach `library_path`, der Testlayer zeigte auf dieselbe Lib und wurde deshalb gar nicht separat geladen. Ein `GLOBAL`→`INSTANCE`-Patch wurde daraufhin eingebaut (`baba7b9`) und hat die Fehler **nicht** beseitigt — er ist inzwischen wieder entfernt. **Maßgeblich ist nur der Test nach `nix-switch`.**
-- **Echte Ursache (2026-09-26, nach `nix-switch` bestätigt):** Nicht das Manifest, sondern die **Bibliothek**. `liblsfg-vk-layer.so` exportiert **genau ein Symbol**: `vkNegotiateLoaderLayerInterfaceVersion`. Der Vulkan-Loader **1.4.357** verlangt `vkGetInstanceProcAddr` — auch für `type: INSTANCE`. Ohne dieses Symbol bindet er den Layer nicht ein.
-- **Vergleich nixpkgs `lsfg-vk` 1.0.0:** exportiert `layer_vkGetInstanceProcAddr` (Legacy-Interface) und wird **fehlerfrei geladen** — ist aber zu alt, kommt nicht in Frage.
-- **Konsequenz:** Upstream-Bug in 2.0.0-rc1 bzw. im lokalen Build aus `lsfg-vk-src` (master). Kein lokaler Workaround gefunden.
-- **Umgang (eingebaut):** `DISABLE_LSFGVK=1` in `modules/system/environment-nex.nix` — der Abschalter stammt aus dem Manifest selbst, wirkt ohne Rebuild und bringt die Fehlermeldungen **2 → 0** (verifiziert). Sobald upstream nachliefert, diese Zeile löschen.
-- **Konsequenz für die Praxis:** Lossless-Scaling-Frame-Generation war und ist mit diesem Build **nicht nutzbar**. FSR Frame Generation im Spiel (`bFSR_FrameGen=True`) läuft davon unberührt nativ.
-- **Notaus-Schalter** (jederzeit wirksam, auch vor dem Rebuild): `DISABLE_LSFGVK=1` als Env-Variable.
+### Die stderr-Meldung ist KEIN Defekt — Spiel-Erkennung funktioniert (2026-09-26)
+- **Meldung:** bei manchen Vulkan-Prozessen `ERROR: loader_create_instance_chain: Failed to find 'vkGetInstanceProcAddr' in layer ".../liblsfg-vk-layer.so"`. Sieht nach kaputtem Layer aus, ist es aber **nur Rauschen**.
+- **Mechanik:** Der Layer exportiert bewusst **nur** `vkNegotiateLoaderLayerInterfaceVersion` und liefert seine ProcAddr über die Struct zurück (`layer.cpp:621`/`668`). Passt **kein** Profil zum Prozess, lehnt er korrekt ab (`layer.cpp`: *"No profile available"* → `VK_ERROR_INITIALIZATION_FAILED`), der Loader fällt auf `dlsym` zurück und meldet das irreführend.
+- **Verifiziert mit `vkcube` (steht in `active_in`):**
+
+  | Prozess | `vkGetInstanceProcAddr`-Fehler |
+  |---|---|
+  | `vkcube` | **0** — Layer initialisiert sauber |
+  | `nvidia-offload vkcube` | **0** |
+  | `vulkaninfo` (kein Profil) | 2 — korrektes Ablehnen, Falschmeldung |
+
+- **Damit gilt: die automatische Spiel-Erkennung funktioniert wie gewünscht.** Der Layer liegt in `implicit_layer.d/`, wird vom Loader in **jeden** Vulkan-Prozess eingebunden, prüft den Prozessnamen gegen `active_in` der Profile in `~/.config/lsfg-vk/conf.toml` und wendet das Passende an. **Keine Startoptionen nötig** — das ist der Sinn der impliziten Einbindung.
+- **Für ein Spiel einrichten:** in `lsfg-vk-gui` das Profil anlegen und `active_in` auf den Prozessnamen setzen (Beispiel vorhanden: `active_in = "helldivers2.exe"`). Die GUI schreibt `conf.toml`; der Layer liest sie zur Laufzeit.
+- **Zwei Fehlbehauptungen, beide zurückgenommen** (nicht wiederholen):
+  1. „Manifest-Typ `GLOBAL` → `INSTANCE` behebt es" — **wirkungslos**, der Loader findet den Layer auch so.
+  2. „`DISABLE_LSFGVK=1` schaltet das Rauschen weg" — **tatsächlich**, aber es schaltet den Layer **auch im Spiel ab** und damit die FG gerade kaputt. Sieht in der Fehlerzählung harmlos aus (0 Fehler), ist es aber nicht.
+- **Merksatz:** LSFG-Layer vorhanden + `active_in` passt = FG läuft. Fehlermeldung ignorieren; sie unterscheidet nicht zwischen „Layer kaputt" und „Profil passt nicht".
 - **Wichtig:** Der Loader-Ordner ist `/run/current-system/sw/share/vulkan/implicit_layer.d/`, **nicht** `/run/opengl-driver/share/vulkan/…` (das ist nur der NVIDIA-Anteil). Ein Check in `/run/opengl-driver` gibt ein irreführendes „nicht vorhanden" aus.
 
 ## Bekannte Probleme

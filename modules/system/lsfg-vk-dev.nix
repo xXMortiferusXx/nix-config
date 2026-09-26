@@ -38,20 +38,15 @@ let
       "-DLSFGVK_LAYER_LIBRARY_PATH=${placeholder "out"}/lib/liblsfg-vk-layer.so"
     ];
 
-    # NACHTRAG 2026-09-26: Der Vulkan-Loader (1.4.357) verwirft den Layer
-    # weiterhin. Ursache ist NICHT der Layer-Typ im Manifest, sondern die
-    # gebaute Bibliothek: sie exportiert nur
-    # vkNegotiateLoaderLayerInterfaceVersion und weder vkGetInstanceProcAddr
-    # noch das Legacy-Symbol layer_vkGetInstanceProcAddr. Der Loader kann den
-    # Layer damit nicht anbinden und ueberspringt ihn bei jedem Vulkan-Prozess:
-    #   [ERROR] loader_create_instance_chain: Failed to find
-    #   'vkGetInstanceProcAddr' in layer ".../liblsfg-vk-layer.so"
-    # Vergleich: nixpkgs' lsfg-vk **1.0.0** exportiert
-    # layer_vkGetInstanceProcAddr und wird fehlerfrei geladen — ist aber zu alt.
-    # => Upstream-Bug in 2.0.0-rc1. Ein frueherer Versuch, den Manifest-Typ von
-    # GLOBAL auf INSTANCE zu korrigieren, brachte nichts und wurde entfernt.
-    # Bis upstream nachzieht, ist der Layer per DISABLE_LSFGVK=1 abgeschaltet
-    # (siehe environment-nex.nix) — die Fehlermeldungen sind damit weg.
+    # Zur Historie der Fehlermeldung "Failed to find 'vkGetInstanceProcAddr'"
+    # in layer ".../liblsfg-vk-layer.so": sie ist KEIN Defekt. Der Layer
+    # exportiert bewusst nur vkNegotiateLoaderLayerInterfaceVersion und reicht
+    # seine ProcAddr ueber die Struct zurueck (layer.cpp:621/668). Klar will er
+    # aber, wenn KEIN Profil zum Prozess passt (layer.cpp, "No profile
+    # available"), und der Loader meldet das dann irrefuehrend. Nur Rauschen,
+    # kein Funktionsverlust. Zwei Fehlbehauptungen wurden bereits zurueckgenommen:
+    # Manifest-Typ GLOBAL->INSTANCE (wirkungslos) und DISABLE_LSFGVK=1
+    # (haette die Spiel-Erkennung im Spiel abgeschaltet).
 
     preFixup = ''
       qtWrapperArgs+=(--prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib")
