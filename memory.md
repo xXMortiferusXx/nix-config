@@ -397,7 +397,8 @@
 ### Outputs lassen sich auch über die Monitor-Identität adressieren (2026-09-26)
 - Umbriel matcht `[output.…]` nicht nur auf den Konnektor, sondern auch auf Hersteller/Modell/Seriennummer. `umbriel outputs` zeigt den verfügbaren *Config name* (Beispiel nex: `AU Optronics 0xB69B`).
 - Doku nennt als Beispiel `[output."Microstep MSI G2712F CD6T084401192"]`.
-- **Robuster als Konnektor-Namen**, weil der Konnektor sich ändert, wenn Kabel/Port wechsel — der Monitor-Identitäts-String nicht. Für lion-pc (2 Monitore, fest verdrahtet) die Option, falls die Zuordnung je wackelt.
+- **Für lion-pk nicht nötig:** dort sind die Monitore fest an ihre Port-Art gebunden (LG nur DisplayPort → `DP-1`, Samsung nur HDMI → `HDMI-A-1`). Der Konnektor kann also gar nicht kipplen, die Config ist dauerhaft korrekt.
+- Relevant allenfalls, wenn auf nex der GPU-Modus wechselt (dort ändert sich `eDP-1`/`eDP-2` mit dem treibenden Treiber) — dort ist der Konnektor aber ohnehin durch die Panel-Hardware festgelegt und die Zuordnung deterministisch.
 
 ### Output-Block ist an den Konnektor-Namen gebunden (Falle, 2026-09-26)
 - `cfg/display.toml` adressiert den Monitor über `[output."eDP-N"]`. **Der Suffix ändert sich mit dem treibenden GPU:**
