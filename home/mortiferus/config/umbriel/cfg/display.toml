@@ -1,15 +1,26 @@
 # Outputs – Übersetzung aus cfg/display.kdl
 #
-# WICHTIG: Der Block ist an den Konnektor-Namen gebunden, und der ändert sich
-# mit dem treibenden GPU! Prüfen mit `umbriel workspaces` (zeigt "eDP-2: N") oder
-# `journalctl --user -b | grep "Found connector"`.
-#   - dGPU-only (nvidia)  -> eDP-1  (card1)
-#   - PRIME-Hybrid (amdgpu) -> eDP-2  (card2)   <- aktuell, seit 2026-09-26
-# Ein nicht passender Name wird still ignoriert (kein Fehler) — der komplette
-# Block ist dann wirkungslos. Genau das ist am 2026-09-26 nach dem BIOS-Umstieg
-# auf Hybrid passiert: workspaces, bit_depth und cyclic_workspaces waren weg,
-# woraufhin die default_workspace-Regeln aus rules.toml ins Leere liefen
-# ("numeric position beyond the current count selects the last workspace").
+# WICHTIG: Der Konnektor-Suffix ändert sich mit dem treibenden GPU:
+#   - PRIME-Hybrid (amdgpu, iGPU fährt das Panel) -> eDP-2  (card2)
+#   - dGPU-only  (nvidia, 2026-08-12 bis 2026-09-26) -> eDP-1  (card1)
+# Deshalb stehen hier BEIDE Blöcke. Ein Block, dessen Name zu keinem aktiven
+# Output passt, wird von Umbriel stillschweigend ignoriert (kein Fehler, keine
+# Warnung) — verifiziert am 2026-09-26 mit einem Testblock auf "eDP-99":
+#   [INF] [server] config reloaded (sections: outputs; ...)  -> kein Fehler
+# Damit funktioniert der Wechsel zwischen Hybrid und dGPU-only ohne Config-Edit.
+#
+# >> ACHTUNG: Die beiden Blöcke muessen IDENTISCH bleiben. <<
+#    TOML kennt keine Anker/Aliasse, die Doppelung ist also manuell.
+#    Bitte jede Aenderung in beiden Bloecken spiegeln, sonst schweigt der
+#    GPU-Modus-Wechsel stillschweigend abweichende Settings an.
+#
+# Pruefen, welcher Output aktiv ist:
+#   umbriel outputs                          # Konnektor -> Monitor-Identitaet
+#   journalctl --user -b | grep "Found connector"
+#   umbriel color | grep "bit depth"          # muss "10 (configured 10)" sein
+#   umbriel workspaces | head -1              # muss "eDP-2: 1" bzw. "eDP-1: 1" sein
+
+# ── PRIME-Hybrid: iGPU (amdgpu) faehrt das Panel ──────────────────────────────
 [output."eDP-2"]
 mode = "1920x1080@165.010"
 scale = 1.0
@@ -23,3 +34,13 @@ workspaces = 4    # STATISCH, und das ist wichtig: regeln die Positionen fest, d
                   # Position 3 zur Startzeit gar nicht vorhanden und die Regel
                   # trifft stattdessen den letzten Workspace.
 cyclic_workspaces = true    # Workspace-Schritt wrappt am Ende: 4 → 1 (und 1 → 4) statt hart zu stoppen.
+
+# ── dGPU-only: NVIDIA fährt das Panel (Rollback-Pfad) ────────────────────────
+# Inhaltsidentisch zum eDP-2-Block — siehe Warnung oben.
+[output."eDP-1"]
+mode = "1920x1080@165.010"
+scale = 1.0
+bit_depth = 10
+vrr = "disabled"
+workspaces = 4
+cyclic_workspaces = true

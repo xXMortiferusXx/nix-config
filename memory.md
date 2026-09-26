@@ -402,10 +402,14 @@
 
 ### Output-Block ist an den Konnektor-Namen gebunden (Falle, 2026-09-26)
 - `cfg/display.toml` adressiert den Monitor über `[output."eDP-N"]`. **Der Suffix ändert sich mit dem treibenden GPU:**
-  - dGPU-only (nvidia) → `eDP-1` (card1) · PRIME-Hybrid (amdgpu) → `eDP-2` (card2)
+  - PRIME-Hybrid (amdgpu, iGPU fährt das Panel) → `eDP-2` (card2)
+  - dGPU-only (nvidia, 2026-08-12 bis 2026-09-26) → `eDP-1` (card1)
 - Ein nicht passender Name wird **still ignoriert, kein Fehler, kein Journal-Warning**. Der ganze Block ist dann wirkungslos.
 - Nach dem Hybrid-Umstieg waren dadurch `workspaces = 4`, `bit_depth = 10` und `cyclic_workspaces` lautlos weg — `bit_depth` fiel auf 8 (sichtbar via `umbriel color`).
-- Prüfen: `umbriel workspaces` (zeigt `eDP-2: N`) · `journalctl --user -b | grep "Found connector"` · `umbriel color | grep "bit depth"`
+- **Empirisch verifiziert**, dass ein unpassender Block harmlos ist: Testblock `[output."eDP-99"]` mit gültigen Werten ergab `[INF] [server] config reloaded (sections: outputs; ...)` ohne Fehler, `bit_depth` blieb 10, 4 Workspaces blieben. (Nebenbei: **Werte** werden dagegen validiert — `workspaces = 99` wurde mit `output.eDP-99.workspaces must be an integer from 1 to 64` abgelehnt.)
+- **Lösung (2026-09-26): beide Blöcke sind in `display.toml` vorhanden** — `[output."eDP-2"]` und ein inhaltsgleicher `[output."eDP-1"]`. Damit greift beim Wechsel zwischen Hybrid und dGPU-only automatisch der passende Block, ohne Config-Edit.
+- ⚠️ **Pflicht: die beiden Blöcke müssen inhaltsgleich bleiben.** TOML hat keine Anker/Aliasse, die Doppelung ist manuell. Bei jeder Änderung beide spiegeln, sonst stellt ein GPU-Modus-Wechsel stillschweigend abweichende Settings her.
+- Prüfen: `umbriel workspaces` (zeigt `eDP-2: N`) · `umbriel outputs` · `journalctl --user -b | grep "Found connector"` · `umbriel color | grep "bit depth"`
 - `mode`/`scale`/`vrr` waren unkritisch (165 Hz ist Preferred Mode, scale/vrr sind Defaults)
 
 ### Warum Apps im Hybrid auf falschen Workspaces landen (2026-09-26)
