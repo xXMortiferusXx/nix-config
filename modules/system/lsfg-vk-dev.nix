@@ -38,6 +38,26 @@ let
       "-DLSFGVK_LAYER_LIBRARY_PATH=${placeholder "out"}/lib/liblsfg-vk-layer.so"
     ];
 
+    # Upstream-Manifest ist falsch: es deklariert den Layer als "GLOBAL"
+    # (explizit), die Bibliothek exportiert aber nur
+    # vkNegotiateLoaderInterfaceVersion — die Schnittstelle fuer IMPLIZITE
+    # Layer. Folge: der Vulkan-Loader verlangt vkGetInstanceProcAddr, findet
+    # es nicht und ueberspringt den Layer. Verifiziert 2026-09-26:
+    #   [ERROR] loader_create_instance_chain: Failed to find
+    #   'vkGetInstanceProcAddr' in layer ".../liblsfg-vk-layer.so"
+    # -> Lossless-Scaling-Frame-Generation lief faktisch nie.
+    # Fix: Typ auf INSTANCE korrigieren, passend zum Ablageort implicit_layer.d
+    # und zur gebauten Bibliothek.
+    postInstall = ''
+      manifest=$(find "$out/share/vulkan" -name 'VkLayer_LSFGVK*.json' | head -1)
+      if [ -n "$manifest" ]; then
+        sed -i 's/"type"[[:space:]]*:[[:space:]]*"GLOBAL"/"type": "INSTANCE"/' "$manifest"
+        echo "lsfg-vk: Layer-Typ auf INSTANCE korrigiert ($manifest)"
+      else
+        echo "lsfg-vk: WARNUNG - Manifest nicht gefunden" >&2
+      fi
+    '';
+
     preFixup = ''
       qtWrapperArgs+=(--prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib")
     '';

@@ -238,6 +238,14 @@
 - **Lösung (User-Befund)**: In Steam bei Lossless Scaling den **Beta-Zweig** wählen — die Standard-Version hat noch die alte DLL, der Beta-Zweig liefert die neue `lsfg-vk.dll`
 - **Verifiziert (2026-08-28)**: Benchmark läuft — 6368 Iterationen/10s, Base 636.80 fps → Output 1273.60 fps. Umzug funktional abgeschlossen
 
+### Layer wurde vom Vulkan-Loader abgelehnt — Lossless-Scaling-FG lief faktisch nie (2026-09-26)
+- **Symptom:** bei *jedem* Vulkan-Prozess `ERROR: loader_create_instance_chain: Failed to find 'vkGetInstanceProcAddr' in layer ".../liblsfg-vk-layer.so"`. Der Loader **überspringt** den Layer.
+- **Ursache:** Upstream-Manifest (`VkLayer_LSFGVK_frame_generation.json`) deklariert `"type": "GLOBAL"` — das ist ein *expliziter* Layer, für den der Loader `vkGetInstanceProcAddr` verlangt. Die gebaute Bibliothek exportiert aber **nur** `vkNegotiateLoaderLayerInterfaceVersion`, also die Schnittstelle für *implizite* Layer. Manifest und Bibliothek widersprechen sich.
+- **Fix:** `modules/system/lsfg-vk-dev.nix` hat jetzt ein `postInstall`, das `"type": "GLOBAL"` → `"type": "INSTANCE"` korrigiert (passend zu Ablageort `implicit_layer.d` und zur gebauten Lib).
+- **Verifikation:** Testmanifest mit `type: INSTANCE` unter eigenem Layernamen via `VK_LAYER_PATH` → Loader listet es **ohne** neue Fehlermeldung (Fehlerzahl bleibt 2, die vom defekten System-Layer stammen). Nach `nix-switch` muss die Fehlermeldung beim nächsten Vulkan-Prozess **verschwunden** sein — das ist die Abnahmeprüfung.
+- **Notaus-Schalter** (vom Manifest selbst vorgesehen, jederzeit wirksam ohne Rebuild): `DISABLE_LSFGVK=1` → Fehlermeldungen 3 → 0. Praktisch zum Testen, ob der Layer die Fehlerquelle ist.
+- **Wichtig:** Der Loader-Ordner ist `/run/current-system/sw/share/vulkan/implicit_layer.d/`, **nicht** `/run/opengl-driver/share/vulkan/…` (das ist nur der NVIDIA-Anteil). Ein Check in `/run/opengl-driver` gibt ein irreführendes „nicht vorhanden" aus.
+
 ## Bekannte Probleme
 
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
