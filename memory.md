@@ -683,23 +683,10 @@
 - Merksatz: `nvidia-offload` allein garantiert **keinen** NVIDIA-Adapter bei Vulkan-Apps. Vorher prüfen mit `nvidia-offload vulkaninfo --summary | grep deviceName` — steht dort `AMD`, läuft es auf der iGPU.
 
 ## GPU-TGP: 115 W Basis vs. 130 W via Dynamic Boost — URSACHE GEFUNDEN (2026-09-26)
-- **Die 130 W kommen über Dynamic Boost 2.0, nicht über ein hoeheres Basis-Limit.**
-  - `power.default_limit = 115.00 W` = Basis-TGP der RTX 3070 Laptop
-  - `power.max_limit = 130.00 W` = Basis + 15 W Dynamic Boost
-  - Lenovo PSREF nennt fuer den 15ACH6H ausdruecklich „Dynamic Boost 2.0", TGP 130 W.
-- **Ursache der 115-W-Deckelung: `hardware.nvidia.dynamicBoost.enable` war NIE gesetzt.**
-  - Der Daemon `nvidia-powerd` (startet durch `dynamicBoost.enable`) lief nicht.
-  - Ohne ihn bleibt die GPU auf der 115-W-Basis, egal in welchem Plattformprofil.
-  - Kein `nvidia-smi -pl`-Befehl kann das ersetzen (wird vom Treiber abgelehnt).
-  - Der Nutzer hatte frueher 121 W gesehen = Dynamic Boost, der einmal griff (zwischen 115 und 130).
-- **Fix (eingebaut):** `dynamicBoost.enable = true` in `modules/hardware/nvidia-prime.nix`. Startet `nvidia-powerd` (verifiziert: Unit `wantedBy=multi-user.target`, `ExecStart=.../nvidia-powerd`). Wirkt nach `nix-switch` + Neustart.
-- **Abnahmetest:** nach Neustart `systemctl status nvidia-powerd` muss `active (running)` zeigen; im Spiel dann der Watt-Wert ueber 115 W (bis 130 W) moeglich.
-- **Warum die frueheren Fehlspuren falsch waren (nicht wiederholen):**
-  1. „Open-Kernel-Modul deckelt" — **falsch**. `open = true` ist die generelle Empfehlung, seit jeher im Einsatz, und nicht der Faktor. (Test auf `open = false` wurde wieder zurueckgenommen.)
-  2. „130 W laufen unter Linux grundsaetzlich nicht" — **falsch**. Der NVIDIA-Forum-Thread zu 15ACH6H betrifft eine aeltere Treiber-Generation; unser Fall ist Dynamic Boost, der schlicht nie angeschaltet war.
-  3. „Plattformprofil aendert den TGP" — **falsch**, es aendert nur die LED (Nutzer bestaetigt).
-- **Messwerte, die dazu fuehrten** (PoE2, 50 Hz, 1190 Samples): Max 113,45 W, `SW Power Cap: Active`, 67 °C, Takt faellt von 1920 auf 1665–1770 MHz. Alles konsistent mit der 115-W-Basis.
-- **Werkzeuge, die sich als wertlos erwiesen:** glmark2/vkmark (Frame-Benchmarks, 44–45 W), FurMark (startet unter XWayland nicht). **Das Spiel bleibt der einzige brauchbare Lastgenerator.**
+- **BESTAETIGT nach Neustart + `dynamicBoost.enable = true`:** PoE2 erreicht **128,78 W**, 29 von 150 Samples ueber 115 W, max Temp 70 °C. Die 130-W-Grenze wird fast erreicht.
+- **Der Nutzer hatte die ganze Zeit recht.** Die 130 W sind erreichbar, sie kommen ueber Dynamic Boost 2.0, und der Daemon `nvidia-powerd` lief vorher schlicht nie.
+- Messwerte nach dem Fix (PoE2): 94 W → 128 W je nach CPU-Last, Mittel 105 W, `Requested Power Limit: N/A` (statt vorher fest 115 W) = powerd verwaltet das Limit dynamisch.
+- Details zur Ursache und den Irrwegen stehen im Abschnitt darunter/oben.
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
 - **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
