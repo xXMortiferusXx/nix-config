@@ -73,6 +73,14 @@
     powerManagement.enable = true;
     powerManagement.finegrained = true;
 
+    # Dynamic Boost 2.0: startet nvidia-powerd und erlaubt der GPU, ueber die
+    # 115-W-Basis bis max. 130 W zu gehen (power.default_limit=115 W,
+    # power.max_limit=130 W), indem ungenutzte CPU-Leistung zur GPU wandert.
+    # War zuvor NIE aktiviert — darum blieb die RTX 3070 (TGP 130W lt. PSREF)
+    # bei 115 W haengen, egal in welchem Plattformprofil. Der Nutzer hatte
+    # 121 W beobachtet = Dynamic Boost, der frueher einmal griff.
+    dynamicBoost.enable = true;
+
     # PRIME-Konfiguration fuer Laptops (Advanced Optimus / Hybrid)
     prime = {
       amdgpuBusId = "PCI:6:0:0";

@@ -682,26 +682,24 @@
 - **Betroffen von der Lücke:** native Linux-Spiele aus den Repos, Flatpak-Apps, jede System-Vulkan-App trotz `nvidia-offload`. **Nicht** betroffen: Steam/Proton-Spiele, weil vkd3d-proton im Prefix seinen eigenen Vulkan-Loader mitbringt — deshalb blieb es beim Alltagstest unentdeckt.
 - Merksatz: `nvidia-offload` allein garantiert **keinen** NVIDIA-Adapter bei Vulkan-Apps. Vorher prüfen mit `nvidia-offload vulkaninfo --summary | grep deviceName` — steht dort `AMD`, läuft es auf der iGPU.
 
-## GPU-TGP: 115 W unter Linux — dokumentiertes Problem auf dem 15ACH6H (2026-09-26)
-- **Der Nutzer hatte recht, nicht ich.** 130 W sind unter Linux auf diesem Modell **nicht erreichbar**; die Hardware kann sie (Lenovo PSREF: RTX 3070 Laptop, **TGP 130W**), Windows erreicht sie, Linux nicht. **Kein Messfehler, keine Verwechslung von Spalten.**
-- **Belege aus der Praxis:**
-  | Last | Leistung | Temp | Bewertung |
-  |---|---|---|---|
-  | glmark2 800×600 | 44 W | 43 °C | Frame-Benchmark, **wertlos** als Watt-Test |
-  | vkmark | 45 W | 47 °C | dito, gleiche Lastklasse |
-  | The Forever Winter | 100–108 W | 70 °C | echte Last |
-  | **Path of Exile 2** (AppID 2694490) | **113,8 W** | 67 °C | höchster gemessener Wert, 99 % vom Limit |
-  - Messung mit **50 Hz** (`nvidia-smi -lms 20`, 1190 Samples): Max **113,45 W**, 0 Samples über 115 W.
-  - Throttle-Gründe unter Last: `SW Power Cap: Active`, **alles andere Not Active** (auch `HW Thermal Slowdown` bei 67 °C). Es ist **kein** thermisches oder Board-Limit.
-  - Takt fällt unter Last von 1920 MHz auf 1665–1770 MHz — Strom gegen Frequenz, Strom ist limitiert.
-- **Dokumentiertes Fremdproblem, genau dieses Chassis:** NVIDIA-Developer-Forum zu Legion 5 15ACH6H mit Nvidia-GPU: GPU bleibt unter Linux bei niedrigem TGP hängen, „leading to significant performance limitations as compared to Windows"; unter Windows werden **130 W** erreicht. Der dort getestete ACPI/WMI-Treffer (`legion-wmi`) **funktioniert laut Autor nicht** („THIS DRIVER DOES NOT WORK"). Bei dem Kollegen waren es 80 W statt 130 W — gleiche Fehlerklasse, andere Höhe.
-- **Geprüfte Hebel, alle wirkungslos:**
-  - Plattformprofil (`powermode` 0–3, FN+Q, `powerprofilesctl`): Limit bleibt in **allen** Modi `115.00 W` — wirkt **nur auf die LED** (vom Nutzer bestätigt).
-  - `sudo nvidia-smi -pl 130`: `Changing power management limit is not supported for GPU` — aber **Exit-Code 0 und „All done."**, obwohl nichts passiert. Immer nachmessen mit `nvidia-smi -q | grep "Current Power Limit"`.
-  - LenovoLegionLinux dokumentiert zum R5000er: auf **Netzteil** bleibe der Limit auf Max, „more power is allowed … on performance or custom mode" — auf dieser Maschine trifft das **nicht** zu (Custom-Modus ändert nichts messbar).
-- **Woher die Gewissheit kommt, dass 130 W die richtige Zielmarke sind:** `power.max_limit = 130.00 W` (Silizium-Deckel) und Lenovo PSREF nennt TGP 130W für genau dieses Modell.
-- **Empfehlung: nichts weiter unternehmen.** Kein vBIOS-Flash (im Thread nur als轮廓 für ein anderes Legion 7i, hohes Risiko: brick). Der praktische Nutzen von 15 W ist gering, die **3,2× VRAM-Reserve** aus dem PRIME-Hybrid ist der eigentliche Gewinn.
-- **FurMark vorhanden, aber unbrauchbar:** `pkgs.furmark` startet unter XWayland nicht (sofort Exit-Code 1, kein Output, trotz intaktem GL-Kontext auf der NVIDIA). Für Leistungsmessungen gilt: **das Spiel ist der einzige brauchbare Lastgenerator.**
+## GPU-TGP: 115 W Basis vs. 130 W via Dynamic Boost — URSACHE GEFUNDEN (2026-09-26)
+- **Die 130 W kommen über Dynamic Boost 2.0, nicht über ein hoeheres Basis-Limit.**
+  - `power.default_limit = 115.00 W` = Basis-TGP der RTX 3070 Laptop
+  - `power.max_limit = 130.00 W` = Basis + 15 W Dynamic Boost
+  - Lenovo PSREF nennt fuer den 15ACH6H ausdruecklich „Dynamic Boost 2.0", TGP 130 W.
+- **Ursache der 115-W-Deckelung: `hardware.nvidia.dynamicBoost.enable` war NIE gesetzt.**
+  - Der Daemon `nvidia-powerd` (startet durch `dynamicBoost.enable`) lief nicht.
+  - Ohne ihn bleibt die GPU auf der 115-W-Basis, egal in welchem Plattformprofil.
+  - Kein `nvidia-smi -pl`-Befehl kann das ersetzen (wird vom Treiber abgelehnt).
+  - Der Nutzer hatte frueher 121 W gesehen = Dynamic Boost, der einmal griff (zwischen 115 und 130).
+- **Fix (eingebaut):** `dynamicBoost.enable = true` in `modules/hardware/nvidia-prime.nix`. Startet `nvidia-powerd` (verifiziert: Unit `wantedBy=multi-user.target`, `ExecStart=.../nvidia-powerd`). Wirkt nach `nix-switch` + Neustart.
+- **Abnahmetest:** nach Neustart `systemctl status nvidia-powerd` muss `active (running)` zeigen; im Spiel dann der Watt-Wert ueber 115 W (bis 130 W) moeglich.
+- **Warum die frueheren Fehlspuren falsch waren (nicht wiederholen):**
+  1. „Open-Kernel-Modul deckelt" — **falsch**. `open = true` ist die generelle Empfehlung, seit jeher im Einsatz, und nicht der Faktor. (Test auf `open = false` wurde wieder zurueckgenommen.)
+  2. „130 W laufen unter Linux grundsaetzlich nicht" — **falsch**. Der NVIDIA-Forum-Thread zu 15ACH6H betrifft eine aeltere Treiber-Generation; unser Fall ist Dynamic Boost, der schlicht nie angeschaltet war.
+  3. „Plattformprofil aendert den TGP" — **falsch**, es aendert nur die LED (Nutzer bestaetigt).
+- **Messwerte, die dazu fuehrten** (PoE2, 50 Hz, 1190 Samples): Max 113,45 W, `SW Power Cap: Active`, 67 °C, Takt faellt von 1920 auf 1665–1770 MHz. Alles konsistent mit der 115-W-Basis.
+- **Werkzeuge, die sich als wertlos erwiesen:** glmark2/vkmark (Frame-Benchmarks, 44–45 W), FurMark (startet unter XWayland nicht). **Das Spiel bleibt der einzige brauchbare Lastgenerator.**
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
 - **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
