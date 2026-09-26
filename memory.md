@@ -375,6 +375,26 @@
 - Numlock: aktuell aus beim Start (Feature fehlt im Build → `umbriel.md`)
 - `xdg.desktop-portal-gtk` bleibt nötig: umbriel-portal deckt nur ScreenCast/Screenshot ab (siehe `desktop/umbriel.nix`)
 
+### Mehrere Outputs: `default_workspace` bewusst unscoped lassen (lion-pc, 2026-09-26)
+- **Nicht** "reparieren": die 13 `default_workspace`-Regeln in `home/lion/config/umbriel/cfg/rules.toml` sind absichtlich **nicht** per `default_output` festgenagelt.
+- Sachstand: Workspaces sind **pro Output unabhängig** (Umbriel-Doku: *"Each output has its own workspaces"*). lion-pc hat mit `DP-1` + `HDMI-A-1` also 4 + 4 = 8 Workspaces, nicht 4 gemeinsame.
+- Ein unscoped `default_workspace = 2` existiert damit auf **beiden** Outputs und ist mehrdeutig. Die Doku löst es so auf: *"Duplicate names resolve on the pointer-preferred output when possible. Otherwise the selector is ambiguous."* → **die App folgt dem Zeiger.**
+- **Das ist hier gewolltes Verhalten**, kein Bug: der Browser soll sich je nach Bedarf zwischen den Monitoren verschieben, beim Spielen auf einem Monitor läuft YouTube daneben. Ein `default_output` würde genau das wegnehmen.
+- Verifiziert funktionierend: „bisher sind alle Apps dort gestartet, wo sie starten sollen."
+- ** Anders als auf nex** gibt es hier aber auch **kein** „Position existiert nicht → fällt auf letzten Workspace"-Problem, weil `workspaces = 4` auf **beiden** Outputs gesetzt ist. Genau das war die Ursache des nex-Bugs.
+- Falls es je doch deterministisch werden soll: `default_output = "DP-1"` (Doku: *"`default_output` restricts either form to one output"*). Vorher aber das tatsächliche Verhalten prüfen — siehe unten.
+
+### Offen: Monitor-Zuordnung auf lion-pc widersprüchlich (2026-09-26)
+- `home/lion/config/umbriel/cfg/display.toml` behauptet: `DP-1` = **LG ULTRAGEAR 144 Hz** (`mode = 1920x1080@143.981`), `HDMI-A-1` = **Samsung S24F350 60 Hz** (`mode = 1920x1080@60.000`).
+- Der Nutzer beschreibt dagegen **DP-1 = Samsung**. Widerspruch ungeklärt.
+- Belastbar auflösbar nur vor Ort mit `umbriel outputs` (zeigt Konnektor → Monitor-Identität). Ein Samsung S24F350 kann max. 75 Hz — ein durchgesetztes `1920x1080@143.981` auf ihm wäre ein Fehler.
+- **Nicht** per Fernzugriff raten; die `mode`-Werte hängen an der Zuordnung.
+
+### Outputs lassen sich auch über die Monitor-Identität adressieren (2026-09-26)
+- Umbriel matcht `[output.…]` nicht nur auf den Konnektor, sondern auch auf Hersteller/Modell/Seriennummer. `umbriel outputs` zeigt den verfügbaren *Config name* (Beispiel nex: `AU Optronics 0xB69B`).
+- Doku nennt als Beispiel `[output."Microstep MSI G2712F CD6T084401192"]`.
+- **Robuster als Konnektor-Namen**, weil der Konnektor sich ändert, wenn Kabel/Port wechsel — der Monitor-Identitäts-String nicht. Für lion-pc (2 Monitore, fest verdrahtet) die Option, falls die Zuordnung je wackelt.
+
 ### Output-Block ist an den Konnektor-Namen gebunden (Falle, 2026-09-26)
 - `cfg/display.toml` adressiert den Monitor über `[output."eDP-N"]`. **Der Suffix ändert sich mit dem treibenden GPU:**
   - dGPU-only (nvidia) → `eDP-1` (card1) · PRIME-Hybrid (amdgpu) → `eDP-2` (card2)
