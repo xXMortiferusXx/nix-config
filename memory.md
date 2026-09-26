@@ -682,22 +682,26 @@
 - **Betroffen von der Lücke:** native Linux-Spiele aus den Repos, Flatpak-Apps, jede System-Vulkan-App trotz `nvidia-offload`. **Nicht** betroffen: Steam/Proton-Spiele, weil vkd3d-proton im Prefix seinen eigenen Vulkan-Loader mitbringt — deshalb blieb es beim Alltagstest unentdeckt.
 - Merksatz: `nvidia-offload` allein garantiert **keinen** NVIDIA-Adapter bei Vulkan-Apps. Vorher prüfen mit `nvidia-offload vulkaninfo --summary | grep deviceName` — steht dort `AMD`, läuft es auf der iGPU.
 
-## GPU-Power-Limit nex: 115 W ist fix, 130 W laufen NICHT (2026-09-26, gemessen)
-- Die RTX 3070 Laptop (Max-Q) im Legion 5 15ACH6H hat ein **festes** Limit von **115 W**. Verhalten ist in `balanced` UND `performance` identisch — das FN+Q-Plattformprofil ändert die GPU-TGP **nicht**.
-- `power.default_limit = 115.00 W`, `power.max_limit = 130.00 W`, `Requested Power Limit = 115.00 W`. Der Wert 130 W ist der vom Treiber gemeldete **Silizium-Deckel**, kein aktives Limit. Er steht unverändert in jeder Messung, unabhängig von Profil und Last — sehr wahrscheinlich die Quelle der Annahme „unter Linux liefen mal 130 W".
-- `sudo nvidia-smi -pl 130` wird abgelehnt: `Changing power management limit is not supported for GPU` — aber **Exit-Code 0 und „All done."**, obwohl nichts passiert. Nach jedem `-pl`-Befehl `nvidia-smi -q | grep "Current Power Limit"` prüfen.
-- **Messungen (2026-09-26):**
+## GPU-TGP: 115 W unter Linux — dokumentiertes Problem auf dem 15ACH6H (2026-09-26)
+- **Der Nutzer hatte recht, nicht ich.** 130 W sind unter Linux auf diesem Modell **nicht erreichbar**; die Hardware kann sie (Lenovo PSREF: RTX 3070 Laptop, **TGP 130W**), Windows erreicht sie, Linux nicht. **Kein Messfehler, keine Verwechslung von Spalten.**
+- **Belege aus der Praxis:**
   | Last | Leistung | Temp | Bewertung |
   |---|---|---|---|
-  | glmark2 800×600 | 44 W | 43 °C | Frame-Benchmark, **wertlos** |
+  | glmark2 800×600 | 44 W | 43 °C | Frame-Benchmark, **wertlos** als Watt-Test |
   | vkmark | 45 W | 47 °C | dito, gleiche Lastklasse |
   | The Forever Winter | 100–108 W | 70 °C | echte Last |
-  | **Path of Exile 2** (AppID 2694490) | **113,8 W** | 67 °C | **höchster Wert, 99 % vom Limit** |
-- **Beweis, dass es das Power-Cap ist (PoE2, unter Last):** Throttle-Gründe — `SW Power Cap: Active`, alles andere **Not Active**: `HW Thermal Slowdown`, `HW Power Brake`, `Board Limit`, `Idle`. Bei 67 °C also **kein** thermisches Limit (eine frühere Notiz, `HW Thermal Slowdown` sei mit im Spiel, war falsch).
-- **Mechanik sichtbar im Takt:** Der GPU-Takt fällt unter Last von 1920 MHz auf **1665–1770 MHz**, um die 115 W einzuhalten — Strom gegen Frequenz, und der Strom ist limitiert.
-- **Konsequenz:** Mehr FPS holt man hier **nicht** über mehr Watt. Nicht verfolgen. Effektiver: bessere Kühlung und Undervolting (~1000 mV auf dem 5600H löst die Klemmung am Cap und senkt die Temperatur).
-- **FurMark vorhanden, aber unbrauchbar:** `pkgs.furmark` (2.10.2) startet unter XWayland nicht (sofort Exit-Code 1, kein Output, trotz intaktem GL-Kontext auf der NVIDIA). `vkmark`/`glmark2` sind als Watt-Test ungeeignet. **Für Leistungsmessungen gilt: das Spiel ist der einzige brauchbare Lastgenerator.**
-
+  | **Path of Exile 2** (AppID 2694490) | **113,8 W** | 67 °C | höchster gemessener Wert, 99 % vom Limit |
+  - Messung mit **50 Hz** (`nvidia-smi -lms 20`, 1190 Samples): Max **113,45 W**, 0 Samples über 115 W.
+  - Throttle-Gründe unter Last: `SW Power Cap: Active`, **alles andere Not Active** (auch `HW Thermal Slowdown` bei 67 °C). Es ist **kein** thermisches oder Board-Limit.
+  - Takt fällt unter Last von 1920 MHz auf 1665–1770 MHz — Strom gegen Frequenz, Strom ist limitiert.
+- **Dokumentiertes Fremdproblem, genau dieses Chassis:** NVIDIA-Developer-Forum zu Legion 5 15ACH6H mit Nvidia-GPU: GPU bleibt unter Linux bei niedrigem TGP hängen, „leading to significant performance limitations as compared to Windows"; unter Windows werden **130 W** erreicht. Der dort getestete ACPI/WMI-Treffer (`legion-wmi`) **funktioniert laut Autor nicht** („THIS DRIVER DOES NOT WORK"). Bei dem Kollegen waren es 80 W statt 130 W — gleiche Fehlerklasse, andere Höhe.
+- **Geprüfte Hebel, alle wirkungslos:**
+  - Plattformprofil (`powermode` 0–3, FN+Q, `powerprofilesctl`): Limit bleibt in **allen** Modi `115.00 W` — wirkt **nur auf die LED** (vom Nutzer bestätigt).
+  - `sudo nvidia-smi -pl 130`: `Changing power management limit is not supported for GPU` — aber **Exit-Code 0 und „All done."**, obwohl nichts passiert. Immer nachmessen mit `nvidia-smi -q | grep "Current Power Limit"`.
+  - LenovoLegionLinux dokumentiert zum R5000er: auf **Netzteil** bleibe der Limit auf Max, „more power is allowed … on performance or custom mode" — auf dieser Maschine trifft das **nicht** zu (Custom-Modus ändert nichts messbar).
+- **Woher die Gewissheit kommt, dass 130 W die richtige Zielmarke sind:** `power.max_limit = 130.00 W` (Silizium-Deckel) und Lenovo PSREF nennt TGP 130W für genau dieses Modell.
+- **Empfehlung: nichts weiter unternehmen.** Kein vBIOS-Flash (im Thread nur als轮廓 für ein anderes Legion 7i, hohes Risiko: brick). Der praktische Nutzen von 15 W ist gering, die **3,2× VRAM-Reserve** aus dem PRIME-Hybrid ist der eigentliche Gewinn.
+- **FurMark vorhanden, aber unbrauchbar:** `pkgs.furmark` startet unter XWayland nicht (sofort Exit-Code 1, kein Output, trotz intaktem GL-Kontext auf der NVIDIA). Für Leistungsmessungen gilt: **das Spiel ist der einzige brauchbare Lastgenerator.**
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
 - **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
