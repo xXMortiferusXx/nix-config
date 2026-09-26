@@ -3,6 +3,8 @@
 [output."eDP-1"]
 mode = "1920x1080@165.010"
 scale = 1.0
+bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"    # Kein globales VRR (flackerte auf Electron-Fenstern wie Zen).
                     # VRR aktiviert sich stattdessen nur per window_rule.vrr (Games/mpv in rules.toml).
 workspaces = 4    # statische Workspaces wie in niri (1=Browser, 2=Chat, 3=Gaming, 4=Sonstiges)
+cyclic_workspaces = true    # Workspace-Schritt wrappt am Ende: 4 → 1 (und 1 → 4) statt hart zu stoppen.

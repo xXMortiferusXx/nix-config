@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `b83ccfd2029cc672ec3ee0bbeb10e3670df9299c` (2026-09-22, revCount 997), Version `0.1.0`
-  (Lock bereits per `nix flake update` gezogen — Stand 12:59 UTC)
+- Aktuelle Rev: `dceb9924bb13eb302d81f954c1682ecdcaafc5e4` (2026-09-26, revCount 1072), Version `0.1.0`
+  (Lock bereits per `nix flake update` gezogen — Stand 15:53 UTC)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -43,7 +43,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 8929c2d / 2026-09-20)
+## Feature-Tracker (Stand: Rev dceb9924 / 2026-09-26)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -61,9 +61,46 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
 | `default_maximize_to_edges` (window_rule) | Fenster-Regel | verfügbar, nicht genutzt |
 | `output.<NAME>.layout.scrolling.default_extent_fraction` | per-Output-Startspaltenbreite überschreiben | verfügbar, nicht gesetzt (nur 1 Monitor) |
-| `curve = "spring"` + `spring = { damping, stiffness }` (unter `animation.*`) | Spring-Physik statt zeitbasiert; Springs leiten Dauer selbst ab (`duration_ms` gilt dann nur für zeitbasierte Kurven) | verfügbar, nicht genutzt (easeout/snappy+duration_ms reicht; 2026-09-22) |
+| `curve = "spring:<damping>,<stiffness>"` (z.B. `"spring:1,900"`, unter `animation.*`) | Spring-Physik statt zeitbasiert; Springs leiten Dauer selbst ab (`duration_ms` gilt dann nur für zeitbasierte Kurven). **Syntax gewechselt** (2026-09-26): die frühere `curve = "spring"` + `spring = { damping, stiffness }`-Tabelle wurde durch den Inline-String + Namens-Registry `[animation.springs]` / `[animation.beziers]` ersetzt | verfügbar, nicht genutzt (easeout/snappy+duration_ms reicht) |
+| `animation.*.shader` (Custom-GLSL) | Fragment-Shader pro Event (`reveal.glsl`/`squash.glsl` werden mitgeliefert) | verfügbar, nicht genutzt |
+| `animation.*.style = "popin"/"zoom"/"slide"/"fade"/"none"` | Öffnungs-/Schließ-Stil für `windows_in`/`windows_out` (popin + `scale`) | verfügbar, genutzt (popin/fade in `cfg/animation.toml`) |
+| `appearance.opaque_fullscreen` | `false` lässt Fullscreen-Fenster Window-Rule-`opacity`/Blur respektieren (statt Backdrop) | verfügbar, nicht gesetzt (Default `true` passt) |
+| `output.<NAME>.bit_depth` | 10-bit-SDR-Rendering (`8`/`10`, #172) | **GESETZT** (`10` in allen `display.toml`, alle Hosts, 2026-09-26 — Fallback auf 8-bit bleibt) |
+| `output.<NAME>.cyclic_workspaces` | Workspace-Schritt über die Enden des Inventars (#267) | **GESETZT** (`true` in allen `display.toml`, alle Hosts, 2026-09-26) |
+| `input.mouse/touchpad/tablet.left_handed` | Primär-/Sekundär-Tasten tauschen (#282) | verfügbar, nicht gesetzt |
+| `input.touchpad.tap_button_map` | Tap-Zuordnung 1/2/3 Finger (`"left_right_middle"`/`"left_middle_right"`, #301) | verfügbar, nicht gesetzt |
+| `border_color_focused/unfocused/outer` (window_rule) | Border-Farben pro Fenster überschreiben (#268) | verfügbar, nicht genutzt |
+| `border_width`/`outer_border_width`/`corner_radius`/`shadow` (window_rule) | Deko-Override pro Fenster (#266, 4748217) | verfügbar, nicht genutzt |
+| `window-move-to-workspace-silent:<ws>` (+`-next`/`-previous`) | Fenster still (ohne Fokus-Wechsel) verschieben (#273) | verfügbar, nicht gebunden |
 
 ## Zuletzt gecheckt
+- **2026-09-26** (Lock-Update auf Rev `dceb9924`, revCount 1072; letzter
+  dokumentierter Stand `b83ccfd`/997): **75 Commits (997→1072), KEINE Breaking
+  Changes / kein Config-Schema-Wandel**
+  (kein `!`-Marker, keine Key-Umbenennung). `umbriel validate` = `config: ok`
+  auf allen 3 Hosts erwartet — unsere Keys (`[animation]` easeout/snappy +
+  `duration_ms`, window_rules `blur`/`opacity`/`vrr`/`content_type`/`xdg_tag`,
+  `default_*`) sind unverändert gültig. **Kernthemen (alles additiv/optional):**
+  1. **Animations-Ausbau**: Defaults jetzt spring-basiert (`duration_ms=250`,
+     `curve="easeout"`; jedes Event defaultet auf einen Spring). **Spring-Syntax
+     gewechselt** → `curve = "spring:<damping>,<stiffness>"` (z.B. `"spring:1,900"`)
+     + Namens-Registry `[animation.springs]`/`[animation.beziers]` (die frühere
+     `curve = "spring"` + `spring = {}`-Tabelle von `c6d7d57` ist damit obsolet —
+     wir nutzen sie nicht). Neu: `style`-Werte `popin`/`zoom`/`slide`/`fade`/`none`,
+     `shader` (Custom-GLSL, `reveal.glsl`/`squash.glsl`), Lifecycle-Animationen
+     („open tiled alongside reflow", „crossfade tiled", „fade as a whole").
+  2. **Neue Config-Keys (ungenutzt)**: `appearance.opaque_fullscreen` (#242),
+     `output.<NAME>.bit_depth` (10-bit-SDR, #172), `output.<NAME>.cyclic_workspaces`
+     (#267), `input.*.left_handed` (#282), `input.touchpad.tap_button_map` (#301),
+     Window-Rule-Deko-Overrides `border_width`/`outer_border_width`/`corner_radius`/
+     `shadow` (#266) + `border_color_*` (#268), Aktion `window-move-to-workspace-silent`
+     (#273). Siehe Feature-Tracker oben.
+  3. **Fixes (automatisch)**: Focus/Fullscreen bei Workspace-Swap & Top-Layer,
+     Fullscreen-Fokus-Preserve, Login-PATH-Vererbung, `environment.d`-Pfad,
+     `new_exits_fullscreen` jetzt auch für floating/pinned (#249), VRR-/
+     Overview-/Scratchpad-Fixes, umbrielfx sRGB/BGRA-Fixes.
+  **Status**: Lock gezogen, Config unverändert sauber — **kein Handlungsbedarf**;
+  `switch` + Login-Neustart auf nex holt das neue Binary in die Sitzung.
 - **2026-09-22** (Lock-Update auf Rev `b83ccfd`, revCount 981→997): seit `8929c2d`
   **16 Commits, KEINE Breaking Changes / kein Schema-Wandel** genau wie der
   Lock-Stand verspricht. `umbriel validate` = `config: ok` auf allen 3 Hosts

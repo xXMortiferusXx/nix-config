@@ -373,6 +373,9 @@
   - `pathofexilesteam.*`-Regel entfernt (redundant, wird von `steam_app_.*` abgedeckt)
   - **Kein `default_fullscreen`** in den Spiel-Regeln → Spiele starten getilted auf W4, anderes Fenster (z.B. Build-Planer) kann daneben getiled werden
 
+### Offene Überlegung (2026-09-26)
+- **`match.is_alone` Window-Rule** (dynamisch maximieren, wenn ein Fenster allein auf dem Workspace ist; schrumpft sobald ein zweites getiltetes Fenster dazu kommt, floatende zählen nicht): **noch nicht aktiviert** — mortiferus lässt sich die Auswirkung auf den gewohnten Workflow durch den Kopf gehen. Umsetzung wäre in `cfg/rules.toml` (global `match.is_alone = true` + `default_maximize = true`, oder per `app_id` gescoped). Nicht entschieden.
+
 ## xwayland-satellite (main statt nixpkgs-Tag, seit 2026-09-10)
 
 - **Problem**: nixpkgs pinnt Tag `v0.8.2` (22.07.), der Popup-X11-Bugs enthält — u.a. Steam-Dropdowns schließen sofort (#468). Fix kam erst mit PR #494 (09.09.) auf `main`.
