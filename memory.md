@@ -650,6 +650,14 @@
   - `nvidia.NVreg_DynamicPowerManagement=0x02` nicht mehr als KernelParam — nixpkgs
     schreibt es bei `powerManagement.enable` automatisch in `/etc/modprobe.d/nixos.conf`
 
+## GPU-Power-Limit nex: 115 W ist fix, nicht änderbar (2026-09-26)
+- Die RTX 3070 Laptop (Max-Q) im Legion 5 15ACH6H hat ein **festes** Limit von **115 W**. `power.max_limit = 130 W` ist nur die vom Treiber gemeldete Silizium-Obergrenze, **kein** erreichbares Board-Limit.
+- **Das FN+Q-Plattformprofil ändert die GPU-TGP nicht.** Gemessen in `balanced` und in `performance`: `Current Power Limit` bleibt in beiden Fällen `115.00 W`, `Requested Power Limit` ebenfalls `115.00 W` — es wird nicht einmal mehr angefragt. Das Limit kommt aus der Firmware, nicht aus einer Policy.
+- `sudo nvidia-smi -pl 130` **schlägt fehl**: `Changing power management limit is not supported for GPU: 00000000:01:00.0. Treating as warning and moving on. All done.` → **Exit-Code 0 und "All done", obwohl nichts passiert.** Nach dem Befehl immer `nvidia-smi -q | grep "Current Power Limit"` prüfen, nie auf die Erfolgsmeldung verlassen.
+- Unter Last (The Forever Winter) real beobachtet: **~100–108 W** bei 74–85 % Auslastung, also ~7–15 W unter dem 115-W-Deckel. Throttle-Gründe: `SW Power Cap: Active` (der harte Limitierer) und `HW Thermal Slowdown: Active` bei 70 °C Kerntemperatur.
+- **Konsequenz:** Mehr FPS holt man hier nicht über mehr Watt. Wirksamer ist bessere Kühlung (Laptop anheben, Staub) und Undervolting (~1000 mV auf dem 5600H) — das löst die Klemmung am Power-Cap und senkt die Temperaturen gleichzeitig.
+- `HW Thermal Slowdown` war bei 70 °C Kern gesetzt, obwohl das unkritisch ist → deutet auf ein Junction-/Hotspot-Limit. Ohne `sensors` (nicht installiert) nicht sauber zuordenbar.
+
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`
 - **Bluetooth auf lion-pc fehlte komplett**: `hardware.bluetooth.enable = true` (laptop-common.nix wird nur von legion.nix/styx importiert) → direkt in `hosts/lion-pc/configuration.nix`
