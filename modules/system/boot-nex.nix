@@ -1,5 +1,6 @@
 # Boot-Konfiguration fuer nex (Standard-Latest Kernel)
-# Keine AMD-iGPU-Parameter mehr (NVIDIA-only seit 2026-08-12).
+# PRIME-Hybrid seit 2026-09-26 wieder aktiv (siehe modules/hardware/nvidia-prime.nix):
+# amdgpu-Kernelparameter + ntsync sind zurueck.
 # CachyOS Kernel via xddxdd/nix-cachyos-kernel deaktiviert (Overlay bleibt aktiv,
 # reaktivierbar):
 #   A) NVIDIA 615 scheitert am CachyOS __to_hwgpio-Patch.
@@ -26,12 +27,22 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
+  # ntsync: DRM-Sync-Mechanismus fuer Wayland/VRR (NVIDIA-only hatte es nicht,
+  # die alte PRIME-Config schon). Verbessert Tear-/Sync-Verhalten unter Umbriel.
+  boot.kernelModules = [ "ntsync" ];
+
   boot.kernelParams = [
     "transparent_hugepage=madvise"
     # AMD CPU P-State Treiber (CPU, nicht GPU — bleibt aktiv)
     "amd_pstate=active"
-    # Kein amdgpu-Parameter mehr (iGPU deaktiviert / nicht genutzt)
-    # Kein NVreg_DynamicPowerManagement (NVIDIA läuft permanent)
+    # Hinweis: nvidia.NVreg_DynamicPowerManagement=0x02 wird NICHT hier gesetzt.
+    # nixpkgs traegt es bei powerManagement.enable = true automatisch in
+    # /etc/modprobe.d/nixos.conf ein (zusammen mit PreserveVideoMemoryAllocations
+    # und UseKernelSuspendNotifiers). Ein KernelParam waere ein Duplikat.
+    # amdgpu: VRR-assoziiertes MCLK-Switching + Stutter-Mode deaktivieren
+    # (Snow-Blitz-Stottern unter Last auf der iGPU, aus alter PRIME-Config).
+    "amdgpu.dcfeaturemask=0x0"
+    "amdgpu.dcdebugmask=0x2"
   ];
 
   boot.kernel.sysctl = {

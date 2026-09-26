@@ -1,5 +1,15 @@
-# NVIDIA-only Modul fuer nex (ab 2026-08-12)
-# Reine dGPU-Ausgabe ohne PRIME/iGPU. Wayland-Optimierungen (GBM, Explicit Sync, VRR).
+# NVIDIA-only Modul: reine dGPU-Ausgabe ohne PRIME/iGPU (Stand 2026-08-12).
+#
+# STATUS: aktuell von KEINEM Host importiert. nex nutzt seit 2026-09-26
+# wieder modules/hardware/nvidia-prime.nix (PRIME-Hybrid, Advanced Optimus).
+# Dieses Modul bleibt bewusst als Rollback-Pfad erhalten: Wer auf nex wieder
+# reine dGPU-Ausgabe ohne Hybrid will, tauscht in hosts/nex/configuration.nix
+# den Import nvidia-prime.nix -> nvidia-only.nix.
+#
+# ACHTUNG beim Wiedereinschalten: boot-nex.nix setzt inzwischen wieder
+# amdgpu-Parameter, ntsync und nvidia.NVreg_DynamicPowerManagement, die zur
+# PRIME-Hybrid-Konfiguration gehoeren. Fuer echtes NVIDIA-only muessen die
+# dort ebenfalls bereinigt werden.
 { config, pkgs, lib, ... }:
 
 {
@@ -33,7 +43,19 @@
   };
 
   # TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
-  boot.extraModprobeConfig = "options nvidia NVreg_TemporaryFilePath=/var/tmp";
+  #
+  # ReBAR: NICHT explizit gesetzt. Der Treiber aktiviert Resizable BAR auf
+  # diesem Notebook von selbst; verifiziert am 2026-09-26:
+  #   nvidia-smi -q            -> BAR1 Memory Usage Total: 8192 MiB
+  #   vulkaninfo               -> NVIDIA memoryTypes[5] heapIndex 0,
+  #                               propertyFlags 0x0007 (DEVICE_LOCAL |
+  #                               HOST_VISIBLE | HOST_CACHED)
+  # Ein frueherer Kommentar deutete BAR0 = 16 MB als "ReBAR aus" — das war
+  # eine Fehldeutung: BAR0 bleibt auch bei aktivem ReBAR klein, das grosse
+  # BAR kommt als separates PCI-BAR (0xfa00000000, 8192 MB).
+  boot.extraModprobeConfig = ''
+    options nvidia NVreg_TemporaryFilePath=/var/tmp
+  '';
 
   hardware.nvidia = {
     # Essential für Wayland/KMS

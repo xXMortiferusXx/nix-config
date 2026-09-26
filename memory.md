@@ -42,12 +42,30 @@
 
 ### Hardware
 - `hardware/legion.nix` – Legion Conservation Mode + Kernel-Modul
-- `hardware/nvidia.nix` – NVIDIA PRIME Offload (archiviert unter `archive/modules/hardware/nvidia-prime.nix`)
+- `hardware/nvidia-prime.nix` – **NVIDIA PRIME Hybrid für nex** (wieder aktiv seit 2026-09-26, ersetzt `hardware/nvidia.nix`)
+  - Rekonstruiert aus der Git-Historie: `git show 064b604^:archive/modules/hardware/nvidia-prime.nix`
+    (die Archiv-Kopie selbst wurde in `064b604` gelöscht und existiert nicht mehr)
   - `vulkan-validation-layers` entfernt (Debug-Tool, nicht nötig für Gaming, Build-Fehler mit Sandbox)
   - `vkbasalt` als System-Vulkan-Layer in `hardware.graphics.extraPackages` (64-Bit + 32-Bit)
     - GOverlay zeigt "not found" an (kein CLI-Binary in nixpkgs), funktioniert aber in Spielen
     - Aktivierung via `ENABLE_VKBASALT=1 %command%` in Steam
-- `hardware/nvidia-only.nix` – **NVIDIA-only Modus für nex** (2026-08-12)
+  - Hybrid läuft mit BIOS-„Switchable Graphics" (Advanced Optimus, Legion 5 15ACH6H / 82JU)
+  - Bus-IDs: NVIDIA `PCI:1:0:0`, AMD iGPU `PCI:6:0:0`
+  - `powerManagement.finegrained = true` (mit PRIME erlaubt)
+  - `GBM_BACKEND` im Hybrid **entfernt** (erzwang sonst NVIDIA-Backend auf der iGPU),
+    `LIBVA_DRIVER_NAME`/`VDPAU_DRIVER` auf `radeonsi` (Compositor läuft auf der iGPU)
+
+#### Hybrid-Verifikation (2026-09-26, nach BIOS-Umstieg)
+- iGPU `06:00.0` Cezanne (Radeon Vega, Renoir) mit amdgpu; dGPU `01:00.0` RTX 3070
+- Render-Nodes: **`renderD128` = nvidia, `renderD129` = amdgpu**
+- **dGPU-VRAM: 857 MiB → 13 MiB** (nur noch Treiber-Overhead, Display hängt an der iGPU) = ~844 MiB Gewinn
+- **Vulkan-Budget: 6,85 GiB → kein `memoryBudget` mehr = volle 8,00 GiB.** Der Treiber reserviert nur, wenn die GPU ein Display versorgt
+- dGPU-Runtime-PM: `runtime_status=suspended` im Leerlauf (Advanced Optimus funktioniert). Achtung: `nvidia-smi`/`glxinfo` wecken sie auf, dann `active` — kein Fehler
+- Offload-Kommando heißt **`nvidia-offload`** (nicht `prime-run`; das ist nur das Beispiel für `offloadCmdMainProgram`). Verifiziert: `glxinfo -B` → AMD radeonsi, `nvidia-offload glxinfo -B` → NVIDIA RTX 3070
+- `GBM_BACKEND` nicht global setzen; `ntsync` geladen; `amdgpu.dcfeaturemask=0x0`/`dcdebugmask=0x2` in der cmdline
+- Nachtrag aus dem Systemcheck: `hosts/test` ist ein **echter** Flake-Output (`nixosConfigurations.test`, QEMU-Installer-Test) — nicht toter Code
+- `hardware/nvidia-only.nix` – reine dGPU-Ausgabe ohne PRIME/iGPU, **aktuell von keinem Host importiert**
+  (nur noch Rollback-Pfad; nex nutzt `nvidia-prime.nix`)
   - Kein PRIME-Block, kein `amdgpu` in `boot.initrd.kernelModules`
   - `powerManagement.finegrained = false` (geht nicht ohne PRIME-Offload, NixOS-Assertion)
   - `NVreg_InitializeSystemMemoryAllocations=0` (Performance)
@@ -351,11 +369,29 @@
 - Beide Hosts `validate → config: ok`, sauberer Start ohne Warning-Banner
 - **niri komplett entfernt** (Modul/Flake-Input/Cache/Mounts; Configs unter `archive/`)
 - Optik: **Blur global** via Catch-all-Regel (`[[window_rule]] blur = true`; sichtbar nur bei transparenten Fenstern), Opacity 0.95 für Discord/Steam/Legcord, kitty 0.9
-- **VRR**: nur noch pro Fenster («`window_rule.vrr`», Werte `disabled|always|fullscreen`) – `output.eDP-1.vrr = "disabled"`. Globales VRR war Flacker-Ursache auf Electron-Fenstern (Zen)
+- **VRR**: nur noch pro Fenster («`window_rule.vrr`», Werte `disabled|always|fullscreen`) – Output-`vrr = "disabled"`. Globales VRR war Flacker-Ursache auf Electron-Fenstern (Zen)
 - Zen-/Discord-Flackern: durch globales VRR verursacht → mit Output-`disabled` weg; Blur selbst verursachte kein Flackern
 - Keybinds u.a. `Mod+Wheel` = Workspace-Wechsel, `Mod+Shift+Wheel` = Fenster in andere Workspace
 - Numlock: aktuell aus beim Start (Feature fehlt im Build → `umbriel.md`)
 - `xdg.desktop-portal-gtk` bleibt nötig: umbriel-portal deckt nur ScreenCast/Screenshot ab (siehe `desktop/umbriel.nix`)
+
+### Output-Block ist an den Konnektor-Namen gebunden (Falle, 2026-09-26)
+- `cfg/display.toml` adressiert den Monitor über `[output."eDP-N"]`. **Der Suffix ändert sich mit dem treibenden GPU:**
+  - dGPU-only (nvidia) → `eDP-1` (card1) · PRIME-Hybrid (amdgpu) → `eDP-2` (card2)
+- Ein nicht passender Name wird **still ignoriert, kein Fehler, kein Journal-Warning**. Der ganze Block ist dann wirkungslos.
+- Nach dem Hybrid-Umstieg waren dadurch `workspaces = 4`, `bit_depth = 10` und `cyclic_workspaces` lautlos weg — `bit_depth` fiel auf 8 (sichtbar via `umbriel color`).
+- Prüfen: `umbriel workspaces` (zeigt `eDP-2: N`) · `journalctl --user -b | grep "Found connector"` · `umbriel color | grep "bit depth"`
+- `mode`/`scale`/`vrr` waren unkritisch (165 Hz ist Preferred Mode, scale/vrr sind Defaults)
+
+### Warum Apps im Hybrid auf falschen Workspaces landen (2026-09-26)
+- **Symptom**: Discord auf 1 statt 2, Steam auf 2 statt 3, Steam-Freundesliste korrekt auf 3
+- **Nicht** die `default_workspace`-Regeln in `cfg/rules.toml` — die sind korrekt. Auch **nicht** der Output-Name in den Regeln (die matchen nur auf `app_id`).
+- **Ursache**: `display.toml` hat den `[output."eDP-1"]`-Block verloren → `workspaces = 4` nicht mehr gesetzt → Umbriel nutzt das **dynamische Modell** (anonyme Workspaces, die beim Mappen entstehen und beim Leerräumen wieder entfernt werden).
+- **Warum das als Fehler durchschlägt**: laut Umbriel-Doku gilt *"On a dynamic output, a numeric position beyond the current count selects the last workspace"* und *"Bare digits from 1 to 64 select a one-based position"*. `default_workspace = 3` wählt also **Position 3** — existiert sie zur Startzeit nicht (es gab nur WS 1, siehe Journal `workspace group for eDP-2 with 1 workspaces`), landet das Fenster auf dem **letzten** Workspace. Sobald WS 3 existiert, greift die Regel wieder — daher das Gemisch aus richtiger und falscher Platzierung.
+- **Fix**: `workspaces = 4` im passenden Output-Block → statisches Inventar, Positionen sind stabil und werden nie gepruned.
+- **Merken**: `default_workspace` wirkt nur beim **Mappen**. Nach dem Fix müssen die Apps einmal neu starten bzw. der Session neu gebootet werden — bestehende Fenster behalten ihre Position.
+- Für dauerhaftes Wechseln zwischen den GPU-Modi wäre ein ausgabeunabhängiger `[[workspace]]`-Block (ohne `output`-Key, gilt pro Output) robuster als ein fest verdrahteter Konnektor-Name. Offen, falls der Modus häufiger wechselt.
+
 
 ### Native Wayland & Workspace-4-Regeln (2026-09-03)
 - **Verifikation** `umbriel windows --json` (XWayland, ohne PROTON_ENABLE_WAYLAND):
@@ -572,10 +608,18 @@
 - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
 - Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
 - `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
-- **nex NVIDIA-only** (2026-08-12):
+- **nex NVIDIA-only** (2026-08-12, bis 2026-09-26):
   - `amdgpu.dcfeaturemask`, `amdgpu.dcdebugmask`, `nvidia.NVreg_DynamicPowerManagement` entfernt
-  - Alte `boot-nex.nix` mit PRIME-Parametern archiviert unter `archive/modules/system/boot-nex-prime.nix`
+  - `boot-nex.nix` mit PRIME-Parametern wurde in `064b604` mit ins Archiv verschoben
+    und dort ebenfalls geloescht — rekonstruierbar via
+    `git show 064b604^:archive/modules/system/boot-nex-prime.nix`
   - `amd_pstate=active` bleibt (AMD-CPU-PState, nicht GPU)
+- **nex zurück auf PRIME-Hybrid** (2026-09-26, Advanced Optimus):
+  - `nvidia-prime.nix` neu angelegt, Import in `hosts/nex/configuration.nix` umgestellt
+  - `amdgpu.dcfeaturemask=0x0` / `amdgpu.dcdebugmask=0x2` + `ntsync` in `boot-nex.nix` zurück
+  - `amdgpu` bewusst **nicht** in `boot.initrd.kernelModules` (udev lädt es automatisch)
+  - `nvidia.NVreg_DynamicPowerManagement=0x02` nicht mehr als KernelParam — nixpkgs
+    schreibt es bei `powerManagement.enable` automatisch in `/etc/modprobe.d/nixos.conf`
 
 ## Log-Sauberkeit (2026-09-19/20, Fixes)
 - **obex.service** (beide Hosts): war gefailed (start-limit-hit), `~/Downloads/Bluetooth` fehlte → `systemd.user.tmpfiles.rules "d %h/Downloads/Bluetooth 0755 - - -"` in `home/<user>/autostart.nix`

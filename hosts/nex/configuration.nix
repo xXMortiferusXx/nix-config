@@ -9,7 +9,7 @@
       ../../modules/system/lsfg-vk-dev.nix
       ../../modules/system/boot-nex.nix
       ../../modules/system/environment-nex.nix
-      ../../modules/hardware/nvidia-only.nix
+      ../../modules/hardware/nvidia-prime.nix
       ../../modules/hardware/legion.nix
       ../../modules/hardware/touchpad.nix
       ../../modules/hardware/audio-alc287.nix
