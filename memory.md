@@ -653,6 +653,12 @@
 - **Binary-Cache** `attic.xuyh0120.win/lantian` wieder aktiv (`modules/system/nix-settings.nix`): Kernel + Komponenten substituierbar (narinfo 200) → **kein langer Lokal-Build**
   - Cache ist privat gehostet und kann kurzzeitig langsam/unerreichbar sein (einmal NAR-Download failed) → Retry oder `--fallback`
 - CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `cachyos-tuning.nix`)
+- **2026-09-26: Scheduler kernel-abhängig gemacht.** `cachyos-tuning.nix` wird ueber `boot-common.nix` von **allen** Hosts importiert, aber `adios` gibt es **nur im CachyOS-Kernel**. Deshalb neue Option `tuning.ioScheduler` (Default `kyber`):
+  - **nex** (`boot-nex.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel)
+  - **lion-pc** (`boot-lion.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel, seit jeher)
+  - **styx** bleibt beim Default `kyber` — läuft auf `linuxPackages_zen`, dort existiert `adios` nicht.
+  - Nach dem Umbau liegt der gesamte Konfigurationsteil des Moduls unter `config = { … }`, weil ein Modul mit `options.*` diese Gruppierung verlangt.
+- **Stand auf lion-pc (per SSH geprueft 2026-09-26):** Kernel `7.2.7-cachyos`, `adios`-Modul vorhanden (`Adaptive Deadline I/O Scheduler`), aber aktiv war noch **`kyber`** — lion hatte schlicht die alte Generation gebootet. `sda`/`sdb` sind dort `rotational=0` (SSD), fallen also unter die adios-Regel.
 - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
 - Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
 
