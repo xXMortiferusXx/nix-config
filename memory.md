@@ -656,6 +656,12 @@
 - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
 - Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
 
+#### Verifikation nach Neustart (2026-09-26) — alles gruen
+- Kernel laeuft: `7.2.7-cachyos`; Scheduler `none mq-deadline kyber [adios]` (**adios aktiv**, Modul `builtin, Adaptive Deadline I/O Scheduler`).
+- **NVIDIA 615.71.09 laeuft auf dem CachyOS-Kernel fehlerfrei** — genau der Punkt, der am 22.09. den Build scheitern liess.
+- PRIME-Hybrid intakt: `nvidia-offload vulkaninfo` -> nur `NVIDIA GeForce RTX 3070 Laptop GPU`; dGPU-VRAM 13 MiB (Display an iGPU).
+- Dynamic Boost: `nvidia-powerd` active.
+- Workspaces 4 auf `eDP-2`, `bit depth: 10`, **0 failed units**.
 ### nex: CachyOS-Kernel am 2026-09-26 REAKTIVIERT (war 2026-09-22 deaktiviert)
 - **Deaktivierungsgrund A (TATSACHE, am 22.09. verifiziert):** NVIDIA 615 hat am `__to_hwgpio`-Patch des damaligen CachyOS-Kernels **wirklich nicht gebaut** — der Build ist gescheitert. Der Patch ist im heutigen CachyOS-Kernel **nicht mehr enthalten** (eigener Patch ist nur noch `randstruct-provide-seed-5.19.patch`).
 - **Deaktivierungsgrund B (TATSACHE, am 22.09. verifiziert):** `linuxPackages_cachyos` verlangte `nvidia_cachyos 610.57.04` — ein **echter Treiber-Downgrade** 615 → 610. Das ist inzwischen **nicht mehr der Fall**: der gepinnte CachyOS-Kernel 7.2.7 liefert exakt dieselbe Standard-Derivation **nvidia-x11-615.71.09** (gleicher `drvPath` `/nix/store/g3ils57q…-nvidia-x11-615.71.09.drv`) wie `linuxPackages_latest`.
