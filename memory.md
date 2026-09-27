@@ -645,7 +645,7 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex + lion-pc**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` (seit 2026-09-19), aktuell `linux-cachyos-latest-7.2.6`
+- **nex + lion-pc**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` — auf **nex am 2026-09-26 reaktiviert** (Kernel `linux-cachyos-latest-7.2.7`)
 - **styx + test**: weiter `pkgs.linuxPackages_zen`
 - **Input** `nix-cachyos-kernel` (`github:xddxdd/nix-cachyos-kernel`, **keine Branch-Pin** → Default-Branch `master`):
   - Warum master statt `release`: release-Branch ist **veraltet** (`444d135`, 09-12 = Kernel 7.2.4); master (`b4e1f53`, 09-19) = `7.2.6` (Hydra-Eval 1801, hydra.lantian.pub/eval/1801)

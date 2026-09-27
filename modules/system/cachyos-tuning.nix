@@ -34,8 +34,14 @@
     # Scheduler nur auf ganze Block-Devices (DEVTYPE=disk) setzen —
     # Partitionen (nvme0n1p1, sda1, ...) haben kein queue/scheduler-Attribut
     # und erzeugen sonst udev-"Could not chase"-Fehler
-    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="kyber"
-    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="kyber"
+    #
+    # "adios" seit 2026-09-26 wieder aktiv: der Scheduler existiert nur im
+    # CachyOS-Kernel, der am 2026-09-26 in boot-nex.nix reaktiviert wurde.
+    # ACHTUNG: der Fallback ist linuxPackages_latest (siehe dort) — dort gibt es
+    # kein adios, die Regel bleibt dann wirkungslos und der Kernel nimmt seinen
+    # Default. Genau deshalb war sie zwischenzeitlich auf "kyber" umgestellt.
+    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="adios"
+    ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="adios"
     ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 
     # CachyOS 99-cpu-dma-latency.rules: audio-Gruppe darf CPU DMA Latenz setzen

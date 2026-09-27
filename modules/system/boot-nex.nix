@@ -1,17 +1,19 @@
-# Boot-Konfiguration fuer nex (Standard-Latest Kernel)
+# Boot-Konfiguration fuer nex (CachyOS-Kernel)
 # PRIME-Hybrid seit 2026-09-26 wieder aktiv (siehe modules/hardware/nvidia-prime.nix):
 # amdgpu-Kernelparameter + ntsync sind zurueck.
-# CachyOS Kernel via xddxdd/nix-cachyos-kernel deaktiviert (Overlay bleibt aktiv,
-# reaktivierbar):
-#   A) NVIDIA 615 scheitert am CachyOS __to_hwgpio-Patch.
-#   B) Chaotic-Nyx (linuxPackages_cachyos) waere der passende Kernel, verlangt
-#      aber nvidia_cachyos 610.57.04 = Treiber-Downgrade 615 -> 610. Nicht
-#      gewollt (kein wahrnehmbarer Kernel-Gewinn vs. linuxPackages_latest),
-#      Entscheidung 2026-09-22 beim Garuda-Nyx-Abgleich.
-# Unabhängig davon: Netz-Tweaks (cake/fin_timeout/rmem_max) kommen aus dem
-# Garuda-Abgleich in cachyos-tuning.nix.
-# Hinweis: der "adios" I/O-Scheduler existiert nur im CachyOS-Kernel —
-# in cachyos-tuning.nix daher auf "kyber" umgestellt.
+#
+# CachyOS-Kernel REAKTIVIERT (2026-09-26). Die beiden Deaktivierungsgruende
+# vom 2026-09-22 sind beide ueberholt:
+#   A) "NVIDIA 615 scheitert am __to_hwgpio-Patch" — der Patch ist im heutigen
+#      CachyOS-Kernel nicht mehr enthalten (nur randstruct als eigener Patch).
+#   B) "verlangt nvidia_cachyos 610.57.04 = Downgrade" — der gepinnte
+#      CachyOS-Kernel 7.2.7 liefert inzwischen exakt dieselbe, unveraenderte
+#      Standard-Derivation nvidia-x11-615.71.09 wie linuxPackages_latest.
+#      Verifiziert: gleicher drvPath (/nix/store/g3ils57q...-nvidia-x11-615.71.09.drv).
+# Der `adios` I/O-Scheduler ist wieder nutzbar -> in cachyos-tuning.nix gesetzt.
+#
+# Netz-Tweaks (cake/fin_timeout/rmem_max) kommen aus dem Garuda-Abgleich in
+# cachyos-tuning.nix.
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -22,9 +24,7 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  # CachyOS-Kernel deaktiviert (Fallback bei Kernel-Update): Zeile wieder aktivieren
-  # boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   # ntsync: DRM-Sync-Mechanismus fuer Wayland/VRR (NVIDIA-only hatte es nicht,
