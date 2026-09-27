@@ -25,7 +25,7 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-x86_64-v3;
   # CachyOS-Kernel bringt den "adios" I/O-Scheduler mit -> in cachyos-tuning.nix nutzen.
   tuning.ioScheduler = "adios";
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
