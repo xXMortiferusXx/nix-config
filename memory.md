@@ -652,9 +652,19 @@
   - Kein Branch-Pin → folgt automatisch den neuen Auto-Update-Ständen. Update: `nix flake update nix-cachyos-kernel`
 - **Binary-Cache** `attic.xuyh0120.win/lantian` wieder aktiv (`modules/system/nix-settings.nix`): Kernel + Komponenten substituierbar (narinfo 200) → **kein langer Lokal-Build**
   - Cache ist privat gehostet und kann kurzzeitig langsam/unerreichbar sein (einmal NAR-Download failed) → Retry oder `--fallback`
-- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `cachyos-tuning.nix`, Zen konnte das nicht)
+- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `cachyos-tuning.nix`)
 - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
 - Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
+
+### nex: CachyOS-Kernel am 2026-09-26 REAKTIVIERT (war 2026-09-22 deaktiviert)
+- **Deaktivierungsgrund A (TATSACHE, am 22.09. verifiziert):** NVIDIA 615 hat am `__to_hwgpio`-Patch des damaligen CachyOS-Kernels **wirklich nicht gebaut** — der Build ist gescheitert. Der Patch ist im heutigen CachyOS-Kernel **nicht mehr enthalten** (eigener Patch ist nur noch `randstruct-provide-seed-5.19.patch`).
+- **Deaktivierungsgrund B (TATSACHE, am 22.09. verifiziert):** `linuxPackages_cachyos` verlangte `nvidia_cachyos 610.57.04` — ein **echter Treiber-Downgrade** 615 → 610. Das ist inzwischen **nicht mehr der Fall**: der gepinnte CachyOS-Kernel 7.2.7 liefert exakt dieselbe Standard-Derivation **nvidia-x11-615.71.09** (gleicher `drvPath` `/nix/store/g3ils57q…-nvidia-x11-615.71.09.drv`) wie `linuxPackages_latest`.
+- **Ergebnis:** beide Blocker entfallen → Kernel reaktiviert, kein Treiberverlust.
+- Kernel-Auflösung: `7.2.7` (CachyOS) gegen `7.2.8` (`linuxPackages_latest`) — inhaltlich ein Zwillingssatz, der Gewinn liegt in den CachyOS-Patches.
+- `adios` I/O-Scheduler in `cachyos-tuning.nix` von `kyber` zurück auf **`adios`** (existiert nur im CachyOS-Kernel; `bfq` für rotierende Platten bleibt).
+- **Wichtig bei Rückfall auf `linuxPackages_latest`:** dort gibt es kein `adios`; die udev-Regel bleibt dann still wirkungslos und der Kernel nimmt seinen Default.
+- Build verifiziert: 19 Derivationen, Kernel+Initrd aus dem Cache (23 MiB), `dry-build` OK.
+- **Rückfallweg bei Nicht-Start:** im systemd-boot-Menü die vorherige Generation wählen (der `linux-switch`-Alias hilft hier nicht, da anderer Kernel).
 - `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
 - **nex NVIDIA-only** (2026-08-12, bis 2026-09-26):
   - `amdgpu.dcfeaturemask`, `amdgpu.dcdebugmask`, `nvidia.NVreg_DynamicPowerManagement` entfernt

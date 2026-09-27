@@ -2,14 +2,15 @@
 # PRIME-Hybrid seit 2026-09-26 wieder aktiv (siehe modules/hardware/nvidia-prime.nix):
 # amdgpu-Kernelparameter + ntsync sind zurueck.
 #
-# CachyOS-Kernel REAKTIVIERT (2026-09-26). Die beiden Deaktivierungsgruende
-# vom 2026-09-22 sind beide ueberholt:
-#   A) "NVIDIA 615 scheitert am __to_hwgpio-Patch" — der Patch ist im heutigen
-#      CachyOS-Kernel nicht mehr enthalten (nur randstruct als eigener Patch).
-#   B) "verlangt nvidia_cachyos 610.57.04 = Downgrade" — der gepinnte
-#      CachyOS-Kernel 7.2.7 liefert inzwischen exakt dieselbe, unveraenderte
-#      Standard-Derivation nvidia-x11-615.71.09 wie linuxPackages_latest.
-#      Verifiziert: gleicher drvPath (/nix/store/g3ils57q...-nvidia-x11-615.71.09.drv).
+# CachyOS-Kernel REAKTIVIERT (2026-09-26). Beide Deaktivierungsgruende vom
+# 2026-09-22 waren damals verifizierte Tatsachen und sind heute ueberholt:
+#   A) NVIDIA 615 hat am __to_hwgpio-Patch des damaligen CachyOS-Kernels
+#      wirklich nicht gebaut (Build gescheitert). Der Patch ist heute nicht
+#      mehr enthalten — eigener Patch ist nur noch randstruct.
+#   B) linuxPackages_cachyos verlangte nvidia_cachyos 610.57.04, also ein
+#      echter Downgrade 615 -> 610. Der heutige CachyOS-Kernel 7.2.7 liefert
+#      exakt dieselbe Standard-Derivation nvidia-x11-615.71.09 wie
+#      linuxPackages_latest (gleicher drvPath) — kein Downgrade noetig.
 # Der `adios` I/O-Scheduler ist wieder nutzbar -> in cachyos-tuning.nix gesetzt.
 #
 # Netz-Tweaks (cake/fin_timeout/rmem_max) kommen aus dem Garuda-Abgleich in
