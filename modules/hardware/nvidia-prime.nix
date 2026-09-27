@@ -1,13 +1,14 @@
-# NVIDIA PRIME-Hybrid fuer nex (reaktiviert 2026-09-26)
-#
-# AUSGANGSPUNKT: das bis 2026-08-12 genutzte Archiv-Modul
-# (archive/modules/hardware/nvidia-prime.nix, rekonstruiert aus Git 064b604^)
-# wurde hier in den NVIDIA-only-Zustand (nvidia-only.nix) ueberfuehrt. Diese
-# Datei portiert den PRIME-Teil zurueck und mischt ihn mit den inzwischen
-# hinzugekommenen, weiterhin gueltigen Einstellungen aus nvidia-only.nix:
-#   - 50-vram-fix.json (GL-VRAM-Heap-Fix) bleibt
-#   - NVreg_TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
-#   - vkbasalt / vulkan-tools / nvidia-vaapi-driver / libva-utils bleiben
+  # NVIDIA PRIME-Hybrid fuer nex (reaktiviert 2026-09-26)
+  #
+  # AUSGANGSPUNKT: das bis 2026-08-12 genutzte Archiv-Modul
+  # (archive/modules/hardware/nvidia-prime.nix, rekonstruiert aus Git 064b604^).
+  # Dazwischen lief nex im reinen NVIDIA-only-Modus; diese Datei portiert den
+  # PRIME-Teil daraus zurueck und mischt ihn mit den inzwischen hinzugekommenen,
+  # weiterhin gueltigen Einstellungen:
+  #   - 50-vram-fix.json (GL-VRAM-Heap-Fix) bleibt
+  #   - NVreg_TemporaryFilePath fuer PreserveVideoMemoryAllocations (Suspend/Resume)
+  #   - vkbasalt / vulkan-tools / nvidia-vaapi-driver / libva-utils bleiben
+
 #   - Wayland-Env (GBM_BACKEND, __GL_VRR_ALLOWED, NIXOS_OZONE_WL, LIBVA/VDPAU)
 #
 # BIOS-Voraussetzung (Advanced Optimus, Lenovo Legion 5 15ACH6H / 82JU):

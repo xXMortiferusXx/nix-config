@@ -64,17 +64,18 @@
 - Offload-Kommando heißt **`nvidia-offload`** (nicht `prime-run`; das ist nur das Beispiel für `offloadCmdMainProgram`). Verifiziert: `glxinfo -B` → AMD radeonsi, `nvidia-offload glxinfo -B` → NVIDIA RTX 3070
 - `GBM_BACKEND` nicht global setzen; `ntsync` geladen; `amdgpu.dcfeaturemask=0x0`/`dcdebugmask=0x2` in der cmdline
 - Nachtrag aus dem Systemcheck: `hosts/test` ist ein **echter** Flake-Output (`nixosConfigurations.test`, QEMU-Installer-Test) — nicht toter Code
-- `hardware/nvidia-only.nix` – reine dGPU-Ausgabe ohne PRIME/iGPU, **aktuell von keinem Host importiert**
-  (nur noch Rollback-Pfad; nex nutzt `nvidia-prime.nix`)
-  - Kein PRIME-Block, kein `amdgpu` in `boot.initrd.kernelModules`
-  - `powerManagement.finegrained = false` (geht nicht ohne PRIME-Offload, NixOS-Assertion)
-  - `NVreg_InitializeSystemMemoryAllocations=0` (Performance)
-  - `NVreg_DynamicPowerManagement=0x02` (GPU spart Strom bei Leerlauf)
-  - `NVreg_EnableS0ixPowerManagement=1` (S0ix Idle-Power fuer AMD Ryzen)
-  - Wayland-Optimierungen: `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `__GL_VRR_ALLOWED=1`
-  - `LIBVA_DRIVER_NAME=nvidia` + `VDPAU_DRIVER=nvidia` für Hardware-Decoding
-  - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland
-  - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` für steamwebhelper, Discord, vesktop, umbriel (50-vram-fix.json)
+- `hardware/nvidia-only.nix` – **GELOESCHT am 2026-09-27.** Das Modul (reine dGPU-Ausgabe ohne PRIME/iGPU) wurde von keinem Host importiert und war veraltet: es enthielt weder `dynamicBoost.enable` (die 130-W-Freigabe) noch `VK_DRIVER_FILES` (NVIDIA-ICD fuer Vulkan-Apps) noch `vulkan-extension-layer`. Ein Rollback darauf haette also still 115 W statt ~128 W geliefert und Vulkan-Apps auf die iGPU geschickt — genau die Fehlerklasse, die diese Session aufgedeckt hat.
+  Rekonstruierbar ueber `git show 720ea05:modules/hardware/nvidia-only.nix` (letzter Stand vor der Löschung). Es gibt jetzt **nur noch** `hardware/nvidia-prime.nix`.
+  - Relevante Einstellungen, die dort historisch standen (alle inzwischen anders entschieden):
+    - Kein PRIME-Block, kein `amdgpu` in `boot.initrd.kernelModules`
+    - `powerManagement.finegrained = false` (geht nicht ohne PRIME-Offload, NixOS-Assertion)
+    - `NVreg_InitializeSystemMemoryAllocations=0` (Performance) — im PRIME-Modul weiterhin gesetzt
+    - `NVreg_DynamicPowerManagement=0x02` (GPU spart Strom bei Leerlauf) — kommt im Hybrid automatisch von nixpkgs über `powerManagement.enable`
+    - `NVreg_EnableS0ixPowerManagement=1` — **nie aktiv gewesen**, Option existiert im Modul-Parameter, stand aber nie in der generierten Config
+    - Wayland: `GBM_BACKEND=nvidia-drm` — im Hybrid bewusst **entfernt** (erzwang sonst NVIDIA-Backend auf der iGPU)
+    - `LIBVA_DRIVER_NAME`/`VDPAU_DRIVER` = `nvidia` → im Hybrid `radeonsi` (Compositor läuft auf der iGPU)
+    - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland — bleibt
+    - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` (50-vram-fix.json) — bleibt
   - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
   - **Treiber**: `nvidiaPackages.stable` = 595.91.07 (seit 2026-08-16; vorher `latest` = 610.57.04, NVIDIA nennt 610 jetzt `new_feature`/`bleeding_edge`, 595 ist der `production`-Zweig)
 
