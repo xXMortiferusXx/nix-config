@@ -17,6 +17,13 @@
   tuning.ioScheduler = "adios";
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
+  # "bfq" fest laden: die udev-Regel in cachyos-tuning.nix weist rota-
+  # tions-Geraeten (künftige SATA-HDD) bfq zu, aber bfq ist ein Modul
+  # (bfq.ko.xz) und haengt sonst am Autoload-Alias "bfq-iosched".
+  # Auf lion (Desktop) ist eine HDD realistisch, deshalb fest geladen.
+  # nex/styx brauchen das nicht: nex hat nur NVMe, styx laeuft auf Zen.
+  boot.kernelModules = [ "bfq" ];
+
   boot.kernelParams = [
     "transparent_hugepage=madvise"
     # AMD P-State NICHT verwenden: Ryzen 1500X (Zen 1) unterstützt es nicht.

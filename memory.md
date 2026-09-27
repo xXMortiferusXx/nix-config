@@ -658,7 +658,13 @@
   - **lion-pc** (`boot-lion.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel, seit jeher)
   - **styx** bleibt beim Default `kyber` — läuft auf `linuxPackages_zen`, dort existiert `adios` nicht.
   - Nach dem Umbau liegt der gesamte Konfigurationsteil des Moduls unter `config = { … }`, weil ein Modul mit `options.*` diese Gruppierung verlangt.
-- **Stand auf lion-pc (per SSH geprueft 2026-09-26):** Kernel `7.2.7-cachyos`, `adios`-Modul vorhanden (`Adaptive Deadline I/O Scheduler`), aber aktiv war noch **`kyber`** — lion hatte schlicht die alte Generation gebootet. `sda`/`sdb` sind dort `rotational=0` (SSD), fallen also unter die adios-Regel.
+- **Regel-Logik (wichtig fuer kuenftige HDD):** `ATTR{queue/scheduler}="x"` ist eine **Zuweisung**, keine Pruefung. Die Trennung SSD/HDD entsteht allein durch die echten Vergleiche `ATTR{queue/rotational}=="0"` bzw. `=="1"`:
+  - NVMe → `adios` (NVMe ist immer non-rotational, deshalb ohne rotational-Test)
+  - `sd*`/`mmcblk*` mit `rotational=0` (SSD) → `adios`
+  - `sd*` mit `rotational=1` (**HDD**) → `bfq`
+  - Eine HDD kann Regel 3 nicht matchen (`rotational=="0"` schlaegt fehl) und landet in Regel 4. **Sauber erkannt, kein Konflikt.**
+- **`bfq` fest auf lion geladen** (`boot.kernelModules = [ "bfq" ]`): `bfq` ist ein Modul (`bfq.ko.xz`) und haengt sonst am Autoload-Alias `bfq-iosched`, der beim Anstecken asynchron und unzuverlaessig sein kann. Auf lion (Desktop) ist eine SATA-HDD realistisch, deshalb deterministisch. **nex/styx ohne `bfq`:** nex kann keine HDD aufnehmen (Notebook), styx laeuft auf dem Zen-Kernel.
+- Stand auf lion-pc (per SSH geprueft 2026-09-26): Kernel `7.2.7-cachyos`, `adios`-Modul vorhanden (`Adaptive Deadline I/O Scheduler`), aber aktiv war noch **`kyber`** — lion hatte schlicht die alte Generation gebootet. `sda`/`sdb` sind dort `rotational=0` (SSD), fallen also unter die adios-Regel.
 - `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
 - Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
 
