@@ -1,27 +1,5 @@
 {
   "nodes": {
-    "arctis-sound-manager": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "dir": "nix",
-        "lastModified": 1790087599,
-        "narHash": "sha256-wCwnoOAoZy/JOyCJvw3wNFM/6OmRrSXCuJxDNtBtBSg=",
-        "owner": "xXMortiferusXx",
-        "repo": "Arctis-Sound-Manager",
-        "rev": "42844d3342ff28b14e1d8a98175315e9a4c76877",
-        "type": "github"
-      },
-      "original": {
-        "dir": "nix",
-        "owner": "xXMortiferusXx",
-        "repo": "Arctis-Sound-Manager",
-        "type": "github"
-      }
-    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -120,11 +98,11 @@
     "lsfg-vk-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1789513022,
-        "narHash": "sha256-VcVBgPonHaTuVYKgdJ6+YM6+Q4slXWKVnUh3egw31b8=",
+        "lastModified": 1790535901,
+        "narHash": "sha256-vfJVp6/WDS2DhCQLlZWqM2XCw17OtQ0FitKXiDg9CqA=",
         "ref": "master",
-        "rev": "fd8c317159ff5cc363cffa0f4d1e9568ceadf9dc",
-        "revCount": 115,
+        "rev": "2a5dc88c9bf787efa2e6e4af46286aaaf99f9dbd",
+        "revCount": 116,
         "type": "git",
         "url": "https://git.lsfg-vk.dev/lsfg-vk.git"
       },
@@ -141,11 +119,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1790463380,
-        "narHash": "sha256-z0xtr21fNPf1e0lIKyqSVSnWJgC5nNlvLPSFRCwi9as=",
+        "lastModified": 1790564970,
+        "narHash": "sha256-ANcKKTLB5oitjAYPp+iWts5clpbowVbDPVvt03P7Hes=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "a75d07341a1f7f64899c1c9a7f3dbf43e6435046",
+        "rev": "b1332396df6e880d7e3b6b451c6a74132ce8cf66",
         "type": "github"
       },
       "original": {
@@ -156,11 +134,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1790334439,
-        "narHash": "sha256-RX9bkn2J5ECwOzj5i2qxsbwKYeEyrEvURNDuWXVIDAQ=",
+        "lastModified": 1790505892,
+        "narHash": "sha256-/pAz2XfqHS//WRn2xRjoqes7Z92qZ0Q1gufZZ3PtuwA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9a4cace81924169a5c0355122fb160c0ad7d9d43",
+        "rev": "545c226a9af7f59fba5c3873f7c6a65e014c8f5f",
         "type": "github"
       },
       "original": {
@@ -187,11 +165,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1790463110,
-        "narHash": "sha256-hKlVl12B1dF0Q5vd9dY3lIJM5mFGWYSlXwSLAqHZ1+s=",
+        "lastModified": 1790578696,
+        "narHash": "sha256-ZoxIApko70jCdbH3l20HWXOBaT2HZd87orzd2yJ9dVE=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa",
+        "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
         "type": "github"
       },
       "original": {
@@ -248,11 +226,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1790470113,
-        "narHash": "sha256-DEjHoo4FtHpOZYQXnsTzem2cWk9LZRv0Cx0+ZU8bEWY=",
+        "lastModified": 1790607056,
+        "narHash": "sha256-4D3nLzUqkOPKnbkHzD2AtZ0MVIqFzW6XJNW/Ig07PGk=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "ffbe8d561fbf6f0a0f94f0096168e4d57506f8ed",
+        "rev": "2415144e0669b64e0e4d2b096180e0983aa71479",
         "type": "github"
       },
       "original": {
@@ -266,11 +244,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1790475997,
-        "narHash": "sha256-z96D866QPXhUBRkCaCF4nDPHV56Zriyg5UcqdWzluxw=",
+        "lastModified": 1790518002,
+        "narHash": "sha256-agpHRmhsUL4ZNFseCNilGSiC/cc0S2tC1ZvC5rXmgtY=",
         "owner": "noctalia-dev",
         "repo": "noctalia-greeter",
-        "rev": "9152426e12d87956f7ec6227c4bd235a1e3aa678",
+        "rev": "44337ecba043749c29de6f3d563315b91987a908",
         "type": "github"
       },
       "original": {
@@ -281,7 +259,6 @@
     },
     "root": {
       "inputs": {
-        "arctis-sound-manager": "arctis-sound-manager",
         "disko": "disko",
         "home-manager": "home-manager",
         "lsfg-vk-src": "lsfg-vk-src",
@@ -323,11 +300,11 @@
         "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
       },
       "locked": {
-        "lastModified": 1790484553,
-        "narHash": "sha256-L2ENvB1YAexEV0lrSfCAdJyP/XK4X0vSJvOgVtkwCDI=",
+        "lastModified": 1790604161,
+        "narHash": "sha256-j6kqk6ZK4y8KiUizta/t6DTQ+kyW8WeZHjIdHd+3PP8=",
         "ref": "refs/heads/main",
-        "rev": "301f39c74415ca923507814975522e93a90d88de",
-        "revCount": 1095,
+        "rev": "efb73be0c389e392f7ca89e7fc36f0644b7c9633",
+        "revCount": 1117,
         "type": "git",
         "url": "https://github.com/noctalia-dev/umbriel"
       },
@@ -384,11 +361,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1790402100,
-        "narHash": "sha256-f/tmhFat/UHra627JbVg6calQ3/ZkEydQZJR71BBX0M=",
+        "lastModified": 1790568199,
+        "narHash": "sha256-h3AHjsOZr9iBEkNfK+Zh7/DoN5iMRpJd/6h/5NxCz9I=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "b851b56b787a61b900751aca2f17e4a5ca6c394a",
+        "rev": "e50ed94ebf28bae95397e482dbb1c020f50c20c1",
         "type": "github"
       },
       "original": {

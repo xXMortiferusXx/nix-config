@@ -63,19 +63,9 @@
       url = "github:xddxdd/nix-cachyos-kernel";
     };
 
-    # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)
-    # - Modul: inputs.arctis-sound-manager.nixosModules.default
-    # - Option: services.arctis-sound-manager.enable
-    # Quelle: eigener Fork (xXMortiferusXx) statt upstream (loteran), weil dort
-    # der 8ch-7.1-Loopback-Fix (Game/Media/Aux → HeSuVi) entwickelt wird.
-    arctis-sound-manager = {
-      url = "github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, arctis-sound-manager, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -99,7 +89,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          arctis-sound-manager.nixosModules.default
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {

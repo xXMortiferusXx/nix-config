@@ -15,7 +15,6 @@ let
     "gtk-4.0"
     "umbriel"
     "nvim"
-    "pipewire"
     "qt5ct"
     "qt6ct"
     "xsettingsd"

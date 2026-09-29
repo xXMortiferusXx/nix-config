@@ -22,10 +22,6 @@
 
   networking.hostName = "nex";
 
-  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — verwaltet EQ/ChatMix/Virtual Surround.
-  # Nur für nex (Headset); styx läuft ohne.
-  services.arctis-sound-manager.enable = true;
-
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
   services.displayManager.noctalia-greeter.passwordless-sync-users = [ "mortiferus" ];
 
