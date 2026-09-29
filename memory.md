@@ -146,6 +146,27 @@
 
 ## Audio (2026-09-29): Sound Blaster GC7 statt ASM
 
+### Sound Blaster GC7 (USB `041e:3271`) — Hardware-GameVoice-Mix + 7.1 (2026-09-29)
+- Headset MMX 330 Pro hängt jetzt am GC7. Ziel: **Hardware-ChatMix (GameVoice-Drehknopf) UND virtueller 7.1-Surround**.
+- **Schlüssel-Fakt**: Der GC7 bietet ZWEI getrennte USB-Playback-Streams, die der physische GameVoice-Knopf
+  in Hardware mischt (Creative-Seite: Game = Default Device "Speakers", Voice = Default *Communications* Device "Headset"):
+  - Interface 4 (PCM 0, bis **8ch** = 7.1) → **Game**  | Interface 5 (PCM 0 capture) → **analoges Mic**
+  - Interface 6 (PCM 1, 2ch/48k)         → **Voice/Chat** | Interface 7 (PCM 1 capture) → 2. Eingang
+- **Profil**: Gerät muss auf **`pro-audio`** (Index 24) stehen → NUR dann sind beide PCMs gleichzeitig offen.
+  Das ACP-Profil "Analog Surround 7.1" öffnet nur Interface 4 → GameVoice-Knopf hätte nichts zu mischen
+  (genau das war die Ursache für "kein ChatMix"). Pro Audio liefert hier sehr wohl 7.1 (8 Kanal am Game-PCM).
+- **Umsetzung** (`modules/hardware/audio-gc7.nix`, via `services.pipewire.wireplumber.extraConfig`):
+  Umbenennung der Pro-Nodes für klare Geräteauswahl:
+  - `pro-output-0` → **"GC7 Game (7.1)"** (Default-Sink)
+  - `pro-output-1` → **"GC7 Voice (Chat)"** (in Discord als **Ausgabe** wählen)
+  - `pro-input-0`  → **"GC7 Microphone"** (Default-Source)
+- **Discord-Setup**: Ausgabe = `GC7 Voice (Chat)`, Rest/System = `GC7 Game (7.1)`. Dann mischt der Drehknopf.
+- **Virtueller Surround**: Am GC7 per **Surround-/SXFI-Taste bzw. mittlerem Drehregler** aktivierbar (DSP sitzt im
+  Gerät, Einstellung bleibt gespeichert) — kein Creative-PC-App nötig zum Ein-/Umschalten; App (Android/Windows)
+  nur fürs Feintuning (SBX-Profile, BLE).
+- **Nicht** persistent erzwingbar über den Flake: die Profilwahl merkt sich WirePlumber selbst (State). Bei
+  Neuaufsetzen ggf. `wpctl set-profile <GC7-DeviceID> 24` + `wpctl set-default` (Sink Game, Source Mic) nötig.
+
 ### Arctis Sound Manager (ASM) — ENTFERNT 2026-09-29
 - Headset (MMX 330 Pro) läuft jetzt über **Sound Blaster GC7** (USB `041e:3271`, `snd_usb_audio`,
   Profile: off / Analoges Stereo Duplex / IEC958-Varianten / Surround 2.1-7.1 / Pro Audio).
