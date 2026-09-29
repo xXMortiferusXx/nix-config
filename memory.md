@@ -167,8 +167,12 @@
 - **Virtueller Surround**: Am GC7 per **Surround-/SXFI-Taste bzw. mittlerem Drehregler** aktivierbar (DSP sitzt im
   Gerät, Einstellung bleibt gespeichert) — kein Creative-PC-App nötig zum Ein-/Umschalten; App (Android/Windows)
   nur fürs Feintuning (SBX-Profile, BLE).
-- **Nicht** persistent erzwingbar über den Flake: die Profilwahl merkt sich WirePlumber selbst (State). Bei
-  Neuaufsetzen ggf. `wpctl set-profile <GC7-DeviceID> 24` + `wpctl set-default` (Sink Game, Source Mic) nötig.
+- **Profilwahl ist jetzt deklarativ** (seit 2026-09-29): `device.profile.priority.rules` in
+  `modules/hardware/audio-gc7.nix` erzwingt `pro-audio` (Match `device.name ~alsa_card.usb.*Sound_Blaster_GC7.*`,
+  `priorities=["pro-audio"]`). Grund: `find-best-profile.lua` überspringt pro-audio bei der Auto-Wahl absichtlich,
+  darum würde WP ohne State nie pro-audio nehmen → kein Voice-Stream/ChatMix. Getestet mit geleertem State
+  (Neuinstall-Simulation) → greift. `device.restore-profile` (default true) bedeutet: ändert man das Profil
+  **manuell** (z.B. pavucontrol), gewinnt danach der gespeicherte State wieder — für den Normalbetrieb egal.
 
 ### Arctis Sound Manager (ASM) — ENTFERNT 2026-09-29
 - Headset (MMX 330 Pro) läuft jetzt über **Sound Blaster GC7** (USB `041e:3271`, `snd_usb_audio`,

@@ -19,6 +19,16 @@
 
 {
   services.pipewire.wireplumber.extraConfig."90-gc7" = {
+    # Profilwahl deklarativ: erzwungen auf "pro-audio" (sonst wählt WP bei leerem
+    # State das höchste ACP-Profil und überspringt pro-audio bewusst -> kein Voice-
+    # Stream = kein ChatMix). Gilt auch nach Neuinstallation ohne gespeicherten State.
+    "device.profile.priority.rules" = [
+      {
+        matches = [ { "device.name" = "~alsa_card.usb.*Sound_Blaster_GC7.*"; } ];
+        actions."update-props"."priorities" = [ "pro-audio" ];
+      }
+    ];
+
     "monitor.alsa.rules" = [
       {
         matches = [ { "node.name" = "~alsa_output.*Sound_Blaster_GC7.*pro-output-0$"; } ];
