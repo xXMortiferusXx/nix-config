@@ -12,7 +12,6 @@
       ../../modules/hardware/nvidia-prime.nix
       ../../modules/hardware/legion.nix
       ../../modules/hardware/touchpad.nix
-      ../../modules/hardware/audio-alc287.nix
       ../../modules/hardware/audio-gc7.nix
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
