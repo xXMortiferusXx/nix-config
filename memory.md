@@ -156,10 +156,13 @@
   Das ACP-Profil "Analog Surround 7.1" öffnet nur Interface 4 → GameVoice-Knopf hätte nichts zu mischen
   (genau das war die Ursache für "kein ChatMix"). Pro Audio liefert hier sehr wohl 7.1 (8 Kanal am Game-PCM).
 - **Umsetzung** (`modules/hardware/audio-gc7.nix`, via `services.pipewire.wireplumber.extraConfig`):
-  Umbenennung der Pro-Nodes für klare Geräteauswahl:
-  - `pro-output-0` → **"GC7 Game (7.1)"** (Default-Sink)
-  - `pro-output-1` → **"GC7 Voice (Chat)"** (in Discord als **Ausgabe** wählen)
-  - `pro-input-0`  → **"GC7 Microphone"** (Default-Source)
+  Umbenennung **und Kanal-Positionen** der Pro-Nodes (Name allein reicht NICHT — Spiele erkennen 7.1
+  an den `audio.position`, nicht am Namen; Pro Audio labelt sonst `AUX0..AUX7` → keine 7.1-Erkennung):
+  - `pro-output-0` → **"GC7 Game (7.1)"** (Default-Sink), `audio.channels=8`, `audio.position=[FL,FR,FC,LFE,RL,RR,SL,SR]`
+    (USB-Descriptor `bmChannelConfig=0x63f` = genau diese 7.1-Reihenfolge → passt).
+  - `pro-output-1` → **"GC7 Voice (Chat)"** (in Discord als **Ausgabe** wählen), `audio.channels=2`, `[FL,FR]`
+  - `pro-input-0`  → **"GC7 Microphone"** (Default-Source), `audio.channels=2`, `[FL,FR]`
+  Default-Auswahl ergibt sich aus `priority.session` (Game 1600 > Voice 1328; Mic 2600 > 2. Eingang 2328).
 - **Discord-Setup**: Ausgabe = `GC7 Voice (Chat)`, Rest/System = `GC7 Game (7.1)`. Dann mischt der Drehknopf.
 - **Virtueller Surround**: Am GC7 per **Surround-/SXFI-Taste bzw. mittlerem Drehregler** aktivierbar (DSP sitzt im
   Gerät, Einstellung bleibt gespeichert) — kein Creative-PC-App nötig zum Ein-/Umschalten; App (Android/Windows)

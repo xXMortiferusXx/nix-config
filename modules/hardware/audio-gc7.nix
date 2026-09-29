@@ -7,26 +7,42 @@
 #   - Interface 5 (PCM 0 capture)   = analoges Mic -> "GC7 Microphone"
 #
 # Damit beide Streams gleichzeitig offen sind, muss das Gerät auf das
-# Profil "pro-audio" gestellt sein (Profil-Index 24). Das ACP-Surround-Profil
+# Profil "pro-audio" gestellt sein (Index 24). Das ACP-Surround-Profil
 # öffnet nur Interface 4 -> der GameVoice-Knopf hätte dann nichts zu mischen.
-# Die Profilwahl persistiert WirePlumber selbst (State); hier benennen wir
-# nur die Nodes für die Geräteauswahl in Discord/Desktops um.
+#
+# Pro Audio vergibt zunächst generische Kanal-Labels (AUX0..AUX7). Deshalb
+# setzen wir die Positionen explizit: der 8ch-Game-Stream wird als echtes
+# 7.1 deklariert (USB-Descriptor bmChannelConfig=0x63f => FL,FR,FC,LFE,BL,BR,SL,SR),
+# sonst erkennen Spiele/Wine/Proton kein 7.1 (sie sehen "8x unbekannt").
+# Die Profilwahl persistiert WirePlumber selbst (State).
 { ... }:
 
 {
-  services.pipewire.wireplumber.extraConfig."90-gc7-names" = {
+  services.pipewire.wireplumber.extraConfig."90-gc7" = {
     "monitor.alsa.rules" = [
       {
         matches = [ { "node.name" = "~alsa_output.*Sound_Blaster_GC7.*pro-output-0$"; } ];
-        actions."update-props"."node.description" = "GC7 Game (7.1)";
+        actions."update-props" = {
+          "node.description" = "GC7 Game (7.1)";
+          "audio.channels" = 8;
+          "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
+        };
       }
       {
         matches = [ { "node.name" = "~alsa_output.*Sound_Blaster_GC7.*pro-output-1$"; } ];
-        actions."update-props"."node.description" = "GC7 Voice (Chat)";
+        actions."update-props" = {
+          "node.description" = "GC7 Voice (Chat)";
+          "audio.channels" = 2;
+          "audio.position" = [ "FL" "FR" ];
+        };
       }
       {
         matches = [ { "node.name" = "~alsa_input.*Sound_Blaster_GC7.*pro-input-0$"; } ];
-        actions."update-props"."node.description" = "GC7 Microphone";
+        actions."update-props" = {
+          "node.description" = "GC7 Microphone";
+          "audio.channels" = 2;
+          "audio.position" = [ "FL" "FR" ];
+        };
       }
     ];
   };
