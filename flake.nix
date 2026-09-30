@@ -18,9 +18,13 @@
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
-    # Noctalia Greeter (ohne follows für Cachix)
+    # Noctalia Greeter. TODO/Fix: follows nixpkgs erzwungen, da der Greeter sonst
+    # gegen sein eigenes (älteres) nixpkgs baut und zur Laufzeit den System-Mesa
+    # aus /run/opengl-driver lädt → glibc-Mismatch (GLIBC_2.43 not found) →
+    # Greeter-Compositor crasht (schwarzer Bildschirm). Kein Cachix-Prebuild mehr.
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Umbriel Compositor – direkt vom Repo statt nixpkgs, damit Fixes zeitnah
