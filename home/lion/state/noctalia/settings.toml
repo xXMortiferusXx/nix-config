@@ -48,7 +48,7 @@ background_opacity = 0.79999998211860657
 enabled = true
 icon_size = 36
 margin_edge = 0
-pinned = [ "zen-beta", "io.github.kolunmi.Bazaar", "org.vinegarhq.Sober", "org.vinegarhq.Vinegar" ]
+pinned = [ "io.github.kolunmi.Bazaar", "org.vinegarhq.Sober", "org.vinegarhq.Vinegar" ]
 reserve_space = false
 smart_auto_hide = true
 

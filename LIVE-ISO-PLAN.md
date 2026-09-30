@@ -48,7 +48,7 @@ Die 5,4 GB kamen fast komplett von den schweren Apps.
 - [ ] Fish + Starship + Zoxide
 - [ ] Nvim, Terminal
 - [ ] Thunar (Dateimanager)
-- [ ] Browser (Zen oder anderer)
+- [ ] Browser (Firefox)
 - [ ] Wayland-Tools: grim, slurp, wl-clipboard, cliphist
 
 ### Weglassen / optional (schwer, nicht Workflow-relevant)

@@ -31,7 +31,6 @@
 - niri **komplett entfernt** (2026-08-31): Modul, Flake-Input, niri.cachix-Cache, Config-Mounts. Alte Configs unter `archive/` (z.B. `archive/home/<user>/config/niri/`) + Git-History als Fallback
 
 ### Programs
-- `programs/zen-policies.nix` – Zen-Browser Enterprise Policies
 - `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `gamescope`, `sunshine`, `scripts`
 - **Lutris**: Standard-nixpkgs-Paket (`lutris`, buildFHSEnv) in `mortiferus.packages` (seit 2026-08-29)
   - Vorher: `lutris-unwrapped` + eigener `steam-run`-Wrapper in eigener `lutris.nix` — entfernt (Doppel-Sandbox: steam-run + UMU/pressure-vessel)

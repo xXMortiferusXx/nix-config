@@ -38,7 +38,7 @@ modules/
 ├── desktop/           # Compositor (umbriel), greeter, polkit, fonts
 ├── hardware/          # GPU drivers, audio, laptop features, legion, touchpad
 ├── home/              # Home-Manager per user (mortiferus + backbone)
-├── programs/          # Gaming stack, tools, shell, terminal, editor, zen-browser
+├── programs/          # Gaming stack, tools, shell, terminal, editor, firefox
 ├── services/          # Noctalia (desktop shell), printing
 ├── system/            # Boot, kernel, tuning, networking, nix-settings
 └── users/             # User definitions
@@ -139,7 +139,7 @@ modules/
 ├── desktop/           # Compositor (umbriel), Greeter, Polkit, Fonts
 ├── hardware/          # GPU-Treiber, Audio, Laptop-Features, Legion, Touchpad
 ├── home/              # Home-Manager pro User (mortiferus + backbone)
-├── programs/          # Gaming-Stack, Tools, Shell, Terminal, Editor, Zen-Browser
+├── programs/          # Gaming-Stack, Tools, Shell, Terminal, Editor, Firefox
 ├── services/          # Noctalia (Desktop-Shell), Drucken
 ├── system/            # Boot, Kernel, Tuning, Netzwerk, Nix-Settings
 └── users/             # Benutzerdefinitionen
