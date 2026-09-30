@@ -18,7 +18,7 @@
   networking.hostName = "styx";
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
-  services.displayManager.noctalia-greeter.passwordless-sync-users = [ "backbone" ];
+  services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "backbone" ];
 
   system.stateVersion = "26.05"; 
 }

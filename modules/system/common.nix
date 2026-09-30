@@ -4,7 +4,6 @@
 
 {
   imports = [
-    inputs.noctalia-greeter.nixosModules.default
     ./locale.nix
     ./networking.nix
     ./security.nix

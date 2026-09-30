@@ -56,7 +56,7 @@
   security.sudo.wheelNeedsPassword = lib.mkForce true;
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
-  services.displayManager.noctalia-greeter.passwordless-sync-users = [ "lion" ];
+  services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "lion" ];
 
   system.stateVersion = "26.05";
 }

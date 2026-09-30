@@ -23,7 +23,7 @@
   networking.hostName = "nex";
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
-  services.displayManager.noctalia-greeter.passwordless-sync-users = [ "mortiferus" ];
+  services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "mortiferus" ];
 
   system.stateVersion = "26.05"; 
   

@@ -1,19 +1,13 @@
 # Noctalia Login-Greeter (DE-Tastatur, merkt letzte Session via sync.toml)
 # Workaround: tmpfiles kann .toml-Symlink nicht kopieren → fix-noctalia-greeter-toml
 #
-# Passwordloser Sync läuft jetzt über die Modul-Option
-# `services.displayManager.noctalia-greeter.passwordless-sync-users` (je Host gesetzt),
-# die eine Rule für die neue Action `org.noctalia.greeter.sync-appearance` generiert.
-# Die alte `apply-appearance`-Policy ist damit obsolet (und passwordlos zu lassen
-# laut Noctalia-Docs unsicher, da sie auch den Legacy-Helper-Mode autorisiert).
-{ config, pkgs, lib, inputs, ... }:
-let
-  greeterPkg = pkgs.noctalia-greeter;  # nixpkgs (1.6.0, Cache) — Flake-Input liefert nur das Modul
-in
+# Paket + Modul kommen komplett aus nixpkgs (kein Flake-Input mehr).
+# Passwordloser Sync läuft über die nixpkgs-Modul-Option
+# `services.displayManager.noctalia-greeter.passwordlessSyncUsers` (je Host gesetzt).
+{ config, pkgs, lib, ... }:
 {
   services.displayManager.noctalia-greeter = {
     enable = true;
-    package = greeterPkg;
   };
 
   environment.etc."noctalia-greeter.toml".text = ''

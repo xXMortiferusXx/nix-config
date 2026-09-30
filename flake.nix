@@ -18,14 +18,6 @@
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
-    # Noctalia Greeter: Paket kommt aus nixpkgs (Binary Cache, glibc-konsistent).
-    # Der Flake-Input bleibt nur fürs NixOS-Modul (nixosModules.default), das den
-    # XDG_DATA_DIRS-Wrapper ins Greeter-Kommando baut und die Option
-    # `passwordless-sync-users` liefert (das nixpkgs-Modul nennt sie camelCase).
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-    };
-
     # Umbriel Compositor – direkt vom Repo statt nixpkgs, damit Fixes zeitnah
     # ankommen (nixpkgs pinnt oft lange alte Revs). git+https statt github:,
     # weil das Repo das Submodule subprojects/scenefx braucht.
@@ -57,7 +49,7 @@
 
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, noctalia-greeter, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, zen-browser, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
