@@ -14,10 +14,13 @@ Referenz: `memory.md` (Grundlagen), `lion-pc.md`/`umbriel.md` (Format).
 - Alles, was Passwort kann, nach und nach auf Passkey/FIDO2 umstellen.
 
 ## Key-Empfehlung
-- **YubiKey 5C NFC** (~55–65 € auf Amazon.de) — USB-C + NFC, 100 Passkey-Slots,
-  Firmware 5.8, FIDO2 CTAP2.1 + U2F, PIV/OpenPGP/OATH-TOTP.
-- Alternativen (Budget): Yubico Security Key C NFC (~30 €, nur FIDO2/U2F),
-  Google Titan USB-C (~35 €, nur FIDO2/U2F), Nitrokey 3C NFC (~60 €, DE, Open Source).
+- Stecker ist **nice-to-have, keine Pflicht** (normale USB-A-Ports sind auch frei):
+  USB-C und USB-A sind technisch identisch (FIDO2 läuft über beide).
+- **YubiKey 5C NFC** (USB-C, ~55–65 €) bzw. **YubiKey 5 NFC** (USB-A, gleiche Funktionen) —
+  100 Passkey-Slots, Firmware 5.8, FIDO2 CTAP2.1 + U2F, PIV/OpenPGP/OATH-TOTP.
+- Alternativen (Budget, nur FIDO2/U2F): Yubico Security Key C NFC (~30 €) / NFC (~30 €),
+  Google Titan (~35 €, USB-C oder USB-A).
+- Nitrokey 3C/3A NFC (~60 €, DE, Open Source) — mehr Open-Source, weniger poliertes Ökosystem.
 - **Backup-Key: Entscheidung abhängig vom Preis** (offen).
   - Mit nur 1 Key ist das Passwort-Fallback der einzige Rettungsanker bei Verlust/Defekt.
   - Empfehlung bei 2 Keys: beide Keys beim Enrollment gleich mit eintragen.
