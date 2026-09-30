@@ -9,6 +9,7 @@ in {
     imports = [
       ./config.nix
       ./autostart.nix
+      ../firefox.nix
       # mpv.nix bewusst NICHT: mortiferus nutzt HRIR/GameSink (nex-Headset) — lion ohne
     ];
 

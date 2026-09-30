@@ -7,6 +7,7 @@ in {
     imports = [
       ./config.nix
       ./autostart.nix
+      ../firefox.nix
     ];
 
     programs.home-manager.enable = true;
