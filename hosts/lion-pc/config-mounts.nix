@@ -10,7 +10,7 @@ let
   configBase = "/etc/nixos/home/lion/config";
 
   # Alle Config-Verzeichnisse die per bind-mount bereitgestellt werden
-  # (Umbriel + Theming 1:1 von nex; pipewire-HRIR von mortiferus bewusst NICHT)
+  # (Umbriel + Theming 1:1 von nex)
   configDirs = [
     "gtk-3.0"
     "gtk-4.0"

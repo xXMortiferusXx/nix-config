@@ -4,8 +4,8 @@
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 
-  # Basis-PipeWire für alle Hosts. Arctis Sound Manager wird nur in
-  # hosts/nex/configuration.nix aktiviert und verwaltet den GameDAC selbst.
+  # Basis-PipeWire für alle Hosts. Spezifische Geräte-Configs (z. B. der
+  # GC7 in audio-gc7.nix) werden pro Host ergänzt.
 
   services.pipewire = {
     enable = true;

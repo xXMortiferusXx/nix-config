@@ -13,7 +13,6 @@ let
   configDirs = [
     "umbriel"
     "nvim"
-    "pipewire"
   ];
 in
 {
