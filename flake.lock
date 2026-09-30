@@ -203,29 +203,7 @@
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nixpkgs": "nixpkgs_2",
         "umbriel": "umbriel",
-        "xwayland-satellite": "xwayland-satellite",
         "zen-browser": "zen-browser"
-      }
-    },
-    "rust-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "xwayland-satellite",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1769222645,
-        "narHash": "sha256-gu6oZ86zLudBZMq8LL1qdtYt/S69GV5keQVXdvBrVSU=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "22da29e7f3d8cff75009cbbcf992c7cb66920cfd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
       }
     },
     "umbriel": {
@@ -268,27 +246,6 @@
         "owner": "noctalia-dev",
         "repo": "xdg-desktop-portal-umbriel",
         "type": "github"
-      }
-    },
-    "xwayland-satellite": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "lastModified": 1790770493,
-        "narHash": "sha256-sNWVkfOVelr60lWHvEgCWx7Mr/2PcoAN8oOrOk7Yp/g=",
-        "ref": "refs/heads/main",
-        "rev": "b5690b56d749526a05db9b9268d58bf8f700957f",
-        "revCount": 277,
-        "type": "git",
-        "url": "https://github.com/Supreeeme/xwayland-satellite"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://github.com/Supreeeme/xwayland-satellite"
       }
     },
     "zen-browser": {

@@ -13,13 +13,12 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache);
-  # xwayland-satellite ebenfalls von main (nixpkgs pinnt v0.8.2 mit Popup-Bugs,
-  # u.a. Steam-Dropdowns #468; Fix durch PR #494). Beide folgen normaler
-  # `nix flake update`-Weg → neueste Rev bei jedem regulären Update.
+  # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache).
+  # xwayland-satellite kommt aus nixpkgs (0.8.3, Binary Cache): die früher
+  # gebugten Popups (#468) sind in 0.8.3 gefixt; einziger Unterschied zu main
+  # ist der #448-Rounding-Fix (nur Fractional Scaling), hier scale=1.0 → egal.
   nixpkgs.overlays = [
     inputs.umbriel.overlays.default
-    inputs.xwayland-satellite.overlays.default
   ];
 
   programs.umbriel = {

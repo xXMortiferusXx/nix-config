@@ -26,17 +26,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # xwayland-satellite – direkt vom Repo (main) statt nixpkgs: nixpkgs pinnt
-    # Tag v0.8.2, der diverse Popup/X11-Fenster-Bugs enthält (u.a. Steam-Dropdowns
-    # schließen sofort: #468, gefixt durch PR #494 am 09.09.). main hält aktuell
-    # ~13 Commits > v0.8.2 (4 verwandte Fenster-Fixes). Overlay in umbriel.nix
-    # ersetzt pkgs.xwayland-satellite; lokaler Rust-Build (~3 min) nur bei
-    # main-Update. Zurueck zu nixpkgs, sobald es eine neue Release mitführt.
-    xwayland-satellite = {
-      url = "git+https://github.com/Supreeeme/xwayland-satellite";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
     # - Binary Cache: https://attic.xuyh0120.win/lantian
     # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
