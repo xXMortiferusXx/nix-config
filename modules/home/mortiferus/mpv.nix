@@ -7,7 +7,6 @@
       vo = "gpu";
       gpu-context = "wayland";
       hwdec = "auto-safe";
-      audio-device = "pipewire/GameSink";
       audio-channels = "7.1,5.1,stereo";
       ao = "pipewire";
       osc = "yes";
