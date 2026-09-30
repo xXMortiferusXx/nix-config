@@ -29,7 +29,7 @@ pkgs: with pkgs; [
   discord
   cartridges
   polychromatic
-  goverlay
+  # goverlay  # deaktiviert: lazarus-qt6 (Build-Dep) baut nicht mit nixpkgs 2026-09-29; zurück sobald Upstream-Fix
   vulkan-tools
 
   # --- Gaming ---
