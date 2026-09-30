@@ -22,14 +22,14 @@ default_floating_size_px = { width = 440, height = 560 }
 
 # ── Workspace 1: Browser ──
 [[window_rule]]
-match.app_id = "^zen-beta$"
+match.app_id = "^firefox$"
 default_workspace = 1
 default_scrolling_extent = 1.0
 opacity = 0.95
 blur = true
 
 [[window_rule]]
-match.app_id = "^zen-beta$"
+match.app_id = "^firefox$"
 match.title = "^Picture-in-Picture$"
 default_floating = true
 

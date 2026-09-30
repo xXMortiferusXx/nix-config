@@ -11,9 +11,6 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Deine zusätzlichen Inputs
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
-
     # lsfg-vk (neue Quelle: git.lsfg-vk.dev statt GitHub; master = laufende Entwicklung)
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
@@ -38,7 +35,7 @@
 
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, zen-browser, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };

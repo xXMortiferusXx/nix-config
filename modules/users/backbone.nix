@@ -10,8 +10,8 @@
 
     packages = with pkgs; [
       tmux
-      # Browser (Flake-Integration) für Styx
-      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # Browser für Styx
+      firefox
     ];
   };
 }

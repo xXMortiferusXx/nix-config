@@ -10,8 +10,8 @@
     shell = pkgs.fish;
 
     packages = with pkgs; [
-      # Browser (Flake-Integration) — gleiche Basis wie nex/styx
-      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # Browser — gleiche Basis wie nex/styx
+      firefox
     ];
   };
 }

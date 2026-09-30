@@ -11,7 +11,7 @@
 
 # ─── Programme ───
 "Mod+Return" = "spawn:kitty"
-"Mod+B"      = "spawn:zen-beta"
+"Mod+B"      = "spawn:firefox"
 "Mod+E"      = "spawn:thunar"
 "Mod+S"      = "spawn:pavucontrol"
 

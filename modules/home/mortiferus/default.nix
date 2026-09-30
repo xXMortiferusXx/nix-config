@@ -10,6 +10,7 @@ in {
       ./config.nix
       ./autostart.nix
       ./mpv.nix
+      ./firefox.nix
     ];
 
     programs.mangohud = {
