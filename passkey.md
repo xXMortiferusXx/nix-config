@@ -55,8 +55,13 @@ Referenz: `memory.md` (Grundlagen), `lion-pc.md`/`umbriel.md` (Format).
 3. Test: Greeter-Login per Berührung + WebAuthn (`webauthn.io`).
 
 ## Konten-Umstellung (nach erfolgreichem Login-Test)
-- Firefox: Passkeys per WebAuthn an Konten anhängen (Google/Microsoft/GitHub/…),
+- Firefox: Passkeys per WebAuthn an Konten anhängen (Google/Microsoft/GitHub/Amazon/…),
   hybrid Passwort+Passkey, nach und nach.
+- **Bitwarden bleibt als Zentrale erhalten** (Passwörter/Long-Tail, auf allen Geräten);
+  der Hardware-Passkey ersetzt nur die Passwort-Eingabe bei passkey-fähigen Konten
+  (Stick statt „Bitwarden öffnen → füllen").
+- Bei der Passkey-Erstellung immer **device-bound** wählen („auf diesem Gerät/YubiKey"),
+  NICHT „im Passwort-Manager" (synced) — sonst verpufft der Stick-Vorteil.
 
 ## Optional später
 - SSH: `ssh-keygen -t ed25519-sk -O resident` (erst wenn SSH-Server auf nex).
