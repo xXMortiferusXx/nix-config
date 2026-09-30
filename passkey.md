@@ -63,6 +63,15 @@ Referenz: `memory.md` (Grundlagen), `lion-pc.md`/`umbriel.md` (Format).
 - Bei der Passkey-Erstellung immer **device-bound** wählen („auf diesem Gerät/YubiKey"),
   NICHT „im Passwort-Manager" (synced) — sonst verpufft der Stick-Vorteil.
 
+## Backup-Key (falls 2× gekauft)
+- **Website-Passkeys:** jeder Stick einzeln auf jeder Seite registrieren (Passkey ist
+  an genau einen Key gebunden, kein Klonen). Moderne Anbieter (Google/MS/GitHub/Amazon/
+  Bitwarden) erlauben mehrere Passkeys pro Konto → einfach beide anlegen.
+- **Ausnahme ohne Doppel-Registrierung:** Greeter-Login & Screen-Lock (pam_u2f) — beide
+  Sticks kommen in die eine `u2f_keys`-Authfile, beide öffnen das System. Bitwarden nimmt
+  mehrere Security-Keys als 2FA auf.
+- **Ein-Key-Limit** (manche Altsysteme/Banken): Primärkey + Recovery-Codes/Passwort als Backup.
+
 ## Optional später
 - SSH: `ssh-keygen -t ed25519-sk -O resident` (erst wenn SSH-Server auf nex).
 - LUKS + `systemd-cryptenroll` für Boot-Passkey (erst wenn Disk verschlüsselt wird).
