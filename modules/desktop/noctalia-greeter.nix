@@ -8,7 +8,7 @@
 # laut Noctalia-Docs unsicher, da sie auch den Legacy-Helper-Mode autorisiert).
 { config, pkgs, lib, inputs, ... }:
 let
-  greeterPkg = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  greeterPkg = pkgs.noctalia-greeter;  # nixpkgs (1.6.0, Cache) — Flake-Input liefert nur das Modul
 in
 {
   services.displayManager.noctalia-greeter = {

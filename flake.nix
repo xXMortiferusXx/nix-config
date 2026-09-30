@@ -18,13 +18,12 @@
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
-    # Noctalia Greeter. TODO/Fix: follows nixpkgs erzwungen, da der Greeter sonst
-    # gegen sein eigenes (älteres) nixpkgs baut und zur Laufzeit den System-Mesa
-    # aus /run/opengl-driver lädt → glibc-Mismatch (GLIBC_2.43 not found) →
-    # Greeter-Compositor crasht (schwarzer Bildschirm). Kein Cachix-Prebuild mehr.
+    # Noctalia Greeter: Paket kommt aus nixpkgs (Binary Cache, glibc-konsistent).
+    # Der Flake-Input bleibt nur fürs NixOS-Modul (nixosModules.default), das den
+    # XDG_DATA_DIRS-Wrapper ins Greeter-Kommando baut und die Option
+    # `passwordless-sync-users` liefert (das nixpkgs-Modul nennt sie camelCase).
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Umbriel Compositor – direkt vom Repo statt nixpkgs, damit Fixes zeitnah
@@ -44,17 +43,6 @@
     xwayland-satellite = {
       url = "git+https://github.com/Supreeeme/xwayland-satellite";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Noctalia v5 – wie Umbriel direkt vom Repo (main, ungepinnt), statt nixpkgs
-    # (dort hängt der Tag v5.0.0-beta.10 fest). Overlay in services/noctalia.nix
-    # registriert das Repo-Paket als pkgs.noctalia (builds gegen den Repo-eigenen
-    # Lock → gleicher Store-Path wie der noctalia.cachix.org-Prebuild).
-    # KEIN follows auf nixpkgs: die noctalia-CI baut gegen den Repo-eigenen
-    # nixpkgs (channels.nixos.org-Tarball); mit follows entstünden andere
-    # Store-Paths als der Prebuild → unnötiger Lokal-Build.
-    noctalia = {
-      url = "github:noctalia-dev/noctalia";
     };
 
     # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
