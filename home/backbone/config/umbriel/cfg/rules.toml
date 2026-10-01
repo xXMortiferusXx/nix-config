@@ -19,7 +19,6 @@ default_floating_size_px = { width = 800, height = 600 }
 match.app_id = "^firefox$"
 default_workspace = 1
 default_scrolling_extent = 1.0
-opacity = 0.95
 
 [[window_rule]]
 match.app_id = "^firefox$"
