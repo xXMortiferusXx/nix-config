@@ -94,7 +94,16 @@ while IFS= read -r line; do
 done < <(lsblk -d -P -o NAME,SIZE,MODEL,SERIAL,LABEL,TYPE)
 
 if [ ${#INSTALL_DEVICES[@]} -eq 0 ]; then
-    error "Keine installierbaren Laufwerke gefunden! Abgebrochen."
+    echo ""
+    warn "Keine installierbaren Laufwerke gefunden!"
+    echo "----------------------------------------------------------"
+    echo "Alle erkannten Blockgeräte:"
+    lsblk -o NAME,SIZE,MODEL,SERIAL,TYPE,FSTYPE,MOUNTPOINTS 2>/dev/null || lsblk
+    echo "----------------------------------------------------------"
+    echo "Kernel-Meldungen zu SATA/USB (letzte Zeilen):"
+    dmesg 2>/dev/null | grep -iE 'ata[0-9]|scsi|sd [a-z]|usb-storage|I/O error|failed' | tail -n 15 || true
+    echo "----------------------------------------------------------"
+    error "Erscheint die interne Platte hier mit SIZE=0 (oder fehlt ganz), dann: SATA-Kabel/Strom prüfen, im BIOS SATA auf AHCI statt RAID stellen, ggf. Datenträger tauschen. SIZE=0 trotz korrekter Verkabelung = Platte sehr wahrscheinlich defekt."
 fi
 
 for i in "${!INSTALL_DEVICES[@]}"; do
