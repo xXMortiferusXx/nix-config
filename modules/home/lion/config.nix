@@ -25,6 +25,13 @@
     fi
     # Erstelle Symlink aufs Repo (schreibbar, fuer State-Backup)
     ln -sfn /etc/nixos/home/lion/state/noctalia "$HOME/.local/state/noctalia"
+
+    # Erst-Installation: Live-settings.toml aus getrackter Baseline seeden.
+    # Danach ist settings.toml lokal (untracked) und wird nie vom Pull ueberschrieben.
+    if [ ! -e /etc/nixos/home/lion/state/noctalia/settings.toml ]; then
+      cp /etc/nixos/home/lion/state/noctalia/settings.toml.baseline \
+         /etc/nixos/home/lion/state/noctalia/settings.toml
+    fi
   '';
 
   # Avatar/Profilbild fuer AccountsService und Noctalia-Greeter.
