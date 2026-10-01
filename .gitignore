@@ -7,6 +7,12 @@ __pycache__/
 
 # Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
 home/mortiferus/state/noctalia/state.toml
+
+# Noctalia settings.toml der Pull-Hosts: wird lokal vom Host gepflegt und darf
+# beim nix-sync (git reset --hard origin/main) NICHT von GitHub überschrieben werden.
+# (nex/mortiferus bleibt getrackt, da nex der einzige Host ist, der committet/pusht.)
+home/lion/state/noctalia/settings.toml
+home/backbone/state/noctalia/settings.toml
 # Noctalia Discord-Voice Plugin: enthält Discord-OAuth-Tokens (nie committen!)
 home/mortiferus/state/noctalia/discord-voice/
 home/backbone/state/noctalia/discord-voice/
