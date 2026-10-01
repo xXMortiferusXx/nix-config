@@ -5,6 +5,13 @@
 # - ohne sunshine (Game-Streaming, nex-only)
 { config, pkgs, ... }:
 
+let
+  # Offizieller portabler Linux-Client (nicht auf Flathub/nixpkgs) – Derivation
+  # in pkgs/boosteroid. Wrapper kopiert die Binary in ein beschreibbares
+  # Verzeichnis (Log/Config + Selbst-Updater).
+  boosteroid = pkgs.callPackage ../../../pkgs/boosteroid { };
+in
+
 {
   imports = [
     ./steam.nix
@@ -18,5 +25,6 @@
     heroic
     gamescope
     protonplus
+    boosteroid
   ];
 }
