@@ -13,6 +13,14 @@ home/mortiferus/state/noctalia/state.toml
 # (nex/mortiferus bleibt getrackt, da nex der einzige Host ist, der committet/pusht.)
 home/lion/state/noctalia/settings.toml
 home/backbone/state/noctalia/settings.toml
+
+# Noctalia Theme-Dateien (aus settings.toml + Wallpaper generiert): pro Host lokal,
+# werden von Noctalia zur Laufzeit neu erzeugt -> nicht tracken, nie überschreiben.
+home/*/config/gtk-3.0/noctalia.css
+home/*/config/gtk-4.0/noctalia.css
+home/*/config/qt5ct/colors/noctalia.conf
+home/*/config/qt6ct/colors/noctalia.conf
+home/*/config/umbriel/noctalia.toml
 # Noctalia Discord-Voice Plugin: enthält Discord-OAuth-Tokens (nie committen!)
 home/mortiferus/state/noctalia/discord-voice/
 home/backbone/state/noctalia/discord-voice/
