@@ -277,8 +277,11 @@ info "RAM: ${TOTAL_RAM_MB}MB | CPU-Kerne: $NPROC | max-jobs: $MAX_JOBS | cores: 
 # --- SCHRITT 5: Dateien nach /mnt kopieren ---
 info "Kopiere Konfiguration nach /mnt..."
 sudo mkdir -p /mnt/etc/nixos
+# .git des Clones MITKOPIEREN (nicht entfernen!): so hat das Ziel-Repo sofort
+# `origin/main` als Remote-Tracking-Ref und `main` trackt `origin/main`.
+# Nur dadurch funktionieren `git pull` und `nix-sync`
+# (`git reset --hard origin/main && git pull`) direkt nach der Installation.
 sudo cp -r . /mnt/etc/nixos/
-sudo rm -rf /mnt/etc/nixos/.git
 
 # --- SCHRITT 6: Installation ---
 info "Starte NixOS-Installation für $HOSTNAME..."
@@ -312,17 +315,22 @@ fi
 
 # --- SCHRITT 7: Rechte & Git-Setup ---
 info "Bereite Zielsystem vor (Rechte & Git)..."
-# Setze Rechte für den User
-sudo nixos-enter --root /mnt -c "chown -R $USERNAME:users /etc/nixos"
 
-# Initialisiere Git im Zielsystem, damit Flakes sofort funktionieren
+# Remote-URL pro Host: nex pusht via SSH, alle anderen Pull-Hosts via HTTPS.
 REMOTE_URL="https://github.com/xXMortiferusXx/nix-config.git"
 if [[ "$HOSTNAME" == "nex" ]]; then
     REMOTE_URL="git@github.com:xXMortiferusXx/nix-config.git"
 fi
 
-# Initialize Git im Zielsystem, damit Flakes sofort funktionieren
-sudo nixos-enter --root /mnt -c "cd /etc/nixos && git init && git branch -M main && git remote add origin $REMOTE_URL && git add ."
+# Das .git stammt vom Clone (siehe SCHRITT 5) und gehoert noch root -> jetzt
+# als root die Remote-URL setzen (vermeidet git "dubious ownership"). `main`
+# trackt bereits `origin/main`, `origin/main` existiert als Remote-Tracking-Ref.
+sudo nixos-enter --root /mnt -c "cd /etc/nixos && git remote set-url origin $REMOTE_URL"
+
+# Erst JETZT Rechte setzen (inkl. .git), damit der User pullen/committen kann.
+# (nixos-enter läuft als root -> .git gehörte sonst root und `git pull` schlägt
+# mit "Permission denied" auf .git fehl.)
+sudo nixos-enter --root /mnt -c "chown -R $USERNAME:users /etc/nixos"
 
 echo ""
 echo "=========================================================="
@@ -345,10 +353,11 @@ echo ""
 echo "Nächste Schritte nach dem Reboot:"
 echo "  1. Einloggen als $USERNAME"
 if [[ "$REMOTE_URL" == https://* ]]; then
-    echo "  2. Config ist bereits unter /etc/nixos als Git-Repo bereit (HTTPS-Remote)"
-    echo "     → Bei HTTPS kein SSH-Key nötig; ggf. Token/Anmeldedaten hinterlegen"
+    echo "  2. Config liegt unter /etc/nixos als Git-Repo (HTTPS); Branch main folgt origin/main"
+    echo "     → Updates mit:  nix-sync   (git reset --hard origin/main && git pull && rebuild)"
 else
-    echo "  2. SSH-Key erstellen und bei GitHub hinterlegen"
+    echo "  2. SSH-Key erstellen und bei GitHub hinterlegen (Repo unter /etc/nixos, main folgt origin/main)"
+    echo "     → Updates mit:  nix-sync"
 fi
 echo "  3. nixos-rebuild (falls nötig) und los geht's"
 echo ""
