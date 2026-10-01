@@ -50,6 +50,9 @@ in
       Service = {
         ExecStartPre = [ waitForTray ];
         ExecStart = "${pkgs.discord}/bin/discord";
+        # waitForTray wartet auf Noctalia; Standard-90s reichen beim langsamen
+        # iGPU-Login nicht immer -> großzügiger Start-Timeout.
+        TimeoutStartSec = "5min";
         Restart = "on-failure";
         RestartSec = 5;
       };
@@ -70,6 +73,7 @@ in
         ];
         ExecStartPre = [ waitForTray ];
         ExecStart = "${steamPackage}/bin/steam";
+        TimeoutStartSec = "5min";
         Restart = "on-failure";
         RestartSec = 10;
       };
@@ -86,6 +90,7 @@ in
         ExecStart = "${pkgs.bluez}/libexec/bluetooth/obexd --auto-accept --root=%h/Downloads/Bluetooth";
         Type = "dbus";
         BusName = "org.bluez.obex";
+        TimeoutStartSec = "5min";
         Restart = "on-failure";
       };
     };
