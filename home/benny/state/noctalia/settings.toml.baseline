@@ -91,7 +91,7 @@ tint_intensity = 0.20000000000000001
 enabled = true
 schema_version = 2
 widget_order = [
-    "lockscreen-login-box@HDMI-A-1",
+    "lockscreen-login-box@HDMI-A-3",
     "lockscreen-widget-0000000000000001",
     "lockscreen-widget-0000000000000003"
 ]
@@ -101,18 +101,18 @@ widget_order = [
     major_interval = 4
     visible = true
 
-    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-3"]
     box_height = 196.0
     box_width = 810.0
     cx = 960.0
     cy = 898.0
-    output = "HDMI-A-1"
+    output = "HDMI-A-3"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
     type = "login_box"
 
-        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-3".settings]
         background_color = "surface_variant"
         background_opacity = 0.88
         background_radius = 12.0
@@ -133,7 +133,7 @@ widget_order = [
     box_width = 800.0
     cx = 960.0
     cy = 280.0
-    output = "HDMI-A-1"
+    output = "HDMI-A-3"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
@@ -154,7 +154,7 @@ widget_order = [
     box_width = 720.0
     cx = 960.0
     cy = 580.0
-    output = "HDMI-A-1"
+    output = "HDMI-A-3"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
@@ -239,7 +239,7 @@ transition_on_startup = true
     [wallpaper.last]
     path = "/home/benny/Pictures/wallhaven-9okxwk.png"
 
-    [wallpaper.monitors.HDMI-A-1]
+    [wallpaper.monitors.HDMI-A-3]
     path = "/home/benny/Pictures/wallhaven-rr1v1m.png"
 
 [weather]

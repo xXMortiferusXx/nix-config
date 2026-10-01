@@ -1,14 +1,15 @@
 # Outputs – benny (Desktop, Intel-Onboard-Grafik HD 4000 / i915, EIN Monitor per HDMI)
 #
-# 1920x1080 @ 75 Hz über HDMI.
-# Konnektor/Modus pruefen mit:
+# 1920x1080 @ 74.973 Hz über HDMI.
+# Konnektor/Modus prüfen mit:
 #   umbriel outputs
-# Falls der Konnektor abweicht (z. B. HDMI-A-2) oder die Refresh-Rate minimal
-# anders gemeldet wird (z. B. 74.973), den Block-Namen bzw. mode anpassen.
+# Der tatsächliche Intel-HDMI-Connector ist HDMI-A-3 (live via `umbriel outputs`
+# geprüft). Weicht er künftig ab (z. B. HDMI-A-1/HDMI-A-2) oder die Refresh-Rate
+# minimal (z. B. 74.973), Block-Namen bzw. mode anpassen.
 # Ein Block, dessen Name zu keinem aktiven Output passt, wird still ignoriert.
 
-[output."HDMI-A-1"]
-mode = "1920x1080@75.000"
+[output."HDMI-A-3"]
+mode = "1920x1080@74.973"
 scale = 1.0
 bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"    # Kein globales VRR; nur per window_rule.vrr (Games) in rules.toml.
