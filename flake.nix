@@ -122,9 +122,8 @@
         ];
       };
 
-      # benny: Intel CPU + AMD Radeon R9 280 (GCN 1.0).
-      # Sonderfall GPU: 6.18-LTS-Kernel + amdgpu-SI/CIK-Params -> Vulkan/RADV
-      # (siehe modules/system/boot-benny.nix). Sobald neue GPU: Kernel umstellen.
+      # benny: Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 4000).
+      # Die defekte AMD R9 280 wurde ausgebaut -> kein GPU-Sonderfall mehr.
       nixosConfigurations."benny" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [

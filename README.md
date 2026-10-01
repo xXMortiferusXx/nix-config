@@ -9,7 +9,7 @@ This is my personal NixOS flake managing multiple machines with a shared module 
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only mode), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
 | **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC for lion (kid) |
-| **benny** | Intel CPU + AMD Radeon R9 280 (GCN 1.0) | Desktop/gaming PC for a friend (6.18-LTS kernel, see below) |
+| **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop/gaming PC for a friend |
 | **test** | QEMU VM | Minimal installer-testing host |
 
 All share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
@@ -35,7 +35,7 @@ hosts/
 ├── nex/               # Gaming laptop config + disko partitioning
 ├── styx/              # Office laptop config + disko partitioning
 ├── lion-pc/           # Gaming-PC config + disko partitioning
-├── benny/             # Intel + Radeon R9 280 desktop (6.18-LTS) + disko partitioning
+├── benny/             # Intel iGPU desktop (Ivy Bridge) + disko partitioning
 └── test/              # Minimal QEMU test host (installer testing)
 modules/
 ├── desktop/           # Compositor (umbriel), greeter, polkit, fonts
@@ -115,7 +115,7 @@ Meine persönliche NixOS-Flake, die mehrere Rechner mit einem gemeinsamen Moduls
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only Modus), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
 | **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC für lion (Kind) |
-| **benny** | Intel CPU + AMD Radeon R9 280 (GCN 1.0) | Desktop-/Gaming-PC für einen Kumpel (6.18-LTS-Kernel, s. u.) |
+| **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop-/Gaming-PC für einen Kumpel |
 | **test** | QEMU-VM | Minimaler Installer-Test-Host |
 
 Alle teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.
@@ -139,7 +139,7 @@ hosts/
 ├── nex/               # Gaming-Laptop Konfig + Disko Partitionierung
 ├── styx/              # Büro-Laptop Konfig + Disko Partitionierung
 ├── lion-pc/           # Gaming-PC Konfig + Disko Partitionierung
-├── benny/             # Intel + Radeon R9 280 Desktop (6.18-LTS) + Disko Partitionierung
+├── benny/             # Intel-iGPU-Desktop (Ivy Bridge) + Disko Partitionierung
 └── test/              # Minimaler QEMU-Test-Host (Installer-Tests)
 modules/
 ├── desktop/           # Compositor (umbriel), Greeter, Polkit, Fonts

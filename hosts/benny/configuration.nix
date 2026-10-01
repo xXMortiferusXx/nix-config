@@ -1,6 +1,6 @@
 # Host: benny
-# Intel CPU + AMD Radeon R9 280 (GCN 1.0) — Umbriel-DE, Noctalia-Greeter.
-# GPU-Sonderfall: 6.18-LTS + amdgpu-SI-Params (siehe modules/system/boot-benny.nix).
+# Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 4000).
+# Die defekte AMD Radeon R9 280 wurde ausgebaut -> kein GPU-Sonderfall mehr.
 { config, pkgs, lib, ... }:
 
 {
@@ -11,7 +11,7 @@
       ../../modules/system/common.nix
       ../../modules/system/boot-benny.nix
       ../../modules/system/environment-benny.nix
-      ../../modules/hardware/amdgpu.nix
+      ../../modules/hardware/intel-ivy.nix
       ../../modules/hardware/power-benny.nix
       ../../modules/programs/gaming/benny.nix
       ../../modules/services/flatpak-benny.nix
