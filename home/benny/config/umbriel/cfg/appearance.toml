@@ -9,17 +9,19 @@ corner_radius = 12
 drag_opacity = 0.9
 
 [appearance.blur]
+# iGPU-Tuning (Intel HD 4000, Gen7): reduziert statt deaktiviert -> Optik bleibt.
 enabled = true
 optimized = true
-passes = 2
-radius = 3
+passes = 1
+radius = 2
 noise = 0.03
 brightness = 0.9
 contrast = 0.9
 saturation = 1.0
 
 [appearance.shadow]
+# iGPU-Tuning: weichere Schatten kosten viel Fillrate -> Softness reduziert.
 enabled = true
-softness = 15
+softness = 8
 offset_x = 2
 offset_y = 2
