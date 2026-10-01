@@ -33,9 +33,20 @@
       url = "github:xddxdd/nix-cachyos-kernel";
     };
 
+    # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)
+    # - Modul: inputs.arctis-sound-manager.nixosModules.default
+    # - Option: services.arctis-sound-manager.enable
+    # Quelle: eigener Fork (xXMortiferusXx) statt upstream (loteran), weil dort
+    # der 8ch-7.1-Loopback-Fix (Game/Media/Aux → HeSuVi) entwickelt wird.
+    # Aktuell nur auf benny (Headset) — nex läuft über den Sound Blaster GC7.
+    arctis-sound-manager = {
+      url = "github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
   
-  outputs = { self, nixpkgs, disko, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, arctis-sound-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
@@ -51,6 +62,9 @@
         import ./hosts/test/disk-config.nix { inherit device; };
       diskoConfigurations.lion-pc = { device ? "/dev/nvme0n1", ... }:
         import ./hosts/lion-pc/disk-config.nix { inherit device; };
+      # benny: SATA-Datentraeger (2013er-Rechner) -> Default /dev/sda
+      diskoConfigurations.benny = { device ? "/dev/sda", ... }:
+        import ./hosts/benny/disk-config.nix { inherit device; };
     in
     {
       inherit diskoConfigurations;
@@ -99,6 +113,24 @@
         modules = [
           disko.nixosModules.disko
           ./hosts/lion-pc/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit inputs; };
+          }
+        ];
+      };
+
+      # benny: Intel CPU + AMD Radeon R9 280 (GCN 1.0).
+      # Sonderfall GPU: 6.18-LTS-Kernel + amdgpu-SI/CIK-Params -> Vulkan/RADV
+      # (siehe modules/system/boot-benny.nix). Sobald neue GPU: Kernel umstellen.
+      nixosConfigurations."benny" = nixpkgs.lib.nixosSystem {
+        inherit system specialArgs;
+        modules = [
+          disko.nixosModules.disko
+          arctis-sound-manager.nixosModules.default
+          ./hosts/benny/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

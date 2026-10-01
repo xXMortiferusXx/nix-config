@@ -1,0 +1,63 @@
+# Host: benny
+# Intel CPU + AMD Radeon R9 280 (GCN 1.0) — Umbriel-DE, Noctalia-Greeter.
+# GPU-Sonderfall: 6.18-LTS + amdgpu-SI-Params (siehe modules/system/boot-benny.nix).
+{ config, pkgs, lib, ... }:
+
+{
+  imports =
+    [
+      ./hardware-configuration.nix
+      ./disk-config.nix
+      ../../modules/system/common.nix
+      ../../modules/system/boot-benny.nix
+      ../../modules/system/environment-benny.nix
+      ../../modules/hardware/amdgpu.nix
+      ../../modules/hardware/power-benny.nix
+      ../../modules/programs/gaming/benny.nix
+      ../../modules/services/flatpak-benny.nix
+      ../../modules/users/benny.nix
+      ../../modules/home/benny
+      ./config-mounts.nix
+    ];
+
+  networking.hostName = "benny";
+
+  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — EQ/ChatMix/Virtual Surround.
+  # Modul kommt aus dem Flake-Input arctis-sound-manager (siehe flake.nix).
+  services.arctis-sound-manager.enable = true;
+
+  hardware.bluetooth.enable = true;
+
+  # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
+  boot.kernelModules = [ "i2c-dev" ];
+  users.groups.i2c = {};
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+
+  # SSH: Lokaler Zugriff von nex (Key-basiert, kein Passwort)
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+  users.users.benny.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE6UHVcDl2byF1+1SYIpM3V0oldx/541PX9a9bX+smBr mortiferus@nex"
+  ];
+
+  # Firewall: SSH nur aus LAN (192.168.50.0/24), extern blockiert
+  networking.firewall.extraCommands = ''
+    iptables -A nixos-fw -s 192.168.50.0/24 -p tcp --dport 22 -j nixos-fw-accept
+  '';
+
+  # Sicherheit: sudo-Passwort nötig (Override der common-Vorgabe aus security.nix)
+  security.sudo.wheelNeedsPassword = lib.mkForce true;
+
+  # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
+  services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "benny" ];
+
+  system.stateVersion = "26.05";
+}

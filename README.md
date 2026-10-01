@@ -9,6 +9,7 @@ This is my personal NixOS flake managing multiple machines with a shared module 
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only mode), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
 | **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC for lion (kid) |
+| **benny** | Intel CPU + AMD Radeon R9 280 (GCN 1.0) | Desktop/gaming PC for a friend (6.18-LTS kernel, see below) |
 | **test** | QEMU VM | Minimal installer-testing host |
 
 All share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
@@ -20,6 +21,7 @@ All share a common base via `modules/system/common.nix` – only hardware-specif
 sudo nixos-rebuild switch --flake .#nex
 sudo nixos-rebuild switch --flake .#styx
 sudo nixos-rebuild switch --flake .#lion-pc
+sudo nixos-rebuild switch --flake .#benny
 
 # Update flake inputs
 nix flake update
@@ -33,6 +35,7 @@ hosts/
 ├── nex/               # Gaming laptop config + disko partitioning
 ├── styx/              # Office laptop config + disko partitioning
 ├── lion-pc/           # Gaming-PC config + disko partitioning
+├── benny/             # Intel + Radeon R9 280 desktop (6.18-LTS) + disko partitioning
 └── test/              # Minimal QEMU test host (installer testing)
 modules/
 ├── desktop/           # Compositor (umbriel), greeter, polkit, fonts
@@ -112,6 +115,7 @@ Meine persönliche NixOS-Flake, die mehrere Rechner mit einem gemeinsamen Moduls
 | **nex** | AMD Ryzen + NVIDIA RTX (NVIDIA-only Modus), Lenovo Legion Laptop | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
 | **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC für lion (Kind) |
+| **benny** | Intel CPU + AMD Radeon R9 280 (GCN 1.0) | Desktop-/Gaming-PC für einen Kumpel (6.18-LTS-Kernel, s. u.) |
 | **test** | QEMU-VM | Minimaler Installer-Test-Host |
 
 Alle teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.
@@ -123,6 +127,7 @@ Alle teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur h
 sudo nixos-rebuild switch --flake .#nex
 sudo nixos-rebuild switch --flake .#styx
 sudo nixos-rebuild switch --flake .#lion-pc
+sudo nixos-rebuild switch --flake .#benny
 nix flake update
 ```
 
@@ -134,6 +139,7 @@ hosts/
 ├── nex/               # Gaming-Laptop Konfig + Disko Partitionierung
 ├── styx/              # Büro-Laptop Konfig + Disko Partitionierung
 ├── lion-pc/           # Gaming-PC Konfig + Disko Partitionierung
+├── benny/             # Intel + Radeon R9 280 Desktop (6.18-LTS) + Disko Partitionierung
 └── test/              # Minimaler QEMU-Test-Host (Installer-Tests)
 modules/
 ├── desktop/           # Compositor (umbriel), Greeter, Polkit, Fonts

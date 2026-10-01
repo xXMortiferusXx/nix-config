@@ -13,6 +13,7 @@ home/mortiferus/state/noctalia/state.toml
 # (nex/mortiferus bleibt getrackt, da nex der einzige Host ist, der committet/pusht.)
 home/lion/state/noctalia/settings.toml
 home/backbone/state/noctalia/settings.toml
+home/benny/state/noctalia/settings.toml
 
 # Noctalia Theme-Dateien (aus settings.toml + Wallpaper generiert): pro Host lokal,
 # werden von Noctalia zur Laufzeit neu erzeugt -> nicht tracken, nie überschreiben.
@@ -24,6 +25,7 @@ home/*/config/umbriel/noctalia.toml
 # Noctalia Discord-Voice Plugin: enthält Discord-OAuth-Tokens (nie committen!)
 home/mortiferus/state/noctalia/discord-voice/
 home/backbone/state/noctalia/discord-voice/
+home/benny/state/noctalia/discord-voice/
 # Noctalia Theme Files: werden automatisch bei Hintergrundbild-Wechsel neu generiert
 home/mortiferus/config/hypr/noctalia.lua
 home/mortiferus/config/niri/noctalia.kdl
@@ -33,12 +35,15 @@ home/mortiferus/state/noctalia/notification_history.json
 # Noctalia Plugin Sources: werden automatisch von Noctalia gecloned
 home/mortiferus/state/noctalia/plugins/sources/
 home/backbone/state/noctalia/plugins/sources/
+home/benny/state/noctalia/plugins/sources/
 # Noctalia Materialized Plugins: werden automatisch regeneriert
 home/mortiferus/state/noctalia/plugins/materialized/
 home/backbone/state/noctalia/plugins/materialized/
+home/benny/state/noctalia/plugins/materialized/
 # Noctalia Runtime-PID-Dateien: ändern sich bei jedem Start
 home/mortiferus/state/noctalia/plugins/data/**/*.pid
 home/backbone/state/noctalia/plugins/data/**/*.pid
+home/benny/state/noctalia/plugins/data/**/*.pid
 
 # Noctalia Caches: werden von Noctalia automatisch generiert/aktualisiert
 home/mortiferus/state/noctalia/community-palettes/
@@ -63,3 +68,15 @@ home/backbone/state/noctalia/recently_used.json
 home/backbone/state/noctalia/usage_counts.json
 home/backbone/state/noctalia/instance.id
 home/backbone/state/noctalia/.setup-complete
+
+# Gleiche Patterns für benny
+home/benny/state/noctalia/community-palettes/
+home/benny/state/noctalia/community-templates/
+home/benny/state/noctalia/plugin-cache/
+home/benny/state/noctalia/notification_history_assets/
+home/benny/state/noctalia/plugins/data/
+home/benny/state/noctalia/screen_time.json
+home/benny/state/noctalia/recently_used.json
+home/benny/state/noctalia/usage_counts.json
+home/benny/state/noctalia/instance.id
+home/benny/state/noctalia/.setup-complete

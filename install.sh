@@ -31,8 +31,9 @@ echo "  1) nex (Haupt-PC / mortiferus)"
 echo "  2) styx (Office-PC / backbone)"
 echo "  3) test (QEMU-Test / test)"
 echo "  4) lion-pc (Gaming-PC / lion)"
+echo "  5) benny (Kumpel-PC / benny)"
 echo ""
-read -p "Auswahl [1-4]: " HOST_CHOICE
+read -p "Auswahl [1-5]: " HOST_CHOICE
 
 if [[ "$HOST_CHOICE" == "1" ]]; then
     HOSTNAME="nex"
@@ -46,6 +47,9 @@ elif [[ "$HOST_CHOICE" == "3" ]]; then
 elif [[ "$HOST_CHOICE" == "4" ]]; then
     HOSTNAME="lion-pc"
     USERNAME="lion"
+elif [[ "$HOST_CHOICE" == "5" ]]; then
+    HOSTNAME="benny"
+    USERNAME="benny"
 else
     error "Ungültige Auswahl."
 fi
@@ -149,6 +153,8 @@ elif [[ "$HOSTNAME" == "test" ]]; then
     DISKO_CONFIG="${PWD}/hosts/test/disk-config.nix"
 elif [[ "$HOSTNAME" == "lion-pc" ]]; then
     DISKO_CONFIG="${PWD}/hosts/lion-pc/disk-config.nix"
+elif [[ "$HOSTNAME" == "benny" ]]; then
+    DISKO_CONFIG="${PWD}/hosts/benny/disk-config.nix"
 fi
 
 # Temporaere disko-Config mit dem gewaehlten Device erzeugen.

@@ -20,7 +20,7 @@ end = [
     "control-center",
     "session"
 ]
-start = [ "launcher", "wallpaper", "launcher_2", "workspaces", "active_window", "media" ]
+start = [ "launcher", "wallpaper", "wallhaven", "launcher_2", "workspaces", "active_window", "media" ]
 
 [calendar]
 enabled = true
@@ -48,6 +48,7 @@ background_opacity = 0.79999998211860657
 enabled = true
 icon_size = 36
 margin_edge = 0
+pinned = [ "firefox", "io.github.kolunmi.Bazaar", "org.vinegarhq.Sober", "org.vinegarhq.Vinegar" ]
 reserve_space = false
 smart_auto_hide = true
 
@@ -90,10 +91,9 @@ tint_intensity = 0.20000000000000001
 enabled = true
 schema_version = 2
 widget_order = [
-    "lockscreen-login-box@eDP-2",
+    "lockscreen-login-box@HDMI-A-1",
     "lockscreen-widget-0000000000000001",
-    "lockscreen-widget-0000000000000003",
-    "lockscreen-login-box@eDP-1"
+    "lockscreen-widget-0000000000000003"
 ]
 
     [lockscreen_widgets.grid]
@@ -101,45 +101,18 @@ widget_order = [
     major_interval = 4
     visible = true
 
-    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
-    box_height = 150.0
-    box_width = 720.0
-    cx = 960.0
-    cy = 820.0
-    output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
-    rotation = 0.0
-    type = "login_box"
-
-        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
-        background_color = "surface_variant"
-        background_opacity = 0.65000000000000002
-        background_radius = 16.0
-        center_password_text = true
-        input_opacity = 0.90000000000000002
-        input_radius = 8.0
-        layout = "regular"
-        show_caps_lock = true
-        show_keyboard_layout = false
-        show_login_button = false
-        show_media = false
-        show_session_buttons = false
-        show_unlock_hint = true
-        show_weather = true
-
-    [lockscreen_widgets.widget."lockscreen-login-box@eDP-2"]
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
     box_height = 196.0
     box_width = 810.0
     cx = 960.0
     cy = 898.0
-    output = "eDP-2"
+    output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
     type = "login_box"
 
-        [lockscreen_widgets.widget."lockscreen-login-box@eDP-2".settings]
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
         background_color = "surface_variant"
         background_opacity = 0.88
         background_radius = 12.0
@@ -160,7 +133,7 @@ widget_order = [
     box_width = 800.0
     cx = 960.0
     cy = 280.0
-    output = "eDP-1"
+    output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
@@ -181,7 +154,7 @@ widget_order = [
     box_width = 720.0
     cx = 960.0
     cy = 580.0
-    output = "eDP-1"
+    output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
     rotation = 0.0
@@ -206,13 +179,13 @@ auto_open_filemanager = true
 file_manager_cmd = "thunar"
 
 [plugin_settings."avivbintangaringga/nix-monitor"]
-update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#nex"
+update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#benny"
 
 [plugin_settings."raycursive/discord-voice"]
-discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
+discord_binary = "/etc/profiles/per-user/benny/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "aristides/udiskie", "weinguyen/opencode-companion" ]
+enabled = [ "avivbintangaringga/nix-monitor", "aristides/udiskie", "noctalia/wallhaven" ]
 
     [[plugins.source]]
     auto_update = true
@@ -237,11 +210,15 @@ telemetry_enabled = true
     auto_sync = true
     privilege_command = "pkexec"
 
+    [shell.launcher]
+    pinned = [ "io.github.kolunmi.Bazaar" ]
+
     [shell.screenshot]
-    directory = "/home/mortiferus/Bilder/Screenshots"
+    directory = "/home/benny/Bilder/Screenshots"
     show_cursor = true
 
 [theme]
+builtin = "Noctalia"
 community_palette = "Zenbones"
 mode = "light"
 source = "wallpaper"
@@ -251,24 +228,19 @@ wallpaper_scheme = "m3-rainbow"
     builtin_ids = [ "gtk3", "gtk4", "qt", "umbriel" ]
 
 [wallpaper]
-directory = "/home/mortiferus/Bilder/Wallpaper-NSFW"
 transition_on_startup = true
 
     [wallpaper.automation]
-    enabled = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-pkwl39_1920x1080.png"
+    path = "/home/benny/Pictures/wallhaven-rr1v1m.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-pkwl39_1920x1080.png"
+    path = "/home/benny/Pictures/wallhaven-9okxwk.png"
 
-    [wallpaper.monitors.eDP-1]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-83o1y1_1920x1080.png"
-
-    [wallpaper.monitors.eDP-2]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-pkwl39_1920x1080.png"
+    [wallpaper.monitors.HDMI-A-1]
+    path = "/home/benny/Pictures/wallhaven-rr1v1m.png"
 
 [weather]
 effects = true
@@ -303,3 +275,6 @@ type = "aristides/udiskie:status"
 
 [widget.volume]
 show_label = false
+
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"

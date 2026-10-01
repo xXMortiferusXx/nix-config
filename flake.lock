@@ -1,5 +1,27 @@
 {
   "nodes": {
+    "arctis-sound-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "nix",
+        "lastModified": 1790087599,
+        "narHash": "sha256-wCwnoOAoZy/JOyCJvw3wNFM/6OmRrSXCuJxDNtBtBSg=",
+        "owner": "xXMortiferusXx",
+        "repo": "Arctis-Sound-Manager",
+        "rev": "42844d3342ff28b14e1d8a98175315e9a4c76877",
+        "type": "github"
+      },
+      "original": {
+        "dir": "nix",
+        "owner": "xXMortiferusXx",
+        "repo": "Arctis-Sound-Manager",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -160,6 +182,7 @@
     },
     "root": {
       "inputs": {
+        "arctis-sound-manager": "arctis-sound-manager",
         "disko": "disko",
         "home-manager": "home-manager",
         "lsfg-vk-src": "lsfg-vk-src",

@@ -1,0 +1,23 @@
+/*
+ * libadwaita-tweaks.css – Optische Tweaks für GTK4/Libadwaita-Apps
+ * Wird NACH noctalia.css geladen und gewinnt bei Konflikten.
+ * Betrifft: Nautilus, Loupe und weitere libadwaita-Apps.
+ * Die Glas-Effekte nutzen das Blur des Compositors (Umbriel).
+ */
+
+/* Headerbar-Glas (aktives Fenster): Matt hinter der Leiste */
+window.csd:not(.backdrop) headerbar {
+  background-color: alpha(@headerbar_bg_color, 0.72);
+}
+
+/* Inaktives Fenster: deutlich gedimmt */
+window.csd.backdrop headerbar {
+  background-color: alpha(@headerbar_bg_color, 0.45);
+}
+
+/* Nautilus-Seitenleiste: kompaktere Zeilen, runde Auswahl */
+nautilus-window .sidebar row {
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 1px 4px;
+}

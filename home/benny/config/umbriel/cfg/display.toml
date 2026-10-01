@@ -1,0 +1,16 @@
+# Outputs – benny (Desktop, AMD Radeon R9 280 / amdgpu, EIN Monitor per HDMI)
+#
+# 1920x1080 @ 75 Hz über HDMI.
+# Konnektor/Modus pruefen mit:
+#   umbriel outputs
+# Falls der Konnektor abweicht (z. B. HDMI-A-2) oder die Refresh-Rate minimal
+# anders gemeldet wird (z. B. 74.973), den Block-Namen bzw. mode anpassen.
+# Ein Block, dessen Name zu keinem aktiven Output passt, wird still ignoriert.
+
+[output."HDMI-A-1"]
+mode = "1920x1080@75.000"
+scale = 1.0
+bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
+vrr = "disabled"    # Kein globales VRR; nur per window_rule.vrr (Games) in rules.toml.
+workspaces = 4    # STATISCH – rules.toml adressiert default_workspace 1..4.
+cyclic_workspaces = true    # Workspace-Schritt wrappt: 4 → 1 (und 1 → 4).
