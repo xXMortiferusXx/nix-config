@@ -26,6 +26,32 @@
   # Modul kommt aus dem Flake-Input arctis-sound-manager (siehe flake.nix).
   services.arctis-sound-manager.enable = true;
 
+  # ASM-Tray-GUI (asm-gui --systray) registriert sich einmalig als SNI-Item.
+  # Noctalia stellt den StatusNotifierWatcher aber erst nach dem Login bereit ->
+  # gleicher Race wie bei Discord/Steam (waitForTray). Deshalb:
+  #   1. vor dem Start auf den Noctalia-Tray-Watcher warten (ExecStartPre)
+  #   2. an noctalia.service koppeln, damit ein Noctalia-Neustart (z. B. durch
+  #      nix-sync) den Tray automatisch neu registriert (PartOf).
+  systemd.user.services."app-ArctisManager" = {
+    after = [ "noctalia.service" ];
+    partOf = [ "noctalia.service" ];
+    serviceConfig = {
+      ExecStartPre = [
+        (pkgs.writeShellScript "wait-for-tray" ''
+          until ${pkgs.systemd}/bin/busctl --user get-property \
+            org.kde.StatusNotifierWatcher /StatusNotifierWatcher \
+            org.kde.StatusNotifierWatcher IsStatusNotifierHostRegistered \
+            2>/dev/null | ${pkgs.gnugrep}/bin/grep -q 'b true'; do
+            ${pkgs.coreutils}/bin/sleep 0.3
+          done
+        '')
+      ];
+      # waitForTray wartet auf Noctalia; Standard-90s reichen beim langsamen
+      # iGPU-Login nicht immer -> großzügiger Start-Timeout.
+      TimeoutStartSec = "5min";
+    };
+  };
+
   hardware.bluetooth.enable = true;
 
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
