@@ -77,6 +77,18 @@ while IFS= read -r line; do
     # shellcheck disable=SC2046
     eval $(echo "$line" | grep -oE 'NAME="[^"]*"|SIZE="[^"]*"|MODEL="[^"]*"|SERIAL="[^"]*"|LABEL="[^"]*"|TYPE="[^"]*"')
     if [ "${TYPE}" = "disk" ] && [[ "$NAME" =~ ^(nvme|sd|vd|hd|mmcblk) ]]; then
+        # 0-Byte-Geraete (leere Kartenleser, leere USB-Ports, toter Datentraeger)
+        # NICHT anbieten: sgdisk bricht dort mit "0 sectors" ab.
+        if [ "${SIZE}" = "0B" ] || [ -z "${SIZE}" ]; then
+            warn "Ueberspringe ${NAME} (Groesse ${SIZE:-?}) – kein echtes/erreichbares Laufwerk."
+            continue
+        fi
+        # Das laufende Live-Medium (USB-Installationsstick) ist gemountet und darf
+        # NIE Ziel sein -> ausschliessen.
+        if lsblk -n -o MOUNTPOINT "/dev/${NAME}" 2>/dev/null | grep -q '[^[:space:]]'; then
+            warn "Ueberspringe ${NAME} (gemountet – laufendes Live-Medium)."
+            continue
+        fi
         INSTALL_DEVICES+=("${NAME}|${SIZE}|${MODEL}|${SERIAL}|${LABEL}")
     fi
 done < <(lsblk -d -P -o NAME,SIZE,MODEL,SERIAL,LABEL,TYPE)
@@ -102,6 +114,15 @@ DISK_MODEL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f3)
 DISK_SERIAL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f4)
 DISK_LABEL=$(echo "${INSTALL_DEVICES[$((DISK_CHOICE-1))]}" | cut -d'|' -f5)
 DISK_DEVICE="/dev/${DISK_NAME}"
+
+# Sanity-Check: Kernel muss eine echte Groesse kennen. Meldet das Geraet 0
+# (defekt, falsch angeschlossen, BIOS/RAID-Modus), hier sauber abbrechen statt
+# spaeter mit "Disk is too small to hold GPT data (0 sectors)" zu crashen.
+DISK_SIZE_BYTES=$(sudo blockdev --getsize64 "$DISK_DEVICE" 2>/dev/null || echo 0)
+if [ "${DISK_SIZE_BYTES:-0}" -lt 1073741824 ]; then
+    error "Laufwerk ${DISK_DEVICE} meldet nur ${DISK_SIZE_BYTES} Bytes (0 = Kernel sieht keine Groesse). Mögliche Ursachen: Datenträger defekt, falsches Gerät gewählt, USB-/Kartenleser ohne Medium, oder SATA im BIOS auf RAID statt AHCI. Installation abgebrochen."
+fi
+info "Laufwerksgroesse: $(numfmt --to=iec "$DISK_SIZE_BYTES" 2>/dev/null || echo "${DISK_SIZE_BYTES}B")"
 
 # Warnung, falls das gewählte Laufwerk ein Label hat (z.B. GamingDrive auf nex)
 if [ -n "$DISK_LABEL" ] && [ "$DISK_LABEL" != "-" ]; then
@@ -144,6 +165,18 @@ cd /tmp/nixos-config
 info "Bereite Festplatte vor (löse bestehende Sperren)..."
 sudo umount -R /mnt 2>/dev/null || true
 sudo swapoff -a 2>/dev/null || true
+
+# Alte/ungueltige Partitionstabellen vorab entfernen. Verhindert, dass sgdisk
+# bei einem Hybrid-MBR/GPT ("Found invalid GPT and valid MBR") die Umwandlung
+# verweigert. Erste + letzte 16 MiB nullen (GPT-Backup sitzt am Disk-Ende).
+info "Bereinige alte Partitionstabellen auf ${DISK_DEVICE}..."
+sudo wipefs -a -f "$DISK_DEVICE" 2>/dev/null || true
+sudo dd if=/dev/zero of="$DISK_DEVICE" bs=1M count=16 status=none conv=fsync 2>/dev/null || true
+DISK_END_MB=$(( DISK_SIZE_BYTES / 1048576 - 16 ))
+if [ "$DISK_END_MB" -gt 16 ]; then
+    sudo dd if=/dev/zero of="$DISK_DEVICE" bs=1M count=16 seek="$DISK_END_MB" status=none conv=fsync 2>/dev/null || true
+fi
+sudo blockdev --rereadpt "$DISK_DEVICE" 2>/dev/null || true
 
 if [[ "$HOSTNAME" == "nex" ]]; then
     DISKO_CONFIG="${PWD}/hosts/nex/disk-config.nix"
