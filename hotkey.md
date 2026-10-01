@@ -81,7 +81,7 @@
 
 ## Workspaces
 
-Statische Workspaces (1 = Browser, 2 = Chat, 3 = Gaming, 4 = Sonstiges):
+Statische Workspaces (1 = Boosteroid, 2 = Chat, 3 = Browser/Steam, 4 = Spiele/ASM):
 
 | Tastenkürzel | Aktion |
 |---|---|

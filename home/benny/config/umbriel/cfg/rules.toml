@@ -20,10 +20,16 @@ match.app_id = "^qalculate-gtk$"
 default_floating = true
 default_floating_size_px = { width = 440, height = 560 }
 
-# ── Workspace 1: Browser ──
+# ── Workspace 1: Cloud-Gaming (Boosteroid) ──
+[[window_rule]]
+match.app_id = "^[Bb]oosteroid$"
+default_workspace = 1
+default_scrolling_extent = 1.0
+
+# ── Workspace 3: Browser ──
 [[window_rule]]
 match.app_id = "^firefox$"
-default_workspace = 1
+default_workspace = 3
 default_scrolling_extent = 1.0
 
 [[window_rule]]
@@ -127,6 +133,11 @@ default_floating = false
 vrr = "always"
 
 
+
+# ── Arctis Sound Manager (Tray-GUI) auf W4 ──
+[[window_rule]]
+match.app_id = "^ArctisManager$"
+default_workspace = 4
 
 # ── Terminal ──
 [[window_rule]]

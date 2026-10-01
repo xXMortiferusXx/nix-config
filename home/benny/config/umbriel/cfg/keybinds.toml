@@ -71,7 +71,7 @@
 "Mod+Shift+WheelDown" = "window-move-to-workspace-next"
 "Mod+Shift+WheelUp"   = "window-move-to-workspace-previous"
 
-# 1=Browser, 2=Chat, 3=Gaming, 4=Sonstiges
+# 1=Boosteroid, 2=Chat, 3=Browser/Steam, 4=Spiele/ASM
 "Mod+1" = "workspace-switch:1"
 "Mod+2" = "workspace-switch:2"
 "Mod+3" = "workspace-switch:3"
