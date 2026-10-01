@@ -185,7 +185,7 @@ update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch
 discord_binary = "/etc/profiles/per-user/benny/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "aristides/udiskie", "noctalia/wallhaven" ]
+enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "aristides/udiskie", "noctalia/wallhaven" ]
 
     [[plugins.source]]
     auto_update = true

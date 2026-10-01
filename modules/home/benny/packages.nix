@@ -22,6 +22,9 @@ pkgs: with pkgs; [
   btop
   yazi
 
+  # --- Python (Noctalia-Plugin "discord-voice" braucht python3 auf PATH) ---
+  python3
+
   # --- Apps & Social ---
   thunar
   discord
