@@ -54,13 +54,13 @@ in
         RestartSec = 5;
       };
     };
+    # Steam wird NICHT mehr automatisch gestartet (Benny ist auf dem
+    # Intel-iGPU-System ohnehin langsam beim Login). Unit bleibt definiert und
+    # kann bei Bedarf manuell gestartet werden: `systemctl --user start steam`.
     steam = {
       Unit = {
         Description = "Steam";
         After = [ "graphical-session.target" "noctalia.service" ];
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
       };
       Service = {
         Environment = [
