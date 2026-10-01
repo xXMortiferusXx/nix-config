@@ -43,6 +43,10 @@ in
       Unit = {
         Description = "Discord";
         After = [ "graphical-session.target" "noctalia.service" ];
+        # Discord registriert sein SNI-Tray nur beim Start und nicht erneut.
+        # Wird Noctalia neu gestartet (z. B. nix-sync), verschwindet das Icon
+        # dauerhaft -> Discord bei Noctalia-Neustart mit-neu-starten.
+        PartOf = [ "noctalia.service" ];
       };
       Install = {
         WantedBy = [ "graphical-session.target" ];
