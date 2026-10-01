@@ -1,4 +1,4 @@
-# Outputs – benny (Desktop, AMD Radeon R9 280 / amdgpu, EIN Monitor per HDMI)
+# Outputs – benny (Desktop, Intel-Onboard-Grafik HD 4000 / i915, EIN Monitor per HDMI)
 #
 # 1920x1080 @ 75 Hz über HDMI.
 # Konnektor/Modus pruefen mit:

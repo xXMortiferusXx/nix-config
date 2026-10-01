@@ -1,4 +1,4 @@
-# Umbriel-Konfiguration für mortiferus (nex)
+# Umbriel-Konfiguration für benny
 #
 # Portierung aus config.kdl (niri → Umbriel). Layout: alle Workspaces scrolling
 # (Gewohnheit aus niri) – Mischlayout später per [[workspace]] layout.mode oder
