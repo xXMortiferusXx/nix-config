@@ -15,7 +15,7 @@
 # 7.1 deklariert (USB-Descriptor bmChannelConfig=0x63f => FL,FR,FC,LFE,BL,BR,SL,SR),
 # sonst erkennen Spiele/Wine/Proton kein 7.1 (sie sehen "8x unbekannt").
 # Die Profilwahl persistiert WirePlumber selbst (State).
-{ ... }:
+{ pkgs, ... }:
 
 {
   services.pipewire.wireplumber.extraConfig."90-gc7" = {
@@ -56,4 +56,33 @@
       }
     ];
   };
+
+  # Standby-Fix: Nach S3-Resume hängt der GC7 (UAC-Clock tot, "cannot get freq:
+  # err -110", "clock source 37 is not valid") -> weder Ton noch Mic bis zum
+  # manuellen Replug. Ursache: USB-Autosuspend (power/control=auto) -> der Port
+  # wird nach dem Wake nicht sauber re-initialisiert.
+  #
+  # (1) Autosuspend für das Gerät deaktivieren (bleibt im laufenden Betrieb wach;
+  #     im S3 geht es physikalisch trotzdem aus, das ist normal).
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="041e", ATTR{idProduct}=="3271", ATTR{power/control}="on"
+  '';
+
+  # (2) Sicherheitsnetz beim Aufwachen: GC7 hart zurücksetzen + WirePlumber neu
+  #     aufbauen -> Ton/Mic kommen ohne manuelles Replug zurück.
+  #     powerManagement.enable ist auf nex bereits über nvidia-prime.nix aktiv.
+  powerManagement.resumeCommands = ''
+    for d in /sys/bus/usb/devices/*/idVendor; do
+      if [ "$(cat "$d" 2>/dev/null)" = "041e" ] && [ "$(cat "''${d%idVendor}idProduct" 2>/dev/null)" = "3271" ]; then
+        dev="''${d%/idVendor}"
+        bus="$(cat "$dev/busnum" 2>/dev/null)"
+        num="$(cat "$dev/devnum" 2>/dev/null)"
+        if [ -n "$bus" ] && [ -n "$num" ] && [ -e "/dev/bus/usb/$bus/$num" ]; then
+          ${pkgs.usbutils}/bin/usbreset "/dev/bus/usb/$bus/$num" >/dev/null 2>&1 || true
+        fi
+      fi
+    done
+    sleep 2
+    runuser -u mortiferus -- env XDG_RUNTIME_DIR=/run/user/1000 systemctl --user restart wireplumber || true
+  '';
 }
