@@ -35,12 +35,20 @@
       # Ein Pin auf 48k wuerde das Geraet deckeln — HiRes ist ohne HW-Schalter
       # allein Sache des Treibers/Streams, also einfach die App auf 96/192k
       # stellen, dann folgt die Karte.
+      #
+      # session.suspend-timeout-seconds = 0: Nodes NIE einschlafen lassen.
+      # Sonst suspendet PipeWire sie nach ~5s Stille und beim Reaktivieren
+      # (z. B. Discord-Mic wenn der Kollege spricht) muss der GC7 seinen
+      # UAC-Clock neu verhandeln -> Timeout ("Start error: Wartezeit
+      # abgelaufen") -> hohes Knacken/Stoerung. Gleiche Ursache/Kur wie beim
+      # GameDAC (Commit 9235fa9). Bewusst fuer Output UND Capture.
       {
         matches = [ { "node.name" = "~alsa_output.*Sound_Blaster_GC7.*pro-output-0$"; } ];
         actions."update-props" = {
           "node.description" = "GC7 Game (7.1)";
           "audio.channels" = 8;
           "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
+          "session.suspend-timeout-seconds" = 0;
         };
       }
       {
@@ -49,6 +57,7 @@
           "node.description" = "GC7 Voice (Chat)";
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
+          "session.suspend-timeout-seconds" = 0;
         };
       }
       {
@@ -57,6 +66,7 @@
           "node.description" = "GC7 Microphone";
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
+          "session.suspend-timeout-seconds" = 0;
         };
       }
     ];

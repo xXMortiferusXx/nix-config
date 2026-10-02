@@ -314,6 +314,7 @@
   - => Wie beim GameDAC gilt: **kein Upstream-Hub im Pfad + eigener Controller** = stabil.
 - **Config (Commit fd7812c, 48k-Pin am 2026-10-02 wieder entfernt)**: nur die harmlosen Teile bleiben — `usbcore.old_scheme_first=1` in boot-nex.nix. Der damals gesetzte 48k-Pin (`audio.samplerate`/`audio.rate`) wurde **zurueckgenommen**, weil er HiRes (GC7 kann nativ 48/96/192k) gedeckelt haette und der Rate-Wechsel nie als Ursache belegt war. WirePlumber waehlt die Rate jetzt automatisch nach Anwendung (HiRes braucht KEINEN HW-Schalter und KEINE Extra-Config).
 - **Falls es wieder auftritt**: Test-Kandidat `modprobe snd_usb_audio implicit_fb=1` (Arch-Workaround) bzw. Kernel-Stand pruefen (CVE-2026-80828-Fix). Port bevorzugt an `06:00.4` (direkt, kein Hub) lassen.
+- **Knacken beim Sprechen (2026-10-02)**: Nach dem Portwechsel am guten Port blieb ein sporadisches hohes Knacken/Stoerung, wenn der Discord-Kollege spricht. Ursache: die GC7-Nodes wurden nach ~5s Stille suspendiert (`pw.node ... suspended -> error: Start error: Wartezeit fuer die Verbindung ist abgelaufen`) -> beim Mic-Wake Clock-Renegotiation -> Knacken. Gleiche Klasse wie GameDAC-Fix `9235fa9`. **Fix**: `session.suspend-timeout-seconds = 0` auf pro-output-0/1 + pro-input-0 (Nodes schlafen nie ein, State bleibt `running`). NICHT `usbcore.old_scheme_first=1` (wirkt nur bei Enumeration, nicht im Betrieb).
 
 ## Noctalia v5
 
