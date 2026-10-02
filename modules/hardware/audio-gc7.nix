@@ -18,11 +18,12 @@
 { pkgs, ... }:
 
 {
-  # Clock-Raten: Standard war nur [ 48000 ] -> jede App mit anderer Rate (viele
-  # Spiele/Wine rendern 44100 oder 96000) wurde ZWANGS-resampled -> klassische
-  # Knack-Quelle. Wir ERWEITERN die erlaubte Liste auf alle gaengigen Raten
-  # inkl. HiRes (88200/96000/176400/192000). Das deckelt NICHTS, es macht HiRes
-  # erst durchgereicht. Siehe Manjaro-HowTo "Troubleshoot crackling in PipeWire".
+  # Clock-Raten (SYSTEMWEIT, nicht nur GC7 — pipewire.conf gilt global):
+  # Standard war nur [ 48000 ] -> jede App mit anderer Rate (viele Spiele/Wine
+  # rendern 44100, HiRes-Player 88200/96000/176400/192000) wurde ZWANGS-resampled
+  # -> klassische Knack-Quelle. Wir ERWEITERN die erlaubte Liste auf alle gaengigen
+  # Raten. Das deckelt NICHTS; Apps laufen nativ auf ihrer Rate. Siehe Manjaro-HowTo
+  # "Troubleshoot crackling in PipeWire". 48000 bleibt Default-Rate.
   services.pipewire.extraConfig.pipewire."99-gc7-clock" = {
     "context.properties"."default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
     "context.properties"."default.clock.rate" = 48000;
