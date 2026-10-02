@@ -23,6 +23,9 @@
   # wireplumber ("BlueZ system service is not available") und der obex-Service meckerten.
   hardware.bluetooth.enable = true;
 
+  # IRQ-Balancing: IRQs gleichmäßig über die CPU-Kerne verteilen.
+  services.irqbalance.enable = true;
+
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
   boot.kernelModules = [ "i2c-dev" ];
   users.groups.i2c = {};
