@@ -1,8 +1,21 @@
 # Host: benny
 # Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 4000).
 # Die defekte AMD Radeon R9 280 wurde ausgebaut -> kein GPU-Sonderfall mehr.
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
+let
+  # GameDAC-Knacken/Aussetzer-Fix (aus nex-Historie, Commit 9235fa9):
+  # ASM-Filter-Ketten mit "node.pause-on-idle = false" erzeugen, damit die
+  # Sonar-Convolution beim Stream-Neustart nicht in "idle" faellt und ihren
+  # Zustand behaelt (kein Transient/Knacken am Liedanfang). Patch aufs
+  # Upstream-Paket, damit er jede ASM-Regeneration uebersteht. Nur Output-
+  # Ketten, die Micro-Input-Kette bleibt unangetastet (sonst bricht das Mic).
+  arctis-sound-manager = inputs.arctis-sound-manager.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      ${pkgs.python3}/bin/python3 ${../../scripts/asm-pause-on-idle.py} src/arctis_sound_manager/sonar_to_pipewire.py
+    '';
+  });
+in
 {
   imports =
     [
@@ -14,6 +27,7 @@
       ../../modules/system/firmware-disk.nix
       ../../modules/hardware/intel-ivy.nix
       ../../modules/hardware/power-benny.nix
+      ../../modules/hardware/audio-gamedac.nix
       ../../modules/programs/gaming/benny.nix
       ../../modules/services/flatpak-benny.nix
       ../../modules/users/benny.nix
@@ -25,7 +39,9 @@
 
   # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — EQ/ChatMix/Virtual Surround.
   # Modul kommt aus dem Flake-Input arctis-sound-manager (siehe flake.nix).
+  # package-Override: pause-on-idle-Patch gegen Knacken/Aussetzer (siehe let-Block).
   services.arctis-sound-manager.enable = true;
+  services.arctis-sound-manager.package = arctis-sound-manager;
 
   # ASM-Tray-GUI (asm-gui --systray) registriert sich einmalig als SNI-Item.
   # Noctalia stellt den StatusNotifierWatcher aber erst nach dem Login bereit ->
