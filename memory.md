@@ -300,6 +300,21 @@
 - **Lösung**: GameDAC muss an USB-C angeschlossen werden (Adapter nötig, USB-A auf USB-C)
 - **Hinweis**: Das Problem ist laptop-spezifisch (interne Hub-Topologie). An Desktop-PCs mit direkten USB-Ports dürfte es nicht auftreten
 
+### Sound Blaster GC7: Capture-Open-Lockup (2026-10-02)
+- **Problem**: Discord oeffnen (Mic/Capture-Stream) -> GC7 tot, Ton kurz ueber Notebook-Lautsprecher
+- **Symptom (dmesg)**: `usb 1-1: cannot get freq (v2/v3): err -110`, `cannot set freq 48000`, `uac_clock_source_is_valid(): clock source NN is not valid`. WirePlumber: `still failing after 3 recovery attempts, giving up`. Die Sink fiel auf die interne ACP-Sink zurueck.
+- **Einordnung (WICHTIG)**: KEIN dokumentierter GC7-Firmware-Bug. Es ist die **generische Linux-`snd-usb-audio` UAC-Clock-Klasse**:
+  - LKML-Patch "ALSA: usb-audio: retry clock validity": *"Sample rate changes take more than 2 seconds for this device. Clock validity request returns false during that period."* -> der Treiber fragt zu frueh.
+  - weitere generische Belege: Arch-Forum (`clock source 41 is not valid`, Workaround `snd_usb_audio implicit_fb=1`), Red Hat #663583 (`cannot get/set freq`).
+  - CVE-2026-80828 (2026-09): ALSA-USB-Resume-Fehlerpfad laesst Karte in `D3hot` haengen -> "unusable until reboot". Aeltere Kernel betroffen.
+  - Der GameDAC-Firmware-Bug (DTS:X/Reset) ist damit NICHT vergleichbar/uebertragbar.
+- **Beobachtung Ports (nex, 2026-10-02)**:
+  - `06:00.3`/bus1 (Port mit **Upstream-Hubs** `1-2`→`1-2.2` + Kamera `1-3` + ITE-HID): GC7 verliert beim Capture-Open den Clock -> **hard-locked**, nicht mal `usbreset` oder xhci-Controller-unbind/bind holten ihn zurueck -> nur physisches Replug.
+  - `06:00.4`/bus3 Port 1 (**direkt am Root-Hub, kein Hub im Pfad**, nur Bluetooth `3-4` daneben): enumeriert sofort, alle Nodes da, Discord-Mic oeffnet sauber, keine `err -110` mehr.
+  - => Wie beim GameDAC gilt: **kein Upstream-Hub im Pfad + eigener Controller** = stabil.
+- **Config-Haertung (Commit fd7812c)**: GC7-Card + pro-Audio-Nodes auf 48000 gepinnt (`audio.samplerate`/`audio.rate`) -> keine Rate-Renegotiation; `usbcore.old_scheme_first=1` in boot-nex.nix. Verifiziert nach Rebuild: `GC7 Game (7.1)` rate 48000, `GC7 Voice (Chat)` 48000, `GC7 Microphone` 48000.
+- **Falls es wieder auftritt**: Test-Kandidat `modprobe snd_usb_audio implicit_fb=1` (Arch-Workaround) bzw. Kernel-Stand pruefen (CVE-2026-80828-Fix). Port bevorzugt an `06:00.4` (direkt, kein Hub) lassen.
+
 ## Noctalia v5
 
 ### GTK-Theme-Anbindung (GTK4)
