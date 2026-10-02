@@ -30,25 +30,17 @@
     ];
 
     "monitor.alsa.rules" = [
-      # Samplerate an der ALSA-Card festnageln (48k). Der GC7 verliert sonst
-      # beim Oeffnen eines Capture-Streams (z. B. Discord -> Mic) seinen UAC-Clock
-      # ("cannot get freq: err -110", "clock source NN is not valid") und die
-      # ALSA-Nodes kommen nicht mehr hoch -> WirePlumber gibt nach 3 Versuchen
-      # auf und der Ton faellt auf die internen Lautsprecher zurueck.
-      # Feste 48k vermeiden die Rate-Renegotiation (Clock-Dance) weitgehend.
-      {
-        matches = [ { "device.name" = "~alsa_card.usb.*Sound_Blaster_GC7.*"; } ];
-        actions."update-props" = {
-          "audio.samplerate" = 48000;
-        };
-      }
+      # KEIN Samplerate-Pin (bewusst): Der GC7 bietet nativ 48k/96k/192k (HiRes).
+      # WirePlumber waehlt automatisch den zur Anwendung passenden Altset/Rate.
+      # Ein Pin auf 48k wuerde das Geraet deckeln — HiRes ist ohne HW-Schalter
+      # allein Sache des Treibers/Streams, also einfach die App auf 96/192k
+      # stellen, dann folgt die Karte.
       {
         matches = [ { "node.name" = "~alsa_output.*Sound_Blaster_GC7.*pro-output-0$"; } ];
         actions."update-props" = {
           "node.description" = "GC7 Game (7.1)";
           "audio.channels" = 8;
           "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
-          "audio.rate" = 48000;
         };
       }
       {
@@ -57,7 +49,6 @@
           "node.description" = "GC7 Voice (Chat)";
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
-          "audio.rate" = 48000;
         };
       }
       {
@@ -66,7 +57,6 @@
           "node.description" = "GC7 Microphone";
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
-          "audio.rate" = 48000;
         };
       }
     ];

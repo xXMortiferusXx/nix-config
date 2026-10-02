@@ -312,7 +312,7 @@
   - `06:00.3`/bus1 (Port mit **Upstream-Hubs** `1-2`→`1-2.2` + Kamera `1-3` + ITE-HID): GC7 verliert beim Capture-Open den Clock -> **hard-locked**, nicht mal `usbreset` oder xhci-Controller-unbind/bind holten ihn zurueck -> nur physisches Replug.
   - `06:00.4`/bus3 Port 1 (**direkt am Root-Hub, kein Hub im Pfad**, nur Bluetooth `3-4` daneben): enumeriert sofort, alle Nodes da, Discord-Mic oeffnet sauber, keine `err -110` mehr.
   - => Wie beim GameDAC gilt: **kein Upstream-Hub im Pfad + eigener Controller** = stabil.
-- **Config-Haertung (Commit fd7812c)**: GC7-Card + pro-Audio-Nodes auf 48000 gepinnt (`audio.samplerate`/`audio.rate`) -> keine Rate-Renegotiation; `usbcore.old_scheme_first=1` in boot-nex.nix. Verifiziert nach Rebuild: `GC7 Game (7.1)` rate 48000, `GC7 Voice (Chat)` 48000, `GC7 Microphone` 48000.
+- **Config (Commit fd7812c, 48k-Pin am 2026-10-02 wieder entfernt)**: nur die harmlosen Teile bleiben — `usbcore.old_scheme_first=1` in boot-nex.nix. Der damals gesetzte 48k-Pin (`audio.samplerate`/`audio.rate`) wurde **zurueckgenommen**, weil er HiRes (GC7 kann nativ 48/96/192k) gedeckelt haette und der Rate-Wechsel nie als Ursache belegt war. WirePlumber waehlt die Rate jetzt automatisch nach Anwendung (HiRes braucht KEINEN HW-Schalter und KEINE Extra-Config).
 - **Falls es wieder auftritt**: Test-Kandidat `modprobe snd_usb_audio implicit_fb=1` (Arch-Workaround) bzw. Kernel-Stand pruefen (CVE-2026-80828-Fix). Port bevorzugt an `06:00.4` (direkt, kein Hub) lassen.
 
 ## Noctalia v5
