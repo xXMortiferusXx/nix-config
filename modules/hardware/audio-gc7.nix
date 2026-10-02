@@ -18,6 +18,16 @@
 { pkgs, ... }:
 
 {
+  # Clock-Raten: Standard war nur [ 48000 ] -> jede App mit anderer Rate (viele
+  # Spiele/Wine rendern 44100 oder 96000) wurde ZWANGS-resampled -> klassische
+  # Knack-Quelle. Wir ERWEITERN die erlaubte Liste auf alle gaengigen Raten
+  # inkl. HiRes (88200/96000/176400/192000). Das deckelt NICHTS, es macht HiRes
+  # erst durchgereicht. Siehe Manjaro-HowTo "Troubleshoot crackling in PipeWire".
+  services.pipewire.extraConfig.pipewire."99-gc7-clock" = {
+    "context.properties"."default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+    "context.properties"."default.clock.rate" = 48000;
+  };
+
   services.pipewire.wireplumber.extraConfig."90-gc7" = {
     # Profilwahl deklarativ: erzwungen auf "pro-audio" (sonst wählt WP bei leerem
     # State das höchste ACP-Profil und überspringt pro-audio bewusst -> kein Voice-
@@ -49,6 +59,7 @@
           "audio.channels" = 8;
           "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
           "session.suspend-timeout-seconds" = 0;
+          "api.alsa.headroom" = 512;
         };
       }
       {
@@ -58,6 +69,7 @@
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
           "session.suspend-timeout-seconds" = 0;
+          "api.alsa.headroom" = 512;
         };
       }
       {
@@ -67,6 +79,7 @@
           "audio.channels" = 2;
           "audio.position" = [ "FL" "FR" ];
           "session.suspend-timeout-seconds" = 0;
+          "api.alsa.headroom" = 512;
         };
       }
     ];
