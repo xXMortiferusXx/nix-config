@@ -8,6 +8,8 @@
       ../../modules/system/common.nix
       ../../modules/system/boot-lion.nix
       ../../modules/system/environment-lion.nix
+      ../../modules/system/firmware-disk.nix
+      ../../modules/programs/zink-run.nix
       ../../modules/hardware/amdgpu.nix
       ../../modules/hardware/power-lion.nix
       ../../modules/programs/gaming/lion.nix

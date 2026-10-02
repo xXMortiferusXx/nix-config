@@ -1,7 +1,7 @@
-# CachyOS-Wrapper-Scripts für Gaming
+# CachyOS-Wrapper-Scripts für Gaming (NVIDIA)
 # dlss-swapper: NVIDIA DLSS-Preset-Override + NGX-Updater
 # dlss-swapper-dll: gleiches ohne NGX-Updater
-# zink-run: OpenGL via Zink (OpenGL-on-Vulkan) ausführen
+# zink-run liegt separat in modules/programs/zink-run.nix (auch für AMD-Hosts).
 { pkgs, ... }:
 
 let
@@ -25,21 +25,11 @@ let
     export DXVK_NVAPI_DRS_NGX_DLSS_SR_OVERRIDE_RENDER_PRESET_SELECTION=render_preset_latest
     exec "$@"
   '';
-
-  zink-run = pkgs.writeShellScriptBin "zink-run" ''
-    # Run OpenGL applications using the Zink Gallium driver (OpenGL-on-Vulkan)
-    export MESA_LOADER_DRIVER_OVERRIDE=zink
-    export GALLIUM_DRIVER=zink
-    export __GLX_VENDOR_LIBRARY_NAME=mesa
-    export __EGL_VENDOR_LIBRARY_FILENAMES=/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json
-    exec "$@"
-  '';
 in
 
 {
   environment.systemPackages = [
     dlss-swapper
     dlss-swapper-dll
-    zink-run
   ];
 }

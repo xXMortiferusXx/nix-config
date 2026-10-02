@@ -11,6 +11,7 @@
       ../../modules/system/common.nix
       ../../modules/system/boot-benny.nix
       ../../modules/system/environment-benny.nix
+      ../../modules/system/firmware-disk.nix
       ../../modules/hardware/intel-ivy.nix
       ../../modules/hardware/power-benny.nix
       ../../modules/programs/gaming/benny.nix
