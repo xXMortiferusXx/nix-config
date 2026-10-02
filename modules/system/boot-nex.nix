@@ -46,6 +46,11 @@
     # (Snow-Blitz-Stottern unter Last auf der iGPU, aus alter PRIME-Config).
     "amdgpu.dcfeaturemask=0x0"
     "amdgpu.dcdebugmask=0x2"
+    # USB-Enumeration: erst das alte (langsamere, robustere) Verfahren probieren.
+    # Der Sound Blaster GC7 verliert gelegentlich beim Oeffnen eines Capture-
+    # Streams seinen UAC-Clock (err -110) und laesst sich dann nicht mehr
+    # enumerieren — Known-Quirk-Klasse bei USB-Audiogeraeten.
+    "usbcore.old_scheme_first=1"
   ];
 
   boot.kernel.sysctl = {
