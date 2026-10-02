@@ -65,23 +65,7 @@
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
 
-  # SSH: Lokaler Zugriff von nex (Key-basiert, kein Passwort)
-  services.openssh = {
-    enable = true;
-    openFirewall = false;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
-  users.users.benny.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE6UHVcDl2byF1+1SYIpM3V0oldx/541PX9a9bX+smBr mortiferus@nex"
-  ];
-
-  # Firewall: SSH nur aus LAN (192.168.50.0/24), extern blockiert
-  networking.firewall.extraCommands = ''
-    iptables -A nixos-fw -s 192.168.50.0/24 -p tcp --dport 22 -j nixos-fw-accept
-  '';
+  # SSH deaktiviert: benny steht nicht im LAN von nex (kein Fernzugriff nötig).
 
   # Sicherheit: sudo-Passwort nötig (Override der common-Vorgabe aus security.nix)
   security.sudo.wheelNeedsPassword = lib.mkForce true;
