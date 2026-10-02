@@ -67,9 +67,6 @@
 
   # SSH deaktiviert: benny steht nicht im LAN von nex (kein Fernzugriff nötig).
 
-  # Sicherheit: sudo-Passwort nötig (Override der common-Vorgabe aus security.nix)
-  security.sudo.wheelNeedsPassword = lib.mkForce true;
-
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
   services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "benny" ];
 
