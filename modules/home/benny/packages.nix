@@ -33,7 +33,6 @@ pkgs: with pkgs; [
   opencode
 
   # --- Gaming ---
-  prismlauncher   # Minecraft
   vinegar         # Roblox Studio
 
   # --- Office & Media ---
@@ -41,4 +40,10 @@ pkgs: with pkgs; [
   gimp
   qalculate-gtk
   zathura
+  libreoffice
+  hunspellDicts.de_DE    # deutsche Rechtschreibung (LibreOffice)
+  hyphenDicts.de-de      # deutsche Silbentrennung (LibreOffice)
+  thunderbird            # E-Mail
+  mpv                    # Video-Player
+  naps2                  # Scanner
 ]
