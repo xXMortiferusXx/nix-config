@@ -83,6 +83,14 @@
     SUBSYSTEM=="usb", ATTR{idVendor}=="041e", ATTR{idProduct}=="3271", ATTR{power/control}="on"
   '';
 
+  # VERWORFEN (2026-10-02): implicit_fb=1 fuer den GC7.
+  #   options snd-usb-audio vid=0x041e pid=0x3271 implicit_fb=1
+  # Nach Reboot versuchsweise aktiviert -> Discord-Stimmen klangen sofort wie
+  # Roboter (total verzerrt). Der GC7 hat offenbar ein EIGENES Feedback und darf
+  # nicht in den generischen impliziten Sync-Modus gezwungen werden. NICHT wieder
+  # einbauen. (Das urspruengliche, seltene Knacken ist damit weiterhin offen und
+  # kommt nicht aus dem aufgenommenen Signalfluss - siehe memory.md.)
+
   # (2) Sicherheitsnetz beim Aufwachen: GC7 hart zurücksetzen + WirePlumber neu
   #     aufbauen -> Ton/Mic kommen ohne manuelles Replug zurück.
   #     powerManagement.enable ist auf nex bereits über nvidia-prime.nix aktiv.
