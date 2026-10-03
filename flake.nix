@@ -44,6 +44,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # BedrockOnLinux: Minecraft Bedrock (Windows/GDK) via WineGDK.
+    # Nur lion-pc. Ersetzt den Android-Weg (mcpelauncher): der hat kein
+    # funktionierendes Xbox-Freunde-Join (Flathub: "times out or crashes").
+    # Wine/Proton laedt der Launcher beim ersten Start selbst in sein
+    # app-privates XDG-Verzeichnis, nicht in den Nix-Store.
+    # Unpinned wie umbriel -> Updates mit `nix flake update bedrock-on-linux`.
+    bedrock-on-linux = {
+      url = "github:Wyze3306/BedrockOnLinux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
   
   outputs = { self, nixpkgs, disko, home-manager, arctis-sound-manager, ... }@inputs:
