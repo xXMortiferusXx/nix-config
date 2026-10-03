@@ -111,6 +111,12 @@
 - Remote: `git@github.com:xXMortiferusXx/nix-config.git` (SSH)
 - `.git`-Ownership war nach Installation `root` (nixos-enter) → auf `mortiferus:users` gefixt
 
+### Arbeitsplatz / Host-Zugriff (2026-10-03)
+- **Wir arbeiten IMMER von nex aus.** Der User sitzt an nex, nicht an lion/benny.
+- **SSH zu den anderen Hosts ist NUR zur Diagnose** (read-only Checks, Logs, `df`, `wpctl`, …). Es wird **nie über SSH deployt/gebaut**.
+- **Deploy auf lion-pc/benny macht der User selbst** direkt an dem Rechner mit `nix-sync` (`git reset --hard origin/main && git pull && nixos-rebuild switch --flake .#<host>`), nachdem hier committet und gepusht wurde.
+- SSH nex→lion scheitert mit `Permission denied (publickey)` — der in `hosts/lion-pc/configuration.nix` hinterlegte Key passt nicht zu nex' Keyring. Nicht als Deploy-Weg einplanen.
+
 ### flake.lock IMMER mitpushen (2026-09-09)
 - **WICHTIG**: Sobald `flake.lock` lokale Änderungen gegenüber `origin/main` hat (z.B. durch `nix flake update`/`nix-check`/`nix-update`), muss sie **zusammen** mit der zugehörigen Konfiguration committet und gepusht werden.
 - **Hintergrund**: `nix-sync` auf den Hosts macht `git reset --hard origin/main` → setzt die `flake.lock` auf den **gepushten Stand** zurück. Ist die gepushte lock veraltet/inkonsistent zur config, löst `nixos-rebuild` auf dem Host die Inputs lokal neu auf → ungewolltes "erneutes Update nötig"-Hin-und-Her.
