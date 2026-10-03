@@ -10,14 +10,9 @@ in {
       ./config.nix
       ./autostart.nix
       ./mpv.nix
+      ./mangohud.nix
       ../firefox.nix
     ];
-
-    programs.mangohud = {
-      enable = true;
-      enableSessionWide = false;
-      settings = { };
-    };
 
     programs.home-manager.enable = true;
     programs.noctalia.enable = true;
