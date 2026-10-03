@@ -116,7 +116,9 @@
 - **SSH zu den anderen Hosts ist NUR zur Diagnose** (read-only Checks, Logs, `df`, `wpctl`, …). Es wird **nie über SSH deployt/gebaut**.
 - **Deploy auf lion-pc/benny macht der User selbst** direkt an dem Rechner mit `nix-sync` (`git reset --hard origin/main && git pull && nixos-rebuild switch --flake .#<host>`), nachdem hier committet und gepusht wurde.
 - SSH nex→lion scheitert mit `Permission denied (publickey)` — der in `hosts/lion-pc/configuration.nix` hinterlegte Key passt nicht zu nex' Keyring. Nicht als Deploy-Weg einplanen.
-- **Testbuilds fremder Hosts IMMER mit `--no-link`** (z.B. `nix build --no-link .#nixosConfigurations.lion-pc...`). **Kein** `result`/`result-*`-Symlink anlegen.
+- **Kein automatisches Bauen aller Hosts.** Es gibt keine CI und keine „alle Hosts bauen"-Automatik. Testbuilds macht der Agent nur bei Bedarf, und nur für die Hosts, die tatsächlich geändert wurden.
+- **Standard-Build-Radius: `nex`, `lion-pc`, `benny`.** `styx` ist ein Gelegenheits-Mini-Office-Notebook, selten in Betrieb und ohne laufende Änderungen → **nicht** standardmäßig mitbauen. Nur wenn eine Änderung styx betrifft (oder explizit angefordert), wird styx gebaut. `test` ebenfalls nur bei Bedarf.
+- **Testbuilds IMMER mit `--no-link`** (z.B. `nix build --no-link .#nixosConfigurations.lion-pc...`). **Kein** `result`/`result-*`-Symlink anlegen.
   - **Grund**: Ein `nix build` **ohne** `--no-link` legt `./result` (bzw. `result-1`, `result-2` …) an und registriert das in `/nix/var/nix/gcroots/auto/`. Dieser Root **schützt die gesamte Closure dauerhaft vor GC** — auch weit über `--delete-older-than 14d` hinaus. So hielt ein vergessener `result-1` auf den styx-Build (Rev `56c02bc`) ~13 GB Store-Platz besetzt, obwohl styx nie für nex lief.
   - Aufräumen bei Bedarf: `rm /etc/nixos/result*` **und** den zugehörigen `/nix/var/nix/gcroots/auto/…`-Link (`sudo`), danach `sudo nix-collect-garbage --delete-older-than 14d`.
   - `result`/`result-*` sind in `.gitignore` — sie werden nie committet, sind also reine lokale Artefakte.
