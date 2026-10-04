@@ -11,6 +11,7 @@ in {
       ./autostart.nix
       ./mpv.nix
       ./mangohud.nix
+      ./mimeapps.nix
       ../firefox.nix
     ];
 
