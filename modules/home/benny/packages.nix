@@ -30,6 +30,7 @@ pkgs: with pkgs; [
   discord
   cartridges
   vulkan-tools
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
   opencode
 
   # --- Gaming ---

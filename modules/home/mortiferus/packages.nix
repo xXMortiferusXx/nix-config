@@ -29,10 +29,7 @@ pkgs: with pkgs; [
   discord
   cartridges
   polychromatic
-  # goverlay  # deaktiviert: lazarus-qt6 baut auf nixos-unstable-Pin (c59305b, 01.10. 02:47) nicht.
-  # Upstream-Fix 50725cfa49 ("lazarus: fix build", 01.10. 16:29) ist auf master, noch nicht im
-  # nixos-unstable-Branch; Hydra baut goverlay bereits fehlerfrei. Nach dem naechsten
-  # `nix flake update nixpkgs` (Branch enthaelt den Fix) goverlay wieder einkommentieren.
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
   vulkan-tools
 
   # --- Gaming ---

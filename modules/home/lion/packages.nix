@@ -29,7 +29,7 @@ pkgs: with pkgs; [
   thunar
   discord
   cartridges
-  # goverlay  # deaktiviert: lazarus-qt6 (Build-Dep) baut nicht mit nixpkgs 2026-09-29; zurück sobald Upstream-Fix
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
   vulkan-tools
   opencode
 
