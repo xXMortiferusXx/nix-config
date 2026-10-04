@@ -49,7 +49,7 @@ pkgs: with pkgs; [
     gimp
     naps2
     qalculate-gtk
-    qmmp          # Winamp-artiger Audio-Player (Skins .wsz), Standard fuer Audio
+    amberol       # moderner GTK4/libadwaita Audio-Player (folgt Noctalia-Theme)
 
     # --- Development & 3D Printing ---
     #opencode
