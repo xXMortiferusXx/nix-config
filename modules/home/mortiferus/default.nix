@@ -12,6 +12,7 @@ in {
       ./mpv.nix
       ./mangohud.nix
       ./mimeapps.nix
+      ./qmmp.nix
       ../firefox.nix
     ];
 
