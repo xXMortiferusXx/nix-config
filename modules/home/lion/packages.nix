@@ -42,4 +42,7 @@ pkgs: with pkgs; [
   gimp
   qalculate-gtk
   zathura
+  thunderbird    # E-Mail
+  mpv            # Video-Player
+  amberol        # Audio-Player (GTK4/libadwaita, Noctalia-Theme)
 ]

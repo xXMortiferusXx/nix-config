@@ -1,14 +1,12 @@
-# Standard-Programme (XDG MIME-Defaults) — deklarativ für nex/mortiferus.
+# Standard-Programme (XDG MIME-Defaults) — gemeinsam für nex / lion / benny.
 #
-# Hintergrund: Bisher lag die Zuordnung nur in der handgeschriebenen,
-# Home-Manager-unverwalteten ~/.config/mimeapps.list. Dort stand noch der
-# tote `zen-beta.desktop` als Browser (Zen wurde durch Firefox ersetzt), der
-# gar nicht mehr installiert war. Diese Datei wird jetzt von Home-Manager
-# verwaltet und ist die einzige Quelle der Wahrheit.
+# Deklarativ via xdg.mimeApps -> Home-Manager verwaltet ~/.config/mimeapps.list.
+# Vorher lag die Zuordnung nur in einer handgeschriebenen, HM-unverwalteten
+# Datei (auf nex stand dort noch der tote `zen-beta.desktop` als Browser).
 #
-# WICHTIG: Änderungen hier treten in Kraft, weil xdg.mimeApps die Datei
-# generiert. Wird Zen/Firefox o.ä. gewechselt, hier anpassen — nicht mehr
-# manuell in mimeapps.list.
+# Enthält nur die universellen Defaults (Apps, die auf allen drei Hosts
+# installiert sind: firefox, thunderbird, amberol, mpv, loupe, zathura,
+# thunar, nvim).
 { config, ... }:
 
 {
@@ -16,7 +14,7 @@
     enable = true;
 
     defaultApplications = {
-      # Browser (Zen -> Firefox abgelöst)
+      # Browser
       "text/html" = "firefox.desktop";
       "application/xhtml+xml" = "firefox.desktop";
       "application/xml" = "firefox.desktop";
@@ -29,7 +27,7 @@
       "application/x-extension-xhtml" = "firefox.desktop";
       "application/x-extension-xht" = "firefox.desktop";
 
-      # E-Mail
+      # E-Mail (Thunderbird auf allen drei Hosts)
       "x-scheme-handler/mailto" = "thunderbird.desktop";
       "message/rfc822" = "thunderbird.desktop";
 
