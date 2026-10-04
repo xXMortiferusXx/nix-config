@@ -77,6 +77,12 @@ let
     pl_show_lengths=true
     pl_show_header=true
     pl_smooth_scrolling=true
+    # Fenstergeometrie + Dock-Layout (Playlists/Cover/Files links gestapelt,
+    # Playlist zentral, Visualisierung unten; Waveform-Seekbar ausgeblendet).
+    # Erzeugt mit Qt 6.11.2 (== qmmp-Build); passt die Qt-Version nicht, ignoriert
+    # qmmp den State und faellt auf sein Default-Layout zurueck.
+    mw_geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\0\0\0\0\0\0\0\x3\xaf\0\0\x4\x1\0\0\0\0\0\0\0\0\0\0\x3\xaf\0\0\x4\x1\0\0\0\0\0\0\0\0\a\x80\0\0\0\0\0\0\0\0\0\0\x3\xaf\0\0\x4\x1)
+    mw_state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\0\0\0\x3,\xfc\x2\0\0\0\x3\xfb\0\0\0&\0p\0l\0\x61\0y\0l\0i\0s\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0?\0\0\x1\x8c\0\0\0\x7f\0\xff\xff\xff\xfb\0\0\0\x1e\0\x63\0o\0v\0\x65\0r\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\xd1\0\0\0\x15\0\0\0\x15\0\xff\xff\xff\xfb\0\0\0(\0\x66\0i\0l\0\x65\0S\0y\0s\0t\0\x65\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\xec\0\0\x1\x7f\0\0\0w\0\xff\xff\xff\0\0\0\x2\0\0\0\0\0\0\0\0\xfc\x1\0\0\0\x1\xfb\0\0\0\x32\0w\0\x61\0v\0\x65\0\x66\0o\0r\0m\0S\0\x65\0\x65\0k\0\x42\0\x61\0r\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x36\0\xff\xff\xff\0\0\0\x3\0\0\x3\xb0\0\0\0y\xfc\x1\0\0\0\x1\xfb\0\0\0$\0\x61\0n\0\x61\0l\0y\0z\0\x65\0r\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x3\xb0\0\0\0O\0\xff\xff\xff\0\0\x2\xaa\0\0\x3,\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\x1\0\0\0\x2\0\0\0\x1\0\0\0Z\0T\0o\0o\0l\0\x62\0\x61\0r\0{\0\x36\0\x38\0\x33\0\x36\0\x33\0\x61\0\x30\0\x62\0-\0\x66\0\x32\0\x63\0\x64\0-\0\x34\0\x36\0\x32\0\x61\0-\0\x38\0\x37\0\x63\0\x61\0-\0\x65\0\x33\0\x30\0\x38\0\x39\0\x64\0\x62\0\x32\0\x31\0\x35\0\x36\0\x31\0}\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0)"
 
     [ReplayGain]
     mode=0
@@ -89,7 +95,7 @@ let
 
     [Misc]
     determine_file_by_content=false
-  '';
+    '';
 in
 {
   home.activation.qmmpDefaultConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
