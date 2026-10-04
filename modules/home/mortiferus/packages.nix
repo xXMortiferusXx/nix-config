@@ -29,7 +29,10 @@ pkgs: with pkgs; [
   discord
   cartridges
   polychromatic
-  # goverlay  # deaktiviert: lazarus-qt6 (Build-Dep) baut nicht mit nixpkgs 2026-09-29; zurück sobald Upstream-Fix
+  # goverlay  # deaktiviert: lazarus-qt6 baut auf nixos-unstable-Pin (c59305b, 01.10. 02:47) nicht.
+  # Upstream-Fix 50725cfa49 ("lazarus: fix build", 01.10. 16:29) ist auf master, noch nicht im
+  # nixos-unstable-Branch; Hydra baut goverlay bereits fehlerfrei. Nach dem naechsten
+  # `nix flake update nixpkgs` (Branch enthaelt den Fix) goverlay wieder einkommentieren.
   vulkan-tools
 
   # --- Gaming ---
@@ -46,6 +49,7 @@ pkgs: with pkgs; [
     gimp
     naps2
     qalculate-gtk
+    qmmp          # Winamp-artiger Audio-Player (Skins .wsz), Standard fuer Audio
 
     # --- Development & 3D Printing ---
     #opencode
