@@ -290,6 +290,13 @@
 - **DNS-Hinweis 2026-08-17**: Mullvad DoT musste aufgegeben werden. Steam's steamwebhelper blockiert Port 5353 (mDNS-Multicast) — kein lokaler mDNS-Responder funktioniert wenn Steam laeuft (bekanntes Valve-Problem, betrifft sogar SteamOS). Router als DNS = Router als mDNS = kein Konflikt. Mullvad unterwegs spaeter per VPN loesen.
 - **Hinweis**: Archer-Bug-Lösung (AP-Modus) war nur temporär; ASUS übernimmt wieder alle Router-Aufgaben
 
+### DNS pro Host: Option `network.dnsServer` (2026-10-05)
+- Der DNS-Server wird **nicht mehr fest im geteilten Modul** verdrahtet, sondern über die Option `network.dnsServer` in `modules/system/networking.nix` gesetzt (gilt für `services.resolved` → `DNS` **und** `FallbackDNS`).
+- **Default = `192.168.50.1`** (ASUS). Damit bleiben nex, lion-pc und styx automatisch korrekt (alle im Heimnetz am ASUS).
+- **Bei jedem neuen Host prüfen**: steht er hinter einem anderen Router? Dann in `hosts/<host>/configuration.nix` überschreiben, z.B. `network.dnsServer = "192.168.178.1";` (FritzBox-Standard).
+- Aktuell so gesetzt: **benny** = `192.168.178.1` (FritzBox, anderer Standort). nex/lion-pc/styx = Default ASUS.
+- Prüfen per Eval: `nix eval --json .#nixosConfigurations.<host>.config.services.resolved.settings.Resolve.DNS`.
+
 ### AX210 Hardware-Upgrade-Plan (Backup)
 - **Ziel**: Volle Performance + stabile Latenz unter Linux, ohne Treiber-Workarounds
 - **Empfohlene Karte**: MediaTek MT7922 (M.2 2230) oder AMD RZ616 (rebadged MT7922)

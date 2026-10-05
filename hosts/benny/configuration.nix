@@ -37,6 +37,10 @@ in
 
   networking.hostName = "benny";
 
+  # benny steht hinter einer FritzBox mit Standard-Config (nicht am ASUS).
+  # DNS + Fallback zeigen auf die FritzBox statt auf 192.168.50.1.
+  network.dnsServer = "192.168.178.1";
+
   # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — EQ/ChatMix/Virtual Surround.
   # Modul kommt aus dem Flake-Input arctis-sound-manager (siehe flake.nix).
   # package-Override: pause-on-idle-Patch gegen Knacken/Aussetzer (siehe let-Block).

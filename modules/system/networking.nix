@@ -1,70 +1,82 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  networking.networkmanager = {
-    enable = true;
-    wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
+  options.network.dnsServer = lib.mkOption {
+    type = lib.types.str;
+    default = "192.168.50.1";
+    example = "192.168.178.1";
+    description = ''
+      DNS-Server (und Fallback) des lokalen Routers. Default ist der ASUS
+      (192.168.50.1) fuer nex/lion-pc. benny laeuft hinter einer FritzBox mit
+      Standard-Config und setzt hier 192.168.178.1.
+    '';
   };
-  # WLAN-Backend iwd statt wpa_supplicant (2026-09-22):
-  # iwlwifi+wpa_supplicant verliert intermittierend die Assotiations-Sync →
-  # "verbunden, aber keine Konnektivität" bis zum manuellen Reconnect.
-  # iwd managt das Reassoziieren selbst und hält Suspend/Resume sauberer.
-  # HINWEIS: networking.wireless.iwd.enable wird vom NM-Modul automatisch
-  # gesetzt, sobald backend == "iwd".
-  networking.networkmanager.wifi.backend = "iwd";
-  # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP.
-  # `networking.wireless.regulatoryDomain` existiert nicht mehr. udev-Regel setzt
-  # DE bei jeder Interface-Initialisierung (auch nach Suspend/Reconnect), weil
-  # wpa_supplicant (via NetworkManager) die Domain sonst nach dem AP-Country
-  # überschreiben kann.
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="ieee80211", RUN+="${pkgs.iw}/bin/iw reg set DE"
-  '';
-  networking.firewall.enable = true;
-  services.udisks2.enable = true;
 
-  # RFC 4821: MTU-Probing NUR für Verbindungen mit klassischem Blackhole-Verlust
-  # (z.B. Ubisoft Connect unter Proton) — Interface-MTU bleibt 1500, nichts anderes
-  # wird angefasst.
-  #
-  # Auskommentiert: Hat nichts am Ubisoft-Login geändert. Deaktiviert → Rückfall
-  # zum Kernel-Default (0). Wieder aktivieren nur, wenn ein Blackhole-Verlust
-  # nachweislich auftritt.
-  #boot.kernel.sysctl."net.ipv4.tcp_mtu_probing" = 1;
-#  networking.search = [ "lan" ];
+  config = {
+    networking.networkmanager = {
+      enable = true;
+      wifi.powersave = false;   # Power Save aus → keine Latenz/Verluste am Verbindungsstart
+    };
+    # WLAN-Backend iwd statt wpa_supplicant (2026-09-22):
+    # iwlwifi+wpa_supplicant verliert intermittierend die Assotiations-Sync →
+    # "verbunden, aber keine Konnektivität" bis zum manuellen Reconnect.
+    # iwd managt das Reassoziieren selbst und hält Suspend/Resume sauberer.
+    # HINWEIS: networking.wireless.iwd.enable wird vom NM-Modul automatisch
+    # gesetzt, sobald backend == "iwd".
+    networking.networkmanager.wifi.backend = "iwd";
+    # DE statt DFS-UNSET → korrekte Sendeleistung/EIRP.
+    # `networking.wireless.regulatoryDomain` existiert nicht mehr. udev-Regel setzt
+    # DE bei jeder Interface-Initialisierung (auch nach Suspend/Reconnect), weil
+    # wpa_supplicant (via NetworkManager) die Domain sonst nach dem AP-Country
+    # überschreiben kann.
+    services.udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="ieee80211", RUN+="${pkgs.iw}/bin/iw reg set DE"
+    '';
+    networking.firewall.enable = true;
+    services.udisks2.enable = true;
 
-  # ────────────────── DNS CACHING ──────────────────
-  # ASUS (192.168.50.1) macht DNS
-  # Hier nur lokales Caching für schnellere Auflösung
- services.resolved = {
-     enable = true;
-     settings.Resolve = {
- #        Domains = [ "lan" "~." ];
- 	DNS = [ "192.168.50.1" ];
-         MulticastDNS = "resolve";  # nur auflösen, nicht selbst announcen
-         LLMNR = "no";
-         DNSSEC = "allow-downgrade";
-         DNSOverTLS = "opportunistic";
-         FallbackDNS = [ "192.168.50.1" ];
-     };
- };
+    # RFC 4821: MTU-Probing NUR für Verbindungen mit klassischem Blackhole-Verlust
+    # (z.B. Ubisoft Connect unter Proton) — Interface-MTU bleibt 1500, nichts anderes
+    # wird angefasst.
+    #
+    # Auskommentiert: Hat nichts am Ubisoft-Login geändert. Deaktiviert → Rückfall
+    # zum Kernel-Default (0). Wieder aktivieren nur, wenn ein Blackhole-Verlust
+    # nachweislich auftritt.
+    #boot.kernel.sysctl."net.ipv4.tcp_mtu_probing" = 1;
+  #  networking.search = [ "lan" ];
 
-  services.gvfs = {
-    enable = true;
-    package = pkgs.gvfs;
+    # ────────────────── DNS CACHING ──────────────────
+    # Router (ASUS bzw. FritzBox) macht DNS
+    # Hier nur lokales Caching für schnellere Auflösung
+    services.resolved = {
+      enable = true;
+      settings.Resolve = {
+        DNS = [ config.network.dnsServer ];
+        MulticastDNS = "resolve";  # nur auflösen, nicht selbst announcen
+        LLMNR = "no";
+        DNSSEC = "allow-downgrade";
+        DNSOverTLS = "opportunistic";
+        FallbackDNS = [ config.network.dnsServer ];
+      };
+    };
+
+    services.gvfs = {
+      enable = true;
+      package = pkgs.gvfs;
+    };
+
+  #  services.avahi = {
+  #    enable = false;
+  #    nssmdns4 = true;
+  #    nssmdns6 = true;  # auch IPv6
+  #    openFirewall = true;
+  #    publish = {
+  #        enable = true;
+  #        addresses = true;
+  #        workstation = true;
+  #        userServices = true;
+  #    };
+  #  };
+
   };
-  
-#  services.avahi = {
-#    enable = false;
-#    nssmdns4 = true;
-#    nssmdns6 = true;  # auch IPv6
-#    openFirewall = true;
-#    publish = {
-#        enable = true;
-#        addresses = true;
-#        workstation = true;
-#        userServices = true;
-#    };
-#  };
-
 }
