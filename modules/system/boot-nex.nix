@@ -25,7 +25,12 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-x86_64-v3;
+  # latest-x86_64-v3 statt bore-x86_64-v3 (2026-10-04): Der bore-v3-Build
+  # liegt bei xddxdd's master-Branch NICHT im Binary-Cache (Hydra-Job aborted),
+  # -> lokaler Kernel-Build bei jedem Vorlauf. latest-x86_64-v3 ist im Cache
+  # (attic lantian, 200) und behaelt die v3-Optimierung; Unterschied ist nur
+  # der Scheduler (latest=EEVDF-Default statt BORE). v3 bleibt erhalten.
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3;
   # CachyOS-Kernel bringt den "adios" I/O-Scheduler mit -> in cachyos-tuning.nix nutzen.
   tuning.ioScheduler = "adios";
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
