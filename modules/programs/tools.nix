@@ -13,8 +13,10 @@
     nix-search = "nix search nixpkgs";
     nix-check  = "nix flake update && nixos-rebuild build --flake .#(hostname) && nvd diff /run/current-system ./result";
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
-    nix-update = "pushd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
-    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && sudo nixos-rebuild switch --flake .#(hostname) && popd";
+    nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
+    # nix-sync holt den gepushten Stand UND aktualisiert die Inputs, damit ein
+    # Reparatur-Sync nie auf einen aelteren (veralteten) Lock downgradet.
+    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
     # Aufräumen
