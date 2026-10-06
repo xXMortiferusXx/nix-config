@@ -94,8 +94,20 @@
       "e /var/lib/systemd/coredump - - - 3d"
     ];
 
-    # Garuda-Nix services.nix: Coredumps komplett deaktivieren (Storage none)
-    systemd.coredump.enable = false;
+    # Garuda/CachyOS: Coredumps standardmäßig AUS.
+    # WICHTIG: NICHT `systemd.coredump.enable = false` — das schaltet nur den
+    # Dienst ab und lässt den Kernel rohe "core.<pid>"-Dateien ins
+    # Arbeitsverzeichnis schreiben (hier: Home!). Stattdessen bleibt
+    # systemd-coredump aktiv (core_pattern = Pipe), und die Soft-Limits
+    # (system + user) werden auf 0 gesetzt -> es wird gar kein Core erzeugt,
+    # nichts landet im Home.
+    # Zum gezielten Debuggen individuell im Shell aktivierbar (Hard-Limit
+    # bleibt frei): `ulimit -c unlimited`, dann das Programm starten. Der Dump
+    # landet komprimiert in /var/lib/systemd/coredump (tmpfiles altert ihn nach
+    # 3 Tagen) und ist per `coredumpctl` abrufbar.
+    systemd.coredump.enable = true;
+    systemd.settings.Manager.DefaultLimitCORESoft = "0";
+    systemd.user.settings.Manager.DefaultLimitCORESoft = "0";
 
     # CachyOS systemd system.conf.d: kürzere Timeouts + höhere NOFILE-Limits
     systemd.settings.Manager = {
