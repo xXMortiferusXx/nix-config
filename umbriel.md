@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `dceb9924bb13eb302d81f954c1682ecdcaafc5e4` (2026-09-26, revCount 1072), Version `0.1.0`
-  (Lock bereits per `nix flake update` gezogen — Stand 15:53 UTC)
+- Aktuelle Rev: `4c89178780d800012fd2508b5a5d6ea11dd5b15d` (2026-10-06, revCount 1167), Version `0.1.0`
+  (Lock per `nix flake update umbriel` gezogen — force-update auf `4c89178`, Identität mit origin/main verifiziert)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -17,8 +17,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Solange auf dem Flake bleiben, bis nixpkgs den Fix-/Feature-Stand eingeholt hat
   (`nix eval nixpkgs#umbriel.src.rev` ≥ Flake-Rev bzw. enthält Suspend/Resume-Fix #27,
   Numlock, `[animation]`, named scratchpads) **und** die Entwicklung sich beruhigt hat
-  (aktuell ~40 Commits/Tag; ein Tag-Release wäre das klarste Zeichen).
-- Kosten Flake: lokaler Rust-Build (~Minuten) bei jedem Rev-Bump.
+  (Stand 2026-10-06: ~95 Commits in 10 Tagen ≈ 10/Tag — deutlich ruhiger als Ende
+  September; ein Tag-Release wäre das klarste Zeichen).
+- Kosten Flake: lokaler C++-Build (~Minuten) bei jedem Rev-Bump.
 - Wechsel zurück: Flake-Input + Overlay (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
   prüfen, Config ggf. re-migrieren (falls nixpkgs-Rev anders steht).
 
@@ -28,22 +29,25 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Ab Rev 2026-09-07: Scratchpad-Actions brauchen `[<scratchpad>]` Suffix (z.B.
   `scratchpad-toggle:default`). Bare Actions ohne Argument greifen auf den impliciten
   `"default"` Scratchpad.
+- Ab Rev `4c89178` (2026-10-06): **CLI-Umbenennung** — `umbriel validate` wurde zu
+  `umbriel config validate`, neu `umbriel config schema [--json]`. Das alte `validate`
+  existiert nicht mehr (kein Alias).
 - Maßgeblich ist `umbriel msg --help` der LAUFENDEN Version, nicht die main-Doku.
-  Gegenprobe: `umbriel validate`.
+  Gegenprobe: `umbriel config validate`.
 
 ## Update-Ablauf („Config auf aktuellen Stand bringen")
 1. `nix flake update` (zieht main neu)
 2. Neue Rev prüfen: `nix eval --raw '.#nixosConfigurations.nex.config.programs.umbriel.package.version'`
 3. Config gegen das NEUE Binary validieren (vor dem Switch!):
    `nix build '.#nixosConfigurations.nex.config.programs.umbriel.package' --no-link` →
-   `<out>/bin/umbriel validate -c <config>` (alle Hosts).
+   `<out>/bin/umbriel config validate -c <config>` (alle Hosts).
 4. Keys/Actions unten abhaken und ggf. in allen Hosts eintragen:
    `home/{mortiferus,backbone,lion}/config/umbriel/` (gleiche Dateien, gleicher Stand).
    **Immer alle 3 Hosts pruefen** – lion ist aktiver im Einsatz als backbone und wird
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev dceb9924 / 2026-09-26)
+## Feature-Tracker (Stand: Rev 4c89178 / 2026-10-06)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -72,8 +76,70 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `border_color_focused/unfocused/outer` (window_rule) | Border-Farben pro Fenster überschreiben (#268) | verfügbar, nicht genutzt |
 | `border_width`/`outer_border_width`/`corner_radius`/`shadow` (window_rule) | Deko-Override pro Fenster (#266, 4748217) | verfügbar, nicht genutzt |
 | `window-move-to-workspace-silent:<ws>` (+`-next`/`-previous`) | Fenster still (ohne Fokus-Wechsel) verschieben (#273) | verfügbar, nicht gebunden |
+| `general.xwayland_native_resolution` | X11-Apps sehen physische Output-Auflösung → scharf bei Scale > 1 (2026-09-29) | IRRELEVANT (alle Outputs `scale = 1.0`); für Games auf skalierten Monitoren relevant |
+| **Natives wlroots-Xwayland** | Umbriel startet Xwayland selbst; braucht `Xwayland` auf PATH statt `xwayland-satellite` (2026-09-29) | **ERLEDIGT**: `xwayland-satellite` aus `modules/desktop/umbriel.nix` entfernt; Flake-Wrapper + `programs.xwayland` liefern das Binary |
+| `umbriel config validate` / `umbriel config schema [--json]` | CLI-Rename (`validate` → `config validate`), neues Schema-Listing (2026-09-27) | **DOKUMENTIERT** (umbriel.md/memory.md); kein Alias für altes `validate` |
+| `[layout.tabs]` (`default_display`, `new_tab_position`, `wrap_focus`, `scroll_switches_tabs`, `middle_click_closes`) | Tab-Gruppen im Scrolling-/Master-Layout | verfügbar, nicht genutzt |
+| `[appearance.tab_bar]` + `[colors.tab_bar]` | Aussehen/Farben der Tab-Leiste | verfügbar, nicht gesetzt |
+| Tab-Actions (`column-toggle-tabbed`, `column-set-display:<normal\|tabbed>`, `column-focus-tab:<n>`, `column-focus-tab-next/previous`, `column-move-tab-next/previous`, `column-{toggle,hide,show}-tab-bar`) | Tab-Gruppen steuern | verfügbar, nicht gebunden |
+| `match.app_id`/`title`/`xdg_tag` / `match.namespace` als **Array** | Mehrere Patterns pro Selektor (any-match) (#353) | verfügbar, nicht genutzt (Einzel-Patterns reichen) |
+| `window_rule.default_column_display` | Spalte als `"tabbed"`/`"normal"` öffnen | verfügbar, nicht genutzt |
+| `[effects]`-Engine (border/window/screen/cursor, Presets+Pools, `effect-*`-Actions) | GLSL-Effekt-Engine mit Pools/Runtime-Selection (#321/#336/#369) | verfügbar, nicht genutzt (Default off) |
+| `window_rule.border_effect` / `window_effect` | Effekt pro Fenster ersetzen/abschalten | verfügbar, nicht genutzt |
+| `window_rule` `default_focused` bei `default_scratchpad` | Scratchpad beim Öffnen gleich zeigen (#328) | verfügbar, nicht genutzt |
+| `[[scratchpad]] spawn_when_empty` | Leeres Scratchpad startet per Toggle eine App (#255) | verfügbar, nicht genutzt |
+| `input.client_window_drag = false` | Client-Move-Requests ignorieren (Titelleisten-Drag der Apps) (e0272e3) | verfügbar, nicht gesetzt (Default `true`) |
+| `[input.touch]` (`enabled`, `map_to_output`) | Touchscreen mappen/ein-/ausschalten (#318) | IRRELEVANT (kein Touchscreen) |
+| `output.<NAME>.screen_effect` | Screen-Effekt pro Output ersetzen/abschalten | verfügbar, nicht gesetzt |
+| `[animation.windows_drag] physics = true` | Elastische Drag-Physik | verfügbar, nicht genutzt (Master-Switch nötig) |
+| `[screencast] disable_dynamic_confirmation` | Bestätigungsdialog bei Target-Wechsel im Share abschalten | verfügbar, nicht gesetzt |
+| `window-consume-from-left/right`, `window-move-left/right`, `window-swap-left/right/up/down` (Richtungs-Swaps), `output-create`/`output-destroy` | Neue Actions (Scrolling: consume/expel; Dwindle-Richtungs-Moves) | verfügbar, nicht gebunden |
+| `animation.*.effect` (ersetzt `animation.*.shader`) | Animation nutzt jetzt benannte `[effects]`-Presets statt Shader-Pfad | nicht genutzt (wir nutzen nur `style`/`scale`) |
 
 ## Zuletzt gecheckt
+- **2026-10-06** (Update auf Rev `4c89178`, revCount 1167; letzter dokumentierter
+  Stand `dceb9924`/1072): **95 Commits (1072→1167), 1 Breaking Change** (nur
+  Verhalten, kein Schema) + **1 CLI-Rename**. `umbriel config validate` =
+  `config: ok` auf allen **4** Hosts (mortiferus/backbone/lion/benny) gegen das
+  NEUE Binary (`nix build …programs.umbriel.package --no-link`). **Kernthemen:**
+  1. **`feat(xwayland): replace xwayland-satellite with native wlroots Xwayland`**
+     (`16d5031`, 2026-09-29): Umbriel startet Xwayland jetzt selbst (lazy, beim
+     ersten X11-Client) und braucht `Xwayland` statt `xwayland-satellite` auf
+     `PATH`. Neuer Key `general.xwayland_native_resolution` (Default `false`).
+     **Umsetzung:** `xwayland-satellite` aus `modules/desktop/umbriel.nix`
+     entfernt (war nur noch ein ungenutztes Paket). Das Flake-Paket wrappt
+     `Xwayland` via `makeBinaryWrapper` selbst in den PATH des Compositors
+     (verifiziert: `/nix/store/…-xwayland-24.1.13/bin` im Wrapper);
+     `programs.xwayland` (shared `desktop.nix`) liefert das Binary. Kein
+     systemd-Service, kein Doppelstart. `xwayland_native_resolution` nicht
+     gesetzt — alle Outputs `scale = 1.0`, daher wirkungslos.
+  2. **CLI-Rename** (`f66d6a8`, 2026-09-27): `umbriel validate` → **`umbriel
+     config validate`**, neu `umbriel config schema [--json]` (listet jeden
+     akzeptierten Key inkl. Typ/Default). **Kein Alias** — altes `validate` weg.
+     Docs (umbriel.md/memory.md) angepasst.
+  3. **Breaking (nur Verhalten, dwindle)**: `feat(dwindle)!` (`4062917`) —
+     Richtungs-Moves in Dwindle legen Fenster in Nachbarkacheln, neue
+     `window-move-left/right` + `window-swap-*`. **Kein Config-Key betroffen,
+     wir nutzen `layout.mode = "scrolling"`** → keine Migration.
+  4. **Große additive Features (nicht gesetzt):** Tab-Gruppen
+     (`[layout.tabs]`/`[appearance.tab_bar]`/`[colors.tab_bar]`, Tab-Actions),
+     GLSL-`[effects]`-Engine (Presets/Pools/`effect-*`-Actions, ersetzt
+     `animation.*.shader` durch `animation.*.effect`), Screencast-Actions +
+     `[screencast]`, `match.app_id/title/xdg_tag`/`namespace` als Array,
+     `window_rule.default_column_display`/`border_effect`/`window_effect`,
+     `[[scratchpad]] spawn_when_empty`, `default_focused` bei Scratchpad,
+     `input.client_window_drag`, `[input.touch]`, `output.screen_effect`,
+     `[animation.windows_drag] physics`, Virtual Outputs
+     (`output-create`/`output-destroy`). Alle optional/Default-off.
+  5. **Nebenfund:** lion's **generierte** (gitignored) `noctalia.toml` (vom
+     2026-09-09) enthielt noch `colors.border.scratchpad_focused/unfocused` —
+     Keys, die im neuen Schema **entfernt** wurden (nur noch
+     `focused`/`unfocused`/`outer`; Scratchpad-Border läuft jetzt über
+     `window_rule.border_color_*` + `match.is_scratchpad`). mortiferus/benny
+     regenerieren die Datei bereits ohne diese Keys. Die zwei Zeilen in lion's
+     Datei entfernt → alle 4 Hosts `config: ok`.
+  **Status:** Config unverändert gültig, ein Modul-Fix (xwayland) + lion-Artefakt.
+  `switch` + Login-Neustart holt das neue Binary in die Sitzung (User).
 - **2026-09-26** (Lock-Update auf Rev `dceb9924`, revCount 1072; letzter
   dokumentierter Stand `b83ccfd`/997): **75 Commits (997→1072), KEINE Breaking
   Changes / kein Config-Schema-Wandel**

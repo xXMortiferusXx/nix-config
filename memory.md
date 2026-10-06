@@ -397,11 +397,11 @@
 ## Umbriel (Wayland-Compositor, seit 2026-08-30)
 
 ### Session & Paket
-- Paket: **nixpkgs** `pkgs.umbriel` (PR #555208) → `umbriel-0-unstable-2026-08-25`, Source-Rev `af351dfa7564eaa0e73d215d057eb0b209cba057`, Binaries aus `cache.nixos.org`
+- Paket: **Umbriel-Flake** (`inputs.umbriel`, Overlay in `modules/desktop/umbriel.nix`) statt nixpkgs, damit Fixes zeitnah ankommen. Aktuell Rev `4c89178` / revCount 1167 (2026-10-06), `umbriel 0.1.0`. **Lokaler Build** (kein Binär-Cache für die Flake-Rev) — Details/Update-Ablauf → `umbriel.md`
 - Start: `start-umbriel` (.desktop) → `umbriel.service` → `umbriel-session.target` (BindsTo graphical-session.target). Units kommen aus dem nixpkgs-Modul (`programs.umbriel.enable = true`)
 - `general.autostart` bewusst NICHT gesetzt (kein Doppelstart, da noctalia.service über graphical-session.target läuft)
-- XWayland: `xwayland-satellite` im PATH, Umbriel startet es selbst (`general.xwayland = true`) — kein separater service
-- Beide Hosts via `system/common.nix` (importiert ebenfalls `desktop/niri.nix` mit `enable = false`)
+- XWayland: **natives wlroots-Xwayland** seit Rev `4c89178` (2026-09-29) — das `Xwayland`-Binary muss auf PATH sein. Das Flake-Paket wrappt es via `makeBinaryWrapper` selbst in den Compositor-PATH; `programs.xwayland` (shared `desktop.nix`) liefert das Binary. Lazy-Start bei `general.xwayland = true`, kein separater Service. **`xwayland-satellite` ist obsolet und entfernt.**
+- Beide Hosts via `system/common.nix` (importiert u.a. `desktop/umbriel.nix`; `desktop/niri.nix` existiert nicht mehr)
 
 ### Config — live == Repo (Bind-Mount)
 - `hosts/<host>/config-mounts.nix`: `home/<user>/config/umbriel` → `~/.config/umbriel` (systemd.mounts). Änderung im Repo = sofort live, kein Rebuild nötig
@@ -410,10 +410,11 @@
 - **Auto-Reload** bei Dateiänderung (Watcher). Prüfen: `journalctl --user -u umbriel | rg 'config reloaded'` — `sections: <x>` zeigt was sich geändert hat, `sections: none` = nichts Neues
 
 ### Diagnose (WICHTIG)
-- `umbriel validate` → `config: ok` = sauber. Zeigt auch unbekannte Config-Keys.
-- **Unbekannte Keys erscheinen NICHT im Journal** — nur im Start-Banner bzw. `umbriel validate`. Nach Config-Edits immer selbst validieren, das Journal allein reicht nicht!
-- Verbindliche Action-Liste: `umbriel msg --help` (der laufenden Version); weitere CLI: `umbriel layers`, `umbriel windows`, `umbriel outputs`
-- **Actions-Namen können zwischen Builds wechseln**: main-Doku nutzt `column-*`, Build 2026-08-25 nutzt `window-*` → siehe `umbriel.md`
+- `umbriel config validate` → `config: ok` = sauber. Zeigt auch unbekannte Config-Keys. (Hieß bis Rev `4c89178` — 2026-09-27 — nur `umbriel validate`; **kein Alias mehr**.)
+- `umbriel config schema [--json]` → listet jeden akzeptierten Key inkl. Typ/Default (der laufenden Version).
+- **Unbekannte Keys erscheinen NICHT im Journal** — nur im Start-Banner bzw. `umbriel config validate`. Nach Config-Edits immer selbst validieren, das Journal allein reicht nicht!
+- Verbindliche Action-Liste: `umbriel msg --help` (der laufenden Version); weitere CLI: `umbriel layers`, `umbriel windows`, `umbriel outputs`, `umbriel effects`
+- **Actions-Namen können zwischen Builds wechseln** → `umbriel.md` Feature-Tracker
 
 ### Stand (2026-08-31)
 - Beide Hosts `validate → config: ok`, sauberer Start ohne Warning-Banner
@@ -491,14 +492,11 @@
 ### Offene Überlegung (2026-09-26)
 - **`match.is_alone` Window-Rule** (dynamisch maximieren, wenn ein Fenster allein auf dem Workspace ist; schrumpft sobald ein zweites getiltetes Fenster dazu kommt, floatende zählen nicht): **noch nicht aktiviert** — mortiferus lässt sich die Auswirkung auf den gewohnten Workflow durch den Kopf gehen. Umsetzung wäre in `cfg/rules.toml` (global `match.is_alone = true` + `default_maximize = true`, oder per `app_id` gescoped). Nicht entschieden.
 
-## xwayland-satellite (main statt nixpkgs-Tag, seit 2026-09-10)
+## XWayland — HISTORY (xwayland-satellite → natives wlroots-Xwayland, 2026-10-06)
 
-- **Problem**: nixpkgs pinnt Tag `v0.8.2` (22.07.), der Popup-X11-Bugs enthält — u.a. Steam-Dropdowns schließen sofort (#468). Fix kam erst mit PR #494 (09.09.) auf `main`.
-- **Verteilungslage**: Fedora (43/44/Rawhide), CachyOS/Arch (extra) und openSUSE hängen seit 22./23.07. auf `v0.8.2` — neue Releases brauchen bei allen Distros Monate. AUR `xwayland-satellite-git` ist tot (Stand `0.6.r19` vom 2025-07-29, hinter v0.8.2). niri.cachix.org-Pin (sodiboo-Flake) ebenfalls veraltet (22.07.). Kein Binär-Cache für main.
-- **Setup**: Flake-Input `xwayland-satellite` (git+https, main) + Overlay in `modules/desktop/umbriel.nix` ersetzt `pkgs.xwayland-satellite` für alle Hosts (via `system/common.nix`). Lock initial `add2795134` (= exakt der #494-Merge). Version: `0.8.2-add2795`.
-- **Update**: regulär per `nix flake update` (wie Umbriel/noctalia) — kein vorgeschaltetes Reset.
-- **Build**: ~3 min lokaler Rust-Build pro main-Änderung (nur das Binary, ≈ selten).
-- **Rückkehr zu nixpkgs**: sobald nixpkgs eine Release ≥ v0.8.2 mitführt (neue Tag-Version) → Overlay in `modules/desktop/umbriel.nix` entfernen. Sinnvoll nach Test auf allen Hosts (Steam-Dropdowns, Launcher).
+- **Aktuell (seit Rev `4c89178`, 2026-09-29):** Umbriel nutzt **natives wlroots-Xwayland** und startet es lazy beim ersten X11-Client. Es braucht nur das `Xwayland`-Binary auf PATH (Flake-Paket wrappt es selbst; `programs.xwayland` liefert es). **Kein `xwayland-satellite` mehr** — weder Flake-Input noch Paket in `modules/desktop/umbriel.nix` (entfernt 2026-10-06). Das betrifft auch die XWayland-Window-Erkennung: X11-Fenster melden jetzt `_NET_WM_PID` (statt „unknown client PID" wie unter satellite).
+- **Historie (nur der Vollständigkeit halber, alles abgelöst):** Zwischenzeitlich lief X11 über `xwayland-satellite` — erst per Flake-Input (main statt nixpkgs-Tag `v0.8.2`, wegen Popup-Bug #468 / Steam-Dropdowns), später aus nixpkgs 0.8.3. Das ist mit dem wlroots-Xwayland-Umbau obsolet geworden.
+- **Für künftige X11-Bugs**: zuerst prüfen, ob es Nativo-Xwayland-spezifisch ist (Konfig-Key `general.xwayland_native_resolution`, siehe `umbriel.md`), nicht mehr satellite.
 
 ## Steam & Proton-GE
 

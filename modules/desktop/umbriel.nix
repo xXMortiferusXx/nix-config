@@ -14,22 +14,18 @@
 
 {
   # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache).
-  # xwayland-satellite kommt aus nixpkgs (0.8.3, Binary Cache): die früher
-  # gebugten Popups (#468) sind in 0.8.3 gefixt; einziger Unterschied zu main
-  # ist der #448-Rounding-Fix (nur Fractional Scaling), hier scale=1.0 → egal.
   nixpkgs.overlays = [
     inputs.umbriel.overlays.default
   ];
 
+  # X11: Seit Rev 4c89178 (2026-09-29) nutzt Umbriel natives wlroots-Xwayland
+  # statt xwayland-satellite. Das Flake-Paket ist ein makeBinaryWrapper, der
+  # `Xwayland` selbst in den PATH des Compositors legt; `programs.xwayland`
+  # (desktop.nix, shared) liefert das Binary. xwayland-satellite ist damit
+  # obsolet → entfernt. general.xwayland = true startet Xwayland lazy.
   programs.umbriel = {
     enable = true;
   };
-
-  # xwayland-satellite im PATH: Umbriel spawnet es selbst (general.xwayland = true
-  # in der Config). Kein systemd-Service dafür → kein Doppelstart.
-  environment.systemPackages = with pkgs; [
-    xwayland-satellite
-  ];
 
   # Portal-Config: Der umbriel-Portal (configPackages des Moduls) liefert die
   # Screencast/Screenshot-Zuordnung → nicht überschreiben. Hier nur die
