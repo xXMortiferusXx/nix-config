@@ -118,19 +118,25 @@ in
 
   # implicit_fb=1 NICHT setzen (macht Discord-Stimmen roboterhaft/verzerrt).
 
+  # ── TEMPORÄR DEAKTIVIERT zum Stabilitätstest (2026-10-09) ──────────────────
+  # Resume- und Boot-Automatik aus, damit wir sehen, ob das GC7 (mit Hub) von
+  # ALLEIN stabil bleibt. `gc7-reset` bleibt als manueller Befehl installiert.
+  # Bei Rückkehr des Problems: auskommentieren aufheben. Ganz löschen erst,
+  # wenn es sicher stabil läuft.
+  #
   # Nach Resume GC7 per Software-Replug zurücksetzen + WirePlumber neu starten.
-  powerManagement.resumeCommands = ''
-    ${gc7Reset}/bin/gc7-reset || true
-  '';
-
+  # powerManagement.resumeCommands = ''
+  #   ${gc7Reset}/bin/gc7-reset || true
+  # '';
+  #
   # Boot: hängt das GC7 noch vom letzten Lock fest, Port einmal toggeln.
-  systemd.services.gc7-reenum = {
-    description = "GC7 re-enumerate if missing";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "systemd-udev-settle.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${gc7Reset}/bin/gc7-reset --if-missing";
-    };
-  };
+  # systemd.services.gc7-reenum = {
+  #   description = "GC7 re-enumerate if missing";
+  #   wantedBy = [ "multi-user.target" ];
+  #   after = [ "systemd-udev-settle.service" ];
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     ExecStart = "${gc7Reset}/bin/gc7-reset --if-missing";
+  #   };
+  # };
 }
