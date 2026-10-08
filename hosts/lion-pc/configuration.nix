@@ -1,3 +1,4 @@
+# Host: lion-pc (Gaming-Desktop, AMD GPU).
 { config, pkgs, lib, ... }:
 
 {
@@ -21,11 +22,9 @@
 
   networking.hostName = "lion-pc";
 
-  # Bluetooth (Intel AX210): Dienst aktivieren — fehlte bisher, wodurch
-  # wireplumber ("BlueZ system service is not available") und der obex-Service meckerten.
+  # Bluetooth (Intel AX210): ohne Dienst meckern wireplumber/obex.
   hardware.bluetooth.enable = true;
 
-  # IRQ-Balancing: IRQs gleichmäßig über die CPU-Kerne verteilen.
   services.irqbalance.enable = true;
 
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
@@ -39,7 +38,7 @@
   # SSH: Lokaler Zugriff von nex (Key-basiert, kein Passwort)
   services.openssh = {
     enable = true;
-    openFirewall = false;  # Manuelles Firewall-Setup unten
+    openFirewall = false;
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";
@@ -55,9 +54,7 @@
     iptables -A nixos-fw -s 192.168.50.0/24 -p tcp --dport 22 -j nixos-fw-accept
   '';
 
-  # Sicherheit: sudo-Passwort nötig (Override der common-Vorgabe aus security.nix: false).
-  # Bazaar/Flatpak bleibt via Polkit-Regel passwordlos; eine bösartige Flatpak-App
-  # kann damit nicht über passwordloses sudo zu Root eskalieren.
+  # Sicherheit: sudo-Passwort nötig; Flatpak bleibt via Polkit passwortlos (keine Root-Eskalation).
   security.sudo.wheelNeedsPassword = lib.mkForce true;
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User

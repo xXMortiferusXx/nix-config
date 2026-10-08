@@ -1,3 +1,4 @@
+# Fish-Shell (Aliase/Abkürzungen) und Starship-Prompt.
 { config, pkgs, lib, ... }:
 
 {

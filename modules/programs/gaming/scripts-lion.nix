@@ -1,13 +1,6 @@
-# Lion-spezifisches game-performance-Script (Desktop mit externen DDC/CI-Monitoren).
-#
-# Monitor-Helligkeit (anders als beim nex-Notebook via brightnessctl) laeuft
-# hier ueber DDC/CI: ddcutil setzt alle erreichbaren Displays beim Spielstart
-# auf 100% und stellt sie beim Beenden (trap) wieder auf 80%.
-#
-# Performance-Part (powerprofilesctl + EPP) ist vorausschauend eingebaut und
-# entspricht scripts.nix: Auf dem aktuellen Ryzen 1500X (Zen 1, nur
-# acpi-cpufreq ohne P-State) greift er noch nicht und schlaegt still fehl;
-# mit einem spaeteren CPU mit P-State laeuft er automatisch voll durch.
+# Lion-spezifisches game-performance-Script.
+# Helligkeit externer Monitore per DDC/CI: 100% bei Start, 80% via trap.
+# Performance-Part (powerprofilesctl + EPP) greift erst mit P-State-CPU.
 { config, pkgs, lib, ... }:
 
 let

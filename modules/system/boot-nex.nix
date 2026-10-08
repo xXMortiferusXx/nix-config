@@ -1,20 +1,6 @@
-# Boot-Konfiguration fuer nex (CachyOS-Kernel)
-# PRIME-Hybrid seit 2026-09-26 wieder aktiv (siehe modules/hardware/nvidia-prime.nix):
-# amdgpu-Kernelparameter + ntsync sind zurueck.
-#
-# CachyOS-Kernel REAKTIVIERT (2026-09-26). Beide Deaktivierungsgruende vom
-# 2026-09-22 waren damals verifizierte Tatsachen und sind heute ueberholt:
-#   A) NVIDIA 615 hat am __to_hwgpio-Patch des damaligen CachyOS-Kernels
-#      wirklich nicht gebaut (Build gescheitert). Der Patch ist heute nicht
-#      mehr enthalten — eigener Patch ist nur noch randstruct.
-#   B) linuxPackages_cachyos verlangte nvidia_cachyos 610.57.04, also ein
-#      echter Downgrade 615 -> 610. Der heutige CachyOS-Kernel 7.2.7 liefert
-#      exakt dieselbe Standard-Derivation nvidia-x11-615.71.09 wie
-#      linuxPackages_latest (gleicher drvPath) — kein Downgrade noetig.
-# Der `adios` I/O-Scheduler ist wieder nutzbar -> in cachyos-tuning.nix gesetzt.
-#
-# Netz-Tweaks (cake/fin_timeout/rmem_max) kommen aus dem Garuda-Abgleich in
-# cachyos-tuning.nix.
+# Boot-Konfiguration fuer nex (CachyOS-Kernel, x86_64-v3).
+# PRIME-Hybrid + amdgpu-Params + ntsync aktiv (siehe nvidia-prime.nix);
+# Netz-Tweaks kommen aus cachyos-tuning.nix.
 { config, pkgs, lib, inputs, ... }:
 
 {
@@ -25,36 +11,24 @@
     inputs.nix-cachyos-kernel.overlays.pinned
   ];
 
-  # latest-x86_64-v3 statt bore-x86_64-v3 (2026-10-04): Der bore-v3-Build
-  # liegt bei xddxdd's master-Branch NICHT im Binary-Cache (Hydra-Job aborted),
-  # -> lokaler Kernel-Build bei jedem Vorlauf. latest-x86_64-v3 ist im Cache
-  # (attic lantian, 200) und behaelt die v3-Optimierung; Unterschied ist nur
-  # der Scheduler (latest=EEVDF-Default statt BORE). v3 bleibt erhalten.
+  # latest-x86_64-v3: bore-v3 fehlt im Binary-Cache (sonst lokaler Build).
   boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3;
   # CachyOS-Kernel bringt den "adios" I/O-Scheduler mit -> in cachyos-tuning.nix nutzen.
   tuning.ioScheduler = "adios";
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
-  # ntsync: DRM-Sync-Mechanismus fuer Wayland/VRR (NVIDIA-only hatte es nicht,
-  # die alte PRIME-Config schon). Verbessert Tear-/Sync-Verhalten unter Umbriel.
+  # ntsync: DRM-Sync fuer Wayland/VRR.
   boot.kernelModules = [ "ntsync" ];
 
   boot.kernelParams = [
     "transparent_hugepage=madvise"
     # AMD CPU P-State Treiber (CPU, nicht GPU — bleibt aktiv)
     "amd_pstate=active"
-    # Hinweis: nvidia.NVreg_DynamicPowerManagement=0x02 wird NICHT hier gesetzt.
-    # nixpkgs traegt es bei powerManagement.enable = true automatisch in
-    # /etc/modprobe.d/nixos.conf ein (zusammen mit PreserveVideoMemoryAllocations
-    # und UseKernelSuspendNotifiers). Ein KernelParam waere ein Duplikat.
-    # amdgpu: VRR-assoziiertes MCLK-Switching + Stutter-Mode deaktivieren
-    # (Snow-Blitz-Stottern unter Last auf der iGPU, aus alter PRIME-Config).
+    # NVreg_DynamicPowerManagement nicht hier setzen (nixpkgs macht das bei powerManagement.enable).
+    # amdgpu: VRR-MCLK-Switching + Stutter-Mode deaktivieren.
     "amdgpu.dcfeaturemask=0x0"
     "amdgpu.dcdebugmask=0x2"
-    # USB-Enumeration: erst das alte (langsamere, robustere) Verfahren probieren.
-    # Der Sound Blaster GC7 verliert gelegentlich beim Oeffnen eines Capture-
-    # Streams seinen UAC-Clock (err -110) und laesst sich dann nicht mehr
-    # enumerieren — Known-Quirk-Klasse bei USB-Audiogeraeten.
+    # usbcore.old_scheme_first=1: robuster gegen GC7-UAC-Clock-Verlust.
     "usbcore.old_scheme_first=1"
   ];
 
@@ -62,23 +36,7 @@
     "vm.max_map_count" = 16777216;
   };
 
-  # Legacy-DHCP (dhcpcd) ist bei aktivem NetworkManager überflüssig — nixpkgs
-  # erzwingt im NM-Modul selbst useDHCP=false ("managed entirely by
-  # NetworkManager"). Explizite Option daher bewusst NICHT gesetzt (wäre nur
-  # Dokumentation und würde suggerieren, auf lion-pc/styx fehle etwas).
+  # Legacy-DHCP (dhcpcd) bewusst nicht gesetzt (NetworkManager übernimmt).
 
   zramSwap.memoryPercent = lib.mkForce 100;
-
-  # scx_bpfland deaktiviert — Zen-Kernel wird pur getestet
-  # systemd.services.scx-scheduler = {
-  #   description = "SCX bpfland Scheduler (Gaming-Modus)";
-  #   after = [ "systemd-modules-load.service" ];
-  #   wantedBy = [ "multi-user.target" ];
-  #   serviceConfig = {
-  #     Type = "simple";
-  #     ExecStart = "${pkgs.scx.full}/bin/scx_bpfland -m all";
-  #     Restart = "on-failure";
-  #     StandardOutput = "journal";
-  #   };
-  # };
 }

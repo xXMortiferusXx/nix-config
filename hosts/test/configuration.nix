@@ -10,16 +10,13 @@
 
   networking.hostName = "test";
 
-  # Flake-Support
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
   };
 
-  # NetworkManager (wie nex/styx)
   networking.networkmanager.enable = true;
 
-  # SSH fuer Remote-Zugriff aus der Host-VM
   services.openssh = {
     enable = true;
     settings = {
@@ -28,24 +25,19 @@
     };
   };
 
-  # Test-User
   users.users.test = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ];
     initialPassword = "test";
   };
 
-  # sudo ohne Passwort ( fuer Installer-Test)
   security.sudo.wheelNeedsPassword = false;
 
-  # Bootloader (systemd-boot wie nex/styx)
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Zen Kernel (immer aktuelle Version)
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
-  # Basis-Pakete
   environment.systemPackages = with pkgs; [
     vim
     git

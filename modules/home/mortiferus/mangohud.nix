@@ -1,17 +1,6 @@
-# MangoHud - Optik wie Steam's In-Game Performance Overlay (nur nex / mortiferus).
-#
+# MangoHud - Steam-artiges In-Game-Overlay (nur nex / mortiferus), erzeugt MangoHud.conf.
 # Kompakt & horizontal, NVIDIA-only (AMD-iGPU ausgeblendet), zentriert via offset_x.
-# Erzeugt ~/.config/MangoHud/MangoHud.conf.
-#
-# Bewusst NICHT enthalten:
-#   gpu_name                -> zu lang, zog das Panel breit
-#   frame_timing_detailed   -> groesserer Graph, sass in horizontal zu tief
-#   core_load / core_load_change -> einzelne CPU-Kerne (zu viel Info)
-#   cpu_power               -> "Failed to initialize CPU power data" (RAPL, root noetig)
-#   gpu_junction_temp/gpu_voltage/gpu_fan -> auf NVIDIA nicht verfuegbar
-#
-# Feinjustieren: offset_x (kleiner = links, groesser = rechts).
-# Live neu laden im Spiel mit Shift_L+F4.
+# Bewusst nicht gesetzt: cpu_power, gpu_junction_temp/voltage/fan (auf NVIDIA/RAPL nicht verfuegbar).
 { ... }:
 
 {
@@ -19,8 +8,7 @@
     enable = true;
     enableSessionWide = false;
     settings = {
-      # Position (manuell zentriert; MangoHud's top-center ist im horizontalen
-      # Modus fehlerhaft und landet links -> daher top-left + offset_x)
+      # MangoHud top-center ist im horizontalen Modus fehlerhaft -> top-left + offset_x.
       position = "top-left";
       offset_x = 330;
       offset_y = 6;

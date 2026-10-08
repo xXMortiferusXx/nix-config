@@ -7,20 +7,16 @@
     ./cachyos-tuning.nix
   ];
 
-  # Gemeinsame Bootloader-Einstellungen
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Konsolen-Level für sauberen Boot
   boot.consoleLogLevel = 3;
 
-  # Gemeinsame sysctl Einstellungen (CachyOS-konform)
-  # net.core.netdev_max_backlog bewusst weggelassen — bpftune (cachyos-tuning.nix) steuert das dynamisch
+  # Gemeinsame sysctl (net.core.netdev_max_backlog bewusst weggelassen — bpftune steuert das).
   boot.kernel.sysctl = {
     "fs.file-max" = 2097152;
   };
 
-  # Swap (ZRAM) - 50% CachyOS-Standard für optimales Verhältnis
   zramSwap = {
     enable = true;
     algorithm = "zstd";
@@ -45,14 +41,6 @@
     '';
   };
 
-  # RAM Schutz
-  #services.earlyoom = {
-  #  enable = true;
-  #  freeMemThreshold = 5;
-  #  freeSwapThreshold = 20;
-  #  enableNotifications = true;
-  #};
-
   # GC
   nix.gc = {
     automatic = true;
@@ -60,7 +48,6 @@
     options = "--delete-older-than 14d";
   };
 
-  # /var/lib/nixos für manuelle Updates
   systemd.tmpfiles.settings."nixos" = {
     "/var/lib/nixos" = {
       d = {

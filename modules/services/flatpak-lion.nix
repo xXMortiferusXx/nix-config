@@ -1,9 +1,6 @@
 # Flatpak-Infrastruktur + Bazaar-App-Store (nur für lion-pc)
-# - Bazaar = natives nixpkgs-Package (wird per nixos-rebuild mitgeupdatet)
-# - lion installiert eigenständig via Bazaar seine Apps (Roblox = Sober u.a.)
-# - Flathub-Remote deklarativ hinzufügen
-# - systemd-Timer aktualisiert die Flatpak-Apps automatisch
-# - Polkit-Regel (modules/desktop/polkit.nix) erlaubt wheel-Installation passwordlos
+# Flathub-Remote deklarativ + systemd-Timer für Auto-Updates.
+# Polkit-Regel (modules/desktop/polkit.nix) erlaubt wheel-Installation passwordlos.
 { config, pkgs, lib, ... }:
 
 {
@@ -13,13 +10,13 @@
     bazaar
   ];
 
-  # Flathub-Remote deklarativ registrieren (idempotent)
+  # Flathub-Remote deklarativ registrieren
   system.activationScripts.flatpak-remotes = lib.stringAfter [ "var" ] ''
     ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo || true
     ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo || true
   '';
 
-  # Flatpak-Apps aktualisieren sich NICHT von alleine → systemd-Timer
+  # Flatpak-Apps aktualisieren sich nicht von alleine -> systemd-Timer
   systemd.services.flatpak-update = {
     description = "Flatpak application updates";
     after = [ "network-online.target" ];
@@ -34,12 +31,11 @@
     description = "Weekly Flatpak update";
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      # 2× die Woche (Mo + Fr) statt wöchentlich – Sober/Vinegar sollen zeitnah
-      # Roblox-Fix-Updates bekommen, falls Sohnemann nicht manuell prüft.
+      # 2x die Woche (Mo+Fr), damit Roblox-Fixes zeitnah ankommen.
       OnCalendar = "Mon,Fri 00:00";
       Persistent = true;
     };
   };
 
-  # Bazaar ist ein Flathub-Frontend: zeigt das GANZE Flathub (kein Altersfilter)
+  # Bazaar zeigt das ganze Flathub (kein Altersfilter).
 }

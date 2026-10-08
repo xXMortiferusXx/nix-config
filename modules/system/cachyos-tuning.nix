@@ -18,9 +18,7 @@
     };
 
 
-    # Konfigurationsattribute stehen unter `config`, weil dieses Modul eine
-    # Option (options.tuning.ioScheduler) deklariert — NixOS verlangt dann die
-    # explizite config-Gruppe.
+    # Option deklariert -> Attribute müssen unter config stehen.
   config = {
       boot.kernel.sysctl = {
 
@@ -35,9 +33,7 @@
       "kernel.printk" = "3 3 3 3";           # Nur kritische Meldungen auf Konsole
       "kernel.unprivileged_userns_clone" = 1; # Unprivileged User-Namespaces für Flatpak/Container
 
-      # BBR TCP Congestion Control + fq Queue (cake verworfen 2026-09-22: bringt am
-      # WLAN-Client kaum etwas, Queue-Management besser am Router; default_qdisc
-      # greift bei wlan0 (iwd-rename, IFF_NO_QUEUE) ohnehin nicht)
+      # BBR + fq (default_qdisc greift bei wlan0 wegen IFF_NO_QUEUE nicht).
       "net.core.default_qdisc" = "fq";
       "net.ipv4.tcp_congestion_control" = "bbr";
       "net.ipv4.tcp_fin_timeout" = 5;
@@ -87,65 +83,47 @@
       KERNEL=="hpet", GROUP="audio"
     '';
 
-    # CachyOS tmpfiles: THP defrag -> defer+madvise (tcmalloc-Optimierung)
+    # THP defrag -> defer+madvise (tcmalloc-Optimierung)
     systemd.tmpfiles.rules = [
       "w! /sys/kernel/mm/transparent_hugepage/defrag - - - - defer+madvise"
       "w! /sys/kernel/mm/transparent_hugepage/khugepaged/max_ptes_none - - - - 409"
       "e /var/lib/systemd/coredump - - - 3d"
     ];
 
-    # Garuda/CachyOS: Coredumps standardmäßig AUS.
-    # WICHTIG: NICHT `systemd.coredump.enable = false` — das schaltet nur den
-    # Dienst ab und lässt den Kernel rohe "core.<pid>"-Dateien ins
-    # Arbeitsverzeichnis schreiben (hier: Home!). Stattdessen bleibt
-    # systemd-coredump aktiv (core_pattern = Pipe), und die Soft-Limits
-    # (system + user) werden auf 0 gesetzt -> es wird gar kein Core erzeugt,
-    # nichts landet im Home.
-    # Zum gezielten Debuggen individuell im Shell aktivierbar (Hard-Limit
-    # bleibt frei): `ulimit -c unlimited`, dann das Programm starten. Der Dump
-    # landet komprimiert in /var/lib/systemd/coredump (tmpfiles altert ihn nach
-    # 3 Tagen) und ist per `coredumpctl` abrufbar.
+    # Coredumps AUS: NICHT systemd.coredump.enable=false (schreibt core.* ins Home) -> Soft-Limits auf 0.
     systemd.coredump.enable = true;
     systemd.settings.Manager.DefaultLimitCORESoft = "0";
     systemd.user.settings.Manager.DefaultLimitCORESoft = "0";
 
-    # CachyOS systemd system.conf.d: kürzere Timeouts + höhere NOFILE-Limits
     systemd.settings.Manager = {
       DefaultTimeoutStartSec = "15s";
       DefaultTimeoutStopSec = "10s";
       DefaultLimitNOFILE = "2048:2097152";
     };
 
-    # CachyOS systemd user.conf.d: kürzere Timeouts + höhere NOFILE-Limits (User)
     systemd.user.settings.Manager = {
       DefaultTimeoutStartSec = "15s";
       DefaultTimeoutStopSec = "10s";
       DefaultLimitNOFILE = "1024:1048576";
     };
 
-    # CachyOS bpftune: dynamische Netzwerk-Optimierung via BPF
-    # Ersetzt statische sysctl für TCP, Buffer, Congestion Control etc.
+    # bpftune: dynamische Netzwerk-Optimierung via BPF.
     services.bpftune.enable = true;
 
-    # CachyOS journald.conf.d: Journal auf 50M begrenzen
     services.journald.settings.Journal.SystemMaxUse = "50M";
 
-    # Garuda-Nix services.nix: locate mit plocate, Index stündlich
     services.locate = {
       enable = true;
       interval = "hourly";
       package = pkgs.plocate;
     };
 
-    # CachyOS 20-audio.conf: @audio Gruppe Echtzeit-Priorität 99
     security.pam.loginLimits = [
       { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
     ];
 
-    # CachyOS rtkit-daemon override: Log-Level auf info
     systemd.services.rtkit-daemon.serviceConfig.LogLevelMax = lib.mkDefault "info";
 
-    # CachyOS user@.service delegate: CPU/Cpuset/IO/Memory/PIDs an User-Services
     systemd.services."user@".serviceConfig.Delegate = "cpu cpuset io memory pids";
   };
 }

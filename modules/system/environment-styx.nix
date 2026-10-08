@@ -1,9 +1,9 @@
+# Umgebungs-Konfiguration fuer styx (Intel-only, kein CUDA).
 { config, pkgs, ... }:
 
 {
   imports = [ ./environment-common.nix ];
 
-  # Kein CUDA auf Intel-only-System
   nixpkgs.config.cudaSupport = false;
 
   environment.variables = {

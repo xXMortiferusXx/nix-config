@@ -1,35 +1,19 @@
-# Umbriel Compositor (wlroots 0.20 + SceneFX) – primäre Wayland-Session
-# Paket-Quelle: direkt vom Umbriel-Flake (inputs.umbriel, Overlay), statt nixpkgs,
-# damit Fixes zeitnah ankommen (nixpkgs pinnt oft lange alte Revs).
-# Das nixpkgs-Modul `programs.umbriel` registriert die Session (.desktop via
-# start-umbriel), installiert die systemd-Units (systemd.packages) und ein
-# Portal-Config; der Overlay ersetzt nur das Paket `pkgs.umbriel`.
-#
-# Autostarts bleiben unverändert über graphical-session.target laufen:
-# Umbriels start-umbriel → umbriel.service → umbriel-session.target
-# (BindsTo=graphical-session.target, Wants=xdg-desktop-autostart.target),
-# damit starten noctalia/steam/discord/… genau wie unter niri.
-# → general.autostart wird bewusst NICHT gesetzt (kein Doppelstart mit noctalia.service).
+# Umbriel Compositor (wlroots + SceneFX) – primäre Wayland-Session
+# Paket kommt direkt aus dem Umbriel-Flake (inputs.umbriel, Overlay) statt nixpkgs.
+# Autostarts laufen über graphical-session.target (kein general.autostart).
 { config, pkgs, lib, inputs, ... }:
 
 {
-  # Umbriel-Paket aus dem Flake (neueste Rev, lokaler Build statt Cache).
   nixpkgs.overlays = [
     inputs.umbriel.overlays.default
   ];
 
-  # X11: Seit Rev 4c89178 (2026-09-29) nutzt Umbriel natives wlroots-Xwayland
-  # statt xwayland-satellite. Das Flake-Paket ist ein makeBinaryWrapper, der
-  # `Xwayland` selbst in den PATH des Compositors legt; `programs.xwayland`
-  # (desktop.nix, shared) liefert das Binary. xwayland-satellite ist damit
-  # obsolet → entfernt. general.xwayland = true startet Xwayland lazy.
+  # Umbriel nutzt natives wlroots-Xwayland; programs.xwayland (desktop.nix) liefert das Binary.
   programs.umbriel = {
     enable = true;
   };
 
-  # Portal-Config: Der umbriel-Portal (configPackages des Moduls) liefert die
-  # Screencast/Screenshot-Zuordnung → nicht überschreiben. Hier nur die
-  # übrigen Interfaces auf GTK + gnome-keyring (wie unter niri).
+  # umbriel-Portal nicht überschreiben; nur übrige Interfaces auf GTK + gnome-keyring.
   xdg.portal.config = {
     common.default = [ "gtk" ];
     umbriel = lib.mkForce {
@@ -43,7 +27,6 @@
 
   services.gnome.gnome-keyring.enable = true;
 
-  # GTK-Portal-Backend (FileChooser/Notification) – kam vorher aus niri.nix
-  # (niri ist entfernt). Screencast/Screenshot liefert der umbriel-Portal.
+  # GTK-Portal-Backend (FileChooser/Notification); Screencast/Screenshot liefert der umbriel-Portal.
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 }

@@ -1,7 +1,6 @@
-# CachyOS-Wrapper-Scripts für Gaming (NVIDIA)
-# dlss-swapper: NVIDIA DLSS-Preset-Override + NGX-Updater
-# dlss-swapper-dll: gleiches ohne NGX-Updater
-# zink-run liegt separat in modules/programs/zink-run.nix (auch für AMD-Hosts).
+# CachyOS-Wrapper-Scripts für Gaming (NVIDIA).
+# dlss-swapper: DLSS-Preset-Override + NGX-Updater.
+# dlss-swapper-dll: wie oben, ohne NGX-Updater (zink-run liegt in zink-run.nix).
 { pkgs, ... }:
 
 let

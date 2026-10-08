@@ -1,3 +1,4 @@
+# Host: nex (Gaming-Laptop, NVIDIA Prime/Optimus).
 { config, ... }:
 
 {

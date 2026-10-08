@@ -1,7 +1,5 @@
 # Flatpak-Infrastruktur + Bazaar-App-Store (benny)
-# - Bazaar = natives nixpkgs-Package
-# - Flathub-Remote deklarativ
-# - systemd-Timer aktualisiert die Flatpak-Apps automatisch
+# Flathub-Remote deklarativ + systemd-Timer für Auto-Updates.
 { config, pkgs, lib, ... }:
 
 {

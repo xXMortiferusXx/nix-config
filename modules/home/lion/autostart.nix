@@ -1,15 +1,9 @@
 # systemd-user-Services für lion (lion-pc)
 # Start nach graphical-session.target + noctalia.service
-# Ohne polychromatic-tray (kein Razer auf lion-pc), ohne HRIR/pipewire-Spezial.
 { pkgs, ... }:
 
 let
-  # SNI-Tray-Watcher (org.kde.StatusNotifierWatcher) wird von noctalia erst
-  # registriert, NACHDEM noctalia wirklich läuft (noctalia.service ist
-  # Type=simple, systemd meldet "started" sofort beim Exec). Electron-Apps
-  # (Discord) registrieren ihr Tray-Item aber nur EINMAL beim Start und nie
-  # nach – starten sie vor dem Watcher, fehlt das Systray-Icon dauerhaft.
-  # → Vor dem App-Start warten, bis der Watcher wirklich bereit ist.
+  # Warten bis Noctalia den SNI-Tray-Watcher registriert hat (Electron-Apps registrieren ihr Tray nur einmal).
   waitForTray = pkgs.writeShellScript "wait-for-tray" ''
     until ${pkgs.systemd}/bin/busctl --user get-property \
       org.kde.StatusNotifierWatcher /StatusNotifierWatcher \
@@ -21,19 +15,15 @@ let
 
 in
 {
-  # Steam-Autostart bewusst NICHT hier: Steam verwaltet seinen Autostart selbst
-  # (Einstellungen -> "Steam beim Anmelden starten"), so entscheidet jeder Host
-  # individuell. Kein systemd-Service, kein HM-XDG-Eintrag.
+  # Kein Steam-Autostart: Steam verwaltet das selbst (host-individuell).
 
   systemd.user.tmpfiles.rules = [
-    # obexd (BT-Dateiübertragung) braucht den Root-Ordner, sonst bricht er ab
-    # (exit 1 → start-limit-hit). Automatisch bei jedem Login / Neuinstallation anlegen.
+    # obexd braucht den Root-Ordner, sonst exit 1 -> start-limit-hit.
     "d %h/Downloads/Bluetooth 0755 - - -"
   ];
 
   systemd.user.services = {
-    # Discord vorerst deaktiviert — lion nutzt es noch nicht, wird erst
-    # zur Nutzung hingefuehrt. Später aktivieren (restlichen Block entkommentieren).
+    # Discord vorerst deaktiviert (Block zum Aktivieren entkommentieren).
     # discord = {
     #   Unit = {
     #     Description = "Discord";

@@ -6,13 +6,12 @@
   boot.initrd.kernelModules = [ "amdgpu" ];
   hardware.enableRedistributableFirmware = true;
 
-  # Grafiktreiber für AMD
   services.xserver.videoDrivers = lib.mkForce [ "amdgpu" ];
 
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    # VA-API für Hardware-Video-Dekodierung (GCN: radeonsi liefert das)
+    # VA-API (GCN: radeonsi)
     extraPackages = with pkgs; [
       libva
     ];

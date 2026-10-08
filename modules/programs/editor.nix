@@ -1,3 +1,4 @@
+# Neovim als Standard-Editor.
 { config, pkgs, ... }:
 
 {

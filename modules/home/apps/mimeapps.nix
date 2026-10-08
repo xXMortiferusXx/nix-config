@@ -1,12 +1,5 @@
 # Standard-Programme (XDG MIME-Defaults) — gemeinsam für nex / lion / benny.
-#
-# Deklarativ via xdg.mimeApps -> Home-Manager verwaltet ~/.config/mimeapps.list.
-# Vorher lag die Zuordnung nur in einer handgeschriebenen, HM-unverwalteten
-# Datei (auf nex stand dort noch der tote `zen-beta.desktop` als Browser).
-#
-# Enthält nur die universellen Defaults (Apps, die auf allen drei Hosts
-# installiert sind: firefox, thunderbird, amberol, mpv, loupe, zathura,
-# thunar, nvim).
+# Enthält nur universelle Defaults (Apps auf allen drei Hosts installiert).
 { config, ... }:
 
 {
@@ -27,7 +20,7 @@
       "application/x-extension-xhtml" = "firefox.desktop";
       "application/x-extension-xht" = "firefox.desktop";
 
-      # E-Mail (Thunderbird auf allen drei Hosts)
+      # E-Mail
       "x-scheme-handler/mailto" = "thunderbird.desktop";
       "message/rfc822" = "thunderbird.desktop";
 
@@ -38,7 +31,7 @@
       "text/plain" = "nvim.desktop";
       "application/x-shellscript" = "nvim.desktop";
 
-      # Video (alle von mpv registrierten Formate)
+      # Video
       "video/mp4" = "mpv.desktop";
       "video/x-matroska" = "mpv.desktop";
       "video/mkv" = "mpv.desktop";
@@ -79,7 +72,7 @@
       "video/3gpp2" = "mpv.desktop";
       "video/dv" = "mpv.desktop";
 
-      # Audio — Hauptformate an Amberol (GTK4/libadwaita, Noctalia-Theme)
+      # Audio — Hauptformate an Amberol
       "audio/mpeg" = "io.bassi.Amberol.desktop";
       "audio/mp3" = "io.bassi.Amberol.desktop";
       "audio/x-mp3" = "io.bassi.Amberol.desktop";
@@ -152,7 +145,7 @@
       "application/x-ogm-audio" = "mpv.desktop";
       "application/x-ogm-video" = "mpv.desktop";
 
-      # Bilder (alle von Loupe unterstützten Formate)
+      # Bilder
       "image/jpeg" = "org.gnome.Loupe.desktop";
       "image/png" = "org.gnome.Loupe.desktop";
       "image/bmp" = "org.gnome.Loupe.desktop";

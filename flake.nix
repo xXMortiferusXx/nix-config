@@ -1,70 +1,50 @@
+# Mortiferus NixOS-Flake (Hosts: nex, lion-pc, benny, styx, test).
 {
   description = "Mortiferus NixOS Flake Configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Disko
+
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Home-Manager
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # lsfg-vk (neue Quelle: git.lsfg-vk.dev statt GitHub; master = laufende Entwicklung)
+    # lsfg-vk: Quelle git.lsfg-vk.dev (master), flake=false -> Selbstbau
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
-    # Umbriel Compositor – direkt vom Repo statt nixpkgs, damit Fixes zeitnah
-    # ankommen (nixpkgs pinnt oft lange alte Revs). git+https statt github:,
-    # weil das Repo das Submodule subprojects/scenefx braucht.
+    # Umbriel direkt vom Repo (nixpkgs pinnt zu alt); git+https wegen Submodule scenefx
     umbriel = {
       url = "git+https://github.com/noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # xddxdd/nix-cachyos-kernel (CachyOS Kernel für NixOS)
-    # - Binary Cache: https://attic.xuyh0120.win/lantian
-    # - Overlay: inputs.nix-cachyos-kernel.overlays.pinned
-    # - Packages: pkgs.cachyosKernels.linuxPackages-cachyos-latest
-    # Keine Branch-Pin: folgt dem Default-Branch (master, Auto-Update).
-    # Kernel-Stand über flake.lock gepinnt; Update: nix flake update nix-cachyos-kernel
+    # CachyOS-Kernel, folgt master; Binär-Cache: attic.xuyh0120.win/lantian
     nix-cachyos-kernel = {
       url = "github:xddxdd/nix-cachyos-kernel";
     };
 
-    # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz für Linux)
-    # - Modul: inputs.arctis-sound-manager.nixosModules.default
-    # - Option: services.arctis-sound-manager.enable
-    # Quelle: eigener Fork (xXMortiferusXx) statt upstream (loteran), weil dort
-    # der 8ch-7.1-Loopback-Fix (Game/Media/Aux → HeSuVi) entwickelt wird.
-    # Aktuell nur auf benny (Headset) — nex läuft über den Sound Blaster GC7.
+    # Arctis Sound Manager (eigener Fork; nur benny, nex nutzt den GC7)
     arctis-sound-manager = {
       url = "github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # BedrockOnLinux: Minecraft Bedrock (Windows/GDK) via WineGDK.
-    # Nur lion-pc. Ersetzt den Android-Weg (mcpelauncher): der hat kein
-    # funktionierendes Xbox-Freunde-Join (Flathub: "times out or crashes").
-    # Wine/Proton laedt der Launcher beim ersten Start selbst in sein
-    # app-privates XDG-Verzeichnis, nicht in den Nix-Store.
-    # Unpinned wie umbriel -> Updates mit `nix flake update bedrock-on-linux`.
+    # BedrockOnLinux: Minecraft Bedrock via WineGDK (nur lion-pc)
     bedrock-on-linux = {
       url = "github:Wyze3306/BedrockOnLinux";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
-  
+
   outputs = { self, nixpkgs, disko, home-manager, arctis-sound-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
 
-      # Disko-Configs fuer den Installer (--flake .#<host> --argstr device /dev/nvmeXn1)
-      # device wird vom Installer per --argstr device uebergeben.
-      # Default nur fuer normales Rebuild, wenn kein Device uebergeben wird.
+      # Disko-Configs fuer den Installer (--argstr device); Default nur fuer Rebuild.
       diskoConfigurations.nex = { device ? "/dev/nvme0n1", ... }:
         import ./hosts/nex/disk-config.nix { inherit device; };
       diskoConfigurations.styx = { device ? "/dev/nvme0n1", ... }:
@@ -73,7 +53,7 @@
         import ./hosts/test/disk-config.nix { inherit device; };
       diskoConfigurations.lion-pc = { device ? "/dev/nvme0n1", ... }:
         import ./hosts/lion-pc/disk-config.nix { inherit device; };
-      # benny: SATA-Datentraeger (2013er-Rechner) -> Default /dev/sda
+      # benny: SATA-Datentraeger -> Default /dev/sda
       diskoConfigurations.benny = { device ? "/dev/sda", ... }:
         import ./hosts/benny/disk-config.nix { inherit device; };
     in
@@ -108,7 +88,7 @@
         ];
       };
 
-      # Test-Host: minimal fuer Installer-Testing (QEMU-VM)
+      # Minimaler Test-Host (QEMU, Installer-Tests)
       nixosConfigurations."test" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
@@ -117,8 +97,7 @@
         ];
       };
 
-      # lion-pc: Gaming-PC fuer lion (AMD CPU + Radeon RX 580), Umbriel-DE,
-      # Flatpak-Bazaar fuer eigenstaendige Roblox-Installation (Sober/Vinegar)
+      # lion-pc: AMD CPU + Radeon RX 580
       nixosConfigurations."lion-pc" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
@@ -133,8 +112,7 @@
         ];
       };
 
-      # benny: Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 4000).
-      # Die defekte AMD R9 280 wurde ausgebaut -> kein GPU-Sonderfall mehr.
+      # benny: Intel i5 (Ivy Bridge) + HD 4000
       nixosConfigurations."benny" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
@@ -150,7 +128,7 @@
         ];
       };
 
-      # Installer ISO fuer QEMU-Testing
+      # Installer-ISO fuer QEMU-Tests
       packages.${system}.installer-iso = let
         iso = nixpkgs.lib.nixosSystem {
           inherit system;

@@ -1,9 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  # ~/.config-Verzeichnisse werden als system-level bind-mounts bereitgestellt
-  # (hosts/benny/config-mounts.nix) — wie lion-pc.
-
+  # ~/.config als system-level bind-mounts (hosts/benny/config-mounts.nix).
   home.file = {
     ".icons/Papirus".source = "${pkgs.papirus-icon-theme}/share/icons/Papirus";
 
@@ -12,9 +10,7 @@
     ".icons/default".source = config.lib.file.mkOutOfStoreSymlink "/etc/nixos/home/benny/config/icons/default";
   };
 
-  # Noctalia v5 verwaltet alle Daten unter ~/.local/state/noctalia.
-  # activation-Script setzt den Symlink nach dem HM-Switch (home.file wuerde ihn
-  # bei jedem Rebuild auf den Store ueberschreiben).
+  # ACHTUNG: home.file würde den Symlink bei jedem Rebuild auf den Store überschreiben -> activation-Script.
   home.activation.createNoctaliaState = lib.hm.dag.entryAfter ["writeBoundary"] ''
     # Entferne ggf. alten Store-Symlink oder Datei
     if [ -e "$HOME/.local/state/noctalia" ] || [ -L "$HOME/.local/state/noctalia" ]; then

@@ -1,9 +1,10 @@
+# Kitty-Terminal (Wayland, Transparenz, Farben, Keybindings).
 { config, pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
     kitty
-    xdg-utils                 # xdg-open für URL-Handling in kitty
+    xdg-utils
 ];
   environment.etc."xdg/kitty/kitty.conf".text = ''
     # WAYLAND

@@ -1,3 +1,4 @@
+# Gamescope (capSysNice für Compositor-Optimierungen).
 { config, pkgs, ... }:
 
 {

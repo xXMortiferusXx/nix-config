@@ -1,3 +1,4 @@
+# Zusatz-Tools und Fish-Aliase für System-/Nix-Pflege.
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
@@ -9,24 +10,21 @@
 
   programs.fish.shellAliases = {
 
-    # System & Update (Nutzt die Fish-Syntax (hostname) für dynamische Auflösung)
+    # System & Update (hostname wird per Fish-Funktion dynamisch aufgelöst)
     nix-search = "nix search nixpkgs";
     nix-check  = "nix flake update && nixos-rebuild build --flake .#(hostname) && nvd diff /run/current-system ./result";
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
-    # nix-sync holt den gepushten Stand UND aktualisiert die Inputs, damit ein
-    # Reparatur-Sync nie auf einen aelteren (veralteten) Lock downgradet.
+    # Reparatur-Sync: Inputs mit aktualisieren, damit kein Downgrade auf alten Lock.
     nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
-    # Aufräumen
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
 
-    # Config-Sync (Git ohne sudo für SSH-Keys)
+    # Git ohne sudo, damit die SSH-Keys des Users genutzt werden.
     conf-sync  = "pushd /etc/nixos && git add . && git commit -m \"Update: $(date +'%Y-%m-%d %H:%M')\" && git push origin main; popd";
     conf       = "cd /etc/nixos";
 
-     # Tools & Gaming
      scx-status = "scxtop";
   };
 

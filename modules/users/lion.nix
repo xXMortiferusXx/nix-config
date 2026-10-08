@@ -10,7 +10,6 @@
     shell = pkgs.fish;
 
     packages = with pkgs; [
-      # Browser — gleiche Basis wie nex/styx
       firefox
     ];
   };

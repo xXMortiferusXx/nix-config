@@ -1,9 +1,6 @@
 # Noctalia Login-Greeter (DE-Tastatur, merkt letzte Session via sync.toml)
-# Workaround: tmpfiles kann .toml-Symlink nicht kopieren → fix-noctalia-greeter-toml
-#
-# Paket + Modul kommen komplett aus nixpkgs (kein Flake-Input mehr).
-# Passwordloser Sync läuft über die nixpkgs-Modul-Option
-# `services.displayManager.noctalia-greeter.passwordlessSyncUsers` (je Host gesetzt).
+# Workaround: tmpfiles kann .toml-Symlink nicht kopieren -> fix-noctalia-greeter-toml
+# Passwordloser Sync über Modul-Option passwordlessSyncUsers (je Host gesetzt).
 { config, pkgs, lib, ... }:
 {
   services.displayManager.noctalia-greeter = {
@@ -27,8 +24,7 @@
     };
   };
 
-  # tmpfiles .C kopiert den Symlink (→ read-only nix-store)
-  # Stattdessen: echte Datei via cp -L anlegen → beschreibbar für greeter-sync
+  # tmpfiles .C kopiert den Symlink (read-only Store) -> echte Datei via cp -L anlegen.
   systemd.services.fix-noctalia-greeter-toml = {
     description = "Create writable greeter.toml (resolve symlink)";
     after = [ "systemd-tmpfiles-setup.service" ];

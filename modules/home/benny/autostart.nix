@@ -3,8 +3,7 @@
 { pkgs, ... }:
 
 let
-  # SNI-Tray-Watcher wird von noctalia erst nach dem Start registriert.
-  # Electron-Apps registrieren ihr Tray nur einmal → vor App-Start warten.
+  # Warten bis Noctalia den SNI-Tray-Watcher registriert hat (Electron-Apps registrieren ihr Tray nur einmal).
   waitForTray = pkgs.writeShellScript "wait-for-tray" ''
     until ${pkgs.systemd}/bin/busctl --user get-property \
       org.kde.StatusNotifierWatcher /StatusNotifierWatcher \
@@ -26,9 +25,7 @@ in
       Unit = {
         Description = "Discord";
         After = [ "graphical-session.target" "noctalia.service" ];
-        # Discord registriert sein SNI-Tray nur beim Start und nicht erneut.
-        # Wird Noctalia neu gestartet (z. B. nix-sync), verschwindet das Icon
-        # dauerhaft -> Discord bei Noctalia-Neustart mit-neu-starten.
+        # Discord registriert sein SNI-Tray nur beim Start -> bei Noctalia-Neustart mit-neu-starten.
         PartOf = [ "noctalia.service" ];
       };
       Install = {
@@ -37,15 +34,13 @@ in
       Service = {
         ExecStartPre = [ waitForTray ];
         ExecStart = "${pkgs.discord}/bin/discord";
-        # waitForTray wartet auf Noctalia; Standard-90s reichen beim langsamen
-        # iGPU-Login nicht immer -> großzügiger Start-Timeout.
+        # waitForTray wartet auf Noctalia; 90s-Standard reichen beim langsamen iGPU-Login nicht.
         TimeoutStartSec = "5min";
         Restart = "on-failure";
         RestartSec = 5;
       };
     };
-    # Steam wird auf benny bewusst NICHT gestartet (Intel-iGPU, langsamer
-    # Login) — bei Bedarf regulär per Launcher/Terminal starten.
+    # Steam auf benny bewusst nicht starten (langsamer iGPU-Login).
     obex = {
       Unit = {
         Description = "Bluetooth OBEX File Transfer";

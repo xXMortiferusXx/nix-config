@@ -4,25 +4,21 @@
 
 {
   imports = [ ./laptop-common.nix ];
-  # Lenovo Legion spezifische Features
+
   boot.extraModulePackages = [
     config.boot.kernelPackages.lenovo-legion-module
   ];
 
-  # iwlmvm Power Management deaktivieren (active mode)
-  # Verhindert tausende tx_retries durch Firmware-Power-Save bei 6GHz/160MHz
+  # iwlmvm power_scheme=1: verhindert tx_retries durch Firmware-Power-Save.
   boot.extraModprobeConfig = "options iwlmvm power_scheme=1";
 
-  # AMD CPU Optimierungen
   hardware.cpu.amd.updateMicrocode = true;
 
-  # Gaming Peripherie & Controller
   hardware.uinput.enable = true;
   hardware.xone.enable = true;
   hardware.xpadneo.enable = true;
   hardware.openrazer.enable = true;
 
-  # Interrupt Balancing (gut für Gaming Hubs/Viel Peripherie)
   services.irqbalance.enable = true;
 
   systemd.services.legion-conservation-mode = {

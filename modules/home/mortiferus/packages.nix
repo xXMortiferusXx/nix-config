@@ -8,9 +8,7 @@ pkgs: with pkgs; [
   papirus-icon-theme
   adwaita-icon-theme
   shared-mime-info
-  # Noctalia setzt adw-gtk3 als Basis-Theme fuer GTK3-Apps.
-  # adw-gtk3 nutzt @define-color Variablen, die Noctalia generiert,
-  # sodass klassische GTK3-Apps (Thunar, NAPS2, etc.) Noctalia-Farben annehmen.
+  # Noctalia setzt adw-gtk3 als GTK3-Basis-Theme (@define-color Variablen).
   adw-gtk3
 
   # --- Wayland & System Utilities ---
@@ -29,12 +27,12 @@ pkgs: with pkgs; [
   discord
   cartridges
   polychromatic
-  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
   vulkan-tools
 
   # --- Gaming ---
   rusty-path-of-building
-  vinegar         # Roblox Studio native (Wine) — zum Testen der 3 Quadrate auf nex
+  vinegar         # Roblox Studio native (Wine)
 
   # --- Office & Media ---
   thunderbird-latest
@@ -46,7 +44,7 @@ pkgs: with pkgs; [
     gimp
     naps2
     qalculate-gtk
-    amberol       # moderner GTK4/libadwaita Audio-Player (folgt Noctalia-Theme)
+    amberol       # GTK4/libadwaita Audio-Player
 
     # --- Development & 3D Printing ---
     #opencode

@@ -93,8 +93,9 @@
 - Große Dateien (>100 Z.) in fachliche Teile splitten
 - Home-Manager: pro User ein Verzeichnis, pro Thema eine Datei
 - Gaming: als Verzeichnis mit Submodulen pro Service/Script
-- Jede `.nix`-Datei hat einen deutschen Header-Kommentar (1-3 Zeilen), der erklärt was das Modul macht
-- Bei sysctl-/kernel-Parametern: Inline-Kommentar in Deutsch was der Wert bewirkt
+- Jede `.nix`-Datei hat einen kurzen deutschen Header-Kommentar (1-3 Zeilen), der erklärt was das Modul macht.
+- **Kommentare minimal halten** (2026-10-08 aufgeräumt): nur noch *tragende* Hinweise — sysctl-/kernel-/udev-Werte, Sicherheitsnotizen und Bruch-Warnungen (z.B. „beide Blöcke müssen identisch bleiben", „kein mkForce weil …", „nicht global setzen weil …"). **Keine** historischen Erzählungen, Daten, Git-Commit-/PR-Referenzen, Debug-Storys oder Wiederholungen des Codes.
+- Kommentar-Umbauten verifizieren: `nix-instantiate --parse` vor/nach vergleichen (der Parser ignoriert Kommentare → AST muss identisch sein; alte Version dazu im **selben Verzeichnis** ablegen, sonst falsche Pfad-Diffs bei relativen Imports).
 - **System-Bau**: Nur mortiferus baut das System neu. Alias `nix-switch` = `sudo nixos-rebuild switch --flake /etc/nixos#(hostname)` (in `programs/tools.nix`). Wenn ich (opencode) Änderungen mache, niemals manuell rebuilden – nur Dateien editieren.
 - **Commits**: opencode darf commits und pushes ausführen, aber **erst nach erfolgreichem Test und explizitem "Grünem Licht" von mortiferus**. Damit bleiben Änderungen auf GitHub nachvollziehbar und plausibel für Dritte, die das Repo betrachten.
 - **Saubere History**: Trial-and-Error-Commits werden vor dem Push entfernt oder gesquashed. Nur funktionierende, sinnvolle Commits landen auf GitHub. Bei größeren Experimenten: lokalen Branch nutzen und erst nach Erfolg in `main` rebasen/mergen.

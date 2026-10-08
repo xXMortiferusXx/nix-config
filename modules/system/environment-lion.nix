@@ -5,7 +5,6 @@
 {
   imports = [ ./environment-common.nix ];
 
-  # Kein CUDA auf AMD-only-System
   nixpkgs.config.cudaSupport = false;
 
   environment.variables = {

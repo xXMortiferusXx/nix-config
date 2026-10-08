@@ -1,3 +1,4 @@
+# Gaming-Stack für nex (mortiferus).
 { config, pkgs, ... }:
 
 {
@@ -14,7 +15,6 @@
     heroic
     faugus-launcher
     gamescope
-    #umu-launcher
     protonplus
     winetricks
     wineWow64Packages.stable

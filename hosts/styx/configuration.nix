@@ -1,3 +1,4 @@
+# Host: styx (Office-Laptop, Intel).
 { config, pkgs, lib, ... }:
 
 {

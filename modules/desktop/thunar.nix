@@ -1,10 +1,8 @@
 # Thunar Dateimanager mit Archiv-Entpack-Actions
-# Installiert Thunar + Archive-Plugin und definiert Custom Actions
-# für "Hier entpacken" und "In Ordner entpacken" als Untermenü
+# Custom Actions "Hier entpacken" / "In Ordner entpacken" als Untermenü.
 { config, pkgs, ... }:
 
 let
-  # Helper-Script: erkennt Archivformat und entpackt mit dem passenden Tool
   thunar-extract = pkgs.writeShellScriptBin "thunar-extract" ''
     set -euo pipefail
     FILE="$1"
@@ -50,22 +48,19 @@ let
     esac
   '';
 
-  # Gemeinsame Dateimuster für alle Archivformate
   archivePatterns = "*.zip;*.tar.gz;*.tgz;*.tar.bz2;*.tbz2;*.tar.xz;*.txz;*.tar;*.7z;*.rar";
 in
 
 {
-  # Thunar aktivieren (kein Archive-Plugin – Custom Actions reichen)
+  # Kein Archive-Plugin – Custom Actions reichen.
   programs.thunar = {
     enable = true;
   };
 
-  # thunar-extract Script systemweit bereitstellen
-  # (unzip, unrar, p7zip bereits in environment-common.nix; gnutar im System-Default)
+  # thunar-extract systemweit bereitstellen.
   environment.systemPackages = [ thunar-extract ];
 
-  # Custom Actions systemweit unter /etc/xdg/Thunar/uca.xml ablegen
-  # Thunar gruppiert Actions mit gleichem <submenu> automatisch zu einem Untermenü
+  # Custom Actions unter /etc/xdg/Thunar/uca.xml; gleiches <submenu> gruppiert automatisch.
   environment.etc."xdg/Thunar/uca.xml".text = ''
     <?xml version="1.0" encoding="UTF-8"?>
     <actions>

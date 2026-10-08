@@ -1,8 +1,5 @@
 # Firefox (Zen-Ersatz) — gemeinsam für alle Hosts/User
-#
-# - Vertikale Tabs + „expand-on-hover" (Seitenleiste fährt beim Hover aus, wie Zen)
-# - Profil wird als Default angelegt; Addons/Konto/Sync bleiben NICHT deklarativ
-#   (leben im Profil, syncen über den Firefox-Account).
+# Vertikale Tabs mit expand-on-hover; Addons/Konto/Sync bleiben nicht deklarativ.
 { config, ... }:
 
 {
@@ -13,14 +10,11 @@
       isDefault = true;
 
       settings = {
-        # Vertikale Tabs + neue Sidebar
         "sidebar.revamp" = true;
         "sidebar.verticalTabs" = true;
 
-        # Seitenleiste einklappen und beim Hover ausfahren (Zen-Compact-Verhalten)
         "sidebar.visibility" = "expand-on-hover";
 
-        # Welche Werkzeuge in der Sidebar angezeigt werden
         "sidebar.main.tools" = "aichat,syncedtabs,history,bookmarks,opentabs";
       };
     };

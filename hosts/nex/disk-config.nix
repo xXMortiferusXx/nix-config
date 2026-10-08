@@ -20,14 +20,6 @@
               };
             };
             # Swap deaktiviert – wir nutzen nur ZRAM
-            # swap = {
-            #   size = "16G";
-            #   content = {
-            #     type = "swap";
-            #     priority = 10;
-            #     discardPolicy = "both";
-            #   };
-            # };
             root = {
               size = "100%";
               content = {

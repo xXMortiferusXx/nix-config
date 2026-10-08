@@ -1,6 +1,6 @@
 # App-Liste für benny
 pkgs: with pkgs; [
-  # --- Desktop & Appearance (Theming) — 1:1 wie nex/styx/lion ---
+  # --- Desktop & Appearance (Theming) ---
   nwg-look
   tela-icon-theme
   qt6Packages.qt6ct
@@ -30,7 +30,7 @@ pkgs: with pkgs; [
   discord
   cartridges
   vulkan-tools
-  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
   opencode
 
   # --- Gaming ---
@@ -42,10 +42,10 @@ pkgs: with pkgs; [
   qalculate-gtk
   zathura
   libreoffice
-  hunspellDicts.de_DE    # deutsche Rechtschreibung (LibreOffice)
-  hyphenDicts.de-de      # deutsche Silbentrennung (LibreOffice)
-  thunderbird            # E-Mail
-  mpv                    # Video-Player
-  amberol                # Audio-Player (GTK4/libadwaita, Noctalia-Theme)
+  hunspellDicts.de_DE    # deutsche Rechtschreibung
+  hyphenDicts.de-de      # deutsche Silbentrennung
+  thunderbird
+  mpv
+  amberol                # GTK4/libadwaita Audio-Player
   naps2                  # Scanner
 ]

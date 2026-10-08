@@ -10,7 +10,6 @@
 
     packages = with pkgs; [
       tmux
-      # Browser für Styx
       firefox
     ];
   };

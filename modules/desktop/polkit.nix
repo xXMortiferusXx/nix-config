@@ -1,10 +1,6 @@
 # Polkit-Regeln
-# - noctalia-greeter: passwordloser Sync via Modul-Option `passwordlessSyncUsers`
-#   (generiert Rule für `org.noctalia.greeter.sync-appearance`; je Host gesetzt)
-# - NetworkManager: wheel-Gruppe darf Netzwerk verwalten ohne Passwort
-# - Flatpak/Bazaar: wheel kann Flatpak-Apps installieren ohne Passwort
-#   (konsistent zu wheelNeedsPassword = false; lion-pc nutzt das für Bazaar,
-#    auf nex/styx ohne Flatpak-Dienst wirkungslos)
+# NetworkManager + Flatpak/Bazaar: wheel darf ohne Passwort verwalten/installieren.
+# noctalia-greeter: passwordloser Sync über Modul-Option passwordlessSyncUsers.
 { config, pkgs, lib, ... }:
 
 {

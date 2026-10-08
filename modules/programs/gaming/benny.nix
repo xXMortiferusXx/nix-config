@@ -1,14 +1,10 @@
-# Gaming-Modul fuer benny
-# Gleicher Stack wie lion-pc, aber:
-# - generisches game-performance-Script (scripts.nix, brightnessctl) statt
-#   lion's DDC/CI-Variante — benny's Monitor-Setup ist noch nicht bekannt
-# - ohne sunshine (Game-Streaming, nex-only)
+# Gaming-Modul für benny — gleicher Stack wie lion-pc.
+# generisches game-performance-Script (scripts.nix, brightnessctl).
+# ohne sunshine (Game-Streaming, nex-only).
 { config, pkgs, ... }:
 
 let
-  # Offizieller portabler Linux-Client (nicht auf Flathub/nixpkgs) – Derivation
-  # in pkgs/boosteroid. Wrapper kopiert die Binary in ein beschreibbares
-  # Verzeichnis (Log/Config + Selbst-Updater).
+  # Offizieller portabler Client; Wrapper kopiert Binary in beschreibbares Verzeichnis.
   boosteroid = pkgs.callPackage ../../../pkgs/boosteroid { };
 in
 

@@ -1,5 +1,4 @@
 # ananicy-cpp: Auto-Nice-Daemon mit CachyOS-Regeln
-# Setzt automatisch nice/ionice/cgroup/oom pro Prozess basierend auf Regelwerk
 # Siehe: https://gitlab.com/ananicy-cpp/ananicy-cpp
 # Regeln: https://github.com/CachyOS/ananicy-rules
 { config, pkgs, lib, ... }:

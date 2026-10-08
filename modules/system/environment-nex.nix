@@ -1,3 +1,4 @@
+# Umgebungs-Konfiguration fuer nex (NVIDIA, Shader-Disk-Cache).
 { config, pkgs, ... }:
 
 {

@@ -1,3 +1,4 @@
+# Generisches game-performance-Script (Performance-Profil + Bildschirmhelligkeit).
 { config, pkgs, lib, ... }:
 
 let

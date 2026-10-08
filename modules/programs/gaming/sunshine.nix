@@ -1,3 +1,4 @@
+# Sunshine Game-Streaming-Host (nex).
 { config, pkgs, ... }:
 
 {

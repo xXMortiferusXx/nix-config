@@ -1,3 +1,4 @@
+# Boosteroid Cloud-Gaming-Client (portables Upstream-Binary).
 { lib
 , stdenv
 , fetchurl
@@ -71,8 +72,7 @@ stdenv.mkDerivation (finalAttrs: {
     curlOptsList = [ "-A" "Mozilla/5.0" ];
   };
 
-  # Das Tar enthält genau eine selbstenthaltene Binary "Boosteroid" (monolithischer
-  # nativer Client, kein Electron). Deshalb kein Standard-unpackPhase.
+  # Tar enthält genau eine selbstenthaltene Binary → kein Standard-unpackPhase.
   unpackPhase = ''
     runHook preUnpack
     tar xf $src

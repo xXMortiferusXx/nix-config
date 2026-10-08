@@ -1,3 +1,4 @@
+# Locale/Zeitzone (de_DE.UTF-8, Europe/Berlin) und Konsolen-Tastaturlayout.
 { config, pkgs, ... }:
 
 {

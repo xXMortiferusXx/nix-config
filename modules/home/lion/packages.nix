@@ -1,9 +1,7 @@
-# App-Liste für lion (lion-pc) — siehe lion-pc.md "App-Liste"
-# Bewusst NICHT enthalten (Raus-Liste): polychromatic, rusty-path-of-building,
-# prusa/orca-slicer, ideamaker, python-poE-Env.
-# Admin/Wartungs-Basis kommt über gemeinsame System-Module (common.nix etc.).
+# App-Liste für lion (lion-pc).
+# Admin/Wartungs-Basis kommt über gemeinsame System-Module.
 pkgs: with pkgs; [
-  # --- Desktop & Appearance (Theming) — 1:1 wie nex/styx ---
+  # --- Desktop & Appearance (Theming) ---
   nwg-look
   tela-icon-theme
   qt6Packages.qt6ct
@@ -29,20 +27,20 @@ pkgs: with pkgs; [
   thunar
   discord
   cartridges
-  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler (baut seit nixpkgs a7868a72 wieder)
+  goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
   vulkan-tools
   opencode
 
   # --- Gaming ---
-  prismlauncher   # Offizieller Launcher ist auf NixOS (1.19+) kaputt → Prism als Standard
-  vinegar         # Roblox Studio nativer Weg (Flatpak-Login ging nicht: Sandbox blockt OAuth-WebView)
+  prismlauncher   # offizieller Launcher auf NixOS kaputt -> Prism als Standard
+  vinegar         # Roblox Studio native
 
   # --- Office & Media (kindgerecht, leicht) ---
   loupe
   gimp
   qalculate-gtk
   zathura
-  thunderbird    # E-Mail
-  mpv            # Video-Player
-  amberol        # Audio-Player (GTK4/libadwaita, Noctalia-Theme)
+  thunderbird
+  mpv
+  amberol        # GTK4/libadwaita Audio-Player
 ]

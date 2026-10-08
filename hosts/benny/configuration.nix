@@ -4,12 +4,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 let
-  # GameDAC-Knacken/Aussetzer-Fix (aus nex-Historie, Commit 9235fa9):
-  # ASM-Filter-Ketten mit "node.pause-on-idle = false" erzeugen, damit die
-  # Sonar-Convolution beim Stream-Neustart nicht in "idle" faellt und ihren
-  # Zustand behaelt (kein Transient/Knacken am Liedanfang). Patch aufs
-  # Upstream-Paket, damit er jede ASM-Regeneration uebersteht. Nur Output-
-  # Ketten, die Micro-Input-Kette bleibt unangetastet (sonst bricht das Mic).
+  # GameDAC-Knacken-Fix: ASM-Ketten mit pause-on-idle=false patchen (nur Output, sonst bricht Mic).
   arctis-sound-manager = inputs.arctis-sound-manager.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
       ${pkgs.python3}/bin/python3 ${../../scripts/asm-pause-on-idle.py} src/arctis_sound_manager/sonar_to_pipewire.py
@@ -37,22 +32,14 @@ in
 
   networking.hostName = "benny";
 
-  # benny steht hinter einer FritzBox mit Standard-Config (nicht am ASUS).
-  # DNS + Fallback zeigen auf die FritzBox statt auf 192.168.50.1.
+  # FritzBox-Standard-Config (nicht am ASUS): DNS/Fallback auf 192.168.178.1.
   network.dnsServer = "192.168.178.1";
 
-  # Arctis Sound Manager (SteelSeries GG/Sonar-Ersatz) — EQ/ChatMix/Virtual Surround.
-  # Modul kommt aus dem Flake-Input arctis-sound-manager (siehe flake.nix).
-  # package-Override: pause-on-idle-Patch gegen Knacken/Aussetzer (siehe let-Block).
+  # Arctis Sound Manager (Flake-Input) mit pause-on-idle-Patch (siehe let-Block).
   services.arctis-sound-manager.enable = true;
   services.arctis-sound-manager.package = arctis-sound-manager;
 
-  # ASM-Tray-GUI (asm-gui --systray) registriert sich einmalig als SNI-Item.
-  # Noctalia stellt den StatusNotifierWatcher aber erst nach dem Login bereit ->
-  # gleicher Race wie bei Discord/Steam (waitForTray). Deshalb:
-  #   1. vor dem Start auf den Noctalia-Tray-Watcher warten (ExecStartPre)
-  #   2. an noctalia.service koppeln, damit ein Noctalia-Neustart (z. B. durch
-  #      nix-sync) den Tray automatisch neu registriert (PartOf).
+  # ASM-Tray wartet per ExecStartPre auf Noctalia-Tray und ist via PartOf an noctalia.service gekoppelt.
   systemd.user.services."app-ArctisManager" = {
     after = [ "noctalia.service" ];
     partOf = [ "noctalia.service" ];
@@ -67,15 +54,13 @@ in
           done
         '')
       ];
-      # waitForTray wartet auf Noctalia; Standard-90s reichen beim langsamen
-      # iGPU-Login nicht immer -> großzügiger Start-Timeout.
+      # waitForTray braucht beim langsamen iGPU-Login mehr als die Standard-90s.
       TimeoutStartSec = "5min";
     };
   };
 
   hardware.bluetooth.enable = true;
 
-  # IRQ-Balancing: IRQs gleichmäßig über die CPU-Kerne verteilen.
   services.irqbalance.enable = true;
 
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
