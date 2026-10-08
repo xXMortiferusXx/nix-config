@@ -14,9 +14,11 @@
         pulseaudio
         libusb1
       ];
+      # XCURSOR_THEME/SIZE setzen wir hier NICHT mehr: Umbriel setzt sie aus
+      # seiner [input.cursor]-Config und veröffentlicht sie seit Rev 1200
+      # (#384) in die systemd-User-Umgebung -> Steam (per XDG-Autostart) erbt
+      # sie. XCURSOR_PATH setzt Umbriel nicht, der bleibt hier (FHS-Pfade).
       extraEnv = {
-        XCURSOR_THEME = "Bibata-Modern-Ice";
-        XCURSOR_SIZE = "24";
         XCURSOR_PATH = "/usr/share/icons:/usr/local/share/icons:$HOME/.icons:$HOME/.local/share/icons";
       };
       extraProfile = "unset TZ";
