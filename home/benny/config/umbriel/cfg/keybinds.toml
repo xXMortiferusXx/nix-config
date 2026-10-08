@@ -99,7 +99,8 @@
 "Mod+Tab"       = "scratchpad-toggle:default"
 "Mod+Shift+Tab" = "window-move-to-scratchpad:default"
 "Mod+Ctrl+Tab"  = "window-restore-from-scratchpad:default"
-"Mod+Shift+Right" = "scratchpad-focus-next:default"
+"Mod+Shift+Left"  = "scratchpad-window-show-previous:default"
+"Mod+Shift+Right" = "scratchpad-window-show-next:default"
 
 # ─── Screenshot ───
 "Print"     = "spawn:noctalia msg screenshot-region"

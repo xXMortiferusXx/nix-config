@@ -95,9 +95,15 @@ Statische Workspaces (1 = Boosteroid, 2 = Chat, 3 = Browser/Steam, 4 = Spiele/AS
 
 | Tastenkürzel | Aktion |
 |---|---|
-| `Mod+Tab` | Scratchpad ein/aus |
+| `Mod+Tab` | Scratchpad verstecken (egal wie gezeigt) |
 | `Mod+Shift+Tab` | Fenster ins Scratchpad verschieben |
+| `Mod+Shift+→` | Ein Scratchpad-Fenster zeigen / nächstes |
+| `Mod+Shift+←` | Vorheriges Scratchpad-Fenster |
 | `Mod+Ctrl+Tab` | Fenster aus dem Scratchpad holen |
+
+Es wird immer **nur ein** Scratchpad-Fenster gezeigt. `Mod+Shift+→`/`←` schalten
+zum nächsten/vorherigen (mit Umlauf am Ende). Ist das Scratchpad versteckt,
+zeigt der erste Druck das zuletzt fokussierte Fenster.
 
 ## Screenshots (über Noctalia)
 
