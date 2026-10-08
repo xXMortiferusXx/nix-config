@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `4c89178780d800012fd2508b5a5d6ea11dd5b15d` (2026-10-06, revCount 1167), Version `0.1.0`
-  (Lock per `nix flake update umbriel` gezogen — force-update auf `4c89178`, Identität mit origin/main verifiziert)
+- Aktuelle Rev: `1a5829066148394b36bc45fe76e768685e5a5369` (2026-10-08, revCount 1200), Version `0.1.0`
+  (Lock per `nix flake update` gezogen — volle Input-Aktualisierung; Umbriel 1167→1200)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -17,8 +17,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Solange auf dem Flake bleiben, bis nixpkgs den Fix-/Feature-Stand eingeholt hat
   (`nix eval nixpkgs#umbriel.src.rev` ≥ Flake-Rev bzw. enthält Suspend/Resume-Fix #27,
   Numlock, `[animation]`, named scratchpads) **und** die Entwicklung sich beruhigt hat
-  (Stand 2026-10-06: ~95 Commits in 10 Tagen ≈ 10/Tag — deutlich ruhiger als Ende
-  September; ein Tag-Release wäre das klarste Zeichen).
+  (Stand 2026-10-08: 33 Commits in 2 Tagen ≈ 16/Tag — weiterhin aktiv; ein Tag-Release
+  wäre das klarste Zeichen).
 - Kosten Flake: lokaler C++-Build (~Minuten) bei jedem Rev-Bump.
 - Wechsel zurück: Flake-Input + Overlay (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
   prüfen, Config ggf. re-migrieren (falls nixpkgs-Rev anders steht).
@@ -47,7 +47,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 4c89178 / 2026-10-06)
+## Feature-Tracker (Stand: Rev 1a58290 / 2026-10-08)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -95,8 +95,50 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `[screencast] disable_dynamic_confirmation` | Bestätigungsdialog bei Target-Wechsel im Share abschalten | verfügbar, nicht gesetzt |
 | `window-consume-from-left/right`, `window-move-left/right`, `window-swap-left/right/up/down` (Richtungs-Swaps), `output-create`/`output-destroy` | Neue Actions (Scrolling: consume/expel; Dwindle-Richtungs-Moves) | verfügbar, nicht gebunden |
 | `animation.*.effect` (ersetzt `animation.*.shader`) | Animation nutzt jetzt benannte `[effects]`-Presets statt Shader-Pfad | nicht genutzt (wir nutzen nur `style`/`scale`) |
+| `input.keyboard.model` | XKB-Tastaturmodell (z.B. `pc104angle`), global oder pro Keyboard (#413) | verfügbar, nicht gesetzt (System-Default) |
+| `[input.drag_edge_scroll]` (`enabled`, `trigger_zone`, `delay_ms`, `max_speed`) | Edge-Scroll beim DnD/getilten Fenster-Move jetzt konfigurierbar (#401) | verfügbar, Defaults passen (nicht gesetzt) |
+| `output.<NAME>.focus_at_startup` | Mauscursor beim Start auf diesen Monitor setzen (#390) | verfügbar, nicht gesetzt (nur 1 aktiver Output) |
+| `window_rule.match.is_only_window` | Einziges Fenster auf dem Workspace (inkl. Floating) (#391) | verfügbar, nicht genutzt |
+| `window_rule.confine_pointer` | Pointer im fokussierten Fenster halten (Spiele-Menüs) (#399) | verfügbar, nicht genutzt — **interessant für Spiele** |
+| `layer_rule.match.layer` / `match.at_startup` | Layer-Surface nach Ebene (`background`/`bottom`/`top`/`overlay`) bzw. Startphase matchen (#400) | verfügbar, nicht genutzt |
+| `scratchpad-window-show-next/previous` | Scratchpad **ein Fenster zur Zeit** anzeigen statt alle (#376) | verfügbar, nicht gebunden (Alternative zu `scratchpad-focus-next`) |
+| `workspace-set-layout:toggle:<mode1,mode2>` | Toggle nur über eine Teilmenge der Layouts (#397) | verfügbar (wir nutzen bare `toggle`) |
+| Umbriel veröffentlicht `XCURSOR_*` selbst (#384) | `XCURSOR_THEME/SIZE` werden vom Compositor an Clients gereicht | Hinweis: ggf. doppelt zu unserer `desktop.nix`/Steam-Wrapper-Setzung — noch unangetastet |
+| Modale Dialoge an Parent gebunden (#215) | Parent wird beschattet, kein Fokus/Input, bewegt sich mit | Verhalten (automatisch) |
+| HDR: EDID-Metadaten + Gamma-Erhalt | Mastering-Luminanz aus EDID; Night-Light-Gamma pausiert bei HDR | Verhalten (automatisch; wir fahren SDR 10-bit) |
 
 ## Zuletzt gecheckt
+- **2026-10-08** (Update auf Rev `1a58290`, revCount 1200; letzter dokumentierter
+  Stand `4c89178`/1167): **33 Commits (1167→1200), KEINE Breaking Changes**
+  (kein `!`-Marker, keine Key-Umbenennung). `umbriel config validate` = `config: ok`
+  auf allen 4 Hosts (mortiferus/backbone/lion/benny) gegen das neue Binary (Rev 1200).
+  **Kernthemen (alles additiv/optional):**
+  1. **Neue Config-Keys (nicht gesetzt):** `input.keyboard.model` (XKB-Modell, #413),
+     `[input.drag_edge_scroll]` (`enabled`/`trigger_zone`/`delay_ms`/`max_speed`, #401 —
+     Edge-Scroll beim DnD/Fenster-Move jetzt konfigurierbar statt fix),
+     `output.<NAME>.focus_at_startup` (#390), `window_rule.match.is_only_window`
+     (einziges Fenster inkl. Floating, #391), `window_rule.confine_pointer`
+     (Pointer im fokussierten Fenster halten — für Spiele-Menüs, #399),
+     `layer_rule.match.layer` + `match.at_startup` (#400). Siehe Tracker.
+  2. **Neue Actions:** `scratchpad-window-show-next`/`-previous` (#376) zeigen ein
+     Scratchpad **Fenster für Fenster** statt alle gleichzeitig — direkte Alternative
+     zu unserem `scratchpad-focus-next`. `workspace-set-layout:toggle:<mode1,mode2>`
+     (#397) zykelt nur eine Teilmenge der Layouts.
+  3. **Verhalten (automatisch):** modale Dialoge an den Parent gebunden (#215:
+     Parent beschattet, kein Fokus/Input, bewegt sich mit); `input.focus.follows_mouse`
+     verfeinert (Scrollen/Drag unter stehendem Pointer ändert den Fokus nicht);
+     spät gemappte Fenster nach Workspace-Slide versteckt (#409); Xwayland-Fullscreen
+     bleibt compositor-owned bis eine Umbriel-Action es beendet; optimized blur folgt
+     Layer-Animationen; HDR nutzt EDID-Mastering-Metadaten und erhält Gamma über
+     HDR-Übergänge.
+  4. **Wichtig als Hinweis:** Umbriel **veröffentlicht `XCURSOR_*` selbst** (#384).
+     Wir setzen die Cursor-Variablen bisher redundant in `desktop.nix`
+     (`environment.sessionVariables`) und im Steam-Wrapper — perspektivisch
+     vereinfachbar, aber unkritisch.
+  5. **Fixes (automatisch):** Xwayland-Fokus/Selections, Pointer-Tear-off-Output,
+     Hover nach Touchpad-Scroll, Focus-Erhalt beim Layout-Scroll, workspace-slide.
+  **Status:** Config unverändert gültig (additiv). `switch` + Login-Neustart holt das
+  neue Binary (Rev 1200) in die Sitzung.
 - **2026-10-06** (Update auf Rev `4c89178`, revCount 1167; letzter dokumentierter
   Stand `dceb9924`/1072): **95 Commits (1072→1167), 1 Breaking Change** (nur
   Verhalten, kein Schema) + **1 CLI-Rename**. `umbriel config validate` =
