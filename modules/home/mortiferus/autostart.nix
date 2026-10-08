@@ -1,10 +1,8 @@
 # systemd-user-Services für mortiferus (nex)
 # Start nach graphical-session.target + noctalia.service
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
-  extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
-
   # SNI-Tray-Watcher (org.kde.StatusNotifierWatcher) wird von noctalia erst
   # registriert, NACHDEM noctalia wirklich läuft (noctalia.service ist
   # Type=simple, systemd meldet "started" sofort beim Exec). Electron-Apps
@@ -20,21 +18,6 @@ let
     done
   '';
 
-
-  steamPackage = pkgs.steam.override {
-    extraPkgs = pkgs: with pkgs; [
-      mangohud
-      bibata-cursors
-      pulseaudio
-      libusb1
-    ];
-    extraEnv = {
-      XCURSOR_THEME = "Bibata-Modern-Ice";
-      XCURSOR_SIZE = "24";
-      XCURSOR_PATH = "/usr/share/icons:/usr/local/share/icons:$HOME/.icons:$HOME/.local/share/icons";
-    };
-    extraProfile = "unset TZ";
-  };
 in
 {
   # Unterdrückt den Paket-eigenen XDG-Autostart-Eintrag des polychromatic-Pakets
@@ -52,8 +35,21 @@ in
     Hidden=true
   '';
 
+  # Steam wird nicht mehr per systemd gestartet, sondern regulär über
+  # XDG-Autostart (Exec=steam -silent). Damit ist es ein normaler Prozess,
+  # den ProtonPlus/der Nutzer sauber beenden und neu starten kann.
+  xdg.configFile."autostart/steam.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Steam
+    Comment=Steam-Spiele verwalten und spielen
+    Exec=steam -silent
+    Icon=steam
+    Terminal=false
+    X-GNOME-Autostart-enabled=true
+  '';
+
   systemd.user.tmpfiles.rules = [
-    "L+ %h/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest - - - - ${lib.getOutput "steamcompattool" pkgs.proton-ge-bin}"
     # obexd (BT-Dateiübertragung) braucht den Root-Ordner, sonst bricht er ab
     # (exit 1 → start-limit-hit). Automatisch bei jedem Login / Neuinstallation anlegen.
     "d %h/Downloads/Bluetooth 0755 - - -"
@@ -77,26 +73,6 @@ in
         ExecStart = "${pkgs.discord}/bin/discord";
         Restart = "on-failure";
         RestartSec = 5;
-      };
-    };
-    steam = {
-      Unit = {
-        Description = "Steam";
-        After = [ "graphical-session.target" "noctalia.service" ];
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-      Service = {
-        Environment = [
-          "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
-          "XCURSOR_THEME=Bibata-Modern-Ice"
-          "XCURSOR_SIZE=24"
-        ];
-        ExecStartPre = [ waitForTray ];
-        ExecStart = "${steamPackage}/bin/steam";
-        Restart = "on-failure";
-        RestartSec = 10;
       };
     };
     polychromatic-tray = {

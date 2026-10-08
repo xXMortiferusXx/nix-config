@@ -1,10 +1,8 @@
 # systemd-user-Services für benny
 # Start nach graphical-session.target + noctalia.service
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
-  extraCompatPaths = lib.makeSearchPathOutput "steamcompattool" "" [ pkgs.proton-ge-bin ];
-
   # SNI-Tray-Watcher wird von noctalia erst nach dem Start registriert.
   # Electron-Apps registrieren ihr Tray nur einmal → vor App-Start warten.
   waitForTray = pkgs.writeShellScript "wait-for-tray" ''
@@ -16,24 +14,9 @@ let
     done
   '';
 
-  steamPackage = pkgs.steam.override {
-    extraPkgs = pkgs: with pkgs; [
-      mangohud
-      bibata-cursors
-      pulseaudio
-      libusb1
-    ];
-    extraEnv = {
-      XCURSOR_THEME = "Bibata-Modern-Ice";
-      XCURSOR_SIZE = "24";
-      XCURSOR_PATH = "/usr/share/icons:/usr/local/share/icons:$HOME/.icons:$HOME/.local/share/icons";
-    };
-    extraProfile = "unset TZ";
-  };
 in
 {
   systemd.user.tmpfiles.rules = [
-    "L+ %h/.local/share/Steam/compatibilitytools.d/GE-Proton-Latest - - - - ${lib.getOutput "steamcompattool" pkgs.proton-ge-bin}"
     # obexd (BT-Dateiübertragung) braucht den Root-Ordner
     "d %h/Downloads/Bluetooth 0755 - - -"
   ];
@@ -61,27 +44,8 @@ in
         RestartSec = 5;
       };
     };
-    # Steam wird NICHT mehr automatisch gestartet (Benny ist auf dem
-    # Intel-iGPU-System ohnehin langsam beim Login). Unit bleibt definiert und
-    # kann bei Bedarf manuell gestartet werden: `systemctl --user start steam`.
-    steam = {
-      Unit = {
-        Description = "Steam";
-        After = [ "graphical-session.target" "noctalia.service" ];
-      };
-      Service = {
-        Environment = [
-          "STEAM_EXTRA_COMPAT_TOOLS_PATHS=${extraCompatPaths}"
-          "XCURSOR_THEME=Bibata-Modern-Ice"
-          "XCURSOR_SIZE=24"
-        ];
-        ExecStartPre = [ waitForTray ];
-        ExecStart = "${steamPackage}/bin/steam";
-        TimeoutStartSec = "5min";
-        Restart = "on-failure";
-        RestartSec = 10;
-      };
-    };
+    # Steam wird auf benny bewusst NICHT gestartet (Intel-iGPU, langsamer
+    # Login) — bei Bedarf regulär per Launcher/Terminal starten.
     obex = {
       Unit = {
         Description = "Bluetooth OBEX File Transfer";

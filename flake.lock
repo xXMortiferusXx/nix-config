@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791123009,
-        "narHash": "sha256-A48yXN4Ag24J8lRABMN8Xujg6MqdWHSgLKA7qlMRmcc=",
+        "lastModified": 1791411127,
+        "narHash": "sha256-6Q32Mjyg9jMVFA+OfoOM8gFB/QGPoLBVNrXWLhzojRI=",
         "owner": "Wyze3306",
         "repo": "BedrockOnLinux",
-        "rev": "312b2ae297f149a3ffe6dcc75df2337ebbe32646",
+        "rev": "fd5aba3a4182d5085630ed34b27f9cac2e8cda7d",
         "type": "github"
       },
       "original": {
@@ -103,11 +103,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791227480,
-        "narHash": "sha256-+lrD+sxc2RKUWXRBAcggn7uBCFeJgnV75jD/cz7gJRA=",
+        "lastModified": 1791465139,
+        "narHash": "sha256-hXTjOf2VQDXrNt4aU9rmNhc0qdOhnjy9FcA4tlPEdq8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "aa23f720d022187228bc264f759aef6b80233bcf",
+        "rev": "678e6c11cd5d24226087dc758d17f705c7c4106a",
         "type": "github"
       },
       "original": {
@@ -119,11 +119,11 @@
     "lsfg-vk-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1790802658,
-        "narHash": "sha256-yM+NhLBNWu3VHDwbqm2nh6FMw5ECfy9jnDOPGk5kqMA=",
+        "lastModified": 1791292655,
+        "narHash": "sha256-VvtSyfljAPxNDUoJKj7eg5Dc068QB0vz+sIRF80twFM=",
         "ref": "master",
-        "rev": "50845d46b494913261094a4d6d3b65f8bb625d78",
-        "revCount": 117,
+        "rev": "40d1e4e317d5a95e577122ab74184b93b2b7db14",
+        "revCount": 118,
         "type": "git",
         "url": "https://git.lsfg-vk.dev/lsfg-vk.git"
       },
@@ -140,11 +140,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791242599,
-        "narHash": "sha256-Q81vP/PueET3wcdEkjKUCAw+m+XN04bVgCbkCEawkio=",
+        "lastModified": 1791411421,
+        "narHash": "sha256-oPewMhsurDiVtmh8vR0flTANn45bccl/PG+WDMZTO2c=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "a701b7e6653f660096d5223b0fa1a663d05b6506",
+        "rev": "0b55e3ad546cf51797cf9cb32e05debda8e24b15",
         "type": "github"
       },
       "original": {
@@ -155,11 +155,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1791216971,
-        "narHash": "sha256-hlZgTWTq6cxCICi/g+rF1Sc+DmjKolJmoCvc2xYtQQQ=",
+        "lastModified": 1791382735,
+        "narHash": "sha256-dx6/1y2hjnWUsRUDpYrKgCCsu5hV24c26Hy91NCtK/I=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c51d592ab064e57951e1e4331f5cf255a586da33",
+        "rev": "4164d3e0cab491e0973dd503757a4da25466f073",
         "type": "github"
       },
       "original": {
@@ -186,11 +186,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1791260994,
-        "narHash": "sha256-Miqqk/ammqnTUxaoCyvtwoPeLbI1ksFyLxi/CazZpWY=",
+        "lastModified": 1791456040,
+        "narHash": "sha256-H83yz/do+hjOO0uujHyH8RgtIQP2v7Mw+cLwcZK/xKc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+        "rev": "e7439b6b14ad3cc35d05608ebca9bce01a25f5f8",
         "type": "github"
       },
       "original": {
@@ -220,11 +220,11 @@
         "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
       },
       "locked": {
-        "lastModified": 1791251728,
-        "narHash": "sha256-UkzN8tOO68hloMjtQIVBLQ+A+2nQ3ADJw6uo62KE+nQ=",
+        "lastModified": 1791473047,
+        "narHash": "sha256-GBaETeWBB5tV1d8Gfa1FWG5ekF4u/hRCPlaG6/4vfoQ=",
         "ref": "refs/heads/main",
-        "rev": "4c89178780d800012fd2508b5a5d6ea11dd5b15d",
-        "revCount": 1167,
+        "rev": "1a5829066148394b36bc45fe76e768685e5a5369",
+        "revCount": 1200,
         "type": "git",
         "url": "https://github.com/noctalia-dev/umbriel"
       },
