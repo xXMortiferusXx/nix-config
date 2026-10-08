@@ -14,13 +14,11 @@
         pulseaudio
         libusb1
       ];
-      # XCURSOR_THEME/SIZE setzen wir hier NICHT mehr: Umbriel setzt sie aus
-      # seiner [input.cursor]-Config und veröffentlicht sie seit Rev 1200
-      # (#384) in die systemd-User-Umgebung -> Steam (per XDG-Autostart) erbt
-      # sie. XCURSOR_PATH setzt Umbriel nicht, der bleibt hier (FHS-Pfade).
-      extraEnv = {
-        XCURSOR_PATH = "/usr/share/icons:/usr/local/share/icons:$HOME/.icons:$HOME/.local/share/icons";
-      };
+      # Kein extraEnv mehr nötig:
+      # - XCURSOR_THEME/SIZE setzt Umbriel aus [input.cursor] und veröffentlicht
+      #   sie seit Rev 1200 (#384) in die systemd-User-Umgebung -> Steam erbt sie.
+      # - XCURSOR_PATH braucht es nicht: bibata-cursors liegt (via extraPkgs) im
+      #   FHS unter /usr/share/icons, und das ist Standard-Xcursor-Pfad.
       extraProfile = "unset TZ";
     };
   };
