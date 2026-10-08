@@ -28,7 +28,8 @@ let
       echo 1 > "''${found}authorized" 2>/dev/null || true
       sleep 2
     else
-      # Nicht enumeriert -> leere Ports des GC7-Controllers (usb3) toggeln.
+      # Nicht enumeriert -> leere Root-Ports + Hubs auf usb3 toggeln, damit
+      # auch ein GC7 HINTER einem Hub (nicht am Root-Port) neu enumeriert.
       for port in /sys/bus/usb/devices/usb3/*-0:1.0/usb3-port*; do
         [ -e "$port/disable" ] || continue
         n="''${port##*-port}"
@@ -37,6 +38,14 @@ let
         echo 1 > "$port/disable" 2>/dev/null || true
         sleep 1
         echo 0 > "$port/disable" 2>/dev/null || true
+      done
+      for hub in /sys/bus/usb/devices/3-*; do
+        [ -e "$hub/authorized" ] || continue
+        [ "$(cat "$hub/bDeviceClass" 2>/dev/null)" = "09" ] || continue
+        echo "gc7-reset: Hub $hub zuruecksetzen"
+        echo 0 > "$hub/authorized" 2>/dev/null || true
+        sleep 1
+        echo 1 > "$hub/authorized" 2>/dev/null || true
       done
       sleep 2
     fi
