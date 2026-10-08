@@ -36,14 +36,14 @@ in
   '';
 
   # Steam wird nicht mehr per systemd gestartet, sondern regulär über
-  # XDG-Autostart (Exec=steam -silent). Damit ist es ein normaler Prozess,
+  # XDG-Autostart. Damit ist es ein normaler Prozess,
   # den ProtonPlus/der Nutzer sauber beenden und neu starten kann.
   xdg.configFile."autostart/steam.desktop".text = ''
     [Desktop Entry]
     Type=Application
     Name=Steam
     Comment=Steam-Spiele verwalten und spielen
-    Exec=steam -silent
+    Exec=steam
     Icon=steam
     Terminal=false
     X-GNOME-Autostart-enabled=true

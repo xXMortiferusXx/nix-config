@@ -28,7 +28,7 @@ in
     Type=Application
     Name=Steam
     Comment=Steam-Spiele verwalten und spielen
-    Exec=steam -silent
+    Exec=steam
     Icon=steam
     Terminal=false
     X-GNOME-Autostart-enabled=true
