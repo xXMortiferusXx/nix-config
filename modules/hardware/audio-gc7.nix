@@ -1,8 +1,55 @@
 # Creative Sound Blaster GC7: GameVoice-Mix + 7.1 via zwei USB-Playback-Streams
-# (Game 7.1 + Voice/Chat + Mic); Clock-Raten, pro-audio-Profil und S3-Fix unten.
+# (Game 7.1 + Voice/Chat + Mic); Clock-Raten, pro-audio-Profil und Lock-Fix.
 { pkgs, ... }:
 
+let
+  # Software-"Replug": toggelt den USB-Port (bzw. authorized), damit ein
+  # hart-gelocktes GC7 ohne physisches Abstecken zurückkommt. Ein Warm-Reboot
+  # power-cyclet USB nicht -> sonst bleibt es nach dem Lock hängen.
+  # --if-missing: nur handeln, wenn das GC7 fehlt (Boot-Service).
+  gc7Reset = pkgs.writeShellScriptBin "gc7-reset" ''
+    export PATH="${pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.systemd pkgs.util-linux ]}:$PATH"
+    set -u
+    if_missing=0
+    [ "''${1:-}" = "--if-missing" ] && if_missing=1
+
+    found=""
+    for d in /sys/bus/usb/devices/*/idVendor; do
+      [ "$(cat "$d" 2>/dev/null)" = "041e" ] || continue
+      [ "$(cat "''${d%idVendor}idProduct" 2>/dev/null)" = "3271" ] || continue
+      found="''${d%idVendor}"
+    done
+
+    if [ -n "$found" ]; then
+      [ "$if_missing" = 1 ] && exit 0
+      echo "gc7-reset: GC7 bei $found -> authorized 0/1"
+      echo 0 > "''${found}authorized" 2>/dev/null || true
+      sleep 1
+      echo 1 > "''${found}authorized" 2>/dev/null || true
+      sleep 2
+    else
+      # Nicht enumeriert -> leere Ports des GC7-Controllers (usb3) toggeln.
+      for port in /sys/bus/usb/devices/usb3/*-0:1.0/usb3-port*; do
+        [ -e "$port/disable" ] || continue
+        n="''${port##*-port}"
+        [ -e "/sys/bus/usb/devices/3-$n" ] && continue
+        echo "gc7-reset: GC7 fehlt -> Port $port toggeln"
+        echo 1 > "$port/disable" 2>/dev/null || true
+        sleep 1
+        echo 0 > "$port/disable" 2>/dev/null || true
+      done
+      sleep 2
+    fi
+
+    [ "$if_missing" = 1 ] && exit 0
+    uid="$(id -u mortiferus 2>/dev/null || echo 1000)"
+    runuser -u mortiferus -- env XDG_RUNTIME_DIR="/run/user/$uid" \
+      systemctl --user restart wireplumber >/dev/null 2>&1 || true
+  '';
+in
 {
+  environment.systemPackages = [ gc7Reset ];
+
   # Erlaubte Clock-Raten systemweit erweitern (sonst werden 44100/88200/...
   # zwangsresampled -> Knacken). Kein Deckel, 48000 bleibt Default.
   services.pipewire.extraConfig.pipewire."99-gc7-clock" = {
@@ -20,7 +67,6 @@
     ];
 
     "monitor.alsa.rules" = [
-      # Kein Samplerate-Pin: GC7 liefert nativ 48k/96k/192k (HiRes).
       # session.suspend-timeout-seconds = 0: Nodes nie einschlafen, sonst
       # UAC-Clock-Timeout -> Knacken (bewusst fuer Output UND Capture).
       {
@@ -63,19 +109,19 @@
 
   # implicit_fb=1 NICHT setzen (macht Discord-Stimmen roboterhaft/verzerrt).
 
-  # Nach Resume GC7 hart zurücksetzen + WirePlumber neu starten.
+  # Nach Resume GC7 per Software-Replug zurücksetzen + WirePlumber neu starten.
   powerManagement.resumeCommands = ''
-    for d in /sys/bus/usb/devices/*/idVendor; do
-      if [ "$(cat "$d" 2>/dev/null)" = "041e" ] && [ "$(cat "''${d%idVendor}idProduct" 2>/dev/null)" = "3271" ]; then
-        dev="''${d%/idVendor}"
-        bus="$(cat "$dev/busnum" 2>/dev/null)"
-        num="$(cat "$dev/devnum" 2>/dev/null)"
-        if [ -n "$bus" ] && [ -n "$num" ] && [ -e "/dev/bus/usb/$bus/$num" ]; then
-          ${pkgs.usbutils}/bin/usbreset "/dev/bus/usb/$bus/$num" >/dev/null 2>&1 || true
-        fi
-      fi
-    done
-    sleep 2
-    runuser -u mortiferus -- env XDG_RUNTIME_DIR=/run/user/1000 systemctl --user restart wireplumber || true
+    ${gc7Reset}/bin/gc7-reset || true
   '';
+
+  # Boot: hängt das GC7 noch vom letzten Lock fest, Port einmal toggeln.
+  systemd.services.gc7-reenum = {
+    description = "GC7 re-enumerate if missing";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-settle.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${gc7Reset}/bin/gc7-reset --if-missing";
+    };
+  };
 }
