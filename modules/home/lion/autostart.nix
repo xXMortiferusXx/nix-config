@@ -21,18 +21,9 @@ let
 
 in
 {
-  # Steam regulär per XDG-Autostart (kein systemd-Service mehr) -> normaler
-  # Prozess, von ProtonPlus/Nutzer sauber beend- und neu startbar.
-  xdg.configFile."autostart/steam.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Steam
-    Comment=Steam-Spiele verwalten und spielen
-    Exec=steam
-    Icon=steam
-    Terminal=false
-    X-GNOME-Autostart-enabled=true
-  '';
+  # Steam-Autostart bewusst NICHT hier: Steam verwaltet seinen Autostart selbst
+  # (Einstellungen -> "Steam beim Anmelden starten"), so entscheidet jeder Host
+  # individuell. Kein systemd-Service, kein HM-XDG-Eintrag.
 
   systemd.user.tmpfiles.rules = [
     # obexd (BT-Dateiübertragung) braucht den Root-Ordner, sonst bricht er ab
