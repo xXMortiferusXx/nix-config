@@ -3,6 +3,7 @@
 # Anzeigenamen prüfen mit `umbriel outputs`; ggf. Refresh-Raten ergänzen.
 [output."DP-1"]
 mode = "1920x1080@143.981"    # LG ULTRAGEAR, 144 Hz (live via `umbriel outputs` geprüft)
+position = [0, 0]    # Haupt-Display (LG) links
 scale = 1.0
 bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"    # Kein globales VRR (flackerte auf Electron-Fenstern wie Zen).
@@ -12,6 +13,7 @@ cyclic_workspaces = true    # Workspace-Schritt wrappt am Ende: 4 → 1 (und 1 �
 
 [output."HDMI-A-1"]
 mode = "1920x1080@60.000"    # Samsung S24F350, 60 Hz (live via `umbriel outputs` geprüft)
+position = [1920, 0]    # Neben-Display (Samsung) rechts daneben
 scale = 1.0
 bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"
