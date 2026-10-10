@@ -1,6 +1,6 @@
 # Outputs – benny (Desktop, Intel-Onboard-Grafik HD 4000 / i915, EIN Monitor per HDMI)
 #
-# 1920x1080 @ 74.973 Hz über HDMI.
+# 1920x1080 @ 60.000 Hz über HDMI (bewusst auf 60 Hz – benny nutzt Cloud-Gaming).
 # Konnektor/Modus prüfen mit:
 #   umbriel outputs
 #
@@ -11,10 +11,10 @@
 # laufzeitabhängig ist, definieren wir alle drei identisch. Ein Block, dessen
 # Name zu keinem aktiven Output passt, wird von Umbriel still ignoriert.
 #
-# mode prüfen mit `umbriel outputs` (hier 74.973 statt 75.000).
+# mode prüfen mit `umbriel outputs` (echte Rate kann leicht abweichen, z.B. 60.000 vs 59.940).
 
 [output."HDMI-A-1"]
-mode = "1920x1080@74.973"
+mode = "1920x1080@60.000"
 scale = 1.0
 bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"    # Kein globales VRR; nur per window_rule.vrr (Games) in rules.toml.
@@ -22,7 +22,7 @@ workspaces = 4    # STATISCH – rules.toml adressiert default_workspace 1..4.
 cyclic_workspaces = true    # Workspace-Schritt wrappt: 4 → 1 (und 1 → 4).
 
 [output."HDMI-A-2"]
-mode = "1920x1080@74.973"
+mode = "1920x1080@60.000"
 scale = 1.0
 bit_depth = 10
 vrr = "disabled"
@@ -30,7 +30,7 @@ workspaces = 4
 cyclic_workspaces = true
 
 [output."HDMI-A-3"]
-mode = "1920x1080@74.973"
+mode = "1920x1080@60.000"
 scale = 1.0
 bit_depth = 10
 vrr = "disabled"
