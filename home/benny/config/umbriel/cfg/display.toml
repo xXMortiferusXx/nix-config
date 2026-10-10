@@ -1,20 +1,21 @@
-# Outputs – benny (Desktop, Intel-Onboard-Grafik HD 4000 / i915, EIN Monitor per HDMI)
+# Outputs – benny (Desktop, Intel-Onboard-Grafik HD 4000 / i915)
+# Hauptmonitor per HDMI (links), TV per VGA (rechts daneben).
+# Beide 1920x1080 @ 60.000 Hz (bewusst 60 Hz – benny nutzt Cloud-Gaming).
 #
-# 1920x1080 @ 60.000 Hz über HDMI (bewusst auf 60 Hz – benny nutzt Cloud-Gaming).
-# Konnektor/Modus prüfen mit:
-#   umbriel outputs
+# Konnektor/Modus/Position prüfen mit:  umbriel outputs
 #
-# WARUM DREI BLÖCKE: i915 legt für die PCH-Ports B, C und D je einen
+# WARUM DREI HDMI-BLÖCKE: i915 legt für die PCH-Ports B, C und D je einen
 # HDMI-Connector an (abhängig vom SDVO_DETECTED-Bit). Ivy Bridge hat maximal
 # 3 HDMI-Ports -> der Name ist HDMI-A-1, -2 oder -3, je nachdem auf welchem
 # Port die Buchse liegt (bei benny aktuell Port D = HDMI-A-3). Da die Nummer
 # laufzeitabhängig ist, definieren wir alle drei identisch. Ein Block, dessen
 # Name zu keinem aktiven Output passt, wird von Umbriel still ignoriert.
-#
-# mode prüfen mit `umbriel outputs` (echte Rate kann leicht abweichen, z.B. 60.000 vs 59.940).
+# >> Die drei HDMI-Blöcke müssen inhaltsgleich bleiben. <<
 
+# Hauptmonitor (links) – [0,0]
 [output."HDMI-A-1"]
 mode = "1920x1080@60.000"
+position = [0, 0]
 scale = 1.0
 bit_depth = 10    # 10-bit-SDR-Rendering (gegen Banding); Umbriel fällt auf 8-bit zurück, falls der Ausgang es nicht kann.
 vrr = "disabled"    # Kein globales VRR; nur per window_rule.vrr (Games) in rules.toml.
@@ -23,6 +24,7 @@ cyclic_workspaces = true    # Workspace-Schritt wrappt: 4 → 1 (und 1 → 4).
 
 [output."HDMI-A-2"]
 mode = "1920x1080@60.000"
+position = [0, 0]
 scale = 1.0
 bit_depth = 10
 vrr = "disabled"
@@ -31,6 +33,17 @@ cyclic_workspaces = true
 
 [output."HDMI-A-3"]
 mode = "1920x1080@60.000"
+position = [0, 0]
+scale = 1.0
+bit_depth = 10
+vrr = "disabled"
+workspaces = 4
+cyclic_workspaces = true
+
+# TV per VGA (rechts vom Hauptmonitor) – [1920,0]
+[output."VGA-1"]
+mode = "1920x1080@60.000"
+position = [1920, 0]
 scale = 1.0
 bit_depth = 10
 vrr = "disabled"
