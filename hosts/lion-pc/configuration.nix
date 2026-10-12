@@ -27,6 +27,10 @@
 
   services.irqbalance.enable = true;
 
+  # iwlmvm-Firmware-Power-Save aus (wie nex): verhindert sporadische
+  # WLAN-Drops/tx_retries durch den Firmware-Powersave der AX210.
+  boot.extraModprobeConfig = "options iwlmvm power_scheme=1";
+
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
   boot.kernelModules = [ "i2c-dev" ];
   users.groups.i2c = {};
