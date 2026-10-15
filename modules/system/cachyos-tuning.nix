@@ -6,14 +6,9 @@
     options.tuning.ioScheduler = lib.mkOption {
       type = lib.types.str;
       default = "kyber";
-      example = "adios";
       description = ''
-        I/O-Scheduler, den die udev-Regeln fuer SSD/NVMe setzen.
-        "adios" nur setzen, wenn der laufende Kernel es mitbringt
-        (CachyOS-Kernel). Auf anderen Kerneln (z. B. linuxPackages_zen auf
-        styx) existiert es nicht, die Regel laeuft dann still ins Leere und der
-        Kernel nimmt seinen Default. CachyOS-Hosts setzen in boot-<host>.nix
-        auf "adios"; hier bleibt es der Default fuer Nicht-CachyOS-Kernels.
+        I/O-Scheduler, den die udev-Regeln fuer SSD/NVMe setzen (mainline:
+        kyber/bfq/none). Gilt fuer alle Hosts.
       '';
     };
 
@@ -51,8 +46,7 @@
       # Partitionen (nvme0n1p1, sda1, ...) haben kein queue/scheduler-Attribut
       # und erzeugen sonst udev-"Could not chase"-Fehler
       #
-      # Scheduler-Wert kommt aus ioScheduler (Default "kyber"). CachyOS-Hosts
-      # uebersteuern auf "adios" (nur dort vorhanden) — siehe boot-<host>.nix.
+      # Scheduler-Wert kommt aus ioScheduler (Default "kyber").
       ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
       ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
       ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"

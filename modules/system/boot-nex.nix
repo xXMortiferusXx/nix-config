@@ -1,20 +1,12 @@
-# Boot-Konfiguration fuer nex (CachyOS-Kernel, x86_64-v3).
+# Boot-Konfiguration fuer nex (Zen-Kernel).
 # PRIME-Hybrid + amdgpu-Params + ntsync aktiv (siehe nvidia-prime.nix);
 # Netz-Tweaks kommen aus cachyos-tuning.nix.
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [ ./boot-common.nix ];
 
-  # CachyOS Kernel Overlay (xddxdd) — pkgs.cachyosKernels.* verfügbar machen
-  nixpkgs.overlays = [
-    inputs.nix-cachyos-kernel.overlays.pinned
-  ];
-
-  # latest-x86_64-v3: bore-v3 fehlt im Binary-Cache (sonst lokaler Build).
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3;
-  # CachyOS-Kernel bringt den "adios" I/O-Scheduler mit -> in cachyos-tuning.nix nutzen.
-  tuning.ioScheduler = "adios";
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   # ntsync: DRM-Sync fuer Wayland/VRR.

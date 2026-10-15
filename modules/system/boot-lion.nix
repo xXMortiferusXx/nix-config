@@ -1,18 +1,11 @@
-# Boot-Konfiguration fuer lion-pc (CachyOS-Kernel).
-# AMD Ryzen (Zen1) + Radeon RX 580; adios-Scheduler via cachyos-tuning.nix.
-{ config, pkgs, lib, inputs, ... }:
+# Boot-Konfiguration fuer lion-pc (Zen-Kernel).
+# AMD Ryzen (Zen1) + Radeon RX 580; I/O-Scheduler via cachyos-tuning.nix (kyber).
+{ config, pkgs, lib, ... }:
 
 {
   imports = [ ./boot-common.nix ];
 
-  # CachyOS Kernel Overlay (xddxdd) — pkgs.cachyosKernels.* verfügbar machen
-  nixpkgs.overlays = [
-    inputs.nix-cachyos-kernel.overlays.pinned
-  ];
-
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
-  # CachyOS-Kernel bringt den "adios" I/O-Scheduler mit -> in cachyos-tuning.nix nutzen.
-  tuning.ioScheduler = "adios";
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   # bfq fest laden: udev-Regel weist HDDs bfq zu, sonst Autoload-Problem.

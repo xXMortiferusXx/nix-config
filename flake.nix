@@ -21,11 +21,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # CachyOS-Kernel, folgt master; Binär-Cache: attic.xuyh0120.win/lantian
-    nix-cachyos-kernel = {
-      url = "github:xddxdd/nix-cachyos-kernel";
-    };
-
     # Arctis Sound Manager (eigener Fork; nur benny, nex nutzt den GC7)
     arctis-sound-manager = {
       url = "github:xXMortiferusXx/Arctis-Sound-Manager?dir=nix";
