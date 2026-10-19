@@ -35,6 +35,18 @@ in
   # FritzBox-Standard-Config (nicht am ASUS): DNS/Fallback auf 192.168.178.1.
   network.dnsServer = "192.168.178.1";
 
+  # Realtek r8169 (RTL8168f, 0000:03:00.0): nach S3-Resume kommt der Link oft
+  # nicht zurueck. Bekannter Workaround: Modul beim Resume neu laden (setzt den
+  # Controller komplett zurueck; reines ip-link-down/up reicht oft nicht).
+  environment.systemPackages = [ pkgs.ethtool ];
+  powerManagement.resumeCommands = ''
+    ${pkgs.ethtool}/bin/ethtool -s enp3s0 wol d || true
+    ${pkgs.kmod}/bin/modprobe -r r8169 || true
+    ${pkgs.kmod}/bin/modprobe r8169 || true
+    ${pkgs.iproute2}/bin/ip link set enp3s0 up || true
+    ${pkgs.ethtool}/bin/ethtool -s enp3s0 autoneg on || true
+  '';
+
   # Arctis Sound Manager (Flake-Input) mit pause-on-idle-Patch (siehe let-Block).
   services.arctis-sound-manager.enable = true;
   services.arctis-sound-manager.package = arctis-sound-manager;
