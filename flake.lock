@@ -69,11 +69,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792000010,
-        "narHash": "sha256-4jtkwQlReQdXsKJJfB9yT7nIf0TlwgZOk2XtxjUgDS8=",
+        "lastModified": 1792467281,
+        "narHash": "sha256-l1aACVdR3Wm6V0MGoTKqUg2tPKVNKGAVoz22jJ4QDw4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "5a9d300bd619c03857521b50c8877a19dbad7078",
+        "rev": "5bf02bcfede52ca95f693069ac28ace376942c05",
         "type": "github"
       },
       "original": {
@@ -85,11 +85,11 @@
     "lsfg-vk-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1791736358,
-        "narHash": "sha256-pzRfJZ7/n2dGnCRlse31kWfSrtj0HexRhl70/PdrKGI=",
+        "lastModified": 1792364758,
+        "narHash": "sha256-YwCvbxdRhPz2daEIEMOciA/i4nhk/hY0Tj7l9t9oOWI=",
         "ref": "master",
-        "rev": "eb080c933da9612d70ed12d15610f808b76f108b",
-        "revCount": 119,
+        "rev": "21fbd1bc4e94ebc076cc0a86f09e3107b83f0c96",
+        "revCount": 120,
         "type": "git",
         "url": "https://git.lsfg-vk.dev/lsfg-vk.git"
       },
@@ -101,17 +101,33 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1791956154,
-        "narHash": "sha256-jBYGPi4udQ9uo4KQp9m2J0546nJVQitG15gvZSaVVAs=",
+        "lastModified": 1792210252,
+        "narHash": "sha256-Mh0PUaIv4nFY+8wAGonaEh8iBzwsmdNlwjVHmFg1Biw=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "55bfb4d7437bd4e09ab7cba58a43bd68eb310044",
+        "rev": "09063bd1f2b36fd9fd793c36dfade7bd40a93dfc",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "ref": "nixos-unstable",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-old": {
+      "locked": {
+        "lastModified": 1792094642,
+        "narHash": "sha256-zp8ToDMnqZcu4o4IH9pdwXFXGp7yLm/M0dEnNWnyd7I=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "fe13242281a67641c0102cdb1087f0ebe586c7df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "fe13242281a67641c0102cdb1087f0ebe586c7df",
         "type": "github"
       }
     },
@@ -123,6 +139,7 @@
         "home-manager": "home-manager",
         "lsfg-vk-src": "lsfg-vk-src",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-old": "nixpkgs-old",
         "umbriel": "umbriel"
       }
     },
@@ -134,11 +151,11 @@
         "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
       },
       "locked": {
-        "lastModified": 1792059052,
-        "narHash": "sha256-RHgqUpZbya4PZkY3IN3Gh8k9HdktmnYXCos4f4BKP/0=",
+        "lastModified": 1792467569,
+        "narHash": "sha256-RShD1Y4ZC7AHg7Dcfd9/IxOl0GZkdfhkAmieek9HGDo=",
         "ref": "refs/heads/main",
-        "rev": "cbc4199c2690a2922ddbae96d07de66ab0e0a042",
-        "revCount": 1247,
+        "rev": "b70b6fab8b92095914e934c599f4dea10b75eb33",
+        "revCount": 1312,
         "type": "git",
         "url": "https://github.com/noctalia-dev/umbriel"
       },
@@ -155,11 +172,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792026707,
-        "narHash": "sha256-4Y93egV/VYybIJ6D6tHEgbOzn2gtWxHRIyomOx5Gc/4=",
+        "lastModified": 1792417147,
+        "narHash": "sha256-uCM9pwVAG4Csf8n+IvFdhEAlXjqVWPidUNY3I1oUkzE=",
         "owner": "noctalia-dev",
         "repo": "xdg-desktop-portal-umbriel",
-        "rev": "5d16415264fa5ae86a110db5d172ca05edb43cf6",
+        "rev": "1cc6eb18ba0d6c82dd66999646d7e554f76a85b6",
         "type": "github"
       },
       "original": {

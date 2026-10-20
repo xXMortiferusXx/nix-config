@@ -5,6 +5,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Letzter Stand vor der patchelf-0.19.2-Regression (naps2 baut dort noch,
+    # patchelf 0.15.2). Nur für das naps2-Overlay; alles andere bleibt unstable.
+    nixpkgs-old.url = "github:nixos/nixpkgs/fe13242281a67641c0102cdb1087f0ebe586c7df";
+
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -34,10 +38,15 @@
     };
   };
 
-  outputs = { self, nixpkgs, disko, home-manager, arctis-sound-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-old, disko, home-manager, arctis-sound-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
+
+      # naps2 aus dem alten nixpkgs (patchelf 0.15.2) -> umgeht den patchelf-0.19.2-Crash
+      naps2Overlay = _final: _prev: {
+        naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
+      };
 
       # Disko-Configs fuer den Installer (--argstr device); Default nur fuer Rebuild.
       diskoConfigurations.nex = { device ? "/dev/nvme0n1", ... }:
@@ -59,6 +68,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -73,6 +83,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/styx/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -88,6 +99,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/test/configuration.nix
         ];
       };
@@ -97,6 +109,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/lion-pc/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -112,6 +125,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
+          { nixpkgs.overlays = [ naps2Overlay ]; }
           arctis-sound-manager.nixosModules.default
           ./hosts/benny/configuration.nix
           home-manager.nixosModules.home-manager
