@@ -76,7 +76,7 @@
     - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland — bleibt
     - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` (50-vram-fix.json) — bleibt
   - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
-  - **Treiber**: `nvidiaPackages.stable` = 595.91.07 (seit 2026-08-16; vorher `latest` = 610.57.04, NVIDIA nennt 610 jetzt `new_feature`/`bleeding_edge`, 595 ist der `production`-Zweig)
+  - **Treiber**: `nvidiaPackages.latest` = 615.78.08 (Stand 2026-10-20; `stable`/`production` = 595.104.02). Siehe „Bekannte Probleme → NVIDIA … patchelf + glibc 2.44" für den origBin-Workaround.
 
 ### Home-Manager
 - `home/mortiferus/{default,packages,config,autostart,mpv}.nix` (mangohud.nix gelöscht – Config wird von GOverlay verwaltet)
@@ -264,6 +264,33 @@
 - **Wichtig:** Der Loader-Ordner ist `/run/current-system/sw/share/vulkan/implicit_layer.d/`, **nicht** `/run/opengl-driver/share/vulkan/…` (das ist nur der NVIDIA-Anteil). Ein Check in `/run/opengl-driver` gibt ein irreführendes „nicht vorhanden" aus.
 
 ## Bekannte Probleme
+
+### NVIDIA nvidia-powerd/nvidia-smi: SIGSEGV durch patchelf + glibc 2.44 (2026-10-20)
+- **Problem**: Nach dem Update auf glibc 2.44-57 / nvidia 615.78.08 crashen die von Nixpkgs
+  per `patchelf` gepatchten NVIDIA-Binaries: `nvidia-powerd` beim Start und `nvidia-smi -L`/`-q`
+  mit SIGSEGV im Loader (`dl_main`), bevor `main()` läuft. `nvidia-smi` ohne Args endet mit
+  exit 0, Queries crashen. Die **ungepatchte** `origBin/` läuft über `nix-ld`.
+- **Ursache**: Nixpkgs übernimmt die NVIDIA-Binaries 1:1, schreibt aber `INTERP` + `RPATH`
+  per `patchelf` um. Beim Vergrößern von `.dynamic`/`.dynstr` (langer RPATH) verschiebt
+  patchelf ELF-Sections und aktualisiert einen Verweis nicht korrekt (bekanntes
+  patchelf-Problem) → Loader folgt stale pointer → SIGSEGV. **Nicht der Treiber** und nicht
+  durch manuelle Treiberinstallation lösbar (NixOS hat kein FHS/`/usr/lib`).
+- **Workaround in `modules/hardware/nvidia-prime.nix`**:
+  - `systemd.services.nvidia-powerd` → `ExecStart = …/origBin/nvidia-powerd` +
+    `LD_LIBRARY_PATH`. Dynamic Boost bleibt an (`-q -d POWER`: 130 W vs. 115 W Default;
+    die „DC"-Fehler im Log betreffen nur Akku-Betrieb).
+  - `environment.systemPackages` → `nvidia-smi`-Wrapper auf `origBin` + NV-Libs,
+    `meta.priority = 1` (sonst verdrängt `nvidia_x11.bin` den Wrapper).
+- **Fix erkennen (ohne switch)**, nach `nix flake update`:
+  ```bash
+  BIN=$(nix eval --raw '.#nixosConfigurations.nex.config.hardware.nvidia.package.bin')
+  env -i "$BIN/bin/nvidia-smi" -L
+  ```
+  Exit 0 + GPU-Zeile → gefixt → beide Overrides entfernen. SIGSEGV → noch nicht gefixt.
+- **Frühindikator**: Änderung an `patchelf` (aktuell 0.19.2) oder `glibc` (2.44-57).
+- **Randsache**: `hardware.sane` setzte global `LD_LIBRARY_PATH=/etc/sane-libs`, was
+  `nvidia-smi`/`nvidia-offload` zusätzlich im Shell-Kontext brach. Global geleert;
+  `scanimage` + `naps2` (nixpkgs-old-Overlay) sind gewrappt.
 
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
