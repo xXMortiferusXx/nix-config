@@ -290,9 +290,11 @@
   env -i "$BIN/bin/nvidia-smi" -L
   ```
 - **Frühindikator**: `nix eval --raw '.#nixosConfigurations.nex.pkgs.patchelf.version'`.
-- **Randsache**: `hardware.sane` setzte global `LD_LIBRARY_PATH=/etc/sane-libs`, was
-  `nvidia-smi`/`nvidia-offload` zusätzlich im Shell-Kontext brach. Global geleert;
-  `scanimage` + `naps2` (nixpkgs-old-Overlay) sind gewrappt.
+- **Randsache (erledigt)**: `hardware.sane` setzt global `LD_LIBRARY_PATH=/etc/sane-libs`.
+  Das sah zunächst wie ein zusätzlicher NVIDIA-Brecher aus, war aber nur ein Symptom des
+  LOAD-Overlaps — mit dem `postFixup`-Fix läuft `nvidia-smi`/`nvidia-offload` auch mit dem
+  globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
+  `naps2`-Wrapper sind entfernt. naps2 kommt weiterhin aus `nixpkgs-old` (patchelf 0.15.2).
 
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein

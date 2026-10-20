@@ -44,19 +44,8 @@
       specialArgs = { inherit self inputs; };
 
       # naps2 aus dem alten nixpkgs (patchelf 0.15.2) -> umgeht den patchelf-0.19.2-Crash.
-      # Zusaetzlich SANE-Backends in den LD_LIBRARY_PATH wrappen (siehe printing.nix,
-      # dort ist der globale LD_LIBRARY_PATH bewusst entfernt).
-      naps2Overlay = final: _prev: {
-        naps2 = final.symlinkJoin {
-          name = "naps2-wrapped";
-          paths = [ nixpkgs-old.legacyPackages.${system}.naps2 ];
-          nativeBuildInputs = [ final.makeWrapper ];
-          postBuild = ''
-            for bin in $out/bin/*; do
-              wrapProgram "$bin" --prefix LD_LIBRARY_PATH : /etc/sane-libs
-            done
-          '';
-        };
+      naps2Overlay = _final: _prev: {
+        naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
       };
 
       # Disko-Configs fuer den Installer (--argstr device); Default nur fuer Rebuild.
