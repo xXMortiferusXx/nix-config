@@ -3,6 +3,23 @@
 # Display, dGPU (NVIDIA, PCI:1:0:0) wird per `nvidia-offload` zugeschaltet.
 { config, pkgs, lib, ... }:
 
+let
+  # patchelf 0.19.2 erzeugt bei "interpreter zuerst, dann rpath" ein
+  # ueberlappendes RW-LOAD (patchelf#672/#674) -> glibc 2.44 SIGSEGV in
+  # dl_main. Die Executables aus der unveraenderten origBin mit rpath zuerst
+  # neu patchen; betrifft nur NVIDIA.
+  nvidiaPackage = config.boot.kernelPackages.nvidiaPackages.latest.overrideAttrs (old: {
+    postFixup = (old.postFixup or "") + ''
+      for i in nvidia-cuda-mps-control nvidia-cuda-mps-server nvidia-smi nvidia-debugdump nvidia-powerd; do
+        if [ -e "$bin/origBin/$i" ]; then
+          cp "$bin/origBin/$i" "$bin/bin/$i"
+          patchelf --set-rpath "$out/lib:$libPath" "$bin/bin/$i"
+          patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$bin/bin/$i"
+        fi
+      done
+    '';
+  });
+in
 {
   hardware.enableRedistributableFirmware = true;
 
@@ -35,7 +52,7 @@
     modesetting.enable = true;
     nvidiaSettings = true;
     open = true;
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    package = nvidiaPackage;
 
     powerManagement.enable = true;
     powerManagement.finegrained = true; # nur mit PRIME erlaubt (NixOS-Assertion)
@@ -54,14 +71,6 @@
     };
   };
 
-  # Das rpath-gepatchte nvidia-powerd segfaultet mit glibc 2.44 beim Start
-  # (Patchelf/glibc-Layoutproblem). Die unveraenderte origBin laeuft ueber
-  # nix-ld -> Service darauf umbiegen, bis nixpkgs/patchelf das fixen.
-  systemd.services.nvidia-powerd = lib.mkIf config.hardware.nvidia.dynamicBoost.enable {
-    environment.LD_LIBRARY_PATH = "${config.hardware.nvidia.package.bin}/lib";
-    serviceConfig.ExecStart = lib.mkForce "${config.hardware.nvidia.package.bin}/origBin/nvidia-powerd";
-  };
-
   # Eigenes Offload-Skript: setzt zusätzlich VK_DRIVER_FILES. Das NVIDIA-Paket
   # bringt hier keine Vulkan-Layer mit, sonst wählt der Loader die iGPU (RADV).
   # Nicht global setzen — Umbriel rendert auf der iGPU.
@@ -74,13 +83,6 @@
       export VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
       exec "$@"
     '')
-    # nvidia-smi crasht als rpath-gepatchtes Binary mit glibc 2.44 (wie
-    # nvidia-powerd); die unveraenderte origBin laeuft mit den NV-Libs.
-    # priority=1, damit der Wrapper das Binary aus nvidia_x11.bin verdrängt.
-    ((pkgs.writeShellScriptBin "nvidia-smi" ''
-      export LD_LIBRARY_PATH="${config.hardware.nvidia.package.bin}/lib:${config.hardware.nvidia.package}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-      exec ${config.hardware.nvidia.package.bin}/origBin/nvidia-smi "$@"
-    '').overrideAttrs (o: { meta = o.meta // { priority = 1; }; }))
   ];
 
   # VRAM-Heap-Fix (GLVidHeapReuseRatio=0) für bekannte Electron-/GPU-Apps.

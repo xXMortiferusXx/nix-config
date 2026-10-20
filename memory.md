@@ -265,29 +265,31 @@
 
 ## Bekannte Probleme
 
-### NVIDIA nvidia-powerd/nvidia-smi: SIGSEGV durch patchelf + glibc 2.44 (2026-10-20)
-- **Problem**: Nach dem Update auf glibc 2.44-57 / nvidia 615.78.08 crashen die von Nixpkgs
-  per `patchelf` gepatchten NVIDIA-Binaries: `nvidia-powerd` beim Start und `nvidia-smi -L`/`-q`
-  mit SIGSEGV im Loader (`dl_main`), bevor `main()` läuft. `nvidia-smi` ohne Args endet mit
-  exit 0, Queries crashen. Die **ungepatchte** `origBin/` läuft über `nix-ld`.
-- **Ursache**: Nixpkgs übernimmt die NVIDIA-Binaries 1:1, schreibt aber `INTERP` + `RPATH`
-  per `patchelf` um. Beim Vergrößern von `.dynamic`/`.dynstr` (langer RPATH) verschiebt
-  patchelf ELF-Sections und aktualisiert einen Verweis nicht korrekt (bekanntes
-  patchelf-Problem) → Loader folgt stale pointer → SIGSEGV. **Nicht der Treiber** und nicht
-  durch manuelle Treiberinstallation lösbar (NixOS hat kein FHS/`/usr/lib`).
-- **Workaround in `modules/hardware/nvidia-prime.nix`**:
-  - `systemd.services.nvidia-powerd` → `ExecStart = …/origBin/nvidia-powerd` +
-    `LD_LIBRARY_PATH`. Dynamic Boost bleibt an (`-q -d POWER`: 130 W vs. 115 W Default;
-    die „DC"-Fehler im Log betreffen nur Akku-Betrieb).
-  - `environment.systemPackages` → `nvidia-smi`-Wrapper auf `origBin` + NV-Libs,
-    `meta.priority = 1` (sonst verdrängt `nvidia_x11.bin` den Wrapper).
-- **Fix erkennen (ohne switch)**, nach `nix flake update`:
+### NVIDIA nvidia-powerd/nvidia-smi: SIGSEGV durch patchelf-LOAD-Overlap (2026-10-20)
+- **Problem**: Nach dem Update auf patchelf **0.19.2** (nixpkgs `09063bd`) crashen die
+  gepatchten NVIDIA-Executables (`nvidia-powerd`, `nvidia-smi -L`/`-q`) mit SIGSEGV in
+  `dl_main`, bevor `main()` läuft. glibc 2.44 und nvidia 615.78.08 waren vorher schon
+  drauf — der Auslöser ist der patchelf-Sprung **0.15.2 → 0.19.2**.
+- **Ursache**: `patchelf --interpreter … --set-rpath …` (Interpreter zuerst, dann RPATH-
+  Wachstum) erzeugt ein zusätzliches RW-PT_LOAD für Header/PHDR/INTERP, das ein
+  bestehendes R-PT_LOAD überlappt. `.dynamic` liegt in der Überlappung; der Loader
+  mappt die Seite mit widersprüchlichen Rechten → Crash. **Nicht `DT_VERDEF`** — die
+  NVIDIA-Binaries haben gar kein `.gnu.version_d`.
+- **Upstream**: patchelf#672 „Fix overlapping LOAD mappings after executable header
+  rewrites" (gemerged 2026-10-20), #668 (offen), #622, #623, #674 (explizit `nvidia-smi`,
+  offen). `nixos-unstable` und `nixos-unstable-small` haben weiterhin patchelf 0.19.2
+  (Stand 2026-10-20) → Fix dort noch nicht enthalten.
+- **Fix in `modules/hardware/nvidia-prime.nix`** (`nvidiaPackage`-Override): `postFixup`
+  kopiert die Executables aus `origBin/` und patcht sie **rpath zuerst, dann interpreter**
+  neu. Betrifft nur NVIDIA, kein World-Rebuild. Verifiziert: `nvidia-powerd` exit 0,
+  `nvidia-smi -L` zeigt die GPU.
+- **Entfernen**, sobald nixpkgs patchelf > 0.19.2 (mit #672) hat — dann `nvidiaPackage`-
+  Override raus. Test ohne Switch:
   ```bash
   BIN=$(nix eval --raw '.#nixosConfigurations.nex.config.hardware.nvidia.package.bin')
   env -i "$BIN/bin/nvidia-smi" -L
   ```
-  Exit 0 + GPU-Zeile → gefixt → beide Overrides entfernen. SIGSEGV → noch nicht gefixt.
-- **Frühindikator**: Änderung an `patchelf` (aktuell 0.19.2) oder `glibc` (2.44-57).
+- **Frühindikator**: `nix eval --raw '.#nixosConfigurations.nex.pkgs.patchelf.version'`.
 - **Randsache**: `hardware.sane` setzte global `LD_LIBRARY_PATH=/etc/sane-libs`, was
   `nvidia-smi`/`nvidia-offload` zusätzlich im Shell-Kontext brach. Global geleert;
   `scanimage` + `naps2` (nixpkgs-old-Overlay) sind gewrappt.
