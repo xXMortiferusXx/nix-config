@@ -43,7 +43,9 @@
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
 
-      # naps2 aus dem alten nixpkgs (patchelf 0.15.2) -> umgeht den patchelf-0.19.2-Crash.
+      # naps2 aus dem alten nixpkgs (patchelf 0.15.2): patchelf 0.19.2 bricht beim
+      # NuGet-AppHost mit `shiftFile: Assertion splitIndex == -1` (Build-Zeit,
+      # --add-rpath). NICHT der NVIDIA-LOAD-Overlap -> rpath-first hilft nicht.
       naps2Overlay = _final: _prev: {
         naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
       };
