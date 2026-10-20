@@ -1,6 +1,6 @@
 # lion-pc – Implementierungsplan (Gaming-Rechner für lion)
 
-Zweck: Plan für den neuen NixOS-Host **lion-pc** (Gaming-Desktop, AMD CPU + AMD Radeon RX 580 8GB)
+Zweck: Plan für den neuen NixOS-Host **lion-pc** (Gaming-Desktop, AMD CPU + AMD Radeon RX 590 8GB)
 festhalten, bevor und während implementiert wird. **Umsetzungsstand: fertig gebaut & verifiziert
 (Build erfolgreich), Tests stehen aus** — lion soll beim Testen dabei sein.
 
@@ -11,7 +11,7 @@ Referenz: `umbriel.md` (Format/Versionstracking). Host-Muster: `hosts/nex`, `hos
 ## Überblick
 
 - Zweck: eigener Gaming-PC für **lion** (Kind), Roblox als Hauptspiel.
-- Hardware: AMD CPU (Ryzen) + **AMD Radeon RX 580 8GB** (GCN, diskret, kein iGPU/APU-Shared-RAM).
+- Hardware: AMD CPU (Ryzen) + **AMD Radeon RX 590 8GB** (GCN, diskret, kein iGPU/APU-Shared-RAM).
 - Basis: vorhandene Host-Struktur + CachyOS-Kernel (wie `nex`).
 - DE: **Umbriel** (eigener Wayland-Compositor, wie `nex`/`styx` — **kein KDE**).
 - User: **lion** / Hostname **lion-pc**.
@@ -202,7 +202,7 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 
 ### Roblox (Install durch lion selbst, nicht deklarativ)
 - `org.vinegarhq.Sober` (Player) + `org.vinegarhq.Vinegar` (Studio) via Flatpak/Bazaar
-- RX 580 (GCN) funktioniert gut mit Mesa/RADV für Roblox
+- RX 590 (GCN) funktioniert gut mit Mesa/RADV für Roblox
 
 ---
 

@@ -8,7 +8,7 @@ This is my personal NixOS flake managing multiple machines with a shared module 
 |------|----------|------|
 | **nex** | AMD Ryzen (iGPU) + NVIDIA RTX 3070, Lenovo Legion 5 laptop (PRIME Hybrid / Advanced Optimus) | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
-| **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC for lion (kid) |
+| **lion-pc** | AMD Ryzen + Radeon RX 590 8GB | Gaming-PC for lion (kid) |
 | **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop/gaming PC for a friend |
 | **test** | QEMU VM | Minimal installer-testing host |
 
@@ -114,7 +114,7 @@ Meine persönliche NixOS-Flake, die mehrere Rechner mit einem gemeinsamen Moduls
 |------|----------|-------|
 | **nex** | AMD Ryzen (iGPU) + NVIDIA RTX 3070, Lenovo Legion 5 Laptop (PRIME Hybrid / Advanced Optimus) | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
-| **lion-pc** | AMD Ryzen + Radeon RX 580 8GB | Gaming-PC für lion (Kind) |
+| **lion-pc** | AMD Ryzen + Radeon RX 590 8GB | Gaming-PC für lion (Kind) |
 | **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop-/Gaming-PC für einen Kumpel |
 | **test** | QEMU-VM | Minimaler Installer-Test-Host |
 

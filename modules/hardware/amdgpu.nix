@@ -1,4 +1,4 @@
-# Grafiktreiber für AMD (Radeon RX 580 8GB / GCN-Polaris)
+# Grafiktreiber für AMD (Radeon RX 590 8GB / GCN-Polaris)
 # Mesa-RADV (Vulkan) + radeonsi (VA-API/VDPAU)
 { config, pkgs, lib, ... }:
 

@@ -106,7 +106,7 @@
         ];
       };
 
-      # lion-pc: AMD CPU + Radeon RX 580
+      # lion-pc: AMD CPU + Radeon RX 590
       nixosConfigurations."lion-pc" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
