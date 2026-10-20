@@ -1,10 +1,10 @@
 # Gemeinsame Boot-Konfig für alle Hosts
-# Importiert cachyos-tuning, setzt systemd-boot, zram, fstrim, chrony, nix.gc
+# Importiert kernel-tuning, setzt systemd-boot, zram, fstrim, chrony, nix.gc
 { config, pkgs, lib, ... }:
 
 {
   imports = [
-    ./cachyos-tuning.nix
+    ./kernel-tuning.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

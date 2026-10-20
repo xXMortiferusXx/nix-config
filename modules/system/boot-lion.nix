@@ -1,5 +1,5 @@
 # Boot-Konfiguration fuer lion-pc (Latest-Kernel).
-# AMD Ryzen (Zen1) + Radeon RX 590; I/O-Scheduler via cachyos-tuning.nix (kyber).
+# AMD Ryzen (Zen1) + Radeon RX 590; I/O-Scheduler via kernel-tuning.nix (kyber).
 { config, pkgs, lib, ... }:
 
 {

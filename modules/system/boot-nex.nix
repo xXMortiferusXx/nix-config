@@ -1,6 +1,6 @@
 # Boot-Konfiguration fuer nex (Latest-Kernel).
 # PRIME-Hybrid + amdgpu-Params + ntsync aktiv (siehe nvidia-prime.nix);
-# Netz-Tweaks kommen aus cachyos-tuning.nix.
+# Netz-Tweaks kommen aus kernel-tuning.nix.
 { config, pkgs, lib, ... }:
 
 {

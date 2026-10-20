@@ -61,9 +61,9 @@ One file = one topic. Large files get split into submodules (e.g., `programs/gam
 - **Disko** for declarative partitioning
 - **Noctalia v5** as desktop shell (launcher, notifications, clipboard, …)
 - **Umbriel** (wlroots-based Wayland compositor) directly from the Umbriel flake (`inputs.umbriel`) as the only session; niri and Hyprland are removed (configs archived under `archive/`)
-- **CachyOS** kernel on nex (`cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3`) and lion-pc (`cachyosKernels.linuxPackages-cachyos-latest`), **Zen** (`linuxPackages_zen`) on styx + test, mainline `linuxPackages_latest` on benny. The CachyOS kernel input follows upstream `master` (no branch pin, auto-updates via `nix flake update nix-cachyos-kernel`); binaries come from the `attic.xuyh0120.win/lantian` binary cache (no long local builds). CachyOS-derived sysctl/udev/PAM/bpftune tuning
+- **Kernel**: mainline `linuxPackages_latest` (currently 7.3) on **all** hosts — no CachyOS kernel, no CachyOS kernel cache. Kernel/system tuning (sysctl, udev I/O-scheduler `kyber`, BBR, PAM, bpftune, zram) lives in `modules/system/kernel-tuning.nix`
 - **ananicy-cpp** with [CachyOS rules](https://github.com/CachyOS/ananicy-rules) for automatic per-process nice/ionice/sched prioritization
-- **Cachix / Attic**: `noctalia.cachix.org` for Noctalia binaries, `attic.xuyh0120.win/lantian` for the CachyOS kernel
+- **Cachix**: `noctalia.cachix.org` (+ `nix-community`) for cached binaries
 - **PipeWire** audio with low-latency config
 
 ## Desktop / Compositor
@@ -78,7 +78,7 @@ See `memory.md` for the full list.
 
 ## Gaming (nex + lion-pc)
 
-nex runs as an **NVIDIA PRIME Hybrid** setup (Advanced Optimus): the AMD Ryzen iGPU drives the internal panel and the RTX 3070 is offloaded on demand via `nvidia-offload`. Dynamic Boost (`nvidia-powerd`) lifts the dGPU to ~128 W under load. It has a dedicated gaming module stack:
+nex runs as an **NVIDIA PRIME Hybrid** setup (Advanced Optimus): the AMD Ryzen iGPU drives the internal panel and the RTX 3070 is offloaded on demand via `nvidia-offload`. Dynamic Boost (`nvidia-powerd`) lifts the dGPU to ~130 W under load. It has a dedicated gaming module stack:
 
 - Steam (with Proton-GE, hardware decoding)
 - Lutris & Heroic (installed as per-user packages)
@@ -98,8 +98,6 @@ Plus a dedicated `/gaming` data SSD (ext4, `GamingDrive` on a separate NVMe; not
 - [bpftune](https://github.com/oracle/bpftune) – BPF-driven network auto-tuning (Oracle)
 - [CachyOS](https://github.com/CachyOS) – kernel tuning inspiration
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – process priority rules
-- [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) – CachyOS kernel packaging + attic binary cache (`attic.xuyh0120.win/lantian`)
-- [zen-kernel](https://github.com/zen-kernel/zen-kernel) – gaming/desktop-optimised kernel
 - All the NixOS community for endless inspiration
 
 ---
@@ -165,9 +163,9 @@ Eine Datei = ein Thema. Große Dateien werden in Untermodule aufgeteilt (z.B. `p
 - **Disko** für deklarative Partitionierung
 - **Noctalia v5** als Desktop-Shell (Launcher, Notifications, Clipboard, …)
 - **Umbriel** (wlroots-basierter Wayland Compositor) direkt vom Umbriel-Flake (`inputs.umbriel`) als einzige Session; niri und Hyprland sind entfernt (Configs unter `archive/`)
-- **CachyOS**-Kernel auf nex (`cachyosKernels.linuxPackages-cachyos-latest-x86_64-v3`) und lion-pc (`cachyosKernels.linuxPackages-cachyos-latest`), **Zen** (`linuxPackages_zen`) auf styx + test, Mainline `linuxPackages_latest` auf benny. Der CachyOS-Kernel-Input folgt dem upstream-`master`-Zweig (keine Branch-Pin, Auto-Update via `nix flake update nix-cachyos-kernel`); Binaries kommen aus dem `attic.xuyh0120.win/lantian` Binary-Cache (keine langen Lokal-Builds). CachyOS-abgeleitete sysctl/udev/PAM/bpftune-Tuning
+- **Kernel**: Mainline `linuxPackages_latest` (aktuell 7.3) auf **allen** Hosts — kein CachyOS-Kernel, kein CachyOS-Kernel-Cache. Kernel-/System-Tuning (sysctl, udev-I/O-Scheduler `kyber`, BBR, PAM, bpftune, zram) liegt in `modules/system/kernel-tuning.nix`
 - **ananicy-cpp** mit [CachyOS-Regeln](https://github.com/CachyOS/ananicy-rules) für automatische per-Prozess nice/ionice/sched Priorisierung
-- **Cachix / Attic**: `noctalia.cachix.org` für Noctalia-Binaries, `attic.xuyh0120.win/lantian` für den CachyOS-Kernel
+- **Cachix**: `noctalia.cachix.org` (+ `nix-community`) für gecachte Binaries
 - **PipeWire** Audio mit Low-Latency-Konfig
 
 ## Desktop / Compositor
@@ -182,7 +180,7 @@ Die vollständige Liste steht in `memory.md`.
 
 ## Gaming (nex + lion-pc)
 
-nex läuft als **NVIDIA PRIME Hybrid** (Advanced Optimus): die AMD-Ryzen-iGPU fährt das interne Panel, die RTX 3070 wird bei Bedarf per `nvidia-offload` zugeschaltet. Dynamic Boost (`nvidia-powerd`) hebt die dGPU unter Last auf ~128 W. Er hat einen dedizierten Gaming-Modul-Stack:
+nex läuft als **NVIDIA PRIME Hybrid** (Advanced Optimus): die AMD-Ryzen-iGPU fährt das interne Panel, die RTX 3070 wird bei Bedarf per `nvidia-offload` zugeschaltet. Dynamic Boost (`nvidia-powerd`) hebt die dGPU unter Last auf ~130 W. Er hat einen dedizierten Gaming-Modul-Stack:
 
 - Steam (mit Proton-GE, Hardware-Dekodierung)
 - Lutris & Heroic (als User-Pakete installiert)
@@ -202,6 +200,4 @@ Plus eine dedizierte `/gaming`-Datenssd (ext4, `GamingDrive` auf separater NVMe;
 - [bpftune](https://github.com/oracle/bpftune) – BPF-basierte Netzwerk-Auto-Optimierung (Oracle)
 - [CachyOS](https://github.com/CachyOS) – Inspiration fürs Kernel-Tuning
 - [CachyOS ananicy-rules](https://github.com/CachyOS/ananicy-rules) – Prozess-Priorisierungs-Regeln
-- [xddxdd/nix-cachyos-kernel](https://github.com/xddxdd/nix-cachyos-kernel) – CachyOS-Kernel-Packaging + attic Binary-Cache (`attic.xuyh0120.win/lantian`)
-- [zen-kernel](https://github.com/zen-kernel/zen-kernel) – Gaming/Desktop-optimierter Kernel
 - Der gesamten NixOS-Community für endlose Inspiration

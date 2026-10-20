@@ -7,13 +7,13 @@
 - `system/environment-common.nix` – base env (31 Zeilen)
 - `system/environment-nex.nix` – nex-spezifische Env (NVIDIA Shader-Cache, Explicit-Sync, Flipping)
 - `system/nix-ld.nix` – nix-ld mit allen Libraries
-- `system/cachyos-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
+- `system/kernel-tuning.nix` – shared sysctl/udev/systemd/journald/PAM/bpftune
   - PAM: `@audio rtprio 99`
   - sysctl: `kernel.unprivileged_userns_clone=1` (Flatpak/Container)
 - `system/ananicy.nix` – ananicy-cpp (Auto-Nice-Daemon) mit CachyOS-Regeln, cgroups deaktiviert (Konflikt mit bpftune)
   - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
   - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
-- `system/boot-common.nix` – importiert cachyos-tuning + tmpfiles für `/var/lib/nixos`
+- `system/boot-common.nix` – importiert kernel-tuning + tmpfiles für `/var/lib/nixos`
 - `system/boot-nex.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter** (NVIDIA-only)
 - `system/boot-styx.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher `linuxPackages_latest`)
 - `system/boot-lion.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), AMD-PStates aktiv, ZRAM 100%
@@ -685,7 +685,7 @@
 - `noctalia.cachix.org` – Noctalia v5 Binaries (Flake-Input: `github:noctalia-dev/noctalia/cachix`)
 
 ## bpftune
-- `services.bpftune.enable = true` in `cachyos-tuning.nix`
+- `services.bpftune.enable = true` in `kernel-tuning.nix`
 - Oracle-Tool: dynamische Netzwerk-Auto-Optimierung via BPF (keine statischen sysctl nötig)
 - Ersetzt manuelle TCP/Congestion/Buffer-Tuning: wählt pro Verbindung per Reinforcement Learning den besten CC-Algorithmus
 - Tuner: TCP-Connection (CC-Auswahl), TCP/UDP-Buffer, IP-Frag, Neighbour/Route-Table, sysctl-Monitoring
@@ -713,8 +713,8 @@
   - Kein Branch-Pin → folgt automatisch den neuen Auto-Update-Ständen. Update: `nix flake update nix-cachyos-kernel`
 - **Binary-Cache** `attic.xuyh0120.win/lantian` wieder aktiv (`modules/system/nix-settings.nix`): Kernel + Komponenten substituierbar (narinfo 200) → **kein langer Lokal-Build**
   - Cache ist privat gehostet und kann kurzzeitig langsam/unerreichbar sein (einmal NAR-Download failed) → Retry oder `--fallback`
-- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `cachyos-tuning.nix`)
-- **2026-09-26: Scheduler kernel-abhängig gemacht.** `cachyos-tuning.nix` wird ueber `boot-common.nix` von **allen** Hosts importiert, aber `adios` gibt es **nur im CachyOS-Kernel**. Deshalb neue Option `tuning.ioScheduler` (Default `kyber`):
+- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `kernel-tuning.nix`)
+- **2026-09-26: Scheduler kernel-abhängig gemacht.** `kernel-tuning.nix` wird ueber `boot-common.nix` von **allen** Hosts importiert, aber `adios` gibt es **nur im CachyOS-Kernel**. Deshalb neue Option `tuning.ioScheduler` (Default `kyber`):
   - **nex** (`boot-nex.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel)
   - **lion-pc** (`boot-lion.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel, seit jeher)
   - **styx** bleibt beim Default `kyber` — läuft auf `linuxPackages_zen`, dort existiert `adios` nicht.
@@ -740,7 +740,7 @@
 - **Deaktivierungsgrund B (TATSACHE, am 22.09. verifiziert):** `linuxPackages_cachyos` verlangte `nvidia_cachyos 610.57.04` — ein **echter Treiber-Downgrade** 615 → 610. Das ist inzwischen **nicht mehr der Fall**: der gepinnte CachyOS-Kernel 7.2.7 liefert exakt dieselbe Standard-Derivation **nvidia-x11-615.71.09** (gleicher `drvPath` `/nix/store/g3ils57q…-nvidia-x11-615.71.09.drv`) wie `linuxPackages_latest`.
 - **Ergebnis:** beide Blocker entfallen → Kernel reaktiviert, kein Treiberverlust.
 - Kernel-Auflösung: `7.2.7` (CachyOS) gegen `7.2.8` (`linuxPackages_latest`) — inhaltlich ein Zwillingssatz, der Gewinn liegt in den CachyOS-Patches.
-- `adios` I/O-Scheduler in `cachyos-tuning.nix` von `kyber` zurück auf **`adios`** (existiert nur im CachyOS-Kernel; `bfq` für rotierende Platten bleibt).
+- `adios` I/O-Scheduler in `kernel-tuning.nix` von `kyber` zurück auf **`adios`** (existiert nur im CachyOS-Kernel; `bfq` für rotierende Platten bleibt).
 - **Wichtig bei Rückfall auf `linuxPackages_latest`:** dort gibt es kein `adios`; die udev-Regel bleibt dann still wirkungslos und der Kernel nimmt seinen Default.
 - Build verifiziert: 19 Derivationen, Kernel+Initrd aus dem Cache (23 MiB), `dry-build` OK.
 - **Rückfallweg bei Nicht-Start:** im systemd-boot-Menü die vorherige Generation wählen (der `linux-switch`-Alias hilft hier nicht, da anderer Kernel).

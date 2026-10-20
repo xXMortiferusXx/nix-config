@@ -197,7 +197,7 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 - Flatpak ist aktuell **NIRGENDS** im Repo aktiviert → für lion-pc deklarativ:
   - `services.flatpak.enable = true;`
   - Flathub-Remote (deklarativ)
-- **Basis:** `modules/system/cachyos-tuning.nix` setzt bereits `kernel.unprivileged_userns_clone = 1` (Flatpak-Sandbox).
+- **Basis:** `modules/system/kernel-tuning.nix` setzt bereits `kernel.unprivileged_userns_clone = 1` (Flatpak-Sandbox).
 - **nex bleibt OHNE Flatpak** (nur optional für Tests).
 
 ### Roblox (Install durch lion selbst, nicht deklarativ)
