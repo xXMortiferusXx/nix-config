@@ -57,6 +57,7 @@
 
 # ─── Fenster-Management ───
 "Mod+Q"       = "window-close"
+"Mod+Ctrl+Q"  = "window-kill"
 "Mod+F"       = "window-toggle-fullscreen"
 "Mod+M"       = "window-toggle-maximize"
 "Mod+T"       = "window-toggle-floating"
@@ -91,6 +92,17 @@
 "Mod+CTRL+7" = "window-move-to-workspace:7"
 "Mod+CTRL+8" = "window-move-to-workspace:8"
 "Mod+CTRL+9" = "window-move-to-workspace:9"
+
+# ─── Fenster still auf Workspace (ohne Fokuswechsel) ───
+"Mod+Shift+Ctrl+1" = "window-move-to-workspace-silent:1"
+"Mod+Shift+Ctrl+2" = "window-move-to-workspace-silent:2"
+"Mod+Shift+Ctrl+3" = "window-move-to-workspace-silent:3"
+"Mod+Shift+Ctrl+4" = "window-move-to-workspace-silent:4"
+"Mod+Shift+Ctrl+5" = "window-move-to-workspace-silent:5"
+"Mod+Shift+Ctrl+6" = "window-move-to-workspace-silent:6"
+"Mod+Shift+Ctrl+7" = "window-move-to-workspace-silent:7"
+"Mod+Shift+Ctrl+8" = "window-move-to-workspace-silent:8"
+"Mod+Shift+Ctrl+9" = "window-move-to-workspace-silent:9"
 
 # ─── Resize ───
 "Mod+R" = "window-cycle-primary-extent"

@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `1a5829066148394b36bc45fe76e768685e5a5369` (2026-10-08, revCount 1200), Version `0.1.0`
-  (Lock per `nix flake update` gezogen — volle Input-Aktualisierung; Umbriel 1167→1200)
+- Aktuelle Rev: `b70b6fab8b92095914e934c599f4dea10b75eb33` (2026-10-20, revCount 1312), Version `0.1.0`
+  (Lock per `nix flake update` gezogen — volle Input-Aktualisierung; Umbriel 1200→1312)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -47,7 +47,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev 1a58290 / 2026-10-08)
+## Feature-Tracker (Stand: Rev b70b6fa / 2026-10-20)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -75,7 +75,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `input.touchpad.tap_button_map` | Tap-Zuordnung 1/2/3 Finger (`"left_right_middle"`/`"left_middle_right"`, #301) | verfügbar, nicht gesetzt |
 | `border_color_focused/unfocused/outer` (window_rule) | Border-Farben pro Fenster überschreiben (#268) | verfügbar, nicht genutzt |
 | `border_width`/`outer_border_width`/`corner_radius`/`shadow` (window_rule) | Deko-Override pro Fenster (#266, 4748217) | verfügbar, nicht genutzt |
-| `window-move-to-workspace-silent:<ws>` (+`-next`/`-previous`) | Fenster still (ohne Fokus-Wechsel) verschieben (#273) | verfügbar, nicht gebunden |
+| `window-move-to-workspace-silent:<ws>` (+`-next`/`-previous`) | Fenster still (ohne Fokus-Wechsel) verschieben (#273) | **GEBUNDEN** (`Mod+Shift+Ctrl+1..9`, alle Hosts, 2026-10-20) |
 | `general.xwayland_native_resolution` | X11-Apps sehen physische Output-Auflösung → scharf bei Scale > 1 (2026-09-29) | IRRELEVANT (alle Outputs `scale = 1.0`); für Games auf skalierten Monitoren relevant |
 | **Natives wlroots-Xwayland** | Umbriel startet Xwayland selbst; braucht `Xwayland` auf PATH statt `xwayland-satellite` (2026-09-29) | **ERLEDIGT**: `xwayland-satellite` aus `modules/desktop/umbriel.nix` entfernt; Flake-Wrapper + `programs.xwayland` liefern das Binary |
 | `umbriel config validate` / `umbriel config schema [--json]` | CLI-Rename (`validate` → `config validate`), neues Schema-Listing (2026-09-27) | **DOKUMENTIERT** (umbriel.md/memory.md); kein Alias für altes `validate` |
@@ -99,15 +99,64 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `[input.drag_edge_scroll]` (`enabled`, `trigger_zone`, `delay_ms`, `max_speed`) | Edge-Scroll beim DnD/getilten Fenster-Move jetzt konfigurierbar (#401) | verfügbar, Defaults passen (nicht gesetzt) |
 | `output.<NAME>.focus_at_startup` | Mauscursor beim Start auf diesen Monitor setzen (#390) | verfügbar, nicht gesetzt (nur 1 aktiver Output) |
 | `window_rule.match.is_only_window` | Einziges Fenster auf dem Workspace (inkl. Floating) (#391) | verfügbar, nicht genutzt |
-| `window_rule.confine_pointer` | Pointer im fokussierten Fenster halten (Spiele-Menüs) (#399) | verfügbar, nicht genutzt — **interessant für Spiele** |
+| `window_rule.confine_pointer` | Pointer im fokussierten Fenster halten (Spiele-Menüs) (#399) | verfügbar, nicht genutzt (2026-10-20 getestet u. wieder entfernt — stört Cross-Monitor-Wechsel auf lion) |
 | `layer_rule.match.layer` / `match.at_startup` | Layer-Surface nach Ebene (`background`/`bottom`/`top`/`overlay`) bzw. Startphase matchen (#400) | verfügbar, nicht genutzt |
 | `scratchpad-window-show-next/previous` | Scratchpad **ein Fenster zur Zeit** anzeigen statt alle (#376) | verfügbar, nicht gebunden (Alternative zu `scratchpad-focus-next`) |
 | `workspace-set-layout:toggle:<mode1,mode2>` | Toggle nur über eine Teilmenge der Layouts (#397) | verfügbar (wir nutzen bare `toggle`) |
 | Umbriel veröffentlicht `XCURSOR_*` selbst (#384) | `XCURSOR_THEME/SIZE` werden vom Compositor an Clients gereicht | Hinweis: ggf. doppelt zu unserer `desktop.nix`/Steam-Wrapper-Setzung — noch unangetastet |
-| Modale Dialoge an Parent gebunden (#215) | Parent wird beschattet, kein Fokus/Input, bewegt sich mit | Verhalten (automatisch) |
+| Modale Dialoge an Parent gebunden (#215) | **ZURÜCKGENOMMEN** (`5731190`, 2026-10-10) — Verhalten wieder wie davor | Verhalten (automatisch) |
 | HDR: EDID-Metadaten + Gamma-Erhalt | Mastering-Luminanz aus EDID; Night-Light-Gamma pausiert bei HDR | Verhalten (automatisch; wir fahren SDR 10-bit) |
+| `animation.windows_resize` | Resize-Timing getrennt von `windows_move` (2026-10-17) | **GESETZT** (`250ms`/`snappy`, alle Hosts, 2026-10-20) |
+| `layout.client_maximize` (`"column"`/`"edges"`, + per-Workspace) | Neuer Layout-Modus (#383) | verfügbar, nicht genutzt (Scrolling) |
+| `layout.dwindle.preserve_split` (+ per-Workspace) | Dwindle-Split-Richtung erhalten | verfügbar, nicht genutzt (Scrolling) |
+| `window_rule[].background_render` | Fenster im Hintergrund weiter rendern (2026-10-17) | verfügbar, nicht genutzt |
+| `general.honor_restored_maximize` | Restored-Maximize respektieren (Default `false`) | verfügbar, nicht gesetzt |
+| `input.keyboard.track_layout` (`"global"`/`"window"`) | Keymap-Wechsel pro Fenster/global | verfügbar, nicht gesetzt (Default `"global"`) |
+| `output.<NAME>.sdr_transfer` (`"gamma22"`/`"srgb"`) / `sdr_white` (80–1000 Nits) | SDR-Transfer + Referenzweiß (HDR) | verfügbar, nicht gesetzt (Default `gamma22`/203) |
+| Action `window-kill:[<id>]` | Prozess des Fensters beenden (2026-10-17) | **GEBUNDEN** (`Mod+Ctrl+Q`, alle Hosts, 2026-10-20) |
+| Action `layout-toggle-split` | Dwindle-Split-Richtung togglen (#444) | verfügbar, nicht gebunden (Scrolling) |
+| Actions `window-move-to:<anchor>/<x>/<y>` / `window-move-by:<dx>/<dy>` | Floating-Fenster pixelgenau verschieben (#451) | verfügbar, nicht gebunden |
+| Action `output-sdr-white:<nits>[/<output>]` | SDR-Referenzweiß live setzen (#467) | verfügbar, nicht gebunden |
+| Audio-reaktive `[effects]` (#455) | Noctalia-Spectrum-Snapshots für Shader | nicht genutzt |
 
 ## Zuletzt gecheckt
+- **2026-10-20** (Update auf Rev `b70b6fa`, revCount 1312; letzter dokumentierter
+  Stand `1a58290`/1200): **112 Commits (1200→1312), 2 Breaking Changes** (kein
+  Schema-Bruch bei uns). `umbriel config validate` = `config: ok` auf allen 4
+  Hosts (mortiferus/backbone/lion/benny) gegen das neue Binary (Rev 1312).
+  **Kernthemen (alles additiv/optional):**
+  1. **Breaking (nicht betroffen):** `feat(audio)!` (#455) — `[effects]` akzeptiert
+     jetzt Noctalia-Spectrum-Snapshots (audio-reaktiv); `refactor(scratchpad)!`
+     (`7b9ad2e`) — `animation.scratchpad`-*Placement*-Keys durch Window-Rules
+     ersetzt (Animations-Keys `blur`/`dim`/`effect` bleiben). Wir nutzen weder
+     `[effects]` noch Placement-Keys → keine Migration.
+  2. **Verhalten geändert (wichtig):** `revert` (#215, `5731190`, 2026-10-10) —
+     modale Dialoge werden **nicht mehr** an den Parent gebunden (kein Beschatten/
+     Mitbewegen). Tracker-Eintrag ist als zurückgenommen markiert.
+  3. **Neue Config-Keys (nicht gesetzt):** `animation.windows_resize` (Resize-
+     Timing getrennt von `windows_move`), `layout.client_maximize`
+     (`"column"`/`"edges"`, neuer Layout-Modus #383, + per-Workspace),
+     `layout.dwindle.preserve_split`, `window_rule[].background_render`,
+     `general.honor_restored_maximize` (Default `false`),
+     `input.keyboard.track_layout` (`"global"`/`"window"`), HDR/SDR:
+     `output.<NAME>.sdr_transfer` (`"gamma22"`/`"srgb"`) + `sdr_white`
+     (80–1000 Nits, Default 203). Siehe Tracker.
+  4. **Neue Actions:** `window-kill` (Prozess beenden), `layout-toggle-split`
+     (Dwindle-Split-Richtung), `window-move-to:<anchor>/<x>/<y>` +
+     `window-move-by:<dx>/<dy>` (Floating pixelgenau), `output-sdr-white:<nits>`.
+     `window-kill` gebunden (`Mod+Ctrl+Q`), `window-move-to-workspace-silent`
+     gebunden (`Mod+Shift+Ctrl+1..9`), uebrige nicht.
+  5. **Automatisch:** Night-Light jetzt auch bei HDR (`76f66c4`), Xwayland reicht
+     Scale/Cursor-Theme via XSETTINGS (`8d9806f`), Keymap aus systemd-localed wenn
+     `[input.keyboard]` keine XKB-Namen setzt (`f8285f8`), Live-Animation für
+     Workspace-Reveals (`d083f24`), optimierter Blur als Paket-Default
+     (`62799bd`). Zahlreiche Fixes (Blur, Syncobj/explicit-sync, IPCs, Scratchpad,
+     Output-Swapchain-Recovery, …).
+  6. **Hinweis:** Die mitgelieferte Default-Config wurde umformatiert/`[general]`
+     auskommentiert (`acb5ae7`/`165a386`) — betrifft nur die Defaults, nicht
+     unsere Config.
+  **Status:** Config unverändert gültig (additiv). `switch` + Login-Neustart holt
+  das neue Binary (Rev 1312) in die Sitzung.
 - **2026-10-08** (Update auf Rev `1a58290`, revCount 1200; letzter dokumentierter
   Stand `4c89178`/1167): **33 Commits (1167→1200), KEINE Breaking Changes**
   (kein `!`-Marker, keine Key-Umbenennung). `umbriel config validate` = `config: ok`

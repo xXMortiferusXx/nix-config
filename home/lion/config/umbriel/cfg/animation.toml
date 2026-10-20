@@ -24,6 +24,11 @@ enabled = true
 duration_ms = 250
 curve = "snappy"
 
+[animation.windows_resize]
+enabled = true
+duration_ms = 250
+curve = "snappy"
+
 [animation.workspaces]
 enabled = true
 duration_ms = 250
