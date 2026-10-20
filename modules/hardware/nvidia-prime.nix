@@ -74,6 +74,13 @@
       export VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
       exec "$@"
     '')
+    # nvidia-smi crasht als rpath-gepatchtes Binary mit glibc 2.44 (wie
+    # nvidia-powerd); die unveraenderte origBin laeuft mit den NV-Libs.
+    # priority=1, damit der Wrapper das Binary aus nvidia_x11.bin verdrängt.
+    ((pkgs.writeShellScriptBin "nvidia-smi" ''
+      export LD_LIBRARY_PATH="${config.hardware.nvidia.package.bin}/lib:${config.hardware.nvidia.package}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+      exec ${config.hardware.nvidia.package.bin}/origBin/nvidia-smi "$@"
+    '').overrideAttrs (o: { meta = o.meta // { priority = 1; }; }))
   ];
 
   # VRAM-Heap-Fix (GLVidHeapReuseRatio=0) für bekannte Electron-/GPU-Apps.
