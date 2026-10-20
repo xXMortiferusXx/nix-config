@@ -34,7 +34,9 @@
         DNS = [ config.network.dnsServer ];
         MulticastDNS = "resolve";  # nur auflösen, nicht announcen
         LLMNR = "no";
-        DNSSEC = "allow-downgrade";
+        # Der ASUS-Router liefert keine DNSSEC-Signaturen, resolved wertet
+        # "no-signature" aber als Fehler -> DNS tot (u. a. lion). Validierung aus.
+        DNSSEC = "no";
         DNSOverTLS = "opportunistic";
         FallbackDNS = [ config.network.dnsServer ];
       };
