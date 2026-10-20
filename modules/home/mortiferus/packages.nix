@@ -26,7 +26,6 @@ pkgs: with pkgs; [
   thunar
   discord
   cartridges
-  polychromatic
   goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
   vulkan-tools
 
@@ -42,9 +41,7 @@ pkgs: with pkgs; [
   zathura
     loupe
     gimp
-    naps2
     qalculate-gtk
-    amberol       # GTK4/libadwaita Audio-Player
 
     # --- Development & 3D Printing ---
     #opencode

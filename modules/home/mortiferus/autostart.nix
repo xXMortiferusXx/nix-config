@@ -15,14 +15,6 @@ let
 
 in
 {
-  # Hidden=true unterdrückt den XDG-Autostart des polychromatic-Pakets (sonst PID-Lock-Kampf mit dem systemd-Service).
-  xdg.configFile."autostart/polychromatic-autostart.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Polychromatic Autostart
-    Hidden=true
-  '';
-
   # Kein Steam-Autostart: Steam verwaltet das selbst (host-individuell).
 
   systemd.user.tmpfiles.rules = [
@@ -46,19 +38,6 @@ in
         ExecStart = "${pkgs.discord}/bin/discord";
         Restart = "on-failure";
         RestartSec = 5;
-      };
-    };
-    polychromatic-tray = {
-      Unit = {
-        Description = "Polychromatic Tray";
-        After = [ "graphical-session.target" "noctalia.service" ];
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.polychromatic}/bin/polychromatic-tray-applet";
-        Restart = "on-failure";
       };
     };
     obex = {

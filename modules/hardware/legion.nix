@@ -1,23 +1,14 @@
 # Lenovo Legion Gaming-Laptop (nex)
-# AMD µcode, Conservation Mode (60%), Razer, Xbox-Controller, uinput, irqbalance
+# AMD µcode, Conservation Mode (60%), Xbox (xone), uinput, irqbalance
 { config, pkgs, lib, ... }:
 
 {
-  imports = [ ./laptop-common.nix ];
-
-  boot.extraModulePackages = [
-    config.boot.kernelPackages.lenovo-legion-module
-  ];
+  imports = [ ./laptop-common.nix ./xbox-controller.nix ];
 
   # iwlmvm power_scheme=1: verhindert tx_retries durch Firmware-Power-Save.
   boot.extraModprobeConfig = "options iwlmvm power_scheme=1";
 
   hardware.cpu.amd.updateMicrocode = true;
-
-  hardware.uinput.enable = true;
-  hardware.xone.enable = true;
-  hardware.xpadneo.enable = true;
-  hardware.openrazer.enable = true;
 
   services.irqbalance.enable = true;
 

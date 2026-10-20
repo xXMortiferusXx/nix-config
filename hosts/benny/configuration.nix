@@ -22,6 +22,7 @@ in
       ../../modules/system/firmware-disk.nix
       ../../modules/hardware/intel-ivy.nix
       ../../modules/hardware/power-benny.nix
+      ../../modules/hardware/xbox-controller.nix
       ../../modules/hardware/audio-gamedac.nix
       ../../modules/programs/gaming/benny.nix
       ../../modules/services/flatpak-benny.nix

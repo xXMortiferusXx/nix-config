@@ -1,11 +1,11 @@
 # Boot-Konfiguration fuer benny (Intel Ivy Bridge / HD Graphics 4000).
-# Zen-Kernel + intel_pstate; kein GPU-Sonderfall mehr (R9 280 ausgebaut).
+# Latest-Kernel + intel_pstate; kein GPU-Sonderfall mehr (R9 280 ausgebaut).
 { config, pkgs, lib, ... }:
 
 {
   imports = [ ./boot-common.nix ];
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.kernelParams = [
     "intel_pstate=active"

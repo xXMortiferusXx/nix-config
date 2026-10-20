@@ -1,4 +1,4 @@
-# Boot-Konfiguration fuer nex (Zen-Kernel).
+# Boot-Konfiguration fuer nex (Latest-Kernel).
 # PRIME-Hybrid + amdgpu-Params + ntsync aktiv (siehe nvidia-prime.nix);
 # Netz-Tweaks kommen aus cachyos-tuning.nix.
 { config, pkgs, lib, ... }:
@@ -6,7 +6,7 @@
 {
   imports = [ ./boot-common.nix ];
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.blacklistedKernelModules = [ "esp4" "esp6" "rxrpc" "algif_aead" "iTCO_wdt" "sp5100_tco" ];
 
   # ntsync: DRM-Sync fuer Wayland/VRR.

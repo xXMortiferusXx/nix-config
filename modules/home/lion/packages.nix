@@ -42,5 +42,4 @@ pkgs: with pkgs; [
   zathura
   thunderbird
   mpv
-  amberol        # GTK4/libadwaita Audio-Player
 ]

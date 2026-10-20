@@ -46,6 +46,4 @@ pkgs: with pkgs; [
   hyphenDicts.de-de      # deutsche Silbentrennung
   thunderbird
   mpv
-  amberol                # GTK4/libadwaita Audio-Player
-  naps2                  # Scanner
 ]

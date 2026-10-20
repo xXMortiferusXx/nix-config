@@ -13,6 +13,7 @@
       ../../modules/programs/zink-run.nix
       ../../modules/hardware/amdgpu.nix
       ../../modules/hardware/power-lion.nix
+      ../../modules/hardware/xbox-controller.nix
       ../../modules/programs/gaming/lion.nix
       ../../modules/services/flatpak-lion.nix
       ../../modules/users/lion.nix
