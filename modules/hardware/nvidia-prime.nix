@@ -54,6 +54,14 @@
     };
   };
 
+  # Das rpath-gepatchte nvidia-powerd segfaultet mit glibc 2.44 beim Start
+  # (Patchelf/glibc-Layoutproblem). Die unveraenderte origBin laeuft ueber
+  # nix-ld -> Service darauf umbiegen, bis nixpkgs/patchelf das fixen.
+  systemd.services.nvidia-powerd = lib.mkIf config.hardware.nvidia.dynamicBoost.enable {
+    environment.LD_LIBRARY_PATH = "${config.hardware.nvidia.package.bin}/lib";
+    serviceConfig.ExecStart = lib.mkForce "${config.hardware.nvidia.package.bin}/origBin/nvidia-powerd";
+  };
+
   # Eigenes Offload-Skript: setzt zusätzlich VK_DRIVER_FILES. Das NVIDIA-Paket
   # bringt hier keine Vulkan-Layer mit, sonst wählt der Loader die iGPU (RADV).
   # Nicht global setzen — Umbriel rendert auf der iGPU.

@@ -41,6 +41,7 @@ pkgs: with pkgs; [
   zathura
     loupe
     gimp
+    naps2
     qalculate-gtk
 
     # --- Development & 3D Printing ---

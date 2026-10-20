@@ -46,4 +46,5 @@ pkgs: with pkgs; [
   hyphenDicts.de-de      # deutsche Silbentrennung
   thunderbird
   mpv
+  naps2                  # Scanner
 ]

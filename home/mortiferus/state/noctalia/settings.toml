@@ -1,4 +1,4 @@
-config_version = 14
+config_version = 15
 
 [bar.default]
 background_opacity = 0.60999998636543751
@@ -198,9 +198,6 @@ widget_order = [
 [notification]
 layer = "overlay"
 
-[plugin_settings."alexander/game-launcher"]
-steampoacher_enabled = true
-
 [plugin_settings."aristides/udiskie"]
 auto_open_filemanager = true
 file_manager_cmd = "thunar"
@@ -212,7 +209,13 @@ update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch
 discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "raycursive/discord-voice", "aristides/udiskie", "weinguyen/opencode-companion" ]
+enabled = [
+    "avivbintangaringga/nix-monitor",
+    "raycursive/discord-voice",
+    "aristides/udiskie",
+    "weinguyen/opencode-companion",
+    "alexander/game-launcher"
+]
 
     [[plugins.source]]
     auto_update = true
@@ -259,16 +262,16 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-q2dqkl_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-q2dqkl_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
     path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-83o1y1_1920x1080.png"
 
     [wallpaper.monitors.eDP-2]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-q2dqkl_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
 
 [weather]
 effects = true
