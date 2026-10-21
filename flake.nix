@@ -54,11 +54,12 @@
       # pyrate-limiter (OOM) und udiskie (Keyutils/ctypes) scheitern.
       # Tests beim Bauen ueberspringen; Laufzeit unveraendert.
       bennyPyTestOverlay = _final: prev: {
+        # udiskie ist ein Top-Level-Paket (nicht python3Packages).
+        udiskie = prev.udiskie.overrideAttrs (_: {
+          dontUsePytestCheck = true;
+        });
         python3Packages = prev.python3Packages.overrideScope (pyFinal: pyPrev: {
           pyrate-limiter = pyPrev.pyrate-limiter.overrideAttrs (_: {
-            dontUsePytestCheck = true;
-          });
-          udiskie = pyPrev.udiskie.overrideAttrs (_: {
             dontUsePytestCheck = true;
           });
         });
