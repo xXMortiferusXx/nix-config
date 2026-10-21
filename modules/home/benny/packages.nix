@@ -48,14 +48,23 @@ pkgs: with pkgs; [
   mpv
   naps2                  # Scanner
 
-  # Edge fuer Boosteroid (offiziell empfohlen); VA-API fuer die HD 4000.
-  microsoft-edge
-  (writeShellScriptBin "edge-boosteroid" ''
-    exec ${microsoft-edge}/bin/microsoft-edge \
-      --ozone-platform=wayland \
-      --enable-features=VaapiVideoDecoder,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder \
-      --use-gl=angle --use-angle=gl \
-      --enable-zero-copy --ignore-gpu-blocklist \
-      "$@"
-  '')
+  # Edge fuer Boosteroid (offiziell empfohlen). Beide Binaries wrappen und die
+  # Desktop-Eintraege auf den Wrapper zeigen lassen, damit das normale
+  # Edge-Menue die VA-API-Flags fuer die HD 4000 immer mitbekommt.
+  (microsoft-edge.overrideAttrs (old: {
+    postFixup = (old.postFixup or "") + ''
+      for b in $out/bin/microsoft-edge $out/bin/microsoft-edge-stable; do
+        [ -e "$b" ] || continue
+        wrapProgram "$b" \
+          --add-flags "--ozone-platform=wayland" \
+          --add-flags "--enable-features=VaapiVideoDecoder,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder" \
+          --add-flags "--use-gl=angle --use-angle=gl" \
+          --add-flags "--enable-zero-copy --ignore-gpu-blocklist"
+      done
+      for f in $out/share/applications/*.desktop; do
+        substituteInPlace "$f" --replace "${microsoft-edge}/bin/" "$out/bin/"
+        substituteInPlace "$f" --replace "${microsoft-edge.bin or microsoft-edge}/bin/" "$out/bin/"
+      done
+    '';
+  }))
 ]
