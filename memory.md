@@ -305,6 +305,8 @@
     `hardware-video-decoding`, `webrender.all`, `widget.dmabuf.force-enabled`).
   - `pkgs/boosteroid/launcher.sh`: startet mit `-vaapi -h264`, setzt für die Laufzeit
     `powerprofilesctl performance` und stellt danach das Profil wieder her.
+  - `modules/home/benny/packages.nix`: `microsoft-edge` + Wrapper `edge-boosteroid`
+    (Boosteroid empfiehlt offiziell Chrome/Edge; VA-API-Flags für die HD 4000).
 - **Falls weiter ruckelt**: Boosteroid-Konto AV1 aus, Bitrate/FPS nicht hochdrehen
   (Default), ggf. 30 FPS; danach Provider/Support mit Zeitstempeln.
 

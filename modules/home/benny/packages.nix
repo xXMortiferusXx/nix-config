@@ -47,4 +47,15 @@ pkgs: with pkgs; [
   thunderbird
   mpv
   naps2                  # Scanner
+
+  # Edge fuer Boosteroid (offiziell empfohlen); VA-API fuer die HD 4000.
+  microsoft-edge
+  (writeShellScriptBin "edge-boosteroid" ''
+    exec ${microsoft-edge}/bin/microsoft-edge \
+      --ozone-platform=wayland \
+      --enable-features=VaapiVideoDecoder,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder \
+      --use-gl=angle --use-angle=gl \
+      --enable-zero-copy --ignore-gpu-blocklist \
+      "$@"
+  '')
 ]
