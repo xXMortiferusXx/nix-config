@@ -13,6 +13,15 @@ in {
       ../apps/mimeapps.nix
     ];
 
+    # Firefox: VA-API auf der HD 4000 (i965) aktivieren. Nur H.264, aber ohne
+    # HW-Decode ruckelt Cloud-Gaming (Boosteroid). Nur benny (alte iGPU).
+    programs.firefox.profiles.benny.settings = {
+      "media.ffmpeg.vaapi.enabled" = true;
+      "media.hardware-video-decoding.enabled" = true;
+      "gfx.webrender.all" = true;
+      "widget.dmabuf.force-enabled" = true;
+    };
+
     programs.mangohud = {
       enable = true;
       enableSessionWide = false;
