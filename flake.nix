@@ -50,11 +50,15 @@
         naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
       };
 
-      # benny: pyrate-limiter (Lutris -> moddb) stirbt im Test-Lauf ohne
-      # Fehlermeldung (OOM auf der alten Kiste). Tests beim Bauen ueberspringen.
-      pyrateOverlay = _final: prev: {
+      # benny: die Python-3.14.8-Rebuilds lassen die Test-Suiten von
+      # pyrate-limiter (OOM) und udiskie (Keyutils/ctypes) scheitern.
+      # Tests beim Bauen ueberspringen; Laufzeit unveraendert.
+      bennyPyTestOverlay = _final: prev: {
         python3Packages = prev.python3Packages.overrideScope (pyFinal: pyPrev: {
           pyrate-limiter = pyPrev.pyrate-limiter.overrideAttrs (_: {
+            dontUsePytestCheck = true;
+          });
+          udiskie = pyPrev.udiskie.overrideAttrs (_: {
             dontUsePytestCheck = true;
           });
         });
@@ -137,7 +141,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay pyrateOverlay ]; }
+          { nixpkgs.overlays = [ naps2Overlay bennyPyTestOverlay ]; }
           arctis-sound-manager.nixosModules.default
           ./hosts/benny/configuration.nix
           home-manager.nixosModules.home-manager
