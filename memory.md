@@ -296,6 +296,18 @@
   globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
   `naps2`-Wrapper sind entfernt. naps2 kommt weiterhin aus `nixpkgs-old` (patchelf 0.15.2).
 
+### Boosteroid/Cloud-Gaming auf benny (HD 4000)
+- **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
+- **Ursache-Kandidat**: HD 4000 (i965) kann nur **H.264** hardware-dekodieren; H.265/AV1
+  laufen in Software. Ohne VA-API dekodiert die Ivy-Bridge-CPU.
+- **Umgesetzt**:
+  - `modules/home/benny/default.nix`: Firefox-VA-API-Prefs (`media.ffmpeg.vaapi.enabled`,
+    `hardware-video-decoding`, `webrender.all`, `widget.dmabuf.force-enabled`).
+  - `pkgs/boosteroid/launcher.sh`: startet mit `-vaapi -h264`, setzt für die Laufzeit
+    `powerprofilesctl performance` und stellt danach das Profil wieder her.
+- **Falls weiter ruckelt**: Boosteroid-Konto AV1 aus, Bitrate/FPS nicht hochdrehen
+  (Default), ggf. 30 FPS; danach Provider/Support mit Zeitstempeln.
+
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
 - **Ursache ursprünglich vermutet**: AX210-Treiber/Firmware — `bt_coex_active=0`, Kernel-Wechsel, `11n_disable=8` getestet, alles ohne Erfolg
