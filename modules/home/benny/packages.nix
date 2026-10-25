@@ -28,6 +28,7 @@ pkgs: with pkgs; [
   # --- Apps & Social ---
   thunar
   discord
+  legcord                # leichterer Discord-Client (Test)
   cartridges
   vulkan-tools
   goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
