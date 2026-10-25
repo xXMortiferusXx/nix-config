@@ -22,11 +22,13 @@ if [ ! -e "$BIN" ] || [ "$(cat "$MARKER" 2>/dev/null)" != "$BOOSTEROID_BIN" ]; t
   printf '%s\n' "$BOOSTEROID_BIN" > "$MARKER"
 fi
 
-if [ ! -x "$WRAP" ] || ! head -n 1 "$WRAP" 2>/dev/null | grep -q 'Wrapper fuer Boosteroid'; then
-  cat > "$WRAP.tmp" <<'WRAPPER'
+cat > "$WRAP.tmp" <<'WRAPPER'
 #!/bin/sh
 # Wrapper fuer Boosteroid: VA-API-Flags + Performance, danach Wiederherstellung.
 set -- -vaapi -h264 "$@"
+
+# Natives Wayland bevorzugen (XWayland-Cursorgrab ist traege); Fallback xcb.
+export QT_QPA_PLATFORM="wayland;xcb"
 
 prev_profile=""
 if command -v powerprofilesctl >/dev/null 2>&1; then
@@ -52,8 +54,7 @@ trap restore EXIT INT TERM HUP
 
 exec "$(dirname "$0")/Boosteroid.bin" "$@"
 WRAPPER
-  chmod +x "$WRAP.tmp"
-  mv -f "$WRAP.tmp" "$WRAP"
-fi
+chmod +x "$WRAP.tmp"
+mv -f "$WRAP.tmp" "$WRAP"
 
 exec "$WRAP" "$@"

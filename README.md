@@ -9,7 +9,7 @@ This is my personal NixOS flake managing multiple machines with a shared module 
 | **nex** | AMD Ryzen (iGPU) + NVIDIA RTX 3070, Lenovo Legion 5 laptop (PRIME Hybrid / Advanced Optimus) | Gaming / Desktop |
 | **styx** | Intel Laptop | Office / Work |
 | **lion-pc** | AMD Ryzen + Radeon RX 590 8GB | Gaming-PC for lion (kid) |
-| **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop/gaming PC for a friend |
+| **benny** | Intel i5 (Ivy Bridge) + Intel HD 2500 iGPU | Desktop/gaming PC for a friend |
 | **test** | QEMU VM | Minimal installer-testing host |
 
 All share a common base via `modules/system/common.nix` – only hardware-specific and role-specific modules differ per host.
@@ -113,7 +113,7 @@ Meine persönliche NixOS-Flake, die mehrere Rechner mit einem gemeinsamen Moduls
 | **nex** | AMD Ryzen (iGPU) + NVIDIA RTX 3070, Lenovo Legion 5 Laptop (PRIME Hybrid / Advanced Optimus) | Gaming / Desktop |
 | **styx** | Intel Laptop | Büro / Arbeit |
 | **lion-pc** | AMD Ryzen + Radeon RX 590 8GB | Gaming-PC für lion (Kind) |
-| **benny** | Intel i5 (Ivy Bridge) + Intel HD 4000 iGPU | Desktop-/Gaming-PC für einen Kumpel |
+| **benny** | Intel i5 (Ivy Bridge) + Intel HD 2500 iGPU | Desktop-/Gaming-PC für einen Kumpel |
 | **test** | QEMU-VM | Minimaler Installer-Test-Host |
 
 Alle teilen sich eine gemeinsame Basis via `modules/system/common.nix` – nur hardware- und rollenspezifische Module unterscheiden sich.

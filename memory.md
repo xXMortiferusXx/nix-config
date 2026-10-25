@@ -296,9 +296,9 @@
   globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
   `naps2`-Wrapper sind entfernt. naps2 kommt weiterhin aus `nixpkgs-old` (patchelf 0.15.2).
 
-### Boosteroid/Cloud-Gaming auf benny (HD 4000)
+### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
-- **Ursache-Kandidat**: HD 4000 (i965) kann nur **H.264** hardware-dekodieren; H.265/AV1
+- **Ursache-Kandidat**: HD 2500 (i965) kann nur **H.264** hardware-dekodieren; H.265/AV1
   laufen in Software. Ohne VA-API dekodiert die Ivy-Bridge-CPU.
 - **Umgesetzt**:
   - `modules/home/benny/default.nix`: Firefox-VA-API-Prefs (`media.ffmpeg.vaapi.enabled`,
@@ -306,7 +306,7 @@
   - `pkgs/boosteroid/launcher.sh`: startet mit `-vaapi -h264`, setzt für die Laufzeit
     `powerprofilesctl performance` und stellt danach das Profil wieder her.
   - `modules/home/benny/packages.nix`: `microsoft-edge` + Wrapper `edge-boosteroid`
-    (Boosteroid empfiehlt offiziell Chrome/Edge; VA-API-Flags für die HD 4000).
+    (Boosteroid empfiehlt offiziell Chrome/Edge; VA-API-Flags für die HD 2500).
 - **Falls weiter ruckelt**: Boosteroid-Konto AV1 aus, Bitrate/FPS nicht hochdrehen
   (Default), ggf. 30 FPS; danach Provider/Support mit Zeitstempeln.
 

@@ -19,7 +19,7 @@ in {
       ../apps/mimeapps.nix
     ];
 
-    # Firefox: VA-API auf der HD 4000 (i965) aktivieren. Nur H.264, aber ohne
+    # Firefox: VA-API auf der HD 2500 (i965) aktivieren. Nur H.264, aber ohne
     # HW-Decode ruckelt Cloud-Gaming (Boosteroid). Nur benny (alte iGPU).
     programs.firefox.profiles.benny.settings = {
       "media.ffmpeg.vaapi.enabled" = true;

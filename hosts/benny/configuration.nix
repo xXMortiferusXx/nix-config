@@ -1,5 +1,5 @@
 # Host: benny
-# Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 4000).
+# Intel CPU (i5-3xxx, Ivy Bridge) + Intel-Onboard-Grafik (HD 2500).
 # Die defekte AMD Radeon R9 280 wurde ausgebaut -> kein GPU-Sonderfall mehr.
 { config, pkgs, lib, inputs, ... }:
 

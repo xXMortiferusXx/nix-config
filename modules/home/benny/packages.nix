@@ -50,7 +50,7 @@ pkgs: with pkgs; [
 
   # Edge fuer Boosteroid (offiziell empfohlen). Beide Binaries wrappen und die
   # Desktop-Eintraege auf den Wrapper zeigen lassen, damit das normale
-  # Edge-Menue die VA-API-Flags fuer die HD 4000 immer mitbekommt.
+  # Edge-Menue die VA-API-Flags fuer die HD 2500 immer mitbekommt.
   (microsoft-edge.overrideAttrs (old: {
     postFixup = (old.postFixup or "") + ''
       for b in $out/bin/microsoft-edge $out/bin/microsoft-edge-stable; do

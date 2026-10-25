@@ -12,7 +12,7 @@
     enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      intel-vaapi-driver   # i965 (Gen7 / HD 4000): VA-API Hardware-Dekodierung
+      intel-vaapi-driver   # i965 (Gen7 / HD 2500): VA-API Hardware-Dekodierung
       libvdpau-va-gl
     ];
   };

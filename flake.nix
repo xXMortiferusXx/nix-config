@@ -137,7 +137,7 @@
         ];
       };
 
-      # benny: Intel i5 (Ivy Bridge) + HD 4000
+      # benny: Intel i5 (Ivy Bridge) + HD 2500
       nixosConfigurations."benny" = nixpkgs.lib.nixosSystem {
         inherit system specialArgs;
         modules = [
