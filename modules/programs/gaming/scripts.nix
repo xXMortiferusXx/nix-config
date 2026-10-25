@@ -15,6 +15,13 @@ let
       OLD_EPP="$OLD_EPP $f:$(<"$f")"
       echo performance | sudo tee "$f" >/dev/null 2>&1
     done
+    # CPUs ohne EPP (z. B. Ivy Bridge): Governor direkt auf performance.
+    OLD_GOV=""
+    for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+      [ -e "$f" ] || continue
+      OLD_GOV="$OLD_GOV $f:$(<"$f")"
+      echo performance | sudo -n tee "$f" >/dev/null 2>&1
+    done
     $BCTL set 100% 2>/dev/null
     $PCTL set performance 2>/dev/null
 
@@ -24,6 +31,10 @@ let
       for entry in $OLD_EPP; do
         f="''${entry%:*}"; v="''${entry##*:}"
         echo "$v" | sudo tee "$f" >/dev/null 2>&1
+      done
+      for entry in $OLD_GOV; do
+        f="''${entry%:*}"; v="''${entry##*:}"
+        echo "$v" | sudo -n tee "$f" >/dev/null 2>&1
       done
     }
     trap restore EXIT

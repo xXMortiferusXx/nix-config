@@ -21,14 +21,29 @@ fi
 # wird von anderen Builds ignoriert. Zusaetzliche Argumente bleiben moeglich.
 set -- -vaapi -h264 "$@"
 
-# Waehrend des Streams Performance-Profil setzen, danach wiederherstellen.
+# Waehrend des Streams Performance-Profil + CPU-Governor auf performance setzen,
+# danach wiederherstellen. Intels ohne EPP (Ivy Bridge) reagieren nicht auf PPD,
+# daher zusaetzlich der Governor.
+prev_profile=""
 if command -v powerprofilesctl >/dev/null 2>&1; then
   prev_profile=$(powerprofilesctl get 2>/dev/null || true)
   powerprofilesctl set performance >/dev/null 2>&1 || true
-  restore_profile() {
-    [ -n "$prev_profile" ] && powerprofilesctl set "$prev_profile" >/dev/null 2>&1 || true
-  }
-  trap restore_profile EXIT INT TERM HUP
 fi
+prev_gov=""
+for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+  [ -e "$f" ] || continue
+  prev_gov="$prev_gov $f:$(cat "$f" 2>/dev/null)"
+  echo performance | sudo -n tee "$f" >/dev/null 2>&1 || true
+done
+restore() {
+  if [ -n "$prev_profile" ]; then
+    powerprofilesctl set "$prev_profile" >/dev/null 2>&1 || true
+  fi
+  for entry in $prev_gov; do
+    f=${entry%:*}; v=${entry##*:}
+    echo "$v" | sudo -n tee "$f" >/dev/null 2>&1 || true
+  done
+}
+trap restore EXIT INT TERM HUP
 
 exec "$DST" "$@"

@@ -2,6 +2,12 @@
 
 let
   pkgsList = import ./packages.nix pkgs;
+
+  # Edge mit Performance-Governor starten (Cloud-Gaming via Browser).
+  # game-performance (Systempaket) setzt Governor/PPD und stellt sie danach zurueck.
+  edgePerformance = pkgs.writeShellScriptBin "edge-performance" ''
+    exec game-performance microsoft-edge "$@"
+  '';
 in {
   home-manager.backupFileExtension = "backup";
 
@@ -32,7 +38,17 @@ in {
     programs.noctalia.enable = true;
     programs.noctalia.systemd.enable = true;
 
-    home.packages = pkgsList;
+    home.packages = pkgsList ++ [ edgePerformance ];
+
+    xdg.desktopEntries."microsoft-edge-performance" = {
+      name = "Microsoft Edge (Performance)";
+      comment = "Edge mit Performance-Governor (Cloud-Gaming)";
+      exec = "${edgePerformance}/bin/edge-performance %U";
+      icon = "microsoft-edge";
+      categories = [ "Network" "WebBrowser" ];
+      startupNotify = true;
+      settings.StartupWMClass = "microsoft-edge";
+    };
     home.username = "benny";
     home.homeDirectory = "/home/benny";
     home.stateVersion = "26.05";
