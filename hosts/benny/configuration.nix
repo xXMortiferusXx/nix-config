@@ -76,6 +76,13 @@ in
 
   services.irqbalance.enable = true;
 
+  # sched_ext: latenzorientierter Scheduler (Frame-Pacing) fuer Cloud-Gaming.
+  # Beim Switch wird der systemd-Service direkt gestartet -> kein Reboot noetig.
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };
+
   # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
   boot.kernelModules = [ "i2c-dev" ];
   users.groups.i2c = {};
