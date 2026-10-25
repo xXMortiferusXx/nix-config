@@ -83,7 +83,19 @@ in
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
 
-  # SSH deaktiviert: benny steht nicht im LAN von nex (kein Fernzugriff nötig).
+  # SSH fuer Fernzugriff von aussen (DynDNS benberlin29.ddnss.de); nur Keys,
+  # kein root, Port 22 im Firewall geoeffnet. Portweiterleitung macht der Router.
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+  users.users.benny.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE6UHVcDl2byF1+1SYIpM3V0oldx/541PX9a9bX+smBr mortiferus@nex"
+  ];
 
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
   services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "benny" ];
