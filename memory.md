@@ -706,7 +706,9 @@
 - Deaktiviert Tuner automatisch bei manuellen sysctl-Überschreibungen
 
 ## sched_ext / Scheduler (nex, 2026-10-25)
-- **nex** nutzt `services.scx` mit **`scx_bpfland`** + `--preferred-idle-scan` (6C/12T Zen 3, kein Hybrid; Slice-/Lag-Defaults bewusst unverändert)
+- **nex** nutzt `services.scx` mit **`scx_bpfland`** + **`-m all`** (CachyOS/scx_loader-Preset „Gaming"; 6C/12T Zen 3, kein Hybrid; Slice-/Lag-Defaults unverändert)
+- scx_loader-Presets für bpfland: Auto `-m auto` · **Gaming `-m all`** · LowLatency `-m performance -w` · PowerSave `-s 20000 -m powersave -I 100 -t 100` · Server `-s 20000 -S`. bpfland-README nennt **kein** „bestes" Flag-Set (nur: vruntime-basiert, interaktiv, Cache-Layout, production-ready).
+- `--preferred-idle-scan` wurde bewusst **nicht** verwendet: rankt AMD-Prefcores (2,3,10,11) und umgeht den Wake-Sync-/LLC-Pfad; steht in keinem CachyOS-Preset.
 - `scx.full` ist ohnehin systemweit installiert (`modules/programs/tools.nix`) — Ad-hoc-A/B ohne Config-Änderung: `sudo scx_lavd`, `sudo scx_flash`, `sudo scx_rusty`, Beenden mit Ctrl-C
 - **Wichtig:** scx ersetzt EEVDF für die verwalteten Tasks → das 7.3-„flatten the pick“-cgroup-Scheduling greift währenddessen nicht. Entweder EEVDF **oder** scx.
 - `ananicy-cpp` bleibt aktiv (nice-basiert, komplementär zu bpfland); `sched_autogroup_enabled=1` unverändert
