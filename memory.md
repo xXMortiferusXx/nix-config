@@ -705,6 +705,15 @@
 - Tuner: TCP-Connection (CC-Auswahl), TCP/UDP-Buffer, IP-Frag, Neighbour/Route-Table, sysctl-Monitoring
 - Deaktiviert Tuner automatisch bei manuellen sysctl-Überschreibungen
 
+## sched_ext / Scheduler (nex, 2026-10-25)
+- **nex** nutzt `services.scx` mit **`scx_bpfland`** + `--preferred-idle-scan` (6C/12T Zen 3, kein Hybrid; Slice-/Lag-Defaults bewusst unverändert)
+- `scx.full` ist ohnehin systemweit installiert (`modules/programs/tools.nix`) — Ad-hoc-A/B ohne Config-Änderung: `sudo scx_lavd`, `sudo scx_flash`, `sudo scx_rusty`, Beenden mit Ctrl-C
+- **Wichtig:** scx ersetzt EEVDF für die verwalteten Tasks → das 7.3-„flatten the pick“-cgroup-Scheduling greift währenddessen nicht. Entweder EEVDF **oder** scx.
+- `ananicy-cpp` bleibt aktiv (nice-basiert, komplementär zu bpfland); `sched_autogroup_enabled=1` unverändert
+- Kernel 7.3 cgroup-Änderung bringt auf 12 Threads wenig (Härtetest war 4 Kerne + künstliche `nice`-Last)
+- `dmem` (Device-Memory-cgroup): NVIDIA = **nur Accounting** (`nvidia/<bdf>/vidmem`), kein TTM-Reclaim/Eviction wie amdgpu → für nex kein Nutzen. Nicht erneut prüfen.
+- `--cpufreq` von bpfland ist **nicht** nutzbar (Treiber `amd-pstate-epp`, Governor `powersave`, kein `schedutil`)
+
 ## systemd.user.services (aktuell)
 
 ### mortiferus (`home/mortiferus/autostart.nix`)

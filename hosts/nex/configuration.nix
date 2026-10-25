@@ -27,6 +27,15 @@
   # Greeter-Sync (Wallpaper/Farben) passwortlos für den Haupt-User
   services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "mortiferus" ];
 
+  # sched_ext: interaktiver Desktop-/Gaming-Scheduler. 6C/12T (Zen 3), kein Hybrid.
+  # Slice-/Lag-Defaults bleiben (bpfland ist darauf abgestimmt), zusaetzlich
+  # bevorzugt der Scheduler vollstaendig idle Cores. ananicy-cpp bleibt aktiv.
+  services.scx = {
+    enable = true;
+    scheduler = "scx_bpfland";
+    extraArgs = [ "--preferred-idle-scan" ];
+  };
+
   system.stateVersion = "26.05"; 
   
 }
