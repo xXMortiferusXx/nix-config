@@ -1,29 +1,33 @@
 #!/bin/sh
 # Boosteroid (Qt-Client) schreibt bstr_client.log und bstr_settings.ini NEBEN
 # die Binary. Der Nix-Store ist read-only -> Binary einmalig in ein
-# beschreibbares Verzeichnis kopieren und von dort starten.
+# beschreibbares Verzeichnis kopieren.
+#
+# Der Client legt selbst Desktop-Shortcuts an, die direkt auf
+# $APP_DIR/Boosteroid zeigen. Damit diese Shortcuts Flags und Performance-
+# Handling bekommen, ist $APP_DIR/Boosteroid ein Wrapper-Skript und die echte
+# Binary liegt daneben als Boosteroid.bin.
 set -e
 
 APP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/boosteroid"
 mkdir -p "$APP_DIR"
-DST="$APP_DIR/Boosteroid"
+BIN="$APP_DIR/Boosteroid.bin"
+WRAP="$APP_DIR/Boosteroid"
 MARKER="$APP_DIR/.source-path"
 
-if [ ! -e "$DST" ] || [ "$(cat "$MARKER" 2>/dev/null)" != "$BOOSTEROID_BIN" ]; then
-  cp -f "$BOOSTEROID_BIN" "$DST.tmp"
-  chmod +x "$DST.tmp"
-  mv -f "$DST.tmp" "$DST"
+if [ ! -e "$BIN" ] || [ "$(cat "$MARKER" 2>/dev/null)" != "$BOOSTEROID_BIN" ]; then
+  cp -f "$BOOSTEROID_BIN" "$BIN.tmp"
+  chmod +x "$BIN.tmp"
+  mv -f "$BIN.tmp" "$BIN"
   printf '%s\n' "$BOOSTEROID_BIN" > "$MARKER"
 fi
 
-# Fuer bennys HD 4000 (i965): VA-API erzwingen und H.264-Codec anfordern
-# (HD 4000 kann kein HEVC/AV1). -h264 gilt nur fuer die Stable-Version und
-# wird von anderen Builds ignoriert. Zusaetzliche Argumente bleiben moeglich.
+if [ ! -x "$WRAP" ] || ! head -n 1 "$WRAP" 2>/dev/null | grep -q 'Wrapper fuer Boosteroid'; then
+  cat > "$WRAP.tmp" <<'WRAPPER'
+#!/bin/sh
+# Wrapper fuer Boosteroid: VA-API-Flags + Performance, danach Wiederherstellung.
 set -- -vaapi -h264 "$@"
 
-# Waehrend des Streams Performance-Profil + CPU-Governor auf performance setzen,
-# danach wiederherstellen. Intels ohne EPP (Ivy Bridge) reagieren nicht auf PPD,
-# daher zusaetzlich der Governor.
 prev_profile=""
 if command -v powerprofilesctl >/dev/null 2>&1; then
   prev_profile=$(powerprofilesctl get 2>/dev/null || true)
@@ -46,4 +50,10 @@ restore() {
 }
 trap restore EXIT INT TERM HUP
 
-exec "$DST" "$@"
+exec "$(dirname "$0")/Boosteroid.bin" "$@"
+WRAPPER
+  chmod +x "$WRAP.tmp"
+  mv -f "$WRAP.tmp" "$WRAP"
+fi
+
+exec "$WRAP" "$@"
