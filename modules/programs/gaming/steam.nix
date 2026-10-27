@@ -4,8 +4,9 @@
   programs.steam = {
     enable = true;
     protontricks.enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
+    # Kein Steam Remote Play / Dedicated Server: Ports bleiben zu.
+    remotePlay.openFirewall = false;
+    dedicatedServer.openFirewall = false;
     gamescopeSession.enable = false;
 
     package = pkgs.steam.override {

@@ -6,6 +6,8 @@
     enable = true;
     autoStart = false;
     capSysAdmin = true;
+    # Moonlight-Clients im LAN brauchen die Ports (NixOS-Firewall filtert LAN mit).
+    openFirewall = true;
   };
 
   # Das nixpkgs-Sunshine-Modul setzt noch die veralteten

@@ -5,8 +5,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    # Letzter Stand vor der patchelf-0.19.2-Regression (naps2 baut dort noch,
-    # patchelf 0.15.2). Nur fuer das naps2-Overlay; alles andere bleibt unstable.
+    # Letzter Stand vor der patchelf-0.19.2-Regression. Der naps2-Override ist
+    # derzeit DEAKTIVIERT (regulaeres nixpkgs hat 8.5.1, baut/cached sauber);
+    # Input + Overlay bleiben fuer einen schnellen Rueckbau stehen.
     nixpkgs-old.url = "github:nixos/nixpkgs/fe13242281a67641c0102cdb1087f0ebe586c7df";
 
     disko.url = "github:nix-community/disko";
@@ -43,9 +44,11 @@
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
 
-      # naps2 aus dem alten nixpkgs (patchelf 0.15.2): patchelf 0.19.2 bricht beim
+      # naps2 aus dem alten nixpkgs (patchelf 0.15.2): patchelf 0.19.2 brach beim
       # NuGet-AppHost mit `shiftFile: Assertion splitIndex == -1` (Build-Zeit,
       # --add-rpath). NICHT der NVIDIA-LOAD-Overlap -> rpath-first hilft nicht.
+      # 2026-10-27: NICHT MEHR ANGEWENDET — naps2 8.5.1 aus unstable baut (Hydra-Cache).
+      # Rueckbau: `{ nixpkgs.overlays = [ naps2Overlay ]; }` in den Hosts wieder eintragen.
       naps2Overlay = _final: _prev: {
         naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
       };
@@ -85,7 +88,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/nex/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -100,7 +102,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/styx/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -116,7 +117,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/test/configuration.nix
         ];
       };
@@ -126,7 +126,6 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay ]; }
           ./hosts/lion-pc/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -142,7 +141,7 @@
         inherit system specialArgs;
         modules = [
           disko.nixosModules.disko
-          { nixpkgs.overlays = [ naps2Overlay bennyPyTestOverlay ]; }
+          { nixpkgs.overlays = [ bennyPyTestOverlay ]; }
           arctis-sound-manager.nixosModules.default
           ./hosts/benny/configuration.nix
           home-manager.nixosModules.home-manager

@@ -294,7 +294,12 @@
   Das sah zunächst wie ein zusätzlicher NVIDIA-Brecher aus, war aber nur ein Symptom des
   LOAD-Overlaps — mit dem `postFixup`-Fix läuft `nvidia-smi`/`nvidia-offload` auch mit dem
   globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
-  `naps2`-Wrapper sind entfernt. naps2 kommt weiterhin aus `nixpkgs-old` (patchelf 0.15.2).
+  `naps2`-Wrapper sind entfernt.
+- **naps2 (2026-10-27)**: `naps2Overlay` **deaktiviert** — reguläres unstable liefert
+  **8.5.1** (Hydra-Cache; baut trotz patchelf 0.19.2). `nixpkgs-old`-Input + Overlay
+  bleiben für schnellen Rückbau stehen; Rückbau = `{ nixpkgs.overlays = [ naps2Overlay ]; }`
+  in den Host-Modulen wieder eintragen. Der `shiftFile: Assertion splitIndex == -1`-Fehler
+  betraf 8.3.2, nicht 8.5.1.
 
 ### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
@@ -704,6 +709,15 @@
 - Ersetzt manuelle TCP/Congestion/Buffer-Tuning: wählt pro Verbindung per Reinforcement Learning den besten CC-Algorithmus
 - Tuner: TCP-Connection (CC-Auswahl), TCP/UDP-Buffer, IP-Frag, Neighbour/Route-Table, sysctl-Monitoring
 - Deaktiviert Tuner automatisch bei manuellen sysctl-Überschreibungen
+
+## Firewall / offene Ports (2026-10-27)
+- NixOS-Firewall filtert **auch LAN** (`trustedInterfaces = [ "lo" ]`) — LAN-IP ist kein Freifahrtschein.
+- **Steam Remote Play/Dedicated Server abgeschaltet** (`modules/programs/gaming/steam.nix`):
+  `remotePlay.openFirewall = false`, `dedicatedServer.openFirewall = false` → 27015/27036/27037/10400/10401 zu.
+- **Sunshine** (`modules/programs/gaming/sunshine.nix`): `openFirewall = true` → TCP 47984/47989/47990/48010,
+  UDP 47998/47999/48000/48002/48010 offen (Moonlight im LAN). `autoStart` bleibt `false`.
+- Hinweis: Sunshine war auf nex bis 27.10. **nie gestartet** (keine Config/Logs); die offenen
+  Steam-Ports waren der reale LAN-Weg.
 
 ## sched_ext / Scheduler (nex, 2026-10-25)
 - **nex** nutzt `services.scx` mit **`scx_bpfland`** + **`-m all`** (CachyOS/scx_loader-Preset „Gaming"; 6C/12T Zen 3, kein Hybrid; Slice-/Lag-Defaults unverändert)
