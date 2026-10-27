@@ -8,8 +8,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `b70b6fab8b92095914e934c599f4dea10b75eb33` (2026-10-20, revCount 1312), Version `0.1.0`
-  (Lock per `nix flake update` gezogen — volle Input-Aktualisierung; Umbriel 1200→1312)
+- Aktuelle Rev: `d9497f366c4fc8ae09a248ad49aa842d47e2b53f` (2026-10-26 14:16 CET, revCount 1398), Version `0.1.0`
+  (Lock per `nix flake update`; **live** — `umbriel --version` = `0.1.0 (d9497f3)`)
+- Upstream-HEAD beim Check (2026-10-27): `3667399` (26.10. 18:45Z) → 2 Commits noch nicht gezogen
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -118,8 +119,50 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Actions `window-move-to:<anchor>/<x>/<y>` / `window-move-by:<dx>/<dy>` | Floating-Fenster pixelgenau verschieben (#451) | verfügbar, nicht gebunden |
 | Action `output-sdr-white:<nits>[/<output>]` | SDR-Referenzweiß live setzen (#467) | verfügbar, nicht gebunden |
 | Audio-reaktive `[effects]` (#455) | Noctalia-Spectrum-Snapshots für Shader | nicht genutzt |
+| `layout.mode = "floating"` / `workspace-set-layout:floating` | Workspace-weit freie, überlappende Fenster (Windows-artig, Kaskade, Geometrie-Fokus; `d323128`) | verfügbar, nicht gesetzt (bleiben bei `scrolling`); `window-toggle-floating` wird dort abgelehnt |
+| `[appearance.title_bar]` (`mode` = `off`/`on`/`forced`/`negotiated`, Buttons, Radius) | Server-seitige Titlebars inkl. Minimize (`1713992`) | verfügbar, nicht gesetzt (Default `off`) |
+| `[input] window_snapping` | Kanten-/Ecken-Snap für schwebende Fenster — Default **`true`** seit `d88b0bc` | aktiv über Default (nicht explizit gesetzt) |
+| Actions `window-snap:<region>` / `window-unsnap` | Floating halbe/viertel Bildschirme per Tastatur | verfügbar, nicht gebunden |
+| `[input.focus] hover_raises` | Hover hebt Fenster an (opt-in, #556) | verfügbar, nicht gesetzt |
+| `[input.touchpad] scroll_method` / `enabled` + Device-Overrides | Touchpad-Scroll-Methode bzw. gezielt an/aus (#518/#531) | IRRELEVANT (Touchpad systemweit aus) |
+| `tap_and_drag` / `drag_lock` (Input) | Tap-and-Drag + Drag-Lock (#500) | verfügbar, nicht gesetzt |
+| `window_rule.match.is_cast_target` | Fenster als Screencast-Ziel matchen | verfügbar, nicht genutzt |
+| `layout.scrolling.center_on_overview_select` | gewählte Spalte beim Overview-Auswählen zentrieren (#494) | verfügbar, nicht gesetzt |
+| `msg focused-window` | IPC-Abfrage des fokussierten Fensters (#572) | verfügbar (nur bei Bedarf) |
+| Cursor-Actions (hide/show) | Cursor ein-/ausblenden (#529) | verfügbar, nicht gebunden |
+| Scrollspalten breiter als der Output (Extent 0.1–4.0) | breite Spalten durchpannen (#569) | verfügbar, nicht genutzt |
+| `[input] mod_right_double_click` | Mod+Doppel-Rechtsklick → Maximize (#504) | verfügbar, nicht gesetzt |
 
 ## Zuletzt gecheckt
+- **2026-10-27** (Check gegen Upstream; Lock `d9497f3`/1398 vom 26.10., **live**;
+  letzter dokumentierter Stand `b70b6fa`/1312): **86 Commits (1312→1398), 1 Breaking
+  Change** (`refactor(scratchpad)!` `7b9ad2e` — liegt **vor** `b70b6fa`, betrifft uns
+  nicht). Upstream-HEAD `3667399` → **2 Commits fehlen** (`155665c` per-window
+  Shortcut-Inhibition, `3667399` Blur-Ecken unter Titlebars).
+  **Kernthemen (additiv):**
+  1. **Neues Layout `floating`** (`d323128`): Workspace-weit freie, überlappende
+     Fenster, Kaskaden-Platzierung, Geometrie-Richtungsfokus,
+     `workspace-set-layout:floating`. `window-toggle-floating` wird dort abgelehnt.
+  2. **Server-seitige Titlebars** (`e3534ac` u.a.): `appearance.title_bar.mode`
+     (`off` Default / `on` / `forced` / `negotiated`), Buttons, Minimize
+     (`1713992`), Corner-Radius, sichtbar bei Maximize-to-Edges.
+  3. **Floating-Snapping**: `[input] window_snapping` (**Default `true`** seit
+     `d88b0bc`), Actions `window-snap:<region>`/`window-unsnap`, `snap` im IPC.
+  4. **Input**: xdg-Toplevel-Drag, `tap_and_drag`/`drag_lock`, Touchpad
+     `scroll_method`, `[input.touchpad].enabled` + Device-Overrides,
+     `[input.focus] hover_raises` (opt-in, #556), libei 1.3 + X11-Input-Hints,
+     autorisierte Xwayland-Input-Emulation, Mod-Doppel-Rechtsklick → Maximize.
+  5. **Layout/IPC**: Scrollspalten breiter als der Output (#569),
+     `center_on_overview_select`, `msg focused-window` (#572), Cursor-Actions,
+     `is_cast_target`-Rule, `appearance.tab_bar.window_gap`.
+  6. **HDR/Perf**: native HDR-Clients + Gamescope (`3507948`), Auto-HDR-Fixes;
+     Default-**Blur-Passes 3 → 2** (`54abe52`).
+  7. **Scratchpad**: leeres Toggle + Direktstart, fokussiertes Fenster zentrieren
+     (#546), Workspace-Move-Bindings für Scratchpad-Fenster.
+  **nixpkgs-Stand (2026-10-27):** `umbriel 0-unstable-2026-10-16` (`5cea311`) →
+  **älter** als unser Pin → weiter Flake-Input.
+  **Status:** Config unverändert gültig (nur additive Keys); `layout.mode` bleibt
+  `scrolling`. `input.window_snapping` bewusst beim Default (`true`) gelassen.
 - **2026-10-20** (Update auf Rev `b70b6fa`, revCount 1312; letzter dokumentierter
   Stand `1a58290`/1200): **112 Commits (1200→1312), 2 Breaking Changes** (kein
   Schema-Bruch bei uns). `umbriel config validate` = `config: ok` auf allen 4
