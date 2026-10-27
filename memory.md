@@ -295,11 +295,10 @@
   LOAD-Overlaps — mit dem `postFixup`-Fix läuft `nvidia-smi`/`nvidia-offload` auch mit dem
   globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
   `naps2`-Wrapper sind entfernt.
-- **naps2 (2026-10-27)**: `naps2Overlay` **deaktiviert** — reguläres unstable liefert
-  **8.5.1** (Hydra-Cache; baut trotz patchelf 0.19.2). `nixpkgs-old`-Input + Overlay
-  bleiben für schnellen Rückbau stehen; Rückbau = `{ nixpkgs.overlays = [ naps2Overlay ]; }`
-  in den Host-Modulen wieder eintragen. Der `shiftFile: Assertion splitIndex == -1`-Fehler
-  betraf 8.3.2, nicht 8.5.1.
+- **naps2 (2026-10-27, abgeschlossen)**: Overlay **und** `nixpkgs-old`-Input **entfernt**.
+  Reguläres unstable liefert **8.5.1** (Hydra-Cache) und läuft im GUI wie gewohnt.
+  Der `shiftFile: Assertion splitIndex == -1`-Fehler (patchelf 0.19.2) betraf nur 8.3.2.
+  Kein Rückbau-Artefakt mehr im Flake; falls je wieder nötig, neues Pin + Overlay anlegen.
 
 ### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.

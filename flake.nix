@@ -5,11 +5,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    # Letzter Stand vor der patchelf-0.19.2-Regression. Der naps2-Override ist
-    # derzeit DEAKTIVIERT (regulaeres nixpkgs hat 8.5.1, baut/cached sauber);
-    # Input + Overlay bleiben fuer einen schnellen Rueckbau stehen.
-    nixpkgs-old.url = "github:nixos/nixpkgs/fe13242281a67641c0102cdb1087f0ebe586c7df";
-
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -39,19 +34,10 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-old, disko, home-manager, arctis-sound-manager, ... }@inputs:
+  outputs = { self, nixpkgs, disko, home-manager, arctis-sound-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       specialArgs = { inherit self inputs; };
-
-      # naps2 aus dem alten nixpkgs (patchelf 0.15.2): patchelf 0.19.2 brach beim
-      # NuGet-AppHost mit `shiftFile: Assertion splitIndex == -1` (Build-Zeit,
-      # --add-rpath). NICHT der NVIDIA-LOAD-Overlap -> rpath-first hilft nicht.
-      # 2026-10-27: NICHT MEHR ANGEWENDET — naps2 8.5.1 aus unstable baut (Hydra-Cache).
-      # Rueckbau: `{ nixpkgs.overlays = [ naps2Overlay ]; }` in den Hosts wieder eintragen.
-      naps2Overlay = _final: _prev: {
-        naps2 = nixpkgs-old.legacyPackages.${system}.naps2;
-      };
 
       # benny: die Python-3.14.8-Rebuilds lassen die Test-Suiten von
       # pyrate-limiter (OOM) und udiskie (Keyutils/ctypes) scheitern.
