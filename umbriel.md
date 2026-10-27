@@ -8,9 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `d9497f366c4fc8ae09a248ad49aa842d47e2b53f` (2026-10-26 14:16 CET, revCount 1398), Version `0.1.0`
-  (Lock per `nix flake update`; **live** — `umbriel --version` = `0.1.0 (d9497f3)`)
-- Upstream-HEAD beim Check (2026-10-27): `3667399` (26.10. 18:45Z) → 2 Commits noch nicht gezogen
+- Aktuelle Rev: `366739955d3905d7600638eb637941b2782c0c68` (2026-10-26 18:45Z, revCount 1400), Version `0.1.0`
+  (Lock per `nix flake update`; **live seit 2026-10-27** — `umbriel --version` = `0.1.0 (3667399)`; Sitzung braucht Login-Neustart)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -137,8 +136,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - **2026-10-27** (Check gegen Upstream; Lock `d9497f3`/1398 vom 26.10., **live**;
   letzter dokumentierter Stand `b70b6fa`/1312): **86 Commits (1312→1398), 1 Breaking
   Change** (`refactor(scratchpad)!` `7b9ad2e` — liegt **vor** `b70b6fa`, betrifft uns
-  nicht). Upstream-HEAD `3667399` → **2 Commits fehlen** (`155665c` per-window
-  Shortcut-Inhibition, `3667399` Blur-Ecken unter Titlebars).
+  nicht). **Nachgezogen auf HEAD `3667399`/1400** (2026-10-27): `155665c`
+  per-window Shortcut-Inhibition + `3667399` Blur-Ecken unter Titlebars; alle 4
+  Hosts `config: ok` gegen das neue Binary, Switch auf nex erledigt.
   **Kernthemen (additiv):**
   1. **Neues Layout `floating`** (`d323128`): Workspace-weit freie, überlappende
      Fenster, Kaskaden-Platzierung, Geometrie-Richtungsfokus,
