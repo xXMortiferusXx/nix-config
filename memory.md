@@ -146,9 +146,9 @@
   (`nix flake update` → `nixos-rebuild switch --flake ".#$(hostname)"` → `nix-reboot-check`).
   Gedacht als `update_command` für das Noctalia-Plugin **nix-monitor** — ersetzt die früheren
   hartkodierten `#nex`/`#benny`/`#lion-pc`-Zeilen in `~/.local/state/noctalia/settings.toml`.
-  nex ist umgestellt; lion/benny/backbone erst **nach** ihrem nächsten Sync (Skript muss dort
-  vorhanden sein), dann dort ebenfalls `update_command = "nixos-update"` setzen.
-- **Pull-Hosts / Baseline (wichtig):** Bei benny (analog lion/backbone) wird die getrackte
+  Umgestellt: **nex, benny, lion** (bei benny/lion erzwingt die HM-Activation die Zeile bei jedem
+  Sync). **backbone bewusst nicht** (kleines Office-Notebook, kein Bedarf).
+- **Pull-Hosts / Baseline (wichtig):** Bei benny und lion wird die getrackte
   `.baseline` **nur bei Erst-Installation** nach `settings.toml` kopiert. Die HM-Activation
   (`createNoctaliaState`) erzwingt danach **ausschließlich** `update_command = "nixos-update"`;
   alle selbst gesetzten Live-Einstellungen (Wallpaper, Theme, Plugins, Lockscreen-Widgets …)
