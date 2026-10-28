@@ -1,18 +1,56 @@
 # Zusatz-Tools und Fish-Aliase für System-/Nix-Pflege.
 { config, pkgs, ... }:
+let
+  # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
+  # Erfolg: neuer Lock bleibt stehen. Fehler: alter Lock wird restauriert.
+  nixCheck = pkgs.writeShellScriptBin "nix-check" ''
+    set -u
+    repo=/etc/nixos
+    host=$(hostname)
+    trace=""
+    if [ "''${1:-}" = "--trace" ]; then trace="--show-trace"; fi
+
+    backup=$(mktemp)
+    trap 'rm -f "$backup"' EXIT
+    cp "$repo/flake.lock" "$backup"
+
+    echo "== nix flake update =="
+    if ! (cd "$repo" && nix flake update); then
+      cp "$backup" "$repo/flake.lock"
+      echo "nix-check: flake update fehlgeschlagen - Lock unveraendert."
+      exit 1
+    fi
+
+    echo "== nixos-rebuild build ($host) =="
+    if ! (cd "$repo" && nixos-rebuild build --flake ".#$host" $trace); then
+      cp "$backup" "$repo/flake.lock"
+      echo
+      echo "nix-check: BUILD FEHLGESCHLAGEN."
+      echo "flake.lock wurde auf den letzten Stand zurueckgesetzt; das System bleibt unangetastet."
+      echo "Vollstaendiger Trace:  nix-check --trace"
+      exit 1
+    fi
+
+    echo
+    echo "== Aenderungen gegenueber /run/current-system =="
+    nvd diff /run/current-system "$repo/result" || true
+    echo
+    echo "nix-check: OK - Lock behalten. Switch mit: nix-switch"
+  '';
+in
 {
   environment.systemPackages = with pkgs; [
     iw
     jq
     ookla-speedtest
     scx.full
-  ];
+  ] ++ [ nixCheck ];
 
   programs.fish.shellAliases = {
 
     # System & Update (hostname wird per Fish-Funktion dynamisch aufgelöst)
     nix-search = "nix search nixpkgs";
-    nix-check  = "nix flake update && nixos-rebuild build --flake .#(hostname) && nvd diff /run/current-system ./result";
+    # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei Fehlern.
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     # Reparatur-Sync: Inputs mit aktualisieren, damit kein Downgrade auf alten Lock.

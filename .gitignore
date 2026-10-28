@@ -19,6 +19,8 @@ home/benny/state/noctalia/settings.toml
 # werden von Noctalia zur Laufzeit neu erzeugt -> nicht tracken, nie überschreiben.
 home/*/config/gtk-3.0/noctalia.css
 home/*/config/gtk-4.0/noctalia.css
+home/*/config/gtk-3.0/noctalia-extensions.css
+home/*/config/gtk-4.0/noctalia-extensions.css
 home/*/config/qt5ct/colors/noctalia.conf
 home/*/config/qt6ct/colors/noctalia.conf
 home/*/config/umbriel/noctalia.toml

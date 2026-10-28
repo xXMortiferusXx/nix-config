@@ -129,6 +129,10 @@
 - **WICHTIG**: Sobald `flake.lock` lokale Änderungen gegenüber `origin/main` hat (z.B. durch `nix flake update`/`nix-check`/`nix-update`), muss sie **zusammen** mit der zugehörigen Konfiguration committet und gepusht werden.
 - **Hintergrund**: `nix-sync` auf den Hosts macht `git reset --hard origin/main` → setzt die `flake.lock` auf den **gepushten Stand** zurück. Ist die gepushte lock veraltet/inkonsistent zur config, löst `nixos-rebuild` auf dem Host die Inputs lokal neu auf → ungewolltes "erneutes Update nötig"-Hin-und-Her.
 - **Faustregel**: `flake.lock` gehört zu den Inputs des gepushten Zustands. Nie config-Änderungen pushen, ohne die zugehörige (ggf. aktualisierte) `flake.lock` mit zu pushen. Prüfen vor jedem Push: `git status` — ist `flake.lock` als geändert gelistet, gehört sie mit in den Commit.
+- **`nix-check` (2026-10-28)**: eigenes Skript (`modules/programs/tools.nix`), kein Einzeiler mehr.
+  Es sichert `flake.lock`, macht `nix flake update`, baut testweise und **restauriert den Lock bei
+  Fehlern** → ein kaputtes Update hinterlässt keinen dreckigen Lock. Erfolgsfall behält den Lock
+  und zeigt `nvd diff`. Bei Bedarf `nix-check --trace` für den vollen Trace.
 
 ## Niri Quelle & Binary Cache (2026-07-27, HISTORISCH – niri entfernt 2026-08-31)
 
