@@ -142,6 +142,10 @@
   initrd neu gebaut bzw. systemd/Firmware → `empfohlen`; sonst `nein`.
   Wird in `nix-check` (gegen `./result`) sowie am Ende von **`nix-switch`** und **`nix-sync`**
   aufgerufen — so sieht z. B. benny nach dem Sync direkt, ob ein Reboot nötig ist.
+  **Alias-Falle:** `nix-switch`/`nix-sync` sind Fish-Aliase und werden beim Shell-Start geladen.
+  Eine bereits offene Shell behält den alten Alias → nach einer Config-Änderung **neues Terminal**
+  öffnen (kein Re-Login nötig). Der Sync, der die Änderung installiert, läuft naturgemäß noch mit
+  dem alten Alias.
 - **`nixos-update`** (Skript, 2026-10-28): host-agnostischer Update-Befehl
   (`nix flake update` → `nixos-rebuild switch --flake ".#$(hostname)"` → `nix-reboot-check`).
   Gedacht als `update_command` für das Noctalia-Plugin **nix-monitor** — ersetzt die früheren
