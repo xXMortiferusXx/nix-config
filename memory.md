@@ -332,7 +332,7 @@
   globalen Wert. Das globale Sane-Verhalten ist wiederhergestellt; `scanimage`- und
   `naps2`-Wrapper sind entfernt.
 - **naps2 (2026-10-27, abgeschlossen)**: Overlay **und** `nixpkgs-old`-Input **entfernt**.
-  Reguläres unstable liefert **8.5.1** (Hydra-Cache) und läuft im GUI wie gewohnt.
+  Reguläres unstable liefert **8.5.1** (Hydra-Cache); vom User **verifiziert** (Scan/Speichern).
   Der `shiftFile: Assertion splitIndex == -1`-Fehler (patchelf 0.19.2) betraf nur 8.3.2.
   Kein Rückbau-Artefakt mehr im Flake; falls je wieder nötig, neues Pin + Overlay anlegen.
 - **fuse2 entfernt (nixpkgs 2026-10-25)**: `pkgs.fuse2` wirft beim Eval
