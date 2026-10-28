@@ -1,6 +1,28 @@
 # Zusatz-Tools und Fish-Aliase für System-/Nix-Pflege.
 { config, pkgs, ... }:
 let
+  # Reboot-Einschaetzung: vergleicht /run/booted-system mit einem Ziel-System
+  # (Default /run/current-system, optional z.B. ./result vor dem Switch).
+  nixRebootCheck = pkgs.writeShellScriptBin "nix-reboot-check" ''
+    set -u
+    target="''${1:-/run/current-system}"
+    booted=/run/booted-system
+    changed() { [ "$(readlink -f "$booted/$1" 2>/dev/null)" != "$(readlink -f "$target/$1" 2>/dev/null)" ]; }
+    boot_kver=$(ls "$booted/kernel-modules/lib/modules/" 2>/dev/null | head -1)
+    new_kver=$(ls "$target/kernel-modules/lib/modules/" 2>/dev/null | head -1)
+    if [ -n "$boot_kver" ] && [ -n "$new_kver" ] && [ "$boot_kver" != "$new_kver" ]; then
+      echo "REBOOT: JA (neuer Kernel: $boot_kver -> $new_kver)"
+    elif changed kernel || changed initrd || changed kernel-modules; then
+      echo "REBOOT: empfohlen (Kernel/Module neu gebaut, laufender Kernel unveraendert)"
+    elif changed init; then
+      echo "REBOOT: empfohlen (systemd/PID1 geaendert)"
+    elif changed firmware; then
+      echo "REBOOT: empfohlen (Firmware geaendert)"
+    else
+      echo "REBOOT: nein (nur Userspace)"
+    fi
+  '';
+
   # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
   # Erfolg: neuer Lock bleibt stehen. Fehler: alter Lock wird restauriert.
   nixCheck = pkgs.writeShellScriptBin "nix-check" ''
@@ -59,23 +81,8 @@ let
       echo "($rebuilds weitere Rebuilds ohne Versionswechsel)"
     fi
 
-    # Reboot-Einschaetzung gegen die BOOTED Generation (nicht /run/current-system).
-    booted=/run/booted-system
-    changed() { [ "$(readlink -f "$booted/$1" 2>/dev/null)" != "$(readlink -f "$repo/result/$1" 2>/dev/null)" ]; }
-    boot_kver=$(ls "$booted/kernel-modules/lib/modules/" 2>/dev/null | head -1)
-    new_kver=$(ls "$repo/result/kernel-modules/lib/modules/" 2>/dev/null | head -1)
     echo
-    if [ -n "$boot_kver" ] && [ -n "$new_kver" ] && [ "$boot_kver" != "$new_kver" ]; then
-      echo "REBOOT: JA (neuer Kernel: $boot_kver -> $new_kver)"
-    elif changed kernel || changed initrd || changed kernel-modules; then
-      echo "REBOOT: empfohlen (Kernel/Module neu gebaut, laufender Kernel unveraendert)"
-    elif changed init; then
-      echo "REBOOT: empfohlen (systemd/PID1 geaendert)"
-    elif changed firmware; then
-      echo "REBOOT: empfohlen (Firmware geaendert)"
-    else
-      echo "REBOOT: nein (nur Userspace)"
-    fi
+    ${nixRebootCheck}/bin/nix-reboot-check "$repo/result"
     echo
     echo "nix-check: OK - Lock behalten. Switch mit: nix-switch"
   '';
@@ -86,19 +93,19 @@ in
     jq
     ookla-speedtest
     scx.full
-  ] ++ [ nixCheck ];
+  ] ++ [ nixCheck nixRebootCheck ];
 
   programs.fish.shellAliases = {
 
     # System & Update (hostname wird per Fish-Funktion dynamisch aufgelöst)
     nix-search = "nix search nixpkgs";
     # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei Fehlern.
-    nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
+    nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname) && nix-reboot-check";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     # Reparatur-Sync: Inputs mit aktualisieren, damit kein Downgrade auf einen
     # alten Lock passiert, wenn der letzte Push schon laenger her ist
     # (bewusste Entscheidung -- nicht entfernen).
-    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
+    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && nix-reboot-check && popd";
     night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
