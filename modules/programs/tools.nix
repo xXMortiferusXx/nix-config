@@ -23,6 +23,16 @@ let
     fi
   '';
 
+  # Host-agnostischer Update-Befehl, z.B. fuer den "Nix Monitor"-Button in Noctalia.
+  # Kein hartkodiertes #hostname; gibt am Ende die Reboot-Einschaetzung aus.
+  nixosUpdate = pkgs.writeShellScriptBin "nixos-update" ''
+    set -u
+    cd /etc/nixos || exit 1
+    nix flake update
+    sudo nixos-rebuild switch --flake ".#$(hostname)"
+    nix-reboot-check
+  '';
+
   # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
   # Erfolg: neuer Lock bleibt stehen. Fehler: alter Lock wird restauriert.
   nixCheck = pkgs.writeShellScriptBin "nix-check" ''
@@ -93,7 +103,7 @@ in
     jq
     ookla-speedtest
     scx.full
-  ] ++ [ nixCheck nixRebootCheck ];
+  ] ++ [ nixCheck nixRebootCheck nixosUpdate ];
 
   programs.fish.shellAliases = {
 

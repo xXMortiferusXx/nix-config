@@ -1,4 +1,4 @@
-config_version = 15
+config_version = 16
 
 [bar.default]
 background_opacity = 0.60999998636543751
@@ -113,7 +113,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.65000000000000002
         background_radius = 16.0
         center_password_text = true
@@ -140,7 +140,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@eDP-2".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -203,7 +203,7 @@ auto_open_filemanager = true
 file_manager_cmd = "thunar"
 
 [plugin_settings."avivbintangaringga/nix-monitor"]
-update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#nex"
+update_command = "nixos-update"
 
 [plugin_settings."raycursive/discord-voice"]
 discord_binary = "/etc/profiles/per-user/mortiferus/bin/discord"
@@ -262,16 +262,16 @@ transition_on_startup = true
     order = "alphabetical"
 
     [wallpaper.default]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-85216o_1920x1080.png"
 
     [wallpaper.last]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-85216o_1920x1080.png"
 
     [wallpaper.monitors.eDP-1]
     path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-83o1y1_1920x1080.png"
 
     [wallpaper.monitors.eDP-2]
-    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-yxqzj7_1920x1080.png"
+    path = "/home/mortiferus/Bilder/Wallpaper-NSFW/wallhaven-85216o_1920x1080.png"
 
 [weather]
 effects = true

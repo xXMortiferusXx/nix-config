@@ -142,6 +142,12 @@
   initrd neu gebaut bzw. systemd/Firmware → `empfohlen`; sonst `nein`.
   Wird in `nix-check` (gegen `./result`) sowie am Ende von **`nix-switch`** und **`nix-sync`**
   aufgerufen — so sieht z. B. benny nach dem Sync direkt, ob ein Reboot nötig ist.
+- **`nixos-update`** (Skript, 2026-10-28): host-agnostischer Update-Befehl
+  (`nix flake update` → `nixos-rebuild switch --flake ".#$(hostname)"` → `nix-reboot-check`).
+  Gedacht als `update_command` für das Noctalia-Plugin **nix-monitor** — ersetzt die früheren
+  hartkodierten `#nex`/`#benny`/`#lion-pc`-Zeilen in `~/.local/state/noctalia/settings.toml`.
+  nex ist umgestellt; lion/benny/backbone erst **nach** ihrem nächsten Sync (Skript muss dort
+  vorhanden sein), dann dort ebenfalls `update_command = "nixos-update"` setzen.
 - **`nix-sync` (bewusst MIT `nix flake update` — nicht entfernen)**: Pull-Hosts aktualisieren
   die Inputs selbst. Grund: wenn der letzte Push schon länger her ist, würde der gepushte Lock
   sonst ein **Downgrade** erzwingen. Preis: ein frisch gezogener nixpkgs-Stand bricht, wenn
