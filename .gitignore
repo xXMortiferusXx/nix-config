@@ -5,8 +5,13 @@ result-*
 result-man
 __pycache__/
 
-# Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.)
-home/mortiferus/state/noctalia/state.toml
+# Noctalia v5 State: enthält sensitive Tokens (OAuth, etc.) - je Host
+home/*/state/noctalia/state.toml
+# Clipboard/Verlauf/Wallpaper-State: kann Klartext-Geheimnisse enthalten
+home/*/state/noctalia/clipboard/
+home/*/state/noctalia/notification_history.json
+home/*/state/noctalia/wallhaven/
+home/*/state/noctalia/wallpaper_shuffle.json
 
 # Noctalia settings.toml der Pull-Hosts: wird lokal vom Host gepflegt und darf
 # beim nix-sync (git reset --hard origin/main) NICHT von GitHub überschrieben werden.
