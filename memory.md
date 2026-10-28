@@ -148,6 +148,11 @@
   hartkodierten `#nex`/`#benny`/`#lion-pc`-Zeilen in `~/.local/state/noctalia/settings.toml`.
   nex ist umgestellt; lion/benny/backbone erst **nach** ihrem nächsten Sync (Skript muss dort
   vorhanden sein), dann dort ebenfalls `update_command = "nixos-update"` setzen.
+- **Pull-Hosts / Baseline (wichtig):** Bei benny (analog lion/backbone) wird die getrackte
+  `.baseline` **nur bei Erst-Installation** nach `settings.toml` kopiert. Die HM-Activation
+  (`createNoctaliaState`) erzwingt danach **ausschließlich** `update_command = "nixos-update"`;
+  alle selbst gesetzten Live-Einstellungen (Wallpaper, Theme, Plugins, Lockscreen-Widgets …)
+  bleiben unangetastet. Live-`settings.toml` ist untracked → `git reset --hard` fasst sie nicht an.
 - **`nix-sync` (bewusst MIT `nix flake update` — nicht entfernen)**: Pull-Hosts aktualisieren
   die Inputs selbst. Grund: wenn der letzte Push schon länger her ist, würde der gepushte Lock
   sonst ein **Downgrade** erzwingen. Preis: ein frisch gezogener nixpkgs-Stand bricht, wenn
