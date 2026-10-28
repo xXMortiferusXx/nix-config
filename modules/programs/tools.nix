@@ -67,10 +67,10 @@ in
     # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei Fehlern.
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
-    # Pull-Hosts uebernehmen den auf nex getesteten flake.lock. KEIN eigenes
-    # `nix flake update` mehr: sonst ziehen sich lion/benny ungetestete nixpkgs-
-    # Staende und brechen unabhaengig (fuse2-Vorfall 2026-10-27).
-    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && sudo nixos-rebuild switch --flake .#(hostname) && popd";
+    # Reparatur-Sync: Inputs mit aktualisieren, damit kein Downgrade auf einen
+    # alten Lock passiert, wenn der letzte Push schon laenger her ist
+    # (bewusste Entscheidung -- nicht entfernen).
+    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";

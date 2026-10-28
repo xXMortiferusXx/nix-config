@@ -135,11 +135,12 @@
   und zeigt `nvd diff`. Bei Bedarf `nix-check --trace` für den vollen Trace.
   Zusätzlich gibt es nach dem Update die **neu hinzugekommenen `throw`/`warnAlias`-Einträge** aus
   `pkgs/top-level/aliases.nix` (alt vs. neu) aus — die „Ankündigung", die nixpkgs/unstable nicht liefert.
-- **`nix-sync` (2026-10-28 geändert)**: macht **kein** `nix flake update` mehr. Pull-Hosts
-  (lion/benny/backbone/styx) übernehmen ausschließlich den auf **nex getesteten** `flake.lock`.
-  Grund: der fuse2-Vorfall (25.10., nixpkgs entfernte `fuse2` ohne Übergangsfrist) brach benny
-  morgens um 6, weil `nix-sync` dort einen ungetesteten nixpkgs-Stand zog. Updates laufen jetzt
-  nur noch über nex (`nix-check` → committen/pushen → Hosts syncen).
+- **`nix-sync` (bewusst MIT `nix flake update` — nicht entfernen)**: Pull-Hosts aktualisieren
+  die Inputs selbst. Grund: wenn der letzte Push schon länger her ist, würde der gepushte Lock
+  sonst ein **Downgrade** erzwingen. Preis: ein frisch gezogener nixpkgs-Stand bricht, wenn
+  `origin/main` noch auf entfernte Attrs verweist (fuse2-Vorfall 2026-10-27, benny um 6 Uhr).
+  Gegenmaßnahme: auf nex `nix-check` laufen lassen (zeigt neu entfernte/umbenannte Attrs) und
+  zeitnah pushen.
 
 ## Niri Quelle & Binary Cache (2026-07-27, HISTORISCH – niri entfernt 2026-08-31)
 
