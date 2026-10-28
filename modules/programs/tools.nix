@@ -12,8 +12,10 @@ let
     new_kver=$(ls "$target/kernel-modules/lib/modules/" 2>/dev/null | head -1)
     if [ -n "$boot_kver" ] && [ -n "$new_kver" ] && [ "$boot_kver" != "$new_kver" ]; then
       echo "REBOOT: JA (neuer Kernel: $boot_kver -> $new_kver)"
-    elif changed kernel || changed initrd || changed kernel-modules; then
-      echo "REBOOT: empfohlen (Kernel/Module neu gebaut, laufender Kernel unveraendert)"
+    elif changed kernel-modules; then
+      echo "REBOOT: empfohlen (Kernel-Module geaendert - z.B. NVIDIA-Treiber)"
+    elif changed kernel || changed initrd; then
+      echo "REBOOT: empfohlen (Kernel/initrd neu gebaut, laufender Kernel unveraendert)"
     elif changed init; then
       echo "REBOOT: empfohlen (systemd/PID1 geaendert)"
     elif changed firmware; then

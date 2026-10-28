@@ -138,8 +138,10 @@
   Die Paketliste ist auf **direkt gewählte Pakete mit Versionswechsel** reduziert (`nvd diff -s`,
   `[U]`/`[A]`/`[R]`); reine Rebuilds werden nur gezählt.
 - **`nix-reboot-check`** (eigenes Skript) vergleicht `/run/booted-system` mit einem Zielsystem
-  (Default `/run/current-system`, optional Pfad). Kernel-**Version** anders → `JA`; Kernel/Module/
-  initrd neu gebaut bzw. systemd/Firmware → `empfohlen`; sonst `nein`.
+  (Default `/run/current-system`, optional Pfad). Kernel-**Version** anders → `JA`; Kernel-Module
+  geändert (auch **NVIDIA-Treiber** — die .ko-Dateien liegen im `kernel-modules`-Tree) →
+  `empfohlen (Kernel-Module geaendert)`; Kernel/initrd neu gebaut bzw. systemd/Firmware →
+  `empfohlen`; sonst `nein`.
   Wird in `nix-check` (gegen `./result`) sowie am Ende von **`nix-switch`** und **`nix-sync`**
   aufgerufen — so sieht z. B. benny nach dem Sync direkt, ob ein Reboot nötig ist.
   **Alias-Falle:** `nix-switch`/`nix-sync` sind Fish-Aliase und werden beim Shell-Start geladen.
