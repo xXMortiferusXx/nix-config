@@ -14,7 +14,6 @@
   environment.systemPackages = with pkgs; [
     bind
     appimage-run
-    fuse2
     e2fsprogs
     libnotify
     nix-tree

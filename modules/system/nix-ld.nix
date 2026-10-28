@@ -10,7 +10,7 @@
       stdenv.cc.cc
       stdenv.cc.cc.lib
       zlib
-      fuse2
+      # fuse2 wurde 2026-10-25 aus nixpkgs entfernt (EOL); `fuse` = fuse3.
       fuse3
       icu
       nspr

@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `366739955d3905d7600638eb637941b2782c0c68` (2026-10-26 18:45Z, revCount 1400), Version `0.1.0`
-  (Lock per `nix flake update`; **live seit 2026-10-27** — `umbriel --version` = `0.1.0 (3667399)`; Sitzung braucht Login-Neustart)
+- Aktuelle Rev: `b456dc29610dff3e92a1cc42a489e3b6d86cbf01` (2026-10-28, revCount 1418), Version `0.1.0`
+  (Lock per `nix flake update`; **live seit 2026-10-28** — `umbriel --version` = `0.1.0 (b456dc2)`; Sitzung braucht Login-Neustart)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
@@ -133,6 +133,21 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `[input] mod_right_double_click` | Mod+Doppel-Rechtsklick → Maximize (#504) | verfügbar, nicht gesetzt |
 
 ## Zuletzt gecheckt
+- **2026-10-28** (Lock-Update via `nix-check`; `3667399`/1400 → `b456dc29`/1418):
+  **18 Commits, KEINE Breaking Changes** (kein `!`). `umbriel config validate` =
+  `config: ok` auf allen 4 Hosts gegen das neue Binary.
+  **Kernthemen:**
+  1. **Screen-Sharing/InputCapture**: `InputCapture`-Portal **v2** (`d4a513e`),
+     genehmigte Capture-Sessions merken (`4fa14f1`), Capture-Pointer-Regionen
+     publizieren (`8121647`), Doku zu Screen-Sharing (`55027a6`).
+  2. **Xwayland**: gemappte Popups neu klassifiziert (`8d29e73`), gepufferte
+     Surfaces nach später Zuordnung mappen (`8b7a76e`).
+  3. **Fenster/Fokus**: Transient-Fokus + abgerissene Menüs (`1d81acb`),
+     geteilter Keyboard-Lock-State (`910297e`).
+  4. **Rendering**: `umbrielfx` rendert interne Framebuffer in gesampelte Texturen
+     (`8c6e5c9`); Output meldet committeten Scanout-State + Historie (`47ee4cc`).
+  5. libinput **1.29**, mehrere Portal-Input-Bumps.
+  **Status:** Config unverändert gültig (additiv). `layout.mode` weiter `scrolling`.
 - **2026-10-27** (Check gegen Upstream; Lock `d9497f3`/1398 vom 26.10., **live**;
   letzter dokumentierter Stand `b70b6fa`/1312): **86 Commits (1312→1398), 1 Breaking
   Change** (`refactor(scratchpad)!` `7b9ad2e` — liegt **vor** `b70b6fa`, betrifft uns

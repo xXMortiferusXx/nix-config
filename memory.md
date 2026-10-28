@@ -299,6 +299,10 @@
   Reguläres unstable liefert **8.5.1** (Hydra-Cache) und läuft im GUI wie gewohnt.
   Der `shiftFile: Assertion splitIndex == -1`-Fehler (patchelf 0.19.2) betraf nur 8.3.2.
   Kein Rückbau-Artefakt mehr im Flake; falls je wieder nötig, neues Pin + Overlay anlegen.
+- **fuse2 entfernt (nixpkgs 2026-10-25)**: `pkgs.fuse2` wirft beim Eval
+  („has been removed because it has reached end of life"). Aus `environment-common.nix`
+  und `nix-ld.nix` entfernt. `pkgs.fuse` ist jetzt **fuse3** (3.18.2); `appimage-run`
+  extrahiert ohne FUSE → kein Ersatz nötig.
 
 ### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
