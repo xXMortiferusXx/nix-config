@@ -14,11 +14,25 @@ let
     trap 'rm -f "$backup"' EXIT
     cp "$repo/flake.lock" "$backup"
 
+    np_path() { nix eval --impure --raw --expr '(builtins.getFlake "/etc/nixos").inputs.nixpkgs.outPath' 2>/dev/null || true; }
+    old_np=$(np_path)
+
     echo "== nix flake update =="
     if ! (cd "$repo" && nix flake update); then
       cp "$backup" "$repo/flake.lock"
       echo "nix-check: flake update fehlgeschlagen - Lock unveraendert."
       exit 1
+    fi
+
+    # Ankuendigung, die nixpkgs bei unstable nicht liefert: was wurde neu entfernt/umbenannt?
+    new_np=$(np_path)
+    if [ -n "$old_np" ] && [ -n "$new_np" ] && [ "$old_np" != "$new_np" ] \
+       && [ -f "$old_np/pkgs/top-level/aliases.nix" ] && [ -f "$new_np/pkgs/top-level/aliases.nix" ]; then
+      echo
+      echo "== nixpkgs: neu entfernt/umbenannt =="
+      diff -U0 "$old_np/pkgs/top-level/aliases.nix" "$new_np/pkgs/top-level/aliases.nix" 2>/dev/null \
+        | grep -E '^\+.*= *(throw|warnAlias)' \
+        | sed 's/^+ *//' | head -25 || true
     fi
 
     echo "== nixos-rebuild build ($host) =="
@@ -53,8 +67,10 @@ in
     # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei Fehlern.
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
-    # Reparatur-Sync: Inputs mit aktualisieren, damit kein Downgrade auf alten Lock.
-    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
+    # Pull-Hosts uebernehmen den auf nex getesteten flake.lock. KEIN eigenes
+    # `nix flake update` mehr: sonst ziehen sich lion/benny ungetestete nixpkgs-
+    # Staende und brechen unabhaengig (fuse2-Vorfall 2026-10-27).
+    nix-sync   = "pushd /etc/nixos && git reset --hard origin/main && git pull && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     night-update = "umbriel msg dpms-off && pushd /etc/nixos && nix flake update && sudo systemd-inhibit --why='Nightly Update' --mode=block nixos-rebuild switch --flake .#(hostname); popd";
 
     nix-clean  = "sudo nix-collect-garbage -d && sudo nix-store --optimise && sudo nixos-rebuild switch --flake /etc/nixos#(hostname)";
