@@ -25,6 +25,14 @@
       cp /etc/nixos/home/benny/state/noctalia/settings.toml.baseline \
          /etc/nixos/home/benny/state/noctalia/settings.toml
     fi
+
+    # Nur diese eine Zeile zentral pflegen: der Noctalia-"Nix Monitor"-Button
+    # ruft das host-agnostische Skript auf (statt hartkodiertem #hostname).
+    settings=/etc/nixos/home/benny/state/noctalia/settings.toml
+    if [ -f "$settings" ]; then
+      ${pkgs.gnused}/bin/sed -i \
+        's|^update_command[[:space:]]*=.*|update_command = "nixos-update"|' "$settings"
+    fi
   '';
 
   # Avatar/Profilbild fuer AccountsService und Noctalia-Greeter.

@@ -232,7 +232,7 @@ auto_open_filemanager = true
 file_manager_cmd = "thunar"
 
 [plugin_settings."avivbintangaringga/nix-monitor"]
-update_command = "cd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#benny"
+update_command = "nixos-update"
 
 [plugin_settings."raycursive/discord-voice"]
 discord_binary = "/etc/profiles/per-user/benny/bin/discord"
