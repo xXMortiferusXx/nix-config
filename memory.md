@@ -223,6 +223,27 @@
   (Neuinstall-Simulation) → greift. `device.restore-profile` (default true) bedeutet: ändert man das Profil
   **manuell** (z.B. pavucontrol), gewinnt danach der gespeicherte State wieder — für den Normalbetrieb egal.
 
+### Host-EQ für MMX 330 Pro (seit 2026-10-28, nex)
+- **Datei**: `modules/hardware/mmx330-filters.txt` = Squiglink/AutoEQ-Export (10 PK-Filter, `Preamp: -9.3 dB`),
+  unverändert aus `~/Downloads/beyerdynamic MMX 330 Pro Filters.txt` (MD5 `011549ac982a487663a0d52b73d0ccdf`).
+- **Umsetzung**: `services.pipewire.extraConfig.pipewire."99-gc7-eq"` startet `libpipewire-module-filter-chain`
+  mit `builtin`/`param_eq` (`config.filename` → Datei). `param_eq` ist **8-kanalfähig** und liest
+  AutoEQ/Squiglink-Dateien direkt (inkl. Preamp) — keine Bandraster-Näherung.
+  - capture: `effect_input.gc7_eq`, `Audio/Sink`, 8ch `[FL,FR,FC,LFE,RL,RR,SL,SR]`, `priority.session=2100`
+    → wird dadurch **automatisch Default-Sink** (getestet mit gelöschtem `~/.local/state/wireplumber/default-nodes`).
+  - playback: `effect_output.gc7_eq`, `node.passive=true`, `node.target` = exakter GC7-Game-Node
+    (Name inkl. Seriennummer — `node.target` löst Strings über `node.name` auf).
+  - Alter `GC7 Game (7.1)`-Node bleibt unverändert darunter; ChatMix via Voice-Node unberührt.
+- **Discord**: Ausgabe bleibt **in-app** `GC7 Voice (Chat)` (wird von PipeWire-State persistiert).
+  Eine WP-Routing-Regel ist **nicht möglich**: `stream.rules` in WirePlumber 0.5 verarbeitet nur `state.*`
+  (`scripts/node/state-stream.lua:102`); `target.object` aus `update-props` wird verworfen. `target.object`
+  selbst akzeptiert nur id oder **exakten** `node.name` (keine Regex, `linking/find-defined-target.lua:86`).
+- **Check**: `pactl get-default-sink` → `effect_input.gc7_eq`; `pw-link -l` zeigt `effect_input.gc7_eq:playback_*`
+  ← Stream und `effect_output.gc7_eq:output_*` → `pro-output-0`. `wpctl status` listet den Sink unter „Filters"
+  (kosmetisch, kein Registrierungsproblem).
+- **A/B-Hören**: Filter temporär entfernen (Block raus) → Bass-/Höhenunterschied deutlich; Gain-Reserve wegen
+  −9,3 dB Preamp geringer.
+
 ### Arctis Sound Manager (ASM) — ENTFERNT 2026-09-29
 - Headset (MMX 330 Pro) läuft jetzt über **Sound Blaster GC7** (USB `041e:3271`, `snd_usb_audio`,
   Profile: off / Analoges Stereo Duplex / IEC958-Varianten / Surround 2.1-7.1 / Pro Audio).

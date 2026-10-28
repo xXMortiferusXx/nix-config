@@ -66,6 +66,49 @@ in
     "context.properties"."default.clock.rate" = 48000;
   };
 
+  # Host-seitige Kopfhörer-Korrektur (Squiglink/AutoEQ-Preset "Beyerdynamic
+  # MMX 330 Pro") als 8-Kanal-param_eq. Der virtuelle Sink "GC7 Game EQ (7.1)"
+  # wird per Prioritaet Default; der echte GC7-Game-Node bleibt unveraendert
+  # darunter (ChatMix intakt). Discord muss seine Ausgabe weiterhin in-app auf
+  # "GC7 Voice (Chat)" stellen (wird von PipeWire-State persistiert) - eine
+  # WirePlumber-Routing-Regel greift hier nicht: stream.rules in WP 0.5
+  # verarbeitet nur state.*-Keys, target.object wird verworfen.
+  services.pipewire.extraConfig.pipewire."99-gc7-eq" = {
+    "context.modules" = [
+      {
+        name = "libpipewire-module-filter-chain";
+        args = {
+          "node.description" = "GC7 Game EQ (7.1)";
+          "filter.graph" = {
+            nodes = [
+              {
+                type = "builtin";
+                name = "eq";
+                label = "param_eq";
+                config.filename = "${./mmx330-filters.txt}";
+              }
+            ];
+          };
+          "capture.props" = {
+            "node.name" = "effect_input.gc7_eq";
+            "node.description" = "GC7 Game EQ (7.1)";
+            "media.class" = "Audio/Sink";
+            "audio.channels" = 8;
+            "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
+            "priority.session" = 2100;
+          };
+          "playback.props" = {
+            "node.name" = "effect_output.gc7_eq";
+            "node.passive" = true;
+            "audio.channels" = 8;
+            "audio.position" = [ "FL" "FR" "FC" "LFE" "RL" "RR" "SL" "SR" ];
+            "node.target" = "alsa_output.usb-Creative_Technology_Ltd_Sound_Blaster_GC7_D56CB9C7B0D55DB9-03.pro-output-0";
+          };
+        };
+      }
+    ];
+  };
+
   services.pipewire.wireplumber.extraConfig."90-gc7" = {
     # Profil "pro-audio" erzwingen (sonst kein Voice-Stream = kein ChatMix).
     "device.profile.priority.rules" = [

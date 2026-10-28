@@ -8,8 +8,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `b456dc29610dff3e92a1cc42a489e3b6d86cbf01` (2026-10-28, revCount 1418), Version `0.1.0`
-  (Lock per `nix flake update`; **live seit 2026-10-28** — `umbriel --version` = `0.1.0 (b456dc2)`; Sitzung braucht Login-Neustart)
+- Aktuelle Rev: `2958d582953a9eb623d945f50ffd5cc1a921ee18` (2026-10-28, revCount 1422), Version `0.1.0`
+  (Lock per `nix flake update` mit `nix-check`; CLI `umbriel --version` = `0.1.0 (2958d58)`;
+  laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
 
