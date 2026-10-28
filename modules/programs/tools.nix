@@ -46,8 +46,36 @@ let
     fi
 
     echo
-    echo "== Aenderungen gegenueber /run/current-system =="
-    nvd diff /run/current-system "$repo/result" || true
+    echo "== Wichtige Paket-Aenderungen (direkt gewaehlt, nur Versionswechsel) =="
+    diff_out=$(nvd diff -s /run/current-system "$repo/result" 2>/dev/null || true)
+    ver_lines=$(printf '%s\n' "$diff_out" | grep -E '^\[(U|A|R)' || true)
+    if [ -n "$ver_lines" ]; then
+      printf '%s\n' "$ver_lines"
+    else
+      echo "(keine Versionswechsel)"
+    fi
+    rebuilds=$(printf '%s\n' "$diff_out" | grep -cE '^\[C' || true)
+    if [ "''${rebuilds:-0}" -gt 0 ]; then
+      echo "($rebuilds weitere Rebuilds ohne Versionswechsel)"
+    fi
+
+    # Reboot-Einschaetzung gegen die BOOTED Generation (nicht /run/current-system).
+    booted=/run/booted-system
+    changed() { [ "$(readlink -f "$booted/$1" 2>/dev/null)" != "$(readlink -f "$repo/result/$1" 2>/dev/null)" ]; }
+    boot_kver=$(ls "$booted/kernel-modules/lib/modules/" 2>/dev/null | head -1)
+    new_kver=$(ls "$repo/result/kernel-modules/lib/modules/" 2>/dev/null | head -1)
+    echo
+    if [ -n "$boot_kver" ] && [ -n "$new_kver" ] && [ "$boot_kver" != "$new_kver" ]; then
+      echo "REBOOT: JA (neuer Kernel: $boot_kver -> $new_kver)"
+    elif changed kernel || changed initrd || changed kernel-modules; then
+      echo "REBOOT: empfohlen (Kernel/Module neu gebaut, laufender Kernel unveraendert)"
+    elif changed init; then
+      echo "REBOOT: empfohlen (systemd/PID1 geaendert)"
+    elif changed firmware; then
+      echo "REBOOT: empfohlen (Firmware geaendert)"
+    else
+      echo "REBOOT: nein (nur Userspace)"
+    fi
     echo
     echo "nix-check: OK - Lock behalten. Switch mit: nix-switch"
   '';

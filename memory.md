@@ -135,6 +135,10 @@
   und zeigt `nvd diff`. Bei Bedarf `nix-check --trace` für den vollen Trace.
   Zusätzlich gibt es nach dem Update die **neu hinzugekommenen `throw`/`warnAlias`-Einträge** aus
   `pkgs/top-level/aliases.nix` (alt vs. neu) aus — die „Ankündigung", die nixpkgs/unstable nicht liefert.
+  Die Paketliste ist auf **direkt gewählte Pakete mit Versionswechsel** reduziert (`nvd diff -s`,
+  `[U]`/`[A]`/`[R]`); reine Rebuilds werden nur gezählt. Am Ende steht eine **Reboot-Einschätzung**
+  gegen `/run/booted-system` (Kernel-Version → „JA", Kernel/Module/initrd neu gebaut bzw. systemd/
+  Firmware → „empfohlen", sonst „nein").
 - **`nix-sync` (bewusst MIT `nix flake update` — nicht entfernen)**: Pull-Hosts aktualisieren
   die Inputs selbst. Grund: wenn der letzte Push schon länger her ist, würde der gepushte Lock
   sonst ein **Downgrade** erzwingen. Preis: ein frisch gezogener nixpkgs-Stand bricht, wenn
