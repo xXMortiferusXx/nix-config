@@ -161,16 +161,25 @@ print("  Clipping      : %7.3f %% der Samples" % clip_pct)
 print("  DC-Offset     : %7.3f %%" % dc)
 print("  Kanal L/R     : %6.1f / %6.1f dBFS" % (db(rms(L)), db(rms(R))))
 print()
-if snr >= 50:
-    print("Einordnung: SNR sehr gut (>= 50 dB)")
-elif snr >= 35:
-    print("Einordnung: SNR gut (35-50 dB)")
+if snr >= 45:
+    print("Einordnung: SNR sehr gut (>= 45 dB)")
+elif snr >= 30:
+    print("Einordnung: SNR gut (30-45 dB)")
+elif snr >= 20:
+    print("Einordnung: SNR ausreichend (20-30 dB) - Stoergeraeuschunterdrueckung sinnvoll")
 else:
-    print("Einordnung: SNR schwach (< 35 dB) - Rauschen/Umgebung pruefen")
+    print("Einordnung: SNR schwach (< 20 dB) - Umgebung/Mikrofonabstand pruefen")
 if peak_db > -3:
-    print("Hinweis: Peak > -3 dBFS - Clipping-Gefahr, Pegel senken")
-if db(speech) < -24:
-    print("Hinweis: Sprache sehr leise (< -24 dBFS) - Pegel/Boost erhoehen")
+    print("Hinweis: Peak > -3 dBFS -> Pegel senken (Clipping-Gefahr)")
+gain = -18.0 - db(speech)
+if gain > 3:
+    print("Empfehlung: Pegel um ca. %+.0f dB anheben (Ziel ~ -18 dBFS Sprache)" % gain)
+elif gain < -3:
+    print("Empfehlung: Pegel um ca. %+.0f dB senken (Ziel ~ -18 dBFS Sprache)" % gain)
+else:
+    print("Empfehlung: Sprachpegel im Zielbereich (~ -18 dBFS)")
+print("Hinweis: SNR ist weitgehend pegelunabhaengig - bei lautem Rauschboden")
+print("hilft nur Umgebung/Abstand, nicht die Verstaerkung.")
 print()
 print("Hinweis: P10/P90 sind robuste Frame-Pegel (20 ms); Raum-/Lueftergeraeusche")
 print("stecken im Rauschboden. Werte sind umgebungsabhaengig, nicht absolut.")
