@@ -178,8 +178,9 @@ elif gain < -3:
     print("Empfehlung: Pegel um ca. %+.0f dB senken (Ziel ~ -18 dBFS Sprache)" % gain)
 else:
     print("Empfehlung: Sprachpegel im Zielbereich (~ -18 dBFS)")
-print("Hinweis: SNR ist weitgehend pegelunabhaengig - bei lautem Rauschboden")
-print("hilft nur Umgebung/Abstand, nicht die Verstaerkung.")
+print("Hinweis: Akustisches Rauschen (Luefter/Raum) skaliert mit dem Pegel -> SNR")
+print("bleibt; elektronisches Rauschen skaliert nicht -> SNR steigt. Pegel daher")
+print("bis knapp unter Clipping ausreizen; gegen akustischen Laerm hilft Abstand.")
 print()
 print("Hinweis: P10/P90 sind robuste Frame-Pegel (20 ms); Raum-/Lueftergeraeusche")
 print("stecken im Rauschboden. Werte sind umgebungsabhaengig, nicht absolut.")
