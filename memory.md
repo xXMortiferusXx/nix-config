@@ -257,8 +257,9 @@
     Crossover **80** · SXFI **off** · Sound-Modes **C1–C3 = None**, **C4 = Ausgangswahl**
   - Mikro: **Mic-Boost an**, Geräte-Lautstärke **30–35 %**, **Crystal Voice aus** (verfälscht die
     Stimme stark/„künstlich"; ohne CV klingt das MMX-330-Pro-Mic sehr gut)
-  - Discord: **AGC aus** (Pegel am Hardware-Knopf), Störgeräuschunterdrückung **Standard oder aus**,
-    Krisp nur bei echtem Lärm (stapelt sonst DSP auf DSP)
+  - Discord: **AGC aus** (Pegel am Hardware-Knopf), **Krisp an** (Tastatur/Umgebung),
+    **manuelle Eingabeempfindlichkeit** knapp unter Sprachpegel (Gate gegen Klicks, statt PTT);
+    PTT ist fuer schnelles Gaming (Helldivers 2) bewusst abgelehnt
   - „Werte im Gerät" = App kann Hardware-Regler nicht mitlesen, **kein** Reset der gespeicherten Werte.
 - **A/B-Hören**: Filter temporär entfernen (Block raus) → Bass-/Höhenunterschied deutlich; Gain-Reserve wegen
   −9,3 dB Preamp geringer.
