@@ -59,10 +59,13 @@ in
 {
   environment.systemPackages = [ gc7Reset ];
 
-  # Erlaubte Clock-Raten systemweit erweitern (sonst werden 44100/88200/...
-  # zwangsresampled -> Knacken). Kein Deckel, 48000 bleibt Default.
+  # Erlaubte Clock-Raten: bewusst nur die 48k-Leiter (48/96/192k, Hi-Res nativ,
+  # kein Deckel). 44,1-kHz-Quellen (CD/Streaming) werden auf 48k resampled -
+  # bewusste Wahl: Geraet bleibt >= 48k, kein Rate-Pingpong (44,1<->48) mit
+  # potenziellen Knacksern. 88200/176400 sind absichtlich NICHT dabei: sonst
+  # zieht PipeWire 44,1k-Quellen auf 88,2k hoch (getestet). 48000 bleibt Default.
   services.pipewire.extraConfig.pipewire."99-gc7-clock" = {
-    "context.properties"."default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+    "context.properties"."default.clock.allowed-rates" = [ 48000 96000 192000 ];
     "context.properties"."default.clock.rate" = 48000;
   };
 

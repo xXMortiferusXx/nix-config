@@ -238,6 +238,16 @@
   Eine WP-Routing-Regel ist **nicht möglich**: `stream.rules` in WirePlumber 0.5 verarbeitet nur `state.*`
   (`scripts/node/state-stream.lua:102`); `target.object` aus `update-props` wird verworfen. `target.object`
   selbst akzeptiert nur id oder **exakten** `node.name` (keine Regex, `linking/find-defined-target.lua:86`).
+- **Rate-Verhalten** (`99-gc7-clock`, bewusst nur die 48k-Leiter `[48000 96000 192000]`):
+  - 44,1k-Quellen werden auf 48k resampled, 48/96/192k laufen nativ (gemessen: 44100→48000,
+    48000→48000, 96000→96000, 192000→192000, jeweils ERR 0).
+  - 88,2k/176,4k sind absichtlich **nicht** erlaubt: mit 88200 in der Liste zog PipeWire
+    44,1k-Quellen auf **88,2k** hoch (verifiziert) statt auf 48k.
+  - `param_eq` rechnet die Koeffizienten pro Graph-Rate neu: `module-filter-chain.c`
+    deaktiviert bei Rate-Wechsel den Graphen (`playback_state_changed`, ~1591), `activate`
+    instanziiert die Plugins mit der neuen Rate → EQ bleibt auch bei 96/192k korrekt.
+  - Quantum ist stream-abhängig, nicht fix: 512 @48k (10,7 ms) bei 20-ms-Wunsch,
+    2048 @48k (42,7 ms) bei paplay-Default. `ERR` bleibt 0.
 - **Check**: `pactl get-default-sink` → `effect_input.gc7_eq`; `pw-link -l` zeigt `effect_input.gc7_eq:playback_*`
   ← Stream und `effect_output.gc7_eq:output_*` → `pro-output-0`. `wpctl status` listet den Sink unter „Filters"
   (kosmetisch, kein Registrierungsproblem).

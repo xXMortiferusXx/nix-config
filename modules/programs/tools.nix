@@ -35,6 +35,21 @@ let
     nix-reboot-check
   '';
 
+  # Zeigt Rate/Quantum/ERR der gerade laufenden Audio-Knoten (GC7-Praefix gekuerzt).
+  # Nuetzlich, weil weder Player noch DAC die tatsaechlich ausgehandelte Rate anzeigen.
+  audioRate = pkgs.writeShellScriptBin "audio-rate" ''
+    set -u
+    echo "Aktive Audio-Knoten (Rate / Quantum / ERR):"
+    pw-top -b -n 2 2>/dev/null | awk '
+      $2 == "ID" { snap = snap + 1; next }
+      snap >= 2 && ($3 + 0) > 0 {
+        name = "";
+        for (i = 13; i <= NF; i++) name = name (i > 13 ? " " : "") $i;
+        sub(/alsa_(output|input)\.usb-Creative_Technology_Ltd_Sound_Blaster_GC7_[A-Za-z0-9]+-03\./, "", name);
+        printf "  %-32s %7s Hz  quantum %-5s  ERR %s\n", name, $4, $3, $9;
+      }'
+  '';
+
   # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
   # Erfolg: neuer Lock bleibt stehen. Fehler: alter Lock wird restauriert.
   nixCheck = pkgs.writeShellScriptBin "nix-check" ''
@@ -105,7 +120,7 @@ in
     jq
     ookla-speedtest
     scx.full
-  ] ++ [ nixCheck nixRebootCheck nixosUpdate ];
+  ] ++ [ nixCheck nixRebootCheck nixosUpdate audioRate ];
 
   programs.fish.shellAliases = {
 
