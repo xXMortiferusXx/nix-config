@@ -7,32 +7,32 @@
 # ────────────── System & UI ──────────────
 "Mod+Shift+ESCAPE"  = "cheatsheet-toggle"
 "Mod+O"             = "overview-toggle"
-"CTRL+ALT+Delete"   = "session-quit:skip-confirmation"
+"CTRL+ALT+Delete"   = "session-quit skip-confirmation"
 
 # ─── Programme ───
-"Mod+Return" = "spawn:kitty"
-"Mod+B"      = "spawn:firefox"
-"Mod+E"      = "spawn:thunar"
-"Mod+S"      = "spawn:pavucontrol"
+"Mod+Return" = "spawn kitty"
+"Mod+B"      = "spawn firefox"
+"Mod+E"      = "spawn thunar"
+"Mod+S"      = "spawn pavucontrol"
 
 # ─── Noctalia IPC ───
-"Mod+CTRL+Return" = "spawn:noctalia msg panel-toggle launcher"
-"Mod+Shift+Q"     = "spawn:noctalia msg panel-toggle session"
-"Mod+ALT+L"       = "spawn:noctalia msg session lock"
+"Mod+CTRL+Return" = "spawn noctalia msg panel-toggle launcher"
+"Mod+Shift+Q"     = "spawn noctalia msg panel-toggle session"
+"Mod+ALT+L"       = "spawn noctalia msg session lock"
 
 # ─── Media & Brightness ───
-"XF86AudioRaiseVolume"  = { action = "spawn:noctalia msg volume-up || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+", allow_when_locked = true }
-"XF86AudioLowerVolume"  = { action = "spawn:noctalia msg volume-down || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true }
-"XF86AudioMute"         = { action = "spawn:noctalia msg volume-mute || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true }
-"XF86AudioPlay"         = { action = "spawn:noctalia msg media toggle", allow_when_locked = true }
-"XF86AudioPause"        = { action = "spawn:noctalia msg media pause", allow_when_locked = true }
-"XF86AudioStop"         = { action = "spawn:noctalia msg media stop", allow_when_locked = true }
-"XF86AudioNext"         = { action = "spawn:noctalia msg media next", allow_when_locked = true }
-"XF86AudioPrev"         = { action = "spawn:noctalia msg media previous", allow_when_locked = true }
-"Mod+Shift+M"           = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true }
-"XF86MonBrightnessUp"   = { action = "spawn:noctalia msg brightness-up || brightnessctl set 5%+", allow_when_locked = true }
-"XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down || brightnessctl set 5%-", allow_when_locked = true }
-"XF86Calculator"        = "spawn:qalculate-gtk"
+"XF86AudioRaiseVolume"  = { action = "spawn noctalia msg volume-up || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+", allow_when_locked = true }
+"XF86AudioLowerVolume"  = { action = "spawn noctalia msg volume-down || wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true }
+"XF86AudioMute"         = { action = "spawn noctalia msg volume-mute || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true }
+"XF86AudioPlay"         = { action = "spawn noctalia msg media toggle", allow_when_locked = true }
+"XF86AudioPause"        = { action = "spawn noctalia msg media pause", allow_when_locked = true }
+"XF86AudioStop"         = { action = "spawn noctalia msg media stop", allow_when_locked = true }
+"XF86AudioNext"         = { action = "spawn noctalia msg media next", allow_when_locked = true }
+"XF86AudioPrev"         = { action = "spawn noctalia msg media previous", allow_when_locked = true }
+"Mod+Shift+M"           = { action = "spawn wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true }
+"XF86MonBrightnessUp"   = { action = "spawn noctalia msg brightness-up || brightnessctl set 5%+", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn noctalia msg brightness-down || brightnessctl set 5%-", allow_when_locked = true }
+"XF86Calculator"        = "spawn qalculate-gtk"
 
 "Mod+Alt+U" = "dpms-off"
 
@@ -43,7 +43,7 @@
 "Mod+Down"    = "window-focus-down"
 "Mod+Comma"   = "workspace-previous"
 "Mod+Period"  = "workspace-next"
-"Alt+Tab"     = "spawn:noctalia msg window-switcher"
+"Alt+Tab"     = "spawn noctalia msg window-switcher"
 
 # ─── Verschieben ───
 "Mod+CTRL+Left"  = "column-move-left"
@@ -62,7 +62,7 @@
 "Mod+M"       = "window-toggle-maximize"
 "Mod+T"       = "window-toggle-floating"
 "Mod+C"       = "window-center"
-"Mod+Shift+T" = "workspace-set-layout:toggle"
+"Mod+Shift+T" = "workspace-set-layout toggle"
 
 # ─── Workspace Wechsel (Scroll-Rad) ───
 "Mod+WheelDown"      = "workspace-next"
@@ -73,48 +73,48 @@
 "Mod+Shift+WheelUp"   = "window-move-to-workspace-previous"
 
 # 1=Boosteroid, 2=Chat, 3=Browser/Steam, 4=Spiele/ASM
-"Mod+1" = "workspace-switch:1"
-"Mod+2" = "workspace-switch:2"
-"Mod+3" = "workspace-switch:3"
-"Mod+4" = "workspace-switch:4"
-"Mod+5" = "workspace-switch:5"
-"Mod+6" = "workspace-switch:6"
-"Mod+7" = "workspace-switch:7"
-"Mod+8" = "workspace-switch:8"
-"Mod+9" = "workspace-switch:9"
+"Mod+1" = "workspace-switch 1"
+"Mod+2" = "workspace-switch 2"
+"Mod+3" = "workspace-switch 3"
+"Mod+4" = "workspace-switch 4"
+"Mod+5" = "workspace-switch 5"
+"Mod+6" = "workspace-switch 6"
+"Mod+7" = "workspace-switch 7"
+"Mod+8" = "workspace-switch 8"
+"Mod+9" = "workspace-switch 9"
 
-"Mod+CTRL+1" = "window-move-to-workspace:1"
-"Mod+CTRL+2" = "window-move-to-workspace:2"
-"Mod+CTRL+3" = "window-move-to-workspace:3"
-"Mod+CTRL+4" = "window-move-to-workspace:4"
-"Mod+CTRL+5" = "window-move-to-workspace:5"
-"Mod+CTRL+6" = "window-move-to-workspace:6"
-"Mod+CTRL+7" = "window-move-to-workspace:7"
-"Mod+CTRL+8" = "window-move-to-workspace:8"
-"Mod+CTRL+9" = "window-move-to-workspace:9"
+"Mod+CTRL+1" = "window-move-to-workspace 1"
+"Mod+CTRL+2" = "window-move-to-workspace 2"
+"Mod+CTRL+3" = "window-move-to-workspace 3"
+"Mod+CTRL+4" = "window-move-to-workspace 4"
+"Mod+CTRL+5" = "window-move-to-workspace 5"
+"Mod+CTRL+6" = "window-move-to-workspace 6"
+"Mod+CTRL+7" = "window-move-to-workspace 7"
+"Mod+CTRL+8" = "window-move-to-workspace 8"
+"Mod+CTRL+9" = "window-move-to-workspace 9"
 
 # ─── Fenster still auf Workspace (ohne Fokuswechsel) ───
-"Mod+Shift+Ctrl+1" = "window-move-to-workspace-silent:1"
-"Mod+Shift+Ctrl+2" = "window-move-to-workspace-silent:2"
-"Mod+Shift+Ctrl+3" = "window-move-to-workspace-silent:3"
-"Mod+Shift+Ctrl+4" = "window-move-to-workspace-silent:4"
-"Mod+Shift+Ctrl+5" = "window-move-to-workspace-silent:5"
-"Mod+Shift+Ctrl+6" = "window-move-to-workspace-silent:6"
-"Mod+Shift+Ctrl+7" = "window-move-to-workspace-silent:7"
-"Mod+Shift+Ctrl+8" = "window-move-to-workspace-silent:8"
-"Mod+Shift+Ctrl+9" = "window-move-to-workspace-silent:9"
+"Mod+Shift+Ctrl+1" = "window-move-to-workspace-silent 1"
+"Mod+Shift+Ctrl+2" = "window-move-to-workspace-silent 2"
+"Mod+Shift+Ctrl+3" = "window-move-to-workspace-silent 3"
+"Mod+Shift+Ctrl+4" = "window-move-to-workspace-silent 4"
+"Mod+Shift+Ctrl+5" = "window-move-to-workspace-silent 5"
+"Mod+Shift+Ctrl+6" = "window-move-to-workspace-silent 6"
+"Mod+Shift+Ctrl+7" = "window-move-to-workspace-silent 7"
+"Mod+Shift+Ctrl+8" = "window-move-to-workspace-silent 8"
+"Mod+Shift+Ctrl+9" = "window-move-to-workspace-silent 9"
 
 # ─── Resize ───
 "Mod+R" = "window-cycle-primary-extent"
 
 # ─── Scratchpad ───
-"Mod+Tab"       = "scratchpad-toggle:default"
-"Mod+Shift+Tab" = "window-move-to-scratchpad:default"
-"Mod+Ctrl+Tab"  = "window-restore-from-scratchpad:default"
-"Mod+Shift+Left"  = "scratchpad-window-show-previous:default"
-"Mod+Shift+Right" = "scratchpad-window-show-next:default"
+"Mod+Tab"       = "scratchpad-toggle default"
+"Mod+Shift+Tab" = "window-move-to-scratchpad default"
+"Mod+Ctrl+Tab"  = "window-restore-from-scratchpad default"
+"Mod+Shift+Left"  = "scratchpad-window-show-previous default"
+"Mod+Shift+Right" = "scratchpad-window-show-next default"
 
 # ─── Screenshot ───
-"Print"     = "spawn:noctalia msg screenshot-region"
-"Mod+Print" = "spawn:noctalia msg screenshot-fullscreen"
-"Alt+Print" = "spawn:noctalia msg screenshot-fullscreen"
+"Print"     = "spawn noctalia msg screenshot-region"
+"Mod+Print" = "spawn noctalia msg screenshot-fullscreen"
+"Alt+Print" = "spawn noctalia msg screenshot-fullscreen"

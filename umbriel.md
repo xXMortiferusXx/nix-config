@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `8df1a189aa0d448207157e0d3b73bc99d40ac486` (2026-10-28, revCount 1424), Version `0.1.0`
-  (Lock per `nix flake update` mit `nix-check`; CLI `umbriel --version` = `0.1.0 (8df1a18)`;
+- Aktuelle Rev: `2952bbcbbb4669953abc67dd74f4cd9711dbce6b` (2026-10-31, revCount 1459), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (2952bbc)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
@@ -33,6 +33,10 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Ab Rev `4c89178` (2026-10-06): **CLI-Umbenennung** — `umbriel validate` wurde zu
   `umbriel config validate`, neu `umbriel config schema [--json]`. Das alte `validate`
   existiert nicht mehr (kein Alias).
+- Ab Rev `2952bbc` (2026-10-31): **Breaking** — IPC-Actions nutzen **Wort-Argumente**
+  (`e8ab5b00`): `name arg1 arg2` statt `name:arg`. Alte `:`-Bindings werden ignoriert
+  („unknown action"). Beispiele: `workspace-switch 3`, `spawn noctalia msg ...`,
+  `scratchpad-toggle default`, `session-quit skip-confirmation`, `workspace-set-layout toggle`.
 - Maßgeblich ist `umbriel msg --help` der LAUFENDEN Version, nicht die main-Doku.
   Gegenprobe: `umbriel config validate`.
 
@@ -103,7 +107,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `window_rule.confine_pointer` | Pointer im fokussierten Fenster halten (Spiele-Menüs) (#399) | verfügbar, nicht genutzt (2026-10-20 getestet u. wieder entfernt — stört Cross-Monitor-Wechsel auf lion) |
 | `layer_rule.match.layer` / `match.at_startup` | Layer-Surface nach Ebene (`background`/`bottom`/`top`/`overlay`) bzw. Startphase matchen (#400) | verfügbar, nicht genutzt |
 | `scratchpad-window-show-next/previous` | Scratchpad **ein Fenster zur Zeit** anzeigen statt alle (#376) | verfügbar, nicht gebunden (Alternative zu `scratchpad-focus-next`) |
-| `workspace-set-layout:toggle:<mode1,mode2>` | Toggle nur über eine Teilmenge der Layouts (#397) | verfügbar (wir nutzen bare `toggle`) |
+| `workspace-set-layout toggle <mode1> <mode2>` | Toggle nur über eine Teilmenge der Layouts (#397) | verfügbar (wir nutzen bare `toggle`) |
 | Umbriel veröffentlicht `XCURSOR_*` selbst (#384) | `XCURSOR_THEME/SIZE` werden vom Compositor an Clients gereicht | Hinweis: ggf. doppelt zu unserer `desktop.nix`/Steam-Wrapper-Setzung — noch unangetastet |
 | Modale Dialoge an Parent gebunden (#215) | **ZURÜCKGENOMMEN** (`5731190`, 2026-10-10) — Verhalten wieder wie davor | Verhalten (automatisch) |
 | HDR: EDID-Metadaten + Gamma-Erhalt | Mastering-Luminanz aus EDID; Night-Light-Gamma pausiert bei HDR | Verhalten (automatisch; wir fahren SDR 10-bit) |
@@ -134,6 +138,16 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `[input] mod_right_double_click` | Mod+Doppel-Rechtsklick → Maximize (#504) | verfügbar, nicht gesetzt |
 
 ## Zuletzt gecheckt
+- **2026-10-31** (`8df1a18`/1424 → `2952bbc`/1459): **35 Commits, 2 Breaking Changes**.
+  `umbriel config validate` = `config: ok` auf allen 4 Hosts (nach Migration).
+  1. `e8ab5b00` (breaking): Actions `name:arg` → **Wort-Argumente**. 221 Bindings in allen
+     4 Hosts migriert (`workspace-switch 7`, `window-move-to-workspace 1`, `spawn ...`,
+     `scratchpad-toggle default`, `session-quit skip-confirmation`, `workspace-set-layout toggle`).
+  2. `b1c3efc4` (breaking): Titlebar-Buttons → tri-state `button_glyph` (Default `hover`);
+     wir setzen keine Titlebar-Optionen → keine Migration nötig.
+  3. Weiter: `b95c1ae5` Floating-Layout → `stacking` + Snap-Actions ersetzt; `69a348c2`
+     Workspaces zwischen Outputs verschieben; `2952bbcb` Opacity/Blur in Window-Rules animieren;
+     `07d3e0bb` Titlebar-Glyphen/Hover; `9180a954` `config validate --json`.
 - **2026-10-28** (Lock-Update via `nix-check`; `3667399`/1400 → `b456dc29`/1418):
   **18 Commits, KEINE Breaking Changes** (kein `!`). `umbriel config validate` =
   `config: ok` auf allen 4 Hosts gegen das neue Binary.
