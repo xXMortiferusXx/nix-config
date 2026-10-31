@@ -136,6 +136,12 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Cursor-Actions (hide/show) | Cursor ein-/ausblenden (#529) | verfügbar, nicht gebunden |
 | Scrollspalten breiter als der Output (Extent 0.1–4.0) | breite Spalten durchpannen (#569) | verfügbar, nicht genutzt |
 | `[input] mod_right_double_click` | Mod+Doppel-Rechtsklick → Maximize (#504) | verfügbar, nicht gesetzt |
+| `window_rule[].block_capture` | Fenster aus Screenshots/Aufnahmen ausblenden (#616) | verfügbar, nicht genutzt |
+| `workspace-move-to-output <ziel>` (+ Richtungen) | ganzen Workspace auf anderen Output verschieben (#617) | verfügbar, nicht gebunden (1 aktiver Output) |
+| `animation.windows_opacity` (enabled/curve/duration_ms) | Opacity/Blur von Window-Rules animieren (`2952bbcb`) | verfügbar, Default aktiv (keine Rule-Opacity genutzt) |
+| `appearance.title_bar.button_glyph` (`hover`/`always`/`never`) + Hover-Sichtbarkeit | Titlebar-Buttons/Glyphen (`b1c3efc4`, `07d3e0bb`) | nicht genutzt (keine Server-Titlebars) |
+| Actions `window-set-region <region>` statt `window-snap:<region>`; Layout `floating` → `stacking` | Rename (`b95c1ae5`) | nicht genutzt |
+| `umbriel config validate --json`, `subscribe --json` | CLI-JSON-Ausgabe (`9180a954`) | verfügbar (nur bei Bedarf) |
 
 ## Zuletzt gecheckt
 - **2026-10-31** (`8df1a18`/1424 → `2952bbc`/1459): **35 Commits, 2 Breaking Changes**.
