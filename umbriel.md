@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `2952bbcbbb4669953abc67dd74f4cd9711dbce6b` (2026-10-31, revCount 1459), Version `0.1.0`
-  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (2952bbc)`;
+- Aktuelle Rev: `6d142d129e87a0c7520755153fa8fe49172d4b6c` (2026-11-02, revCount 1499), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (6d142d1)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
@@ -142,8 +142,24 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `appearance.title_bar.button_glyph` (`hover`/`always`/`never`) + Hover-Sichtbarkeit | Titlebar-Buttons/Glyphen (`b1c3efc4`, `07d3e0bb`) | nicht genutzt (keine Server-Titlebars) |
 | Actions `window-set-region <region>` statt `window-snap:<region>`; Layout `floating` → `stacking` | Rename (`b95c1ae5`) | nicht genutzt |
 | `umbriel config validate --json`, `subscribe --json` | CLI-JSON-Ausgabe (`9180a954`) | verfügbar (nur bei Bedarf) |
+| Scratchpad proportionale Groesse (opt-in, ueber Monitore) | `ef1d1b8c` | verfuegbar, nicht genutzt |
+| DRM-Leasing fuer Non-Desktop-Displays | VR/Headset-Outputs (`0a0d03e6`) | verfuegbar, nicht genutzt (kein VR) |
+| Tab-Gruppe verschieben (Mod+Drag / Overview-Karte) | `b0afa068`, `eb9f426a` | verhalten (Tabs), kein Config-Key |
+| Managed Sessions raeumen beim Launcher-Ende auf | `42278452` | verhalten (automatisch, Gaming) |
+| Xwayland: passive Utility-Fenster ohne Tastaturfokus | `a70596db` | verhalten (automatisch) |
 
 ## Zuletzt gecheckt
+- **2026-11-02** (`2952bbc`/1459 → `6d142d12`/1499): **40 Commits, KEINE Breaking Changes**.
+  `umbriel config validate` = `config: ok` auf allen 4 Hosts gegen das neue Binary.
+  Viel Test-/Harness-Arbeit; relevant:
+  1. `ef1d1b8c` Scratchpads: opt-in **proportionale Größe über Monitore** (neue Option).
+  2. `0a0d03e6` **DRM-Leasing** für Non-Desktop-Displays (VR-Headsets).
+  3. `b0afa068`/`eb9f426a` Ganze **Tab-Gruppe** per Mod+Drag bzw. im Overview verschieben.
+  4. `42278452` Managed Sessions werden beim Beenden des Launchers aufgeräumt.
+  5. `a70596db` Xwayland: passive Utility-Fenster klauen keinen Tastaturfokus mehr.
+  6. `129896ca` Layer-Input deckt sich mit Fullscreen; `1e84f566` SDR-Feedback;
+     `13f20192`/`0435d3bf` Layout-/Tab-Korrekturen.
+  7. `a808b8c3` Cheatsheet auf die neue Wort-Argument-Syntax aktualisiert.
 - **2026-10-31** (`8df1a18`/1424 → `2952bbc`/1459): **35 Commits, 2 Breaking Changes**.
   `umbriel config validate` = `config: ok` auf allen 4 Hosts (nach Migration).
   1. `e8ab5b00` (breaking): Actions `name:arg` → **Wort-Argumente**. 221 Bindings in allen
