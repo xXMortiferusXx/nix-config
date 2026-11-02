@@ -98,7 +98,6 @@
       libvorbis
       libvpx
       wayland
-      gtk2
       util-linux
     ]
     ++ (pkgs.steam-run.args.multiPkgs pkgs);

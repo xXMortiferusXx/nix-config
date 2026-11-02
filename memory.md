@@ -381,6 +381,13 @@
   und `nix-ld.nix` entfernt. `pkgs.fuse` ist jetzt **fuse3** (3.18.2); `appimage-run`
   extrahiert ohne FUSE → kein Ersatz nötig.
 
+- **gtk2/„gtk+" (2026-11-02)**: nixpkgs markiert `gtk+` (2.24.33) als **broken**
+  (Entfernung für NixOS 27.05, Issue #410814). Quellen waren unsere `nix-ld`-Liste und
+  **Lutris** (FHS-Rootfs). Beides entfernt: `gtk2` aus `nix-ld.nix`, Lutris aus
+  `gaming/{default,benny,lion}.nix`. Kein `problems.handlers`-Workaround nötig.
+  Runtime auf nex gelöscht (`~/.local/share/lutris`, `~/.cache/lutris`, Desktop- und
+  Cartridges-Einträge); Heroic/Faugus/Steam bleiben als Launcher.
+
 ### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
 - **Ursache-Kandidat**: HD 2500 (i965) kann nur **H.264** hardware-dekodieren; H.265/AV1

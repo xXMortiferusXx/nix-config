@@ -11,7 +11,6 @@
   ];
 
   users.users.mortiferus.packages = with pkgs; [
-    lutris
     heroic
     faugus-launcher
     gamescope
