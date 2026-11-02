@@ -10,6 +10,7 @@ home/*/state/noctalia/state.toml
 # Clipboard/Verlauf/Wallpaper-State: kann Klartext-Geheimnisse enthalten
 home/*/state/noctalia/clipboard/
 home/*/state/noctalia/notification_history.json
+home/*/state/noctalia/notification_history.enc
 home/*/state/noctalia/wallhaven/
 home/*/state/noctalia/wallpaper_shuffle.json
 
