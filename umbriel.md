@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `6d142d129e87a0c7520755153fa8fe49172d4b6c` (2026-11-02, revCount 1499), Version `0.1.0`
-  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (6d142d1)`;
+- Aktuelle Rev: `e0da106317b10831e709618f52cc00bd7a9dc793` (2026-11-03, revCount 1504), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (e0da106)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
@@ -149,6 +149,11 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Xwayland: passive Utility-Fenster ohne Tastaturfokus | `a70596db` | verhalten (automatisch) |
 
 ## Zuletzt gecheckt
+- **2026-11-03** (`6d142d12`/1499 → `e0da1063`/1504): **5 Commits, keine Breaking Changes**.
+  `config validate` = `config: ok` auf allen 4 Hosts.
+  1. `e0da1063` `screen_cast`: Effekt fuer **capture-te Outputs** austauschbar (#565).
+  2. `79300119` Tab-Titlebar bleibt sichtbar, wenn der Tab floatet oder ins Scratchpad wandert (#654).
+  3. Rest Tests/Harness (`4d386f8b`, `565e01ce`, Merge).
 - **2026-11-02** (`2952bbc`/1459 → `6d142d12`/1499): **40 Commits, KEINE Breaking Changes**.
   `umbriel config validate` = `config: ok` auf allen 4 Hosts gegen das neue Binary.
   Viel Test-/Harness-Arbeit; relevant:
