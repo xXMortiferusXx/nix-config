@@ -10,12 +10,19 @@ in {
       ./config.nix
       ./autostart.nix
       ./mpv.nix
-      ./mangohud.nix
       ../apps/mimeapps.nix
       ../firefox.nix
     ];
 
     programs.home-manager.enable = true;
+
+    # Config wird von GOverlay verwaltet (settings leer = kein HM-Symlink).
+    programs.mangohud = {
+      enable = true;
+      enableSessionWide = false;
+      settings = { };
+    };
+
     programs.noctalia.enable = true;
     programs.noctalia.systemd.enable = true;
 

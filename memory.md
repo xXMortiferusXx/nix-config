@@ -744,15 +744,19 @@
 
 ## MangoHud & GOverlay
 
-### Konfiguration (2026-07-24)
-- **GOverlay** steuert MangoHud – `goverlay` + `vulkan-tools` (vkcube Preview) in `home/mortiferus/packages.nix`
-- **Home-Manager**: `programs.mangohud.enable = true`, `settings = { }` (leer)
-  - Keine festen `settings` in Home-Manager, damit kein unveränderlicher Nix-Store-Symlink nach `~/.config/MangoHud/MangoHud.conf` entsteht
-  - GOverlay schreibt die Config als reguläre Datei nach `~/.config/MangoHud/MangoHud.conf`
-  - `mangohud.nix` (fixe Config) wurde gelöscht – alles wird von GOverlay verwaltet
-- **Steam-FHS-Umgebung** sieht `~/.config/MangoHud/MangoHud.conf` (Home-Verzeichnis ist gemountet, Datei ist regulär und nicht ein Store-Symlink)
-- **Steam-Launch-Option**: Weiterhin `mangohud %command%` in den Steam-Spieleigenschaften setzen
-- **MangoHud-Toggle**: `Shift_R+F12` (oder via GOverlay neu belegen)
+### Konfiguration (Stand 2026-11-04)
+- **GOverlay verwaltet MangoHud** – `goverlay` in `home/mortiferus/packages.nix`
+  (inzwischen auch OptiScaler/ReShade/bgmod unter `~/.local/share/goverlay/`).
+- Home-Manager installiert **nur das Paket**:
+  `programs.mangohud = { enable = true; enableSessionWide = false; settings = { }; };`
+  → bei leerem `settings` schreibt HM **keine** `MangoHud.conf` (kein Store-Symlink);
+  GOverlay kann die Datei frei schreiben.
+- Die feste „Steam-Look"-Config (`modules/home/mortiferus/mangohud.nix`, `d36b34f`,
+  2026-10-03) wurde am **2026-11-04 wieder entfernt** (GOverlay-Anforderung).
+- **Fallstrick**: GOverlay hatte die alte read-only Store-Config als `444` nach
+  `~/.local/share/goverlay/gameconfig/global/MangoHud.conf` kopiert → „Permission denied"
+  beim Speichern. Einmalig `chmod u+w` genuegt; mit regulaerer Datei danach nicht mehr.
+- Steam-Launch-Option `mangohud %command%` bleibt; Toggle `Shift_R+F12`.
 
 ### PRIME Offload – GPU-Swap Workaround (2026-07-17)
 - **Problem**: `lspci` zeigt `01:00.0` (NVIDIA) und `06:00.0` (AMD)
@@ -772,18 +776,11 @@
   - Verschiebt HUD pixelgenau nach rechts, simuliert Zentrierung
   - Wert muss bei Auflösungswechsel neu angepasst werden
 
-### Fazit (2026-07-24)
-- **Keine Home-Manager/Repo-Integration** für MangoHud Config
-  - Symlink auf `/etc/nixos/` funktioniert nicht in Steam's FHS-Umgebung
-  - Automatisches Backup ist manuell und daher nutzlos → entfernt
-  - GOverlay verwaltet `~/.config/MangoHud/MangoHud.conf` vollständig selbst
-  - Wenn Config verloren geht: neu in GOverlay einstellen (dauert 2 Minuten)
-- **GOverlay Abhängigkeiten** (2026-07-24):
-  - `goverlay` + `vulkan-tools` (vkcube Preview) – beide in `mortiferus/packages.nix`
-  - `vkbasalt` in nixpkgs ist Vulkan-Layer-Library (`libvkbasalt.so`), kein CLI-Binary → GOverlay zeigt "not found" an
-  - **Aber**: vkBasalt als System-Layer in `hardware.graphics.extraPackages` installiert (64-Bit + 32-Bit)
-  - Funktioniert in Spielen trotz GOverlay-Anzeige – Aktivierung via `ENABLE_VKBASALT=1 %command%` in Steam
-  - Nicht in nixpkgs verfügbar: `vksumi`, `qt6pas` → bleiben rot in GOverlay, sind aber optional
+### Fazit (2026-11-04)
+- **Repo/Home-Manager verwaltet die MangoHud-Config nicht** – nur das Paket.
+- GOverlay schreibt `~/.config/MangoHud/MangoHud.conf` und seine Presets als regulaere Dateien.
+- Der fruehere Store-Symlink funktionierte in Steam zwar, war aber read-only und blockierte
+  GOverlay → deshalb `settings = { }`.
 
 ## Cachix / Binary Caches
 - `cache.nixos.org` – Offizieller NixOS Cache
