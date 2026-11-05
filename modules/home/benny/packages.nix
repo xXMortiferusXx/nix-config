@@ -31,7 +31,6 @@ pkgs: with pkgs; [
   cartridges
   vulkan-tools
   goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
-  opencode
 
   # --- Gaming ---
   vinegar         # Roblox Studio

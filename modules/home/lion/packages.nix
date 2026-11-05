@@ -29,7 +29,6 @@ pkgs: with pkgs; [
   cartridges
   goverlay       # GUI fuer MangoHud/vkBasalt/OptiScaler
   vulkan-tools
-  opencode
 
   # --- Gaming ---
   prismlauncher   # offizieller Launcher auf NixOS kaputt -> Prism als Standard
