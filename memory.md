@@ -36,6 +36,11 @@
   `gaming/{default,benny,lion}.nix` (seit 2026-08-29; 2026-11-02 kurz entfernt, 2026-11-06 zurück)
   - Vorher: `lutris-unwrapped` + eigener `steam-run`-Wrapper in eigener `lutris.nix` — entfernt (Doppel-Sandbox: steam-run + UMU/pressure-vessel)
   - `lutris.nix` gelöscht, kein Font-Wrapper/`FONTCONFIG_FILE`-Hack mehr nötig
+- **RetroArch (benny, 2026-11-06)**: `retroarch-full` in `gaming/benny.nix` → 113
+  Libretro-Cores inkl. nonfree (z. B. `snes9x`, `fbneo`, `genesis-plus-gx`;
+  `allowUnfree` ist global an). Wrapper setzt `-L …/lib/retroarch/cores` und
+  `--appendconfig`; Cores liegen im Store, nichts in `~/.config` nötig.
+  `retroarch-free` wäre die Variante ohne nonfree-Cores, `retroarch` allein hat keine Cores.
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)

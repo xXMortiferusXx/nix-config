@@ -22,5 +22,6 @@ in
     gamescope
     protonplus
     boosteroid
+    retroarch-full # RetroArch mit allen Libretro-Cores (inkl. nonfree, allowUnfree ist global an)
   ];
 }
