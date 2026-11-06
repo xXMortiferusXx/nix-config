@@ -41,6 +41,11 @@
   `allowUnfree` ist global an). Wrapper setzt `-L …/lib/retroarch/cores` und
   `--appendconfig`; Cores liegen im Store, nichts in `~/.config` nötig.
   `retroarch-free` wäre die Variante ohne nonfree-Cores, `retroarch` allein hat keine Cores.
+- **Xbox-Controller (benny, 2026-11-06)**: 360-Clone (`045e:028e`, Hersteller „ZhiXu")
+  wurde nicht erkannt, weil `xbox-controller.nix` **xone** aktiviert und xone per
+  `boot.blacklistedKernelModules = [ "xpad" ... ]` den 360-Treiber blacklistet.
+  benny importiert das Modul nicht mehr; dort stattdessen `hardware.uinput.enable`
+  + `boot.kernelModules = [ "xpad" ]`. lion-pc/legion behalten xone (Xbox-One/Series).
 
 ### Services
 - `services/noctalia.nix` – v5 package (kein systemd-Konflikt mit HM-Modul)

@@ -22,7 +22,6 @@ in
       ../../modules/system/firmware-disk.nix
       ../../modules/hardware/intel-ivy.nix
       ../../modules/hardware/power-benny.nix
-      ../../modules/hardware/xbox-controller.nix
       ../../modules/hardware/audio-gamedac.nix
       ../../modules/programs/gaming/benny.nix
       ../../modules/services/flatpak-benny.nix
@@ -83,8 +82,12 @@ in
     scheduler = "scx_lavd";
   };
 
-  # DDC/CI (ddcutil): i2c-dev Kernel-Modul + i2c-Gruppe + Geräte-Rechte
-  boot.kernelModules = [ "i2c-dev" ];
+  # Xbox-360-Controller (hier ein ZhiXu-Clone, 045e:028e) braucht xpad.
+  # Das gemeinsame xbox-controller.nix (xone) blacklistet xpad – xone ist auf
+  # benny nicht nötig, weil kein Xbox-One/Series-Controller im Einsatz ist.
+  # uinput bleibt für Steam Input / virtuelle Gamepads aktiv.
+  hardware.uinput.enable = true;
+  boot.kernelModules = [ "i2c-dev" "xpad" ];
   users.groups.i2c = {};
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
