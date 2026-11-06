@@ -17,6 +17,7 @@ in
   ];
 
   users.users.benny.packages = with pkgs; [
+    lutris
     heroic
     gamescope
     protonplus

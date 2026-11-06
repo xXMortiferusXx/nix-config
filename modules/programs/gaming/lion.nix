@@ -12,6 +12,7 @@
   ];
 
   users.users.lion.packages = with pkgs; [
+    lutris
     heroic
     gamescope
     protonplus

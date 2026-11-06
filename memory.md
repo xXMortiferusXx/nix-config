@@ -32,7 +32,8 @@
 
 ### Programs
 - `programs/gaming/` – als Verzeichnis mit Submodulen: `default`, `steam`, `gamescope`, `sunshine`, `scripts`
-- **Lutris**: Standard-nixpkgs-Paket (`lutris`, buildFHSEnv) in `mortiferus.packages` (seit 2026-08-29)
+- **Lutris**: Standard-nixpkgs-Paket (`lutris`, buildFHSEnv) in den Gaming-Modulen
+  `gaming/{default,benny,lion}.nix` (seit 2026-08-29; 2026-11-02 kurz entfernt, 2026-11-06 zurück)
   - Vorher: `lutris-unwrapped` + eigener `steam-run`-Wrapper in eigener `lutris.nix` — entfernt (Doppel-Sandbox: steam-run + UMU/pressure-vessel)
   - `lutris.nix` gelöscht, kein Font-Wrapper/`FONTCONFIG_FILE`-Hack mehr nötig
 
@@ -381,12 +382,14 @@
   und `nix-ld.nix` entfernt. `pkgs.fuse` ist jetzt **fuse3** (3.18.2); `appimage-run`
   extrahiert ohne FUSE → kein Ersatz nötig.
 
-- **gtk2/„gtk+" (2026-11-02)**: nixpkgs markiert `gtk+` (2.24.33) als **broken**
-  (Entfernung für NixOS 27.05, Issue #410814). Quellen waren unsere `nix-ld`-Liste und
-  **Lutris** (FHS-Rootfs). Beides entfernt: `gtk2` aus `nix-ld.nix`, Lutris aus
-  `gaming/{default,benny,lion}.nix`. Kein `problems.handlers`-Workaround nötig.
-  Runtime auf nex gelöscht (`~/.local/share/lutris`, `~/.cache/lutris`, Desktop- und
-  Cartridges-Einträge); Heroic/Faugus/Steam bleiben als Launcher.
+- **gtk2/„gtk+" (2026-11-02, teilweise revidiert 2026-11-06)**: nixpkgs markiert
+  `gtk+` (2.24.33) weiterhin als **broken** (Entfernung für NixOS 27.05, Issue #410814).
+  `gtk2` bleibt daher aus `nix-ld.nix` draußen.
+  **Lutris** wurde am 2026-11-02 entfernt, weil es `gtk2` im FHS-Rootfs zog.
+  Inzwischen hat nixpkgs `gtk2` aus den Lutris-`targetPkgs` gestrichen (nur noch `gtk3`,
+  bestätigt mit Pin `1d06008`, 2026-11-03: `pkgs.lutris` baut erfolgreich) → Lutris ist
+  seit 2026-11-06 wieder in `gaming/{default,benny,lion}.nix`. Kein
+  `problems.handlers`-Workaround nötig.
 
 ### Boosteroid/Cloud-Gaming auf benny (HD 2500)
 - **Problem**: Boosteroid ruckelt alle 1–2 min (Browser **und** App), obwohl Ping/FPS stabil.
