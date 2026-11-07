@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `e0da106317b10831e709618f52cc00bd7a9dc793` (2026-11-03, revCount 1504), Version `0.1.0`
-  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (e0da106)`;
+- Aktuelle Rev: `d171ccb31628da65b1beee3221b37a2758d553b3` (2026-11-07, revCount 1536), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (d171ccb)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
@@ -64,7 +64,12 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `layout.struts` | Struts/Reservierung | verfügbar, nicht gesetzt (Noctalia regelt) |
 | `workspaces.empty_above` | Leere Workspaces über dem aktuellen | verfügbar, nicht gesetzt |
 | `input.touchpad.disable_on_external_mouse` | Touchpad bei Maus deaktivieren | IRRELEVANT (Touchpad systemweit aus) |
-| `match.is_alone` (window_rule) | Fenster-Regel: matched wenn einzige geteilte Spalte auf Workspace | verfügbar, nicht genutzt |
+| `match.is_alone` (window_rule) | Fenster-Regel: matched wenn einzige geteilte Spalte auf Workspace — **Semantik präzisiert** (#691, Rev `1c8b3697`, 2026-11-07): zählt nur die einzige **Tiled-Column** des Workspace, Floating/Scratchpads zählen nicht mehr blind mit | verfügbar, nicht genutzt |
+| `match.layout` (window_rule) | Fenster nach Workspace-Layout matchen (`"scrolling"`/`"dwindle"`/`"master"`/`"stacking"`, String oder Array; folgt Layout-Wechseln/Workspace-Move live; z.B. Titlebar nur in stacking) | verfügbar, nicht genutzt (Rev `3612329e`, 2026-11-07) |
+| `window_rule.dim_behind` | „Dim behind“ (#679, Rev `462ee042`, 2026-11-07): Inhalt unterhalb des Fensters abdunkeln (`0.0`–`1.0`, Default `0.0`; stapelt sich; `match.is_focused = true` → nur bei Fokus; keine Input-Interferenz, eigenes Fenster bleibt hell) | verfügbar, nicht genutzt |
+| `layer_rule.dim_behind` | „Dim behind“ für Layer-Surfaces (#679), analog (0.0–1.0) | verfügbar, nicht genutzt |
+| `session-quit … no-wait` / `wait_for_clients: false` (IPC) | Schnell-Logout (#697, Rev `28de32d0`): Clients **dieses** Compositors stoppen statt auf alle zu warten (Helfer auf 2s gebundelt; System/User-Services anfassbar). **Kein Config-Key** — Default unverändert (graceful); aktiv erst mit Noctalia-Support (noctalia #5218) | verfügbar, nicht genutzt (Default: verhalten) |
+| IPC-Snapshot-Events gepocht | Events auf max. 1 pro 16 ms gebremst (#723, Rev `d171ccb`) | verhalten (automatisch, 2026-11-07) |
 | `default_scratchpad` (window_rule) | Fenster automatisch in Scratchpad stecken beim Öffnen | verfügbar, nicht genutzt |
 | Named Workspaces in `default_workspace` | String-Workspace-Targets (`"CHAT"`) neben Integer | verfügbar, nutzen Integer (bevorzugt) |
 | Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
@@ -149,6 +154,33 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Xwayland: passive Utility-Fenster ohne Tastaturfokus | `a70596db` | verhalten (automatisch) |
 
 ## Zuletzt gecheckt
+- **2026-11-07** (`b6c4b7dd`/1510 → `d171ccb3`/1536): **26 Commits, KEINE Breaking Changes**.
+  `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
+  gegen das neue Binary (`0.1.0 (d171ccb)`). Kernthemen:
+  1. **Neue Rules:** `match.layout` (Workspace-Layout matchen, String/Array),
+     `dim_behind` für Window- **und** Layer-Rules (0.0–1.0, „dim behind“ #679),
+     `match.is_alone` **Semantik präzisiert** (#691: nur die einzige Tiled-Column des
+     Workspace; Floating/Scratchpad/Pinned nehmen den Match nicht mehr; 
+     `match.is_only_window` bleibt die strengere Regel). Siehe Tracker.
+  2. **Session-IPC** #697: `session-quit skip-confirmation no-wait` / 
+     `wait_for_clients: false` = Schnell-Logout. Default unverändert; braucht 
+     Noctalia-Support (PR 5218) – für uns kein Handlungsbedarf.
+  3. `feat(animation)` #700: Resize-Animation wartet auf Client-Redraw statt Fenster
+     zu dehnen (neue `resize_wait_*`-Harness-Checks).
+  4. `feat(input)` #689: Strip-Swipe-Projektion mit Sättigungskurve; 
+     Cursor-Updates vom native Drag-Source akzeptiert.
+  5. `feat(titlebar)` #709: Button-Geometrie von Titlebar-Höhe entkoppelt
+     (wir: `[appearance.title_bar]` Default `off` → irrelevant).
+  6. **Fixes:** IPC-Snapshot-Pacing 1/16ms (`d171ccb`, #723), Xwayland-Fullscreen 
+     beim Move im Layout-Target (#701), Maximize-to-Edges-Fenster bleibt 
+     on-screen (#683), Focus-Chrome friert bei held reflow (#712), 
+     Box-Shadow-Sigma-Skalierung (#678), Titlebar-Rounding gegen Window-Frame,
+     Overview-Fokus-Effekte nach Card-Layout („focus effect settle", #684).
+  7. Basis-Refactor (PascalCase-Enumeratoren, `m_`-Members, clang-format/tidy)
+     + 3× portal-input bump + Doku-Neuzugänge `docs/design/touchpad-gestures.md`,
+     `docs/design/effects.md` — kein Config-Impact.
+  **Status:** Config unverändert gültig (additiv). `switch` + Login-Neustart holt
+  Rev 1536 in die Sitzung (User).
 - **2026-11-03** (`6d142d12`/1499 → `e0da1063`/1504): **5 Commits, keine Breaking Changes**.
   `config validate` = `config: ok` auf allen 4 Hosts.
   1. `e0da1063` `screen_cast`: Effekt fuer **capture-te Outputs** austauschbar (#565).
