@@ -77,9 +77,9 @@ in
 
   # sched_ext: latenzorientierter Scheduler (Frame-Pacing) fuer Cloud-Gaming.
   # Beim Switch wird der systemd-Service direkt gestartet -> kein Reboot noetig.
-  services.scx = {
+  services.scx-loader = {
     enable = true;
-    scheduler = "scx_lavd";
+    config.default_sched = "scx_lavd";
   };
 
   # Xbox-360-Controller (hier ein ZhiXu-Clone, 045e:028e) braucht xpad.

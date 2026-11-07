@@ -28,12 +28,13 @@
   services.displayManager.noctalia-greeter.passwordlessSyncUsers = [ "mortiferus" ];
 
   # sched_ext: interaktiver Desktop-/Gaming-Scheduler. 6C/12T (Zen 3), kein Hybrid.
-  # Flags = CachyOS/scx_loader-Preset "Gaming" fuer scx_bpfland (-m all).
-  # Slice-/Lag-Defaults bleiben unveraendert; ananicy-cpp bleibt aktiv.
-  services.scx = {
+  # Modus "Gaming" fuer scx_bpfland (-m all). ananicy-cpp bleibt aktiv.
+  services.scx-loader = {
     enable = true;
-    scheduler = "scx_bpfland";
-    extraArgs = [ "-m" "all" ];
+    config = {
+      default_sched = "scx_bpfland";
+      default_mode = "Gaming";
+    };
   };
 
   system.stateVersion = "26.05"; 
