@@ -30,7 +30,10 @@ pkgs: with pkgs; [
   vulkan-tools
 
   # --- Gaming ---
-  rusty-path-of-building
+  # 2026-11-08 deaktiviert: 0.3.3 (nixpkgs #582575) baut nicht (vendored aws-lc-sys
+  # bentigt System-AWS-LC, findet keine; Tracking #570938, Fix analog zed-editor
+  # #583273 erwartbar). Reaktivieren, sobald ein Fix-Commit in nixpkgs landet.
+  # rusty-path-of-building
   vinegar         # Roblox Studio native (Wine)
 
   # --- Office & Media ---
