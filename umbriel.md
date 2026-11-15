@@ -8,8 +8,8 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 - Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
   statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
   `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `d171ccb31628da65b1beee3221b37a2758d553b3` (2026-11-07, revCount 1536), Version `0.1.0`
-  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (d171ccb)`;
+- Aktuelle Rev: `e4ecd92a83b6bf5d7175bc191b9bb611e7e9a066` (2026-11-15, revCount 1580), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (e4ecd92)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
 - Update via `nix flake update` (zieht main neu); danach normaler `switch`.
 - **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
@@ -52,7 +52,7 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    ueber `nix-sync` auf demselben Stand gehalten.
 5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
 
-## Feature-Tracker (Stand: Rev b70b6fa / 2026-10-20)
+## Feature-Tracker (Stand: Rev e4ecd92 / 2026-11-15)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -70,6 +70,15 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `layer_rule.dim_behind` | „Dim behind“ für Layer-Surfaces (#679), analog (0.0–1.0) | verfügbar, nicht genutzt |
 | `session-quit … no-wait` / `wait_for_clients: false` (IPC) | Schnell-Logout (#697, Rev `28de32d0`): Clients **dieses** Compositors stoppen statt auf alle zu warten (Helfer auf 2s gebundelt; System/User-Services anfassbar). **Kein Config-Key** — Default unverändert (graceful); aktiv erst mit Noctalia-Support (noctalia #5218) | verfügbar, nicht genutzt (Default: verhalten) |
 | IPC-Snapshot-Events gepocht | Events auf max. 1 pro 16 ms gebremst (#723, Rev `d171ccb`) | verhalten (automatisch, 2026-11-07) |
+| `window_rule[].touchpad_scroll_factor` | Scroll-Faktor pro Fenster (`0.1`–`10.0`, #686, Rev `9561ab7a`) | verfügbar, nicht genutzt (2026-11-12) |
+| `scratchpad[].hide_when_empty` | Scratchpad ausblenden, sobald das letzte Fenster endet (#751, Rev `8e13926a`) | verfügbar, nicht genutzt |
+| `keybinds.<name>.release` | **Release-Binds** (Action erst beim Loslassen, #743, Rev `2bccfb51`) | verfügbar, nicht genutzt |
+| `appearance.title_bar.button_glyph_size` / `button_glyph_stroke` | Glyph-Größe (px, `-1` = auto) / Strichstärke der Titlebar-Buttons (#762) | nicht genutzt (keine Server-Titlebars) |
+| `appearance.title_bar.title_align` | Titel-Ausrichtung `left`/`center`/`right` (#763) | nicht genutzt (keine Server-Titlebars) |
+| `output.<NAME>.layout.mode` | Layout-Modus pro Output (`scrolling`/`dwindle`/`master`/`stacking`) statt nur global/per-Workspace (Rev `49b29701`) | verfügbar, nicht gesetzt (nur 1 aktiver Output) |
+| `output.<NAME>.color_profile` (`none`/`edid`) + `sdr_gamut` (`srgb`/`native`) | ICC/EDID-Output-Charakterisierung + SDR-Gamut-Mapping (#585, Rev `d3c85928`); Defaults `none`/`native` → Verhalten unverändert | verfügbar, nicht gesetzt |
+| `umbriel config set/get/unset` | **Runtime-Overrides**: dotted Key + TOML-Wert, nur im Speicher (bis Compositor-Ende), überleben Reload/`config-replace`; `get --json`, `unset --all`; Tabellen/Arrays werden ersetzt, `include` nicht setzbar | verfügbar (nur bei Bedarf) |
+| IPC `previous workspace` in Snapshots | Snapshot-Events enthalten den vorherigen Workspace (Rev `0c1f1255`) | verhalten/verfügbar |
 | `default_scratchpad` (window_rule) | Fenster automatisch in Scratchpad stecken beim Öffnen | verfügbar, nicht genutzt |
 | Named Workspaces in `default_workspace` | String-Workspace-Targets (`"CHAT"`) neben Integer | verfügbar, nutzen Integer (bevorzugt) |
 | Scratchpad-Actions: `[<scratchpad>]` | Scratchpads global + named (statt per-output) | **MIGRIERT** (2026-09-09): alle 3 Hosts `:default`_suffix hinzugefügt |
@@ -133,6 +142,9 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | `[input] window_snapping` | Kanten-/Ecken-Snap für schwebende Fenster — Default **`true`** seit `d88b0bc` | aktiv über Default (nicht explizit gesetzt) |
 | Actions `window-snap:<region>` / `window-unsnap` | Floating halbe/viertel Bildschirme per Tastatur | verfügbar, nicht gebunden |
 | `[input.focus] hover_raises` | Hover hebt Fenster an (opt-in, #556) | verfügbar, nicht gesetzt |
+| `[input.focus] follows_mouse` | **Breaking** (`fabf4001`, Rev `e4ecd92`): Bool → Enum `"off"`/`"sloppy"`/`"always"`; `false` wird ignoriert | **MIGRIERT** (`"off"` = Klick-Fokus, alle 4 Hosts, 2026-11-15) |
+| `input.focus.follows_mouse_max_scroll` | Scroll-Schwelle für Pointer-Fokus (float, Default `0.5`) | verfügbar, nicht gesetzt |
+| `output.<NAME>.vrr = "fullscreen_any"` | VRR-Policy zusätzlich zu `disabled`/`always`/`fullscreen` (#795, Rev `e4ecd92`) | verfügbar, nicht genutzt (wir: per-Fenster `window_rule.vrr`) |
 | `[input.touchpad] scroll_method` / `enabled` + Device-Overrides | Touchpad-Scroll-Methode bzw. gezielt an/aus (#518/#531) | IRRELEVANT (Touchpad systemweit aus) |
 | `tap_and_drag` / `drag_lock` (Input) | Tap-and-Drag + Drag-Lock (#500) | verfügbar, nicht gesetzt |
 | `window_rule.match.is_cast_target` | Fenster als Screencast-Ziel matchen | verfügbar, nicht genutzt |
@@ -154,6 +166,56 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Xwayland: passive Utility-Fenster ohne Tastaturfokus | `a70596db` | verhalten (automatisch) |
 
 ## Zuletzt gecheckt
+- **2026-11-15** (`0c1f1255`/1566 → `e4ecd92a`/1580): **14 Commits, 1 Breaking Change**.
+  `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
+  gegen das neue Binary (`0.1.0 (e4ecd92)`). Schema: **keine Keys neu/entfernt**, aber
+  **Typwechsel** bei `follows_mouse` und ein neuer Enum-Wert bei `vrr`. Kernthemen:
+  1. **Breaking `feat(input)!`** (`fabf4001`): `[input.focus] follows_mouse` ist jetzt
+     Enum `"off"`/`"sloppy"`/`"always"`; `false` wird ignoriert → Config ungültig.
+     **Migriert**: alle 4 Hosts auf `"off"` (Verhalten unverändert: Klick-Fokus).
+     Dazu `follows_mouse_max_scroll` (Scroll-Schwelle, Default `0.5`, nicht gesetzt).
+  2. **VRR** (`db2133cc`, #795): neuer Output-Wert `vrr = "fullscreen_any"`;
+     VRR-Änderungen greifen erst mit dem nächsten Frame-Commit (`03eb189d`, #793).
+     Wir bleiben bei `disabled` + per-Fenster `window_rule.vrr = "always"`.
+  3. **Neues Protokoll** `wp_alpha_modifier_v1` (`2cc809f8`, #784) — rein client-seitig,
+     kein Config-Key.
+  4. **Fixes:** HDR-State bei Connector-Reconnect (`cb8d8334`), Blur-Padding ohne
+     Filterung (`88ba829c`, #773), Modifier bei nativem Drag (`28ae9b7f`), Popup-
+     Reposition-Replies (`33a782dc`), Layer-Surfaces auf ihren Output geclippt
+     (`7ca6d84e`, #771), fokussierte Kachel über Fullscreen in ihrer Spalte (`07181d99`),
+     X-Fokus-Freigabe (`2de13d6a`), versteckter Cursor bleibt versteckt (`e63d943a`),
+     Client-Maximize in Stacking-Layouts (`e4ecd92a`), flake.lock-Bump (`ae3472d7`).
+  **Status:** Config nach Migration gültig; `switch` lief (Binary `e4ecd92` liegt im
+  System), **Login-Neustart** auf nex holt die Rev in die laufende Sitzung.
+- **2026-11-12** (`d171ccb3`/1536 → `0c1f1255`/1566): **30 Commits, KEINE Breaking Changes**.
+  `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
+  gegen das neue Binary (`0.1.0 (0c1f125)`); laufende Generation
+  `26.11.20261109.177d054` enthält den neuen Pin. Schema-Diff: **9 neue Keys, 0 entfernt**.
+  Kernthemen:
+  1. **Neue Config-Keys (Defaults unverändert):** `window_rule[].touchpad_scroll_factor`
+     (#686), `scratchpad[].hide_when_empty` (#751), `keybinds.<name>.release`
+     (Release-Binds, #743), `output.<NAME>.layout.mode` (per-Output-Layout),
+     `appearance.title_bar.button_glyph_size`/`button_glyph_stroke` (#762) und
+     `title_align` (#763), `output.<NAME>.color_profile`/`sdr_gamut` (#585). Siehe Tracker.
+  2. **Color-Management** (#585): ICC/EDID-basierte Output-Charakterisierung,
+     SDR-Gamut-Mapping und Color-Description an Clients; ohne gesetzten
+     `color_profile` bleibt alles beim bisherigen Verhalten (`none`/`native`).
+  3. **Runtime-Overrides:** `umbriel config set/get/unset <key> [wert]` —
+     nur im Speicher gültig, überleben Reloads, `get --json`, `unset --all`.
+  4. **IPC:** Snapshots enthalten den vorherigen Workspace (`0c1f1255`).
+  5. **Fixes/Perf:** Fullscreen-Tile-IPC am Output-Box (#737), Tab-Gruppe nach
+     Untab gleichmäßig (#741), compositor-eigene Resizes (#708), unskalierte
+     Client-Frames beim Pointer-Resize, maximierte Kachel behält Breite über
+     Scratchpad/Pinning (#730), Fokus-Erhalt bei Output-Warp (#732), Tab-Gruppe
+     mit einer Zeilenhöhe (#753), Fokus landet auf dem sichtbaren Tab (#755),
+     Overview-Karte für Tab-Gruppen (#757), Blur hinter Popups nutzt die **live**
+     Szene statt des gecachten Wallpapers, jemalloc ohne transparent huge pages,
+     Title-Label-Cache begrenzt, Keymap-Sharing für gleichnamige Keyboards.
+  6. Doku/Flake: Installation Doku für „stonking" (Ubuntu 26.10), PACKAGING,
+     FUNDING, flake.lock-Pflege — kein Config-Impact.
+  **Status:** Config unverändert gültig (rein additiv; Defaults greifen nicht ein).
+  Für die neue Rev: `switch` lief bereits, **Login-Neustart** holt das Binary
+  (`0c1f125`) in die laufende Session.
 - **2026-11-07** (`b6c4b7dd`/1510 → `d171ccb3`/1536): **26 Commits, KEINE Breaking Changes**.
   `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
   gegen das neue Binary (`0.1.0 (d171ccb)`). Kernthemen:

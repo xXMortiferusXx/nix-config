@@ -15,4 +15,5 @@ size = 24
 hardware_cursor = true
 
 [input.focus]
-follows_mouse = false
+# Seit Rev e4ecd92 Enum statt Bool: "off" (Klick-Fokus, ex-false) | "sloppy" | "always"
+follows_mouse = "off"
