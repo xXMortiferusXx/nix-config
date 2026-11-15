@@ -1,6 +1,15 @@
 # Zusatz-Tools und Fish-Aliase für System-/Nix-Pflege.
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
+  # Nur Hosts mit NVIDIA-Treiber (nex) bekommen nvidia-track und den
+  # Treiber-Schritt in nix-check; auf allen anderen bleibt alles unveraendert.
+  nvidiaHost = builtins.elem "nvidia" config.services.xserver.videoDrivers;
+
+  # Was der Auto-Commit in nix-check anfassen darf (bewusst nicht `git add -A`,
+  # damit eigene Arbeit und settings.toml unberuehrt bleiben).
+  commitPaths = [ "flake.lock" ]
+    ++ lib.optional nvidiaHost "modules/hardware/nvidia-driver.json";
+
   # Gemeinsames Terminal-Design fuer alle Nix-Tools. Farben/Symbole nur bei TTY
   # (und nicht bei NO_COLOR/TERM=dumb), damit Pipes/Logs sauber bleiben.
   uiLib = ''
@@ -295,19 +304,122 @@ print(c(DIM, "  Rauschboden. Werte sind umgebungsabhängig, nicht absolut."))
 PYEOF
   '';
 
+  # Holt die neueste NVIDIA-Version direkt aus NVIDIAs Download-Index und
+  # schreibt Version + Hashes nach modules/hardware/nvidia-driver.json.
+  # Ohne neues Release: ein HTTP-GET, sonst nichts. Gebaut/geprueft wird das
+  # Ganze in `nix-check`.
+  nvidiaTrack = pkgs.writeShellScriptBin "nvidia-track" ''
+    set -u
+    ${uiLib}
+    repo=/etc/nixos
+    json=$repo/modules/hardware/nvidia-driver.json
+    index=https://download.nvidia.com/XFree86/Linux-x86_64
+    jq=${pkgs.jq}/bin/jq
+    curl=${pkgs.curl}/bin/curl
+    nixbin=${pkgs.nix}/bin
+
+    ui_title "NVIDIA-Treiber"
+
+    if [ ! -f "$json" ]; then
+      ui_err "$json fehlt"
+      exit 1
+    fi
+
+    if [ "''${1:-}" = "--reset" ]; then
+      $jq '.blocked = []' "$json" > "$json.tmp" && mv "$json.tmp" "$json"
+      ui_ok "Sperrliste geleert"
+      exit 0
+    fi
+
+    cur=$($jq -r .version "$json")
+    ui_kv "Pin" "$cur"
+
+    # Der Index nutzt je nach Server ' oder "; auf " normalisieren.
+    newest=$($curl -fsSL --max-time 25 "$index/" \
+      | tr "'" '"' \
+      | grep -oE 'href="[0-9][^"]*/"' \
+      | sed -E 's/href="([^"]*)\/"/\1/' \
+      | sort -V | tail -1)
+
+    if [ -z "''${newest:-}" ]; then
+      ui_err "NVIDIA-Index nicht lesbar"
+      exit 1
+    fi
+
+    if [ "$newest" = "$cur" ]; then
+      ui_ok "$cur · aktuell"
+      exit 0
+    fi
+    if [ "$(printf '%s\n%s\n' "$cur" "$newest" | sort -V | tail -1)" = "$cur" ]; then
+      ui_info "Index nennt $newest (aelter als Pin) · nichts zu tun"
+      exit 0
+    fi
+    if $jq -e --arg v "$newest" '.blocked | index($v)' "$json" >/dev/null 2>&1; then
+      ui_warn "$newest · blockiert (Freigabe: nvidia-track --reset)"
+      exit 0
+    fi
+
+    ui_kv "Neu" "$newest"
+    ui_step "Hashes laden"
+
+    # .run ist ein einzelnes File (fetchurl); die drei Tarballs werden entpackt
+    # gehasht (fetchzip) -> dafuer nix-prefetch-url --unpack.
+    flat() { $nixbin/nix store prefetch-file --json "$1" 2>/dev/null | $jq -r .hash; }
+    unpacked() {
+      b32=$($nixbin/nix-prefetch-url --unpack "$1" 2>/dev/null) || return 1
+      [ -n "$b32" ] || return 1
+      $nixbin/nix hash convert --hash-algo sha256 --to sri "$b32"
+    }
+
+    run=$(flat "https://us.download.nvidia.com/XFree86/Linux-x86_64/$newest/NVIDIA-Linux-x86_64-$newest.run")
+    [ -n "''${run:-}" ] || { ui_err "Download .run fehlgeschlagen"; exit 1; }
+
+    open=$(unpacked "https://github.com/NVIDIA/open-gpu-kernel-modules/archive/$newest.tar.gz")
+    [ -n "''${open:-}" ] || { ui_err "Download open-gpu-kernel-modules fehlgeschlagen"; exit 1; }
+
+    settings=$(unpacked "https://github.com/NVIDIA/nvidia-settings/archive/$newest.tar.gz")
+    [ -n "''${settings:-}" ] || { ui_err "Download nvidia-settings fehlgeschlagen"; exit 1; }
+
+    persist=$(unpacked "https://github.com/NVIDIA/nvidia-persistenced/archive/$newest.tar.gz")
+    [ -n "''${persist:-}" ] || { ui_err "Download nvidia-persistenced fehlgeschlagen"; exit 1; }
+
+    $jq -n --arg v "$newest" --arg run "$run" --arg open "$open" \
+      --arg settings "$settings" --arg persist "$persist" \
+      --argjson blocked "$($jq '.blocked // []' "$json")" \
+      '{version: $v, blocked: $blocked, sha256_64bit: $run,
+        openSha256: $open, settingsSha256: $settings,
+        persistencedSha256: $persist}' > "$json.tmp" && mv "$json.tmp" "$json" \
+      || { ui_err "JSON schreiben fehlgeschlagen"; exit 1; }
+
+    ui_ok "$newest eingetragen"
+    ui_info "Bau/Pruefung: nix-check"
+  '';
+
   # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
-  # Erfolg: neuer Lock bleibt stehen. Fehler: alter Lock wird restauriert.
+  # Erfolg: neuer Lock bleibt stehen, Lock + Treiber-Pin werden committet/gepusht.
+  # Fehler: alter Lock (und ggf. Pin) wird restauriert, die Version wird blockiert.
   nixCheck = pkgs.writeShellScriptBin "nix-check" ''
     set -u
     ${uiLib}
     repo=/etc/nixos
     host=$(hostname)
     trace=""
-    if [ "''${1:-}" = "--trace" ]; then trace="--show-trace"; fi
+    do_commit=1
+    for a in "$@"; do
+      case "$a" in
+        --trace) trace="--show-trace" ;;
+        --no-commit) do_commit=0 ;;
+      esac
+    done
 
     backup=$(mktemp)
-    trap 'rm -f "$backup"' EXIT
+    json_backup=$(mktemp)
+    trap 'rm -f "$backup" "$json_backup"' EXIT
     cp "$repo/flake.lock" "$backup"
+    ${lib.optionalString nvidiaHost ''
+    json=$repo/modules/hardware/nvidia-driver.json
+    cp "$json" "$json_backup"
+    ''}
 
     ui_title "Nix-Check"
     ui_kv "Host" "$host"
@@ -315,6 +427,11 @@ PYEOF
 
     np_path() { nix eval --impure --raw --expr '(builtins.getFlake "/etc/nixos").inputs.nixpkgs.outPath' 2>/dev/null || true; }
     old_np=$(np_path)
+
+    ${lib.optionalString nvidiaHost ''
+    ui_step "nvidia-track"
+    ${nvidiaTrack}/bin/nvidia-track || ui_warn "nvidia-track fehlgeschlagen · Pin unverändert"
+    ''}
 
     ui_step "flake update"
     if ! (cd "$repo" && nix flake update); then
@@ -341,12 +458,30 @@ PYEOF
     if ! (cd "$repo" && nixos-rebuild build --flake ".#$host" $trace); then
       cp "$backup" "$repo/flake.lock"
       echo
+      ${lib.optionalString nvidiaHost ''
+      # Neuen Treiber-Pin zuruecknehmen und die Version sperren, damit der
+      # naechste Lauf nicht an derselben Stelle scheitert.
+      new_ver=$(${pkgs.jq}/bin/jq -r .version "$json" 2>/dev/null || true)
+      old_ver=$(${pkgs.jq}/bin/jq -r .version "$json_backup" 2>/dev/null || true)
+      if [ -n "''${new_ver:-}" ] && [ "$new_ver" != "$old_ver" ]; then
+        cp "$json_backup" "$json"
+        ${pkgs.jq}/bin/jq --arg v "$new_ver" \
+          '.blocked = ((.blocked // []) + [$v] | unique)' "$json" > "$json.tmp" \
+          && mv "$json.tmp" "$json"
+        ui_warn "nvidia $new_ver blockiert · Freigabe: nvidia-track --reset"
+      fi
+      ''}
       ui_err "Build fehlgeschlagen"
       ui_info "flake.lock zurückgesetzt · System unangetastet"
       ui_info "Vollständiger Trace: nix-check --trace"
       exit 1
     fi
     ui_ok "Build ok"
+
+    ${lib.optionalString nvidiaHost ''
+    src=$repo/result/etc/nvidia/driver-source
+    if [ -f "$src" ]; then ui_kv "nvidia" "$(cat "$src")"; fi
+    ''}
 
     ui_step "Paket-Änderungen"
     diff_out=$(nvd diff -s /run/current-system "$repo/result" 2>/dev/null || true)
@@ -362,6 +497,36 @@ PYEOF
     fi
 
     ${nixRebootCheck}/bin/nix-reboot-check "$repo/result"
+
+    # Nur Lock (+ Treiber-Pin) committen, nie fremde Aenderungen: `--only`
+    # laesst bereits gestagte Dateien anderer Arbeit unberuehrt.
+    ui_step "Commit & Push"
+    paths=( ${lib.concatStringsSep " " commitPaths} )
+    if [ "$do_commit" = 0 ]; then
+      ui_info "--no-commit · uebersprungen"
+    elif [ "$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null)" != "main" ]; then
+      ui_warn "nicht auf main · nichts committet"
+    elif [ -d "$repo/.git/rebase-merge" ] || [ -d "$repo/.git/rebase-apply" ] || [ -f "$repo/.git/MERGE_HEAD" ]; then
+      ui_warn "Rebase/Merge aktiv · nichts committet"
+    else
+      ( cd "$repo" && git add -- "''${paths[@]}" )
+      if ( cd "$repo" && git diff --cached --quiet -- "''${paths[@]}" ); then
+        ui_info "keine Aenderungen an Lock/Pin"
+      else
+        msg="chore(lock): nix-check ok $(date +%F)"
+        if ( cd "$repo" && git commit -q --only -m "$msg" -m "$ver_lines" -- "''${paths[@]}" ); then
+          ui_ok "committet · $msg"
+          if ( cd "$repo" && git push -q origin main 2>/dev/null ); then
+            ui_ok "gepusht"
+          else
+            ui_warn "push fehlgeschlagen · Commit bleibt lokal"
+          fi
+        else
+          ui_warn "commit fehlgeschlagen · Aenderungen bleiben lokal"
+        fi
+      fi
+    fi
+
     echo
     ui_rule
     ui_ok "OK · Lock behalten · Switch: nix-switch"
@@ -373,13 +538,15 @@ in
     jq
     ookla-speedtest
     scx.full
-  ] ++ [ nixCheck nixRebootCheck nixosUpdate nixSync audioRate micCheck ];
+  ] ++ [ nixCheck nixRebootCheck nixosUpdate nixSync audioRate micCheck ]
+    ++ lib.optional nvidiaHost nvidiaTrack;
 
   programs.fish.shellAliases = {
 
     # System & Update (hostname wird per Fish-Funktion dynamisch aufgelöst)
     nix-search = "nix search nixpkgs";
-    # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei Fehlern.
+    # nix-check ist ein eigenes Skript (siehe nixCheck oben) - restauriert den Lock bei
+    # Fehlern, committet/pusht bei Erfolg Lock (+ NVIDIA-Pin); --no-commit zum Auslassen.
     nix-switch = "sudo nixos-rebuild switch --flake /etc/nixos#(hostname) && nix-reboot-check";
     nix-update = "pushd /etc/nixos && nix flake update && sudo nixos-rebuild switch --flake .#(hostname) && popd";
     # nix-sync ist ein eigenes Skript (siehe nixSync oben).

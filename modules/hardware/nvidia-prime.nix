@@ -4,11 +4,31 @@
 { config, pkgs, lib, ... }:
 
 let
+  # Treiber-Pin, gepflegt von `nvidia-track` (siehe modules/programs/tools.nix).
+  # nixpkgs ist bei NVIDIA der Flaschenhals: Treiber-PRs liegen approved, aber
+  # wochenlang ungemerged herum. Deshalb die Version direkt von NVIDIA nehmen,
+  # solange sie neuer ist als nixpkgs' `latest`. Sobald nixpkgs aufholt
+  # (>= Pin), gewinnt automatisch nixpkgs -> kein manuelles Aufraeumen.
+  pin = builtins.fromJSON (builtins.readFile ./nvidia-driver.json);
+
+  nixLatest = config.boot.kernelPackages.nvidiaPackages.latest;
+
+  pinned = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+    version = pin.version;
+    sha256_64bit = pin.sha256_64bit;
+    openSha256 = pin.openSha256;
+    settingsSha256 = pin.settingsSha256;
+    persistencedSha256 = pin.persistencedSha256;
+  };
+
+  usePin = lib.versionOlder nixLatest.version pin.version;
+  driverSource = if usePin then "pin" else "nixpkgs";
+
   # patchelf 0.19.2 erzeugt bei "interpreter zuerst, dann rpath" ein
   # ueberlappendes RW-LOAD (patchelf#672/#674) -> glibc 2.44 SIGSEGV in
   # dl_main. Die Executables aus der unveraenderten origBin mit rpath zuerst
   # neu patchen; betrifft nur NVIDIA.
-  nvidiaPackage = config.boot.kernelPackages.nvidiaPackages.latest.overrideAttrs (old: {
+  nvidiaPackage = (if usePin then pinned else nixLatest).overrideAttrs (old: {
     postFixup = (old.postFixup or "") + ''
       for i in nvidia-cuda-mps-control nvidia-cuda-mps-server nvidia-smi nvidia-debugdump nvidia-powerd; do
         if [ -e "$bin/origBin/$i" ]; then
@@ -84,6 +104,11 @@ in
       exec "$@"
     '')
   ];
+
+  # Woher der Treiber kommt (Pin vs. nixpkgs). `nix-check` zeigt die Datei an,
+  # damit ein Quellenwechsel bei gleicher Version nicht unsichtbar bleibt.
+  environment.etc."nvidia/driver-source".text =
+    "${driverSource} · pin ${pin.version} · nixpkgs ${nixLatest.version}\n";
 
   # VRAM-Heap-Fix (GLVidHeapReuseRatio=0) für bekannte Electron-/GPU-Apps.
   environment.etc."nvidia/nvidia-application-profiles-rc.d/50-vram-fix.json".text = builtins.toJSON {

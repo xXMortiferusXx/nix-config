@@ -87,7 +87,51 @@
     - `NIXOS_OZONE_WL=1` für Electron-Apps nativ auf Wayland — bleibt
     - VRAM-Heap-Fix: `GLVidHeapReuseRatio=0` (50-vram-fix.json) — bleibt
   - `__GL_SHADER_DISK_CACHE_SIZE=12000000000` + `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` in `environment-nex.nix` (Shader-Cache 12 GB, global)
-  - **Treiber**: `nvidiaPackages.latest` = 615.78.08 (Stand 2026-10-20; `stable`/`production` = 595.104.02). Siehe „Bekannte Probleme → NVIDIA … patchelf + glibc 2.44" für den origBin-Workaround.
+  - **Treiber**: `nvidiaPackages.latest` + Pin (siehe „NVIDIA-Treiber-Pin & `nvidia-track`").
+    Stand 2026-11-15: Pin 620.70.06, nixpkgs-`latest` 615.78.08. Siehe „Bekannte Probleme
+    → NVIDIA … patchelf + glibc 2.44" für den origBin-Workaround.
+
+#### NVIDIA-Treiber-Pin & `nvidia-track` (2026-11-15)
+- **Problem**: nixpkgs ist bei NVIDIA der Flaschenhals. Treiber-PRs sind oft fertig und
+  approved, liegen aber wochenlang ungemerged (620.70.06: PR #583684, approved 09.11.,
+  am 15.11. immer noch offen; Autor Kiskae fährt 620 selbst nicht). `latest` =
+  `selectHighestVersion production new_feature` — der Treiber kommt also **nur** über
+  einen Merge.
+- **Loesung**: Version direkt von NVIDIA, solange sie neuer ist als nixpkgs' `latest`.
+  - `modules/hardware/nvidia-driver.json` — nur Daten: `version`, `blocked` und die
+    5 Hashes (`sha256_64bit`, `openSha256`, `settingsSha256`, `persistencedSha256`).
+  - `nvidia-prime.nix` baut daraus `nvidiaPackages.mkDriver { … }` (Treiber fuer den
+    eigenen Kernel). Regel: `versionOlder nixLatest.version pin.version` → Pin, sonst
+    nixpkgs. Sobald nixpkgs aufholt (>= Pin) gewinnt also automatisch nixpkgs —
+    kein Aufraeumen noetig.
+  - `nvidia-track` (nur nex, `environment.systemPackages`) liest die neueste Version
+    aus NVIDIAs Verzeichnis-Index (`download.nvidia.com/XFree86/Linux-x86_64/`,
+    Links dort in `'`), laedt die Hashes und schreibt die JSON. Ohne neues Release:
+    ein HTTP-GET, sonst nichts.
+    - `.run` = einzelnes File → `nix store prefetch-file --json` (flat hash).
+    - `open-gpu-kernel-modules`, `nvidia-settings`, `nvidia-persistenced` werden
+      **entpackt** gehasht (fetchzip) → `nix-prefetch-url --unpack` + `nix hash convert`.
+      Mit `prefetch-file --unpack` (existiert nicht) gaebe es falsche Hashes.
+  - `nix-check` ruft `nvidia-track` **vor** `flake update` auf (nur auf Hosts mit
+    `services.xserver.videoDrivers = [ "nvidia" ]`; auf allen anderen ist das Skript
+    byte-gleich zu vorher). Der Build prueft den Treiber.
+    - Build-Fehler → JSON aus dem Backup zurueckschreiben und die Version in `blocked`
+      eintragen (sonst scheitert jeder weitere Lauf an derselben Stelle).
+      Freigabe: `nvidia-track --reset`.
+    - Nach Erfolg: `git commit --only` fuer **nur** `flake.lock` +
+      `modules/hardware/nvidia-driver.json` (nie `git add -A`, `settings.toml` bleibt
+      unberuehrt), dann `git push origin main`. `--no-commit` ueberspringt das.
+  - `environment.etc."nvidia/driver-source"` schreibt `pin|nixpkgs · pin <v> · nixpkgs <v>`;
+    `nix-check` zeigt die Datei aus `result/` an, damit ein Quellenwechsel bei gleicher
+    Version sichtbar bleibt.
+- **Verifiziert (2026-11-15)**: alle 5 Hashes des PR #583684 mit eigenen Prefetch-Laeufen
+  reproduziert (identisch). `hardware.nvidia.package.version` = 620.70.06, Quelle `pin`.
+  `nvidia-track` Ende-zu-Ende gegen ein Test-Repo (610 → 620) inkl. `blocked`/`--reset`.
+- **Wichtig**: das Kernelmodul wird **immer lokal** gebaut (`SYSSRC=${kernel.dev}` in
+  `kernel-modules.nix`), unabhaengig vom Cache. nixpkgs patcht `production`/`new_feature`
+  gar nicht (nur `legacy_470/390/340` bekommen Kernel-Kompatibilitätspatches) — bei einem
+  neuen Treiber gegen einen sehr neuen Kernel kann der Modul-Build also scheitern; genau
+  dafuer ist `nvidia-track` mit `blocked` gebaut.
 
 ### Home-Manager
 - `home/mortiferus/{default,packages,config,autostart,mpv}.nix` (mangohud.nix gelöscht – Config wird von GOverlay verwaltet)
