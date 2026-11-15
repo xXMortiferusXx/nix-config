@@ -15,10 +15,14 @@
     lsfg-vk-src.url = "git+https://git.lsfg-vk.dev/lsfg-vk.git?ref=master";
     lsfg-vk-src.flake = false;
 
-    # Umbriel direkt vom Repo (nixpkgs pinnt zu alt); git+https wegen Submodule scenefx
+    # Umbriel direkt vom Repo (nixpkgs pinnt zu alt); git+https wegen Submodule scenefx.
+    # BEWUSST ohne `inputs.nixpkgs.follows`: der Binary-Cache (umbriel.cachix.org)
+    # enthaelt genau die Store-Pfade, die die CI gegen Umbriels EIGENEN nixpkgs-Lock
+    # gebaut hat. Mit follows bauen wir gegen unser (taeglich wechselndes) nixpkgs und
+    # verfehlen den Cache. `ref=cachix` = Branch, der immer auf den letzten von der CI
+    # erfolgreich gecachten Commit zeigt (Upstream-Empfehlung). Siehe umbriel.md.
     umbriel = {
-      url = "git+https://github.com/noctalia-dev/umbriel";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "git+https://github.com/noctalia-dev/umbriel?ref=cachix";
     };
 
     # Arctis Sound Manager (eigener Fork; nur benny, nex nutzt den GC7)

@@ -1,16 +1,21 @@
 # Umbriel Compositor (wlroots + SceneFX) – primäre Wayland-Session
-# Paket kommt direkt aus dem Umbriel-Flake (inputs.umbriel, Overlay) statt nixpkgs.
+# Paket kommt direkt aus dem Umbriel-Flake (inputs.umbriel) statt nixpkgs.
 # Autostarts laufen über graphical-session.target (kein general.autostart).
 { config, pkgs, lib, inputs, ... }:
 
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in
 {
-  nixpkgs.overlays = [
-    inputs.umbriel.overlays.default
-  ];
-
+  # Bewusst KEIN Overlay: das Overlay (`final.callPackage`) baut Umbriel gegen UNSER
+  # nixpkgs, das taeglich per `nix flake update` wandert -> Store-Pfad weicht vom
+  # CI-Build ab -> Cache-Miss. `inputs.umbriel.packages` ist exakt das, was die CI
+  # baut und nach umbriel.cachix.org pusht (Umbriels eigener nixpkgs-Lock, weil
+  # `inputs.nixpkgs.follows` in flake.nix entfernt ist) -> garantierter Treffer.
   # Umbriel nutzt natives wlroots-Xwayland; programs.xwayland (desktop.nix) liefert das Binary.
   programs.umbriel = {
     enable = true;
+    package = inputs.umbriel.packages.${system}.default;
   };
 
   # umbriel-Portal nicht überschreiben; nur übrige Interfaces auf GTK + gnome-keyring.

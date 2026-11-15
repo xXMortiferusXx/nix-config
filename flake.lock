@@ -115,6 +115,19 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1794386569,
+        "narHash": "sha256-W60urNAgQVS8bhNWH0bQsYoiagds8m38oTDUjEOM9FE=",
+        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1117658.d4f25a3e5620/nixexprs.tar.xz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
+      }
+    },
     "root": {
       "inputs": {
         "arctis-sound-manager": "arctis-sound-manager",
@@ -128,21 +141,20 @@
     },
     "umbriel": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": "nixpkgs_2",
         "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
       },
       "locked": {
-        "lastModified": 1794739313,
-        "narHash": "sha256-k7T/VkmWqe/H2s9JgBv7OpSOwQ9LHnY0Y87rNIMjrzw=",
-        "ref": "refs/heads/main",
-        "rev": "e4ecd92a83b6bf5d7175bc191b9bb611e7e9a066",
-        "revCount": 1580,
+        "lastModified": 1794741281,
+        "narHash": "sha256-+MmRT3zLrNUhd1Dl/jBHqPO14bNNgtQzuFIWwLN9Qig=",
+        "ref": "cachix",
+        "rev": "2572005a9fe5505618f783534ca0ca6d0e745090",
+        "revCount": 1581,
         "type": "git",
         "url": "https://github.com/noctalia-dev/umbriel"
       },
       "original": {
+        "ref": "cachix",
         "type": "git",
         "url": "https://github.com/noctalia-dev/umbriel"
       }

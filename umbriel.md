@@ -5,14 +5,68 @@ Update wieder auf den aktuellen Stand gebracht wird (die Doku/Features sind dem
 Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 
 ## Gepinnter Stand
-- Quelle: **direkt vom Umbriel-Flake** (`git+https://github.com/noctalia-dev/umbriel`, main)
-  statt nixpkgs — damit Fixes/Features zeitnah ankommen. Overlay in
-  `modules/desktop/umbriel.nix` ersetzt `pkgs.umbriel`.
-- Aktuelle Rev: `e4ecd92a83b6bf5d7175bc191b9bb611e7e9a066` (2026-11-15, revCount 1580), Version `0.1.0`
-  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (e4ecd92)`;
+- Quelle: **direkt vom Umbriel-Flake**, Branch **`cachix`**
+  (`git+https://github.com/noctalia-dev/umbriel?ref=cachix`) statt nixpkgs — der
+  Branch zeigt immer auf den letzten Commit, den die CI erfolgreich gecacht hat
+  (hinkt `main` um die CI-Laufzeit nach, ~10 min). `modules/desktop/umbriel.nix`
+  setzt `programs.umbriel.package = inputs.umbriel.packages.<system>.default`
+  (kein Overlay, siehe Cache-Abschnitt).
+- Aktuelle Rev: `2572005a9fe5505618f783534ca0ca6d0e745090` (2026-11-15, revCount 1581), Version `0.1.0`
+  (Lock per `nix flake update`; CLI `umbriel --version` = `0.1.0 (2572005)`;
   laufender Compositor braucht Login-Neustart, damit die neue Rev aktiv wird)
-- Update via `nix flake update` (zieht main neu); danach normaler `switch`.
-- **Lokaler Build** (kein Binär-Cache für die Flake-Rev).
+- Update via `nix flake update` (zieht den cachix-Branch neu); danach normaler `switch`.
+- **Binär-Cache konfiguriert** (`umbriel.cachix.org`, siehe unten) — Download statt
+  C++-Build bei jedem Rev-Bump.
+
+## Binär-Cache (`umbriel.cachix.org`)
+- Cache: `https://umbriel.cachix.org`
+  Key: `umbriel.cachix.org-1:JfNq/2yg2S6D6z4Z2dVSZrZlDPQTKtexB6GAVLD98nw=`
+- Eingetragen in `modules/system/nix-settings.nix` (substituters, trusted-substituters,
+  trusted-public-keys). Wirksam ab `switch` (nix-daemon liest die Settings neu).
+- CI (`.github/workflows/cachix.yml`) baut bei jedem Push auf `main`
+  `.#default` + `.#xdg-desktop-portal-umbriel` für **x86_64-linux und aarch64-linux**
+  und lädt sie hoch. Branch `cachix` zeigt immer auf den zuletzt erfolgreich
+  gecachten Commit.
+- **Setup (seit 2026-11-15): Paket = CI-Paket.**
+  - `modules/desktop/umbriel.nix`: `programs.umbriel.package = inputs.umbriel.packages.<system>.default`,
+    **kein Overlay** (`final.callPackage` würde gegen *unser* nixpkgs bauen).
+  - `flake.nix`: `inputs.nixpkgs.follows` beim Umbriel-Input **entfernt**; damit gilt
+    der nixpkgs-Lock, den Umbriel selbst committet hat — genau das, wogegen die CI
+    baut. Ergebnis: unser `drv` ist byte-identisch mit dem CI-`drv` → garantierter
+    Cache-Treffer, unabhängig von unserem eigenen nixpkgs-Stand.
+- **Warum das nötig war (Beleg, Rev `0c1f125`):**
+  - mit Umbriels Lock (`f9a75f41`) → `f99qvlvv…-umbriel-0.1.0` → Narinfo **200**.
+  - mit unserem damaligen nixpkgs-Stand → `gw917hrb…`/`ndnjrx5m…` → **404**.
+  Grund: neuere wayland-protocols/cairo/pango/xwayland im Buildinput → anderer `drv`.
+  Mit dem Overlay war der Treffer also reine Tagesform (unser Lock wandert nächtlich).
+- **Was ist `nixpkgs_2` im Lock?** Nix' Name für das nixpkgs, das *Umbriel selbst*
+  pinnt (transitiver Input). Es ist **nicht** unser System-nixpkgs und beeinflusst nur
+  das `umbriel`-Paket. `nix flake update` zieht es automatisch zusammen mit `umbriel`
+  nach (getestet: `0c1f125`/`f9a75f41` → `2572005`/`d4f25a3e` in einem Lauf), ein
+  separater Befehl ist nicht nötig.
+- **Lock-Falle:** `follows` zu entfernen und dann `nix flake lock` laufen zu lassen,
+  pinnt den Channel-Tarball auf den *aktuellen* Stand (`d5cc6833`), nicht auf Umbriels
+  Lock. Danach einmal `nix flake update umbriel` — das zieht den Lock des Commits
+  (hier `d4f25a3e`). Ein normales `nix flake update` lässt den Node danach in Ruhe
+  (verifiziert).
+- Prüfen:
+  `nix eval --raw .#nixosConfigurations.nex.config.programs.umbriel.package.drvPath`
+  → muss dem `Deriver` im Narinfo entsprechen;
+  `nix path-info --store https://umbriel.cachix.org /nix/store/<pfad>` (200 = da).
+  Stand 2026-11-15 (`2572005`, Branch `cachix`): `drv` `phjyxxrs…`, Ausgabe
+  `frm8wakw…-umbriel-0.1.0`, Narinfo **200** (NarSize 9207888, zstd).
+  Für `e4ecd92` war es `cvwxdds4…`/`hna787z…` (Signatur per `nix store verify` geprüft).
+- **Kein „CI noch nicht fertig"-Risiko:** dadurch, dass der Input dem `cachix`-Branch
+  folgt, zeigt der Lock immer auf einen bereits gecachten Commit. `nix flake update`
+  bewegt Umbriel + `nixpkgs_2` gemeinsam dorthin.
+- Bei uns stehen die Listen explizit (`substituters`/`trusted-public-keys` inkl.
+  Defaults) statt `extra-substituters`/`extra-trusted-public-keys` wie im
+  Upstream-Snippet — Inhalt ist identisch.
+- `pkgs.umbriel` existiert jetzt nicht mehr (Overlay weg); Bedarf →
+  `inputs.umbriel.packages.${system}.default`.
+- Nicht gecacht (und daher weiter lokal gebaut, klein): der **Portal**
+  `xdg-desktop-portal-umbriel` kommt aus unserem nixpkgs (`0-unstable-2026-10-14`),
+  nicht aus dem Flake-Paket (`0.1.0`, Portal-Input `56951426`).
 
 ## Wann zurück zu nixpkgs?
 - Solange auf dem Flake bleiben, bis nixpkgs den Fix-/Feature-Stand eingeholt hat
@@ -20,8 +74,10 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
   Numlock, `[animation]`, named scratchpads) **und** die Entwicklung sich beruhigt hat
   (Stand 2026-10-08: 33 Commits in 2 Tagen ≈ 16/Tag — weiterhin aktiv; ein Tag-Release
   wäre das klarste Zeichen).
-- Kosten Flake: lokaler C++-Build (~Minuten) bei jedem Rev-Bump.
-- Wechsel zurück: Flake-Input + Overlay (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
+- Kosten Flake: früher lokaler C++-Build (~Minuten) bei jedem Rev-Bump; seit dem
+  Cache (2026-11-15) ein Download der gecachten Closure (plus ein zusätzlicher
+  nixpkgs-Eval für Umbriels Lock, ~2–4 s).
+- Wechsel zurück: Flake-Input + `package`-Zuweisung (`modules/desktop/umbriel.nix`) raus, `nix eval nixpkgs#umbriel`
   prüfen, Config ggf. re-migrieren (falls nixpkgs-Rev anders steht).
 
 ## WICHTIG – Namens-Instabilität
@@ -47,12 +103,12 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
    `nix build '.#nixosConfigurations.nex.config.programs.umbriel.package' --no-link` →
    `<out>/bin/umbriel config validate -c <config>` (alle Hosts).
 4. Keys/Actions unten abhaken und ggf. in allen Hosts eintragen:
-   `home/{mortiferus,backbone,lion}/config/umbriel/` (gleiche Dateien, gleicher Stand).
-   **Immer alle 3 Hosts pruefen** – lion ist aktiver im Einsatz als backbone und wird
-   ueber `nix-sync` auf demselben Stand gehalten.
-5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion.
+   `home/{mortiferus,backbone,lion,benny}/config/umbriel/` (gleiche Dateien, gleicher Stand).
+   **Immer alle 4 Hosts pruefen** – lion/benny sind aktiver im Einsatz als backbone und
+   werden ueber `nix-sync` auf demselben Stand gehalten.
+5. `switch` + **Login-Neustart** auf nex, erst dann styx/lion/benny.
 
-## Feature-Tracker (Stand: Rev e4ecd92 / 2026-11-15)
+## Feature-Tracker (Stand: Rev 2572005 / 2026-11-15)
 | Config-Key | Zweck | Status |
 |---|---|---|
 | `input.keyboard.numlock_toggle` | Numlock beim Tastatur-Connect AN | **EINGEBAUT** (alle Hosts `true`, 2026-08-31) |
@@ -187,6 +243,10 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
      Client-Maximize in Stacking-Layouts (`e4ecd92a`), flake.lock-Bump (`ae3472d7`).
   **Status:** Config nach Migration gültig; `switch` lief (Binary `e4ecd92` liegt im
   System), **Login-Neustart** auf nex holt die Rev in die laufende Sitzung.
+- **2026-11-15 (Nachtrag)** `e4ecd92a`/1580 → `2572005a`/1581: nur
+  `fix(focus): reveal tiled windows above floating fullscreen`
+  (`src/workspace/*.cpp/h` + Xwayland-Test). **Kein Config-/Schema-Änderung**,
+  Validierung von `e4ecd92` gilt weiter. Binary liegt im Cache (Branch `cachix`).
 - **2026-11-12** (`d171ccb3`/1536 → `0c1f1255`/1566): **30 Commits, KEINE Breaking Changes**.
   `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
   gegen das neue Binary (`0.1.0 (0c1f125)`); laufende Generation
