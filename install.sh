@@ -390,6 +390,12 @@ fi
 if command -v mdadm >/dev/null 2>&1; then
     sudo mdadm --stop --scan 2>/dev/null || true   # Software-RAIDs stoppen
 fi
+if command -v dmsetup >/dev/null 2>&1; then
+    sudo dmsetup remove_all 2>/dev/null || true   # LUKS/übrige Device-Mapper-Devices schließen
+fi
+if command -v zpool >/dev/null 2>&1; then
+    sudo zpool export -a 2>/dev/null || true   # ZFS-Pools exportieren
+fi
 for part in $(lsblk -rno NAME "$DISK_DEVICE" 2>/dev/null | tail -n +2); do
     sudo wipefs -a -f "/dev/$part" 2>/dev/null || true
 done
