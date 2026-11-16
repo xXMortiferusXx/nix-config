@@ -371,6 +371,19 @@ if [ "$DISK_END_MB" -gt 16 ]; then
 fi
 sudo blockdev --rereadpt "$DISK_DEVICE" 2>/dev/null || true
 
+# UEFI-Eintraege liegen im NVRAM des Mainboards, nicht auf der Platte. Wipe und
+# Neuinstallation loeschen sie NICHT -> sonst sammeln sich bei jeder Installation
+# neue "NixOS"/"Linux Boot Manager"-Eintraege an. Hier alle entfernen; der
+# Bootloader legt danach genau einen neuen an. Andere Systeme bleiben unangetastet.
+if [ -d /sys/firmware/efi ] && command -v efibootmgr >/dev/null 2>&1; then
+    info "Entferne alte NixOS-UEFI-Eintraege..."
+    sudo efibootmgr 2>/dev/null \
+        | sed -n -E 's/^Boot([0-9A-Fa-f]{4})\*? +(NixOS|Linux Boot Manager).*/\1/p' \
+        | while read -r entry; do
+            sudo efibootmgr -b "$entry" -B >/dev/null 2>&1 || warn "Konnte UEFI-Eintrag Boot${entry} nicht entfernen."
+        done
+fi
+
 if [[ "$HOSTNAME" == "nex" ]]; then
     DISKO_CONFIG="${PWD}/hosts/nex/disk-config.nix"
 elif [[ "$HOSTNAME" == "styx" ]]; then
