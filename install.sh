@@ -15,11 +15,180 @@ info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
-# --- SCHRITT 0: Internet-Check ---
-info "Prüfe Internetverbindung..."
-if ! ping -c 1 8.8.8.8 &>/dev/null; then
-    error "Keine Internetverbindung erkannt! Bitte verbinde dich über nmtui mit dem WLAN/LAN."
+# --- INSTALLATIONS-DNS ---
+# Die Live-Sitzung nutzt bewusst öffentliche Resolver. Ein vom Router
+# vorgegebener DNS (Fritzbox-Filter, Pi-hole, Rebind-Schutz) soll die
+# Installation nicht blockieren. Gilt NUR für die Live-Sitzung: weder
+# /etc/resolv.conf noch die NetworkManager-Profile werden ins Zielsystem
+# übernommen. Überschreibbar mit --dns <ip[,ip]> bzw. --dns off.
+INSTALL_DNS=(1.1.1.1 9.9.9.9)
+
+# --- TEMPORÄRE RESSOURCEN (werden bei Ende/Abbruch zurückgebaut) ---
+SWAPFILE="/mnt/.install-swapfile"
+DNS_KEY="install-dns"
+DNS_ACTIVE=0
+DNS_MODE=""
+DNS_BACKUP=""
+
+cleanup_install_dns() {
+    [ "${DNS_ACTIVE}" -eq 1 ] || return 0
+    if [ "${DNS_MODE}" = "resolvconf" ]; then
+        sudo resolvconf -d "${DNS_KEY}" 2>/dev/null || true
+    elif [ -n "${DNS_BACKUP}" ]; then
+        sudo rm -f /etc/NetworkManager/conf.d/90-install-dns.conf 2>/dev/null || true
+        sudo nmcli general reload conf >/dev/null 2>&1 || true
+        sudo cp "${DNS_BACKUP}" /etc/resolv.conf 2>/dev/null || true
+        rm -f "${DNS_BACKUP}"
+    fi
+    DNS_ACTIVE=0
+}
+
+cleanup_swap() {
+    sudo swapoff "${SWAPFILE}" 2>/dev/null || true
+    sudo rm -f "${SWAPFILE}" 2>/dev/null || true
+}
+
+cleanup_all() {
+    cleanup_install_dns
+    cleanup_swap
+}
+trap cleanup_all EXIT
+
+# --- OPTIONEN ---
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dns)
+            [ $# -ge 2 ] || error "--dns braucht einen Wert (IP oder 'off')."
+            if [ "$2" = "off" ] || [ "$2" = "none" ]; then
+                INSTALL_DNS=()
+            else
+                IFS=',' read -r -a INSTALL_DNS <<< "$2"
+            fi
+            shift 2
+            ;;
+        --dns=*)
+            val="${1#*=}"
+            if [ "$val" = "off" ] || [ "$val" = "none" ]; then
+                INSTALL_DNS=()
+            else
+                IFS=',' read -r -a INSTALL_DNS <<< "$val"
+            fi
+            shift
+            ;;
+        -h|--help)
+            echo "Aufruf: $0 [--dns <ip[,ip]>|off]"
+            echo "  --dns IP    Resolver für die Installation (Standard: 1.1.1.1,9.9.9.9)"
+            echo "  --dns off   Router-/DHCP-DNS verwenden"
+            exit 0
+            ;;
+        *)
+            error "Unbekannte Option: $1 (erlaubt: --dns <ip[,ip]>|off)"
+            ;;
+    esac
+done
+
+for ns in "${INSTALL_DNS[@]}"; do
+    [[ "$ns" =~ ^[0-9a-fA-F:.]+$ ]] || error "Ungültige DNS-Adresse: $ns"
+done
+
+# Setzt den Installations-DNS über openresolv (die ISO nutzt NetworkManager +
+# openresolv). `-m 0` = höchste Priorität, `-x` = exklusiv: der Router-DNS wird
+# während der Installation komplett ignoriert. Fällt openresolv aus oder
+# schreibt es die Datei nicht, wird /etc/resolv.conf direkt geschrieben
+# (Original wird gesichert und im EXIT-Trap zurückgespielt).
+dns_in_file() {
+    local ns
+    for ns in "${INSTALL_DNS[@]}"; do
+        grep -qx "nameserver ${ns}" /etc/resolv.conf 2>/dev/null || return 1
+    done
+    return 0
+}
+
+set_install_dns() {
+    if [ "${#INSTALL_DNS[@]}" -eq 0 ]; then
+        info "Installations-DNS: aus (Router-/DHCP-DNS wird verwendet)."
+        return 0
+    fi
+
+    local rc_ok=0
+    if command -v resolvconf >/dev/null 2>&1; then
+        if printf 'nameserver %s\n' "${INSTALL_DNS[@]}" \
+            | sudo resolvconf -m 0 -x -a "${DNS_KEY}" 2>/dev/null; then
+            if dns_in_file; then
+                DNS_MODE="resolvconf"
+                rc_ok=1
+            else
+                # Key wieder entfernen, sonst bleibt ein wirkungsloser Eintrag.
+                sudo resolvconf -d "${DNS_KEY}" 2>/dev/null || true
+            fi
+        fi
+    fi
+
+    if [ "${rc_ok}" -eq 0 ]; then
+        DNS_BACKUP=$(mktemp)
+        sudo cp /etc/resolv.conf "${DNS_BACKUP}" 2>/dev/null || true
+        printf 'nameserver %s\noptions timeout:2 attempts:2\n' "${INSTALL_DNS[@]}" \
+            | sudo tee /etc/resolv.conf >/dev/null
+        # Verhindern, dass NetworkManager/openresolv die Datei bei einem
+        # DHCP-Renew wieder überschreibt (betrifft nur die Live-Sitzung).
+        sudo mkdir -p /etc/NetworkManager/conf.d
+        printf '[main]\nrc-manager=unmanaged\n' \
+            | sudo tee /etc/NetworkManager/conf.d/90-install-dns.conf >/dev/null
+        sudo nmcli general reload conf >/dev/null 2>&1 || true
+        DNS_MODE="file"
+    fi
+
+    DNS_ACTIVE=1
+    info "Installations-DNS: ${INSTALL_DNS[*]} (nur Live-Sitzung, Modus: ${DNS_MODE})"
+}
+
+# Prüft den Weg, den die Installation tatsächlich nimmt. ping war untauglich:
+# viele Router verwerfen ICMP, obwohl HTTP(S) funktioniert.
+net_ok() {
+    curl -sf -o /dev/null --connect-timeout 5 --max-time 10 \
+        https://cache.nixos.org/nix-cache-info 2>/dev/null \
+    && curl -sfI -o /dev/null --connect-timeout 5 --max-time 10 \
+        https://github.com 2>/dev/null
+}
+
+# Wartet auf DHCP. LAN-Kabel steckt bei den meisten Installationen bereits,
+# dann ist der erste Versuch erfolgreich.
+net_wait() {
+    local i=1
+    while [ "$i" -le 6 ]; do
+        if net_ok; then
+            return 0
+        fi
+        if [ "$i" -lt 6 ]; then
+            info "Noch kein Netz – warte auf DHCP... (${i}/6)"
+            sleep 3
+        fi
+        i=$((i + 1))
+    done
+    return 1
+}
+
+# --- SCHRITT 0: Netzwerk & Installations-DNS ---
+info "Setze DNS für die Installation..."
+set_install_dns
+
+info "Prüfe Netzwerkverbindung (DHCP)..."
+if ! net_wait; then
+    # Manche Netze (Gast-WLAN, Captive Portal) erlauben nur den Router-DNS.
+    # Dann lieber mit diesem weiterarbeiten als die Installation abzubrechen.
+    if [ "${DNS_ACTIVE}" -eq 1 ]; then
+        warn "Über ${INSTALL_DNS[*]} nicht erreichbar – teste den Router-DNS..."
+        cleanup_install_dns
+        if net_wait; then
+            warn "Netz erlaubt nur den Router-DNS. Installation läuft damit weiter."
+        fi
+    fi
 fi
+
+if ! net_ok; then
+    error "Keine Internetverbindung. LAN: Kabel prüfen (DHCP startet automatisch). WLAN: 'nmtui' starten und verbinden. Danach Skript erneut starten."
+fi
+info "Netzwerk OK."
 
 # --- SCHRITT 0b: UEFI-Check ---
 # Alle Hosts nutzen systemd-boot mit `canTouchEfiVariables = true`. Wird die ISO
@@ -170,7 +339,8 @@ info "Prüfe Voraussetzungen..."
 
 if ! command -v git &> /dev/null; then
     warn "Git fehlt. Lade temporäre Nix-Shell..."
-    exec nix-shell -p git --run "$(readlink -f "$0")"
+    # Optionen (--dns ...) beim Re-Exec mitnehmen.
+    exec nix-shell -p git --run "$(printf '%q ' "$(readlink -f "$0")" "$@")"
     exit
 fi
 
@@ -234,14 +404,8 @@ sudo nix --experimental-features "nix-command flakes" \
 # Für den nixos-install-Build kann viel RAM nötig sein (OOM-Risiko).
 # Daher legen wir hier ein temporäres Swapfile auf /mnt an, aktivieren es
 # für die Installation und entfernen es danach wieder — es landet also
-# NIE im installierten System.
-SWAPFILE="/mnt/.install-swapfile"
-
-cleanup_swap() {
-    sudo swapoff "$SWAPFILE" 2>/dev/null || true
-    sudo rm -f "$SWAPFILE" 2>/dev/null || true
-}
-trap cleanup_swap EXIT
+# NIE im installierten System. (SWAPFILE + cleanup_swap stehen oben, damit
+# der EXIT-Trap auch DNS und Swap gemeinsam aufräumt.)
 
 setup_swap() {
     if command -v free &>/dev/null; then
@@ -362,14 +526,18 @@ fi
 if [ "${WLAN_COUNT}" -gt 0 ]; then
     info "WLAN-Profile übernommen: ${WLAN_COUNT}"
 else
-    warn "Keine WLAN-Profile im Live-System gefunden (NM oder iwd). WLAN nach dem Boot neu einrichten."
+    # Kein Fehler: bei LAN-Installation (DHCP) gibt es nichts zu übernehmen.
+    info "Keine WLAN-Profile vorhanden (LAN-Installation) – nichts zu übernehmen."
 fi
 
-# --- SCHRITT 6b: Verifikation VOR dem Reboot ---
-# Lieber hier laut abbrechen als in ein nicht bootfaehiges System rebooten.
+# --- SCHRITT 6b: Verifikation (Aufruf erfolgt nach Rechte/Passwoerter) ---
+# Lieber laut abbrechen als in ein nicht bootfaehiges System rebooten.
 # Prueft die Stellen, die typischerweise "Installation lief durch, bootet aber
 # nicht" verursachen: unvollstaendiger Store, fehlende Kern-Binaries,
-# Partlabels aus /etc/fstab, Bootloader auf der ESP, freier Platz.
+# Partlabels aus /etc/fstab, Bootloader auf der ESP, freier Platz, Rechte.
+# Wird bewusst erst nach chown/passwd aufgerufen: bricht die Verifikation ab,
+# ist das System trotzdem vollstaendig eingerichtet und benutzbar.
+verify_installation() {
 info "Verifiziere die Installation..."
 VERIFY_FAIL=0
 verify_fail() {
@@ -380,6 +548,9 @@ verify_fail() {
 store_count=$(sudo find /mnt/nix/store -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 info "Store-Pfade: ${store_count}"
 [ "${store_count}" -gt 1500 ] || verify_fail "Store wirkt unvollstaendig (nur ${store_count} Pfade)."
+
+live_dns=$(grep -h '^nameserver' /etc/resolv.conf 2>/dev/null | awk '{print $2}' | tr '\n' ' ' || true)
+info "DNS der Live-Sitzung: ${live_dns:-unbekannt}"
 
 sudo sh -c 'ls /mnt/nix/store/*-systemd-*/lib/systemd/systemd-udevd >/dev/null 2>&1' \
     || verify_fail "systemd-udevd fehlt im Store."
@@ -402,14 +573,29 @@ sudo sh -c 'ls /mnt/boot/loader/entries/*.conf >/dev/null 2>&1' \
 avail_mb=$(sudo df -Pm /mnt 2>/dev/null | awk 'NR==2 {print $4}')
 [ "${avail_mb:-0}" -gt 1024 ] || verify_fail "Wenig Platz auf / (${avail_mb:-?} MB frei)."
 
-# Rechte: Home des Users muss existieren und ihm gehören, Secrets nur root-lesbar.
+# Rechte: Home des Users muss existieren und ihm gehoeren.
+# WICHTIG: numerisch vergleichen. `stat -c %U` loest den Namen ueber die
+# /etc/passwd des LIVE-Systems auf (UID 1000 = nixos) und wuerde eine
+# korrekte Installation faelschlich als fehlerhaft melden.
 if ! sudo test -d "/mnt/home/$USERNAME"; then
     info "Lege /home/$USERNAME im Zielsystem an (fehlte nach nixos-install)..."
     sudo nixos-enter --root /mnt -c "install -d -m 700 -o $USERNAME -g users /home/$USERNAME" \
         || verify_fail "Konnte /home/$USERNAME nicht anlegen."
 fi
-home_owner=$(sudo stat -c '%U' "/mnt/home/$USERNAME" 2>/dev/null || echo "fehlt")
-[ "$home_owner" = "$USERNAME" ] || verify_fail "/home/$USERNAME fehlt oder gehoert nicht $USERNAME (ist: $home_owner)."
+
+target_uid=$(sudo awk -F: -v u="$USERNAME" '$1 == u {print $3}' /mnt/etc/passwd 2>/dev/null || true)
+target_gid=$(sudo awk -F: -v u="$USERNAME" '$1 == u {print $4}' /mnt/etc/passwd 2>/dev/null || true)
+home_uid=$(sudo stat -c '%u' "/mnt/home/$USERNAME" 2>/dev/null || echo "fehlt")
+home_gid=$(sudo stat -c '%g' "/mnt/home/$USERNAME" 2>/dev/null || echo "fehlt")
+
+if [ -z "$target_uid" ]; then
+    verify_fail "Benutzer $USERNAME fehlt in /mnt/etc/passwd."
+elif [ "$home_uid" != "$target_uid" ]; then
+    verify_fail "/home/$USERNAME gehoert UID $home_uid, erwartet $target_uid ($USERNAME)."
+elif [ -n "$target_gid" ] && [ "$home_gid" != "$target_gid" ]; then
+    verify_fail "/home/$USERNAME gehoert GID $home_gid, erwartet $target_gid."
+fi
+
 for f in /mnt/etc/NetworkManager/system-connections/*.nmconnection /mnt/var/lib/iwd/*; do
     [ -e "$f" ] || continue
     mode=$(sudo stat -c '%a' "$f" 2>/dev/null)
@@ -425,6 +611,7 @@ if [ "${VERIFY_FAIL}" -ne 0 ]; then
     error "Installation unvollstaendig - Abbruch vor dem Reboot."
 fi
 info "Verifikation OK - System ist bootfaehig."
+}
 
 # --- SCHRITT 7: Rechte & Git-Setup ---
 info "Bereite Zielsystem vor (Rechte & Git)..."
@@ -445,6 +632,14 @@ sudo nixos-enter --root /mnt -c "cd /etc/nixos && git remote set-url origin $REM
 # mit "Permission denied" auf .git fehl.)
 sudo nixos-enter --root /mnt -c "chown -R $USERNAME:users /etc/nixos"
 
+# Gegenprobe (Name wird hier im Zielsystem aufgelöst, nicht im Live-System).
+repo_owner=$(sudo nixos-enter --root /mnt -c "stat -c %U /etc/nixos" 2>/dev/null || echo "unbekannt")
+if [ "$repo_owner" = "$USERNAME" ]; then
+    info "Rechte OK: /etc/nixos gehoert $USERNAME."
+else
+    warn "/etc/nixos gehoert ${repo_owner} statt ${USERNAME} – git pull als $USERNAME wird fehlschlagen."
+fi
+
 echo ""
 echo "=========================================================="
 echo "  Passwörter setzen"
@@ -457,6 +652,11 @@ sudo nixos-enter --root /mnt -c "passwd root"
 echo ""
 echo "Passwort für $USERNAME setzen:"
 sudo nixos-enter --root /mnt -c "passwd $USERNAME"
+
+echo ""
+# Erst jetzt pruefen: Rechte und Passwoerter sind gesetzt, das System ist
+# selbst bei einem Verifikationsfehler vollstaendig eingerichtet.
+verify_installation
 
 echo ""
 echo "=========================================================="
