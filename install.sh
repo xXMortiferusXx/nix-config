@@ -371,7 +371,17 @@ done < <(lsblk -rno MOUNTPOINT "$DISK_DEVICE" 2>/dev/null)
 # Alte/ungueltige Partitionstabellen vorab entfernen. Verhindert, dass sgdisk
 # bei einem Hybrid-MBR/GPT ("Found invalid GPT and valid MBR") die Umwandlung
 # verweigert. Erste + letzte 16 MiB nullen (GPT-Backup sitzt am Disk-Ende).
-info "Bereinige alte Partitionstabellen auf ${DISK_DEVICE}..."
+#
+# WICHTIG, Reihenfolge! Erst die Dateisystem-Signaturen der ALTEN Partitionen
+# löschen, DANN die Partitionstabelle. disko formatiert eine Partition nur,
+# wenn `blkid` KEIN vorhandenes Dateisystem meldet (idempotent). Löscht man
+# zuerst die Partitionstabelle, verschwinden die alten /dev/sdXN-Geräte, disko
+# kann deren Superblocks nicht mehr entfernen, und `mkfs` wird beim Neuanlegen
+# STILL übersprungen -> alte Daten/ESP-Einträge bleiben "darunter" bestehen.
+info "Bereinige alte Partitionen und Partitionstabelle auf ${DISK_DEVICE}..."
+for part in $(lsblk -rno NAME "$DISK_DEVICE" 2>/dev/null | tail -n +2); do
+    sudo wipefs -a -f "/dev/$part" 2>/dev/null || true
+done
 sudo wipefs -a -f "$DISK_DEVICE" 2>/dev/null || true
 sudo dd if=/dev/zero of="$DISK_DEVICE" bs=1M count=16 status=none conv=fsync 2>/dev/null || true
 DISK_END_MB=$(( DISK_SIZE_BYTES / 1048576 - 16 ))
