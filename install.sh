@@ -21,6 +21,20 @@ if ! ping -c 1 8.8.8.8 &>/dev/null; then
     error "Keine Internetverbindung erkannt! Bitte verbinde dich über nmtui mit dem WLAN/LAN."
 fi
 
+# --- SCHRITT 0b: UEFI-Check ---
+# Alle Hosts nutzen systemd-boot mit `canTouchEfiVariables = true`. Wird die ISO
+# im Legacy/CSM-Modus gebootet, landet der Bootloader zwar auf der ESP, aber es
+# entsteht KEIN NVRAM-Eintrag -> nach dem Reboot "no bootable device".
+# Lieber hier abbrechen als die Platte zu löschen und dann ohne Boot dazustehen.
+if [ ! -d /sys/firmware/efi ]; then
+    warn "System wurde im Legacy/BIOS-Modus gebootet (kein /sys/firmware/efi)."
+    warn "Alle Hosts verwenden systemd-boot (UEFI) – die Installation wäre nicht bootfähig."
+    warn "Abhilfe: im BIOS/UEFI CSM bzw. Legacy-Boot deaktivieren,"
+    warn "beim Booten den UEFI-Eintrag des USB-Sticks wählen, Skript erneut starten."
+    error "Installation abgebrochen (Legacy-Boot)."
+fi
+info "UEFI-Modus erkannt."
+
 # --- SCHRITT 1: Host-Auswahl ---
 echo "=========================================================="
 echo "  Mortiferus NixOS Multi-Host Installer"
@@ -285,15 +299,19 @@ sudo cp -r . /mnt/etc/nixos/
 
 # --- SCHRITT 6: Installation ---
 info "Starte NixOS-Installation für $HOSTNAME..."
-# Extra-Substituter: holt Prebuilds (noctalia, nix-community) statt lokal zu bauen;
-# cache.nixos.org ist immer dabei. Muss zu modules/system/nix-settings.nix passen.
+# Extra-Substituter: holt Prebuilds (nix-community, noctalia, umbriel) statt
+# lokal zu bauen; cache.nixos.org ist immer dabei. Muss zu
+# modules/system/nix-settings.nix passen.
+# WICHTIG: Die substituters aus der Ziel-Config greifen beim Install NICHT –
+# nixos-install baut mit der nix.conf des Live-Systems. Fehlt hier ein Cache,
+# wird das Paket (z. B. umbriel mit scenefx/wlroots) lokal kompiliert.
 sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" \
     --option max-jobs "$MAX_JOBS" \
     --option cores "$CORES" \
     --option download-buffer-size 268435456 \
     --option connect-timeout 20 \
-    --option extra-substituters 'https://nix-community.cachix.org https://noctalia.cachix.org' \
-    --option extra-trusted-public-keys 'nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=' \
+    --option extra-substituters 'https://nix-community.cachix.org https://noctalia.cachix.org https://umbriel.cachix.org' \
+    --option extra-trusted-public-keys 'nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4= umbriel.cachix.org-1:JfNq/2yg2S6D6z4Z2dVSZrZlDPQTKtexB6GAVLD98nw=' \
     --no-root-passwd --no-channel-copy
 
 # --- WLAN-VERBINDUNGEN VOM LIVE-SYSTEM ÜBERNEHMEN ---
