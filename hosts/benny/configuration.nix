@@ -51,6 +51,14 @@ in
   services.arctis-sound-manager.enable = true;
   services.arctis-sound-manager.package = arctis-sound-manager;
 
+  # Die Arctis-Units liegen in /etc/systemd/user und starten damit in JEDER
+  # User-Session - auch in der des Greeters. Dessen HOME ist /var/empty und
+  # nicht beschreibbar, deshalb bricht arctis-firstrun-seed dort mit
+  # "cannot create directory '/var/empty/.local'" ab und erzeugt bei jedem Boot
+  # ein rotes "Failed to start". Auf den echten Desktop-User begrenzen (greeter
+  # braucht kein HRIR-Seeding).
+  systemd.user.services."arctis-firstrun-seed".unitConfig.ConditionUser = "benny";
+
   # ASM-Tray wartet per ExecStartPre auf Noctalia-Tray und ist via PartOf an noctalia.service gekoppelt.
   systemd.user.services."app-ArctisManager" = {
     after = [ "noctalia.service" ];

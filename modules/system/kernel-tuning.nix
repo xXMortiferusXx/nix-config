@@ -46,10 +46,16 @@
       # Partitionen (nvme0n1p1, sda1, ...) haben kein queue/scheduler-Attribut
       # und erzeugen sonst udev-"Could not chase"-Fehler
       #
+      # Zusätzlich nur EINGEBAUTE Datenträger (ATTR{removable}=="0"). Kartenleser
+      # und USB-Sticks sind removable=1; ihre Queue ist ohne Medium "eingefroren",
+      # ein Schreiben endet mit "Failed to write ... Device or resource busy"
+      # (rote Meldung bei jedem Boot). Zusätzlich wird geprüft, ob der Scheduler
+      # überhaupt angeboten wird.
+      #
       # Scheduler-Wert kommt aus ioScheduler (Default "kyber").
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*", ENV{DEVTYPE}=="disk", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}=="*${config.tuning.ioScheduler}*", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
+      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*|mmcblk*", ENV{DEVTYPE}=="disk", ATTR{removable}=="0", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}=="*${config.tuning.ioScheduler}*", ATTR{queue/scheduler}="${config.tuning.ioScheduler}"
+      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd*", ENV{DEVTYPE}=="disk", ATTR{removable}=="0", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}=="*bfq*", ATTR{queue/scheduler}="bfq"
 
       # CachyOS 99-cpu-dma-latency.rules: audio-Gruppe darf CPU DMA Latenz setzen
       DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
@@ -84,10 +90,13 @@
       "e /var/lib/systemd/coredump - - - 3d"
     ];
 
-    # Coredumps AUS: NICHT systemd.coredump.enable=false (schreibt core.* ins Home) -> Soft-Limits auf 0.
+    # Coredumps AUS: NICHT systemd.coredump.enable=false (schreibt core.* ins Home) -> Limit auf 0.
+    # ACHTUNG: systemd 262 kennt KEINE "Soft"/"Hard"-Varianten (DefaultLimitCORESoft
+    # ist ungültig -> "Unknown key 'DefaultLimitCORESoft'" beim Boot). Nur die
+    # Grundform DefaultLimitCORE wird ausgewertet und setzt Soft- und Hard-Limit.
     systemd.coredump.enable = true;
-    systemd.settings.Manager.DefaultLimitCORESoft = "0";
-    systemd.user.settings.Manager.DefaultLimitCORESoft = "0";
+    systemd.settings.Manager.DefaultLimitCORE = "0";
+    systemd.user.settings.Manager.DefaultLimitCORE = "0";
 
     systemd.settings.Manager = {
       # 15s war zu aggressiv: auf alter Hardware (langsame Platte, viele Geräte)
