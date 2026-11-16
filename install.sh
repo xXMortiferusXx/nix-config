@@ -331,6 +331,53 @@ else
     warn "NetworkManager system-connections Verzeichnis nicht gefunden."
 fi
 
+# --- SCHRITT 6b: Verifikation VOR dem Reboot ---
+# Lieber hier laut abbrechen als in ein nicht bootfaehiges System rebooten.
+# Prueft die Stellen, die typischerweise "Installation lief durch, bootet aber
+# nicht" verursachen: unvollstaendiger Store, fehlende Kern-Binaries,
+# Partlabels aus /etc/fstab, Bootloader auf der ESP, freier Platz.
+info "Verifiziere die Installation..."
+VERIFY_FAIL=0
+verify_fail() {
+    warn "$1"
+    VERIFY_FAIL=$((VERIFY_FAIL + 1))
+}
+
+store_count=$(sudo find /mnt/nix/store -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+info "Store-Pfade: ${store_count}"
+[ "${store_count}" -gt 1500 ] || verify_fail "Store wirkt unvollstaendig (nur ${store_count} Pfade)."
+
+sudo sh -c 'ls /mnt/nix/store/*-systemd-*/lib/systemd/systemd-udevd >/dev/null 2>&1' \
+    || verify_fail "systemd-udevd fehlt im Store."
+sudo sh -c 'ls /mnt/nix/store/*-systemd-*/lib/systemd/systemd-journald >/dev/null 2>&1' \
+    || verify_fail "systemd-journald fehlt im Store."
+
+fstab_labels=$(sudo awk '$1 ~ /^\/dev\/disk\/by-partlabel\// {sub(".*/", "", $1); print $1}' /mnt/etc/fstab 2>/dev/null | sort -u)
+for label in $fstab_labels; do
+    if ! sudo blkid -t "PARTLABEL=${label}" -o device 2>/dev/null | grep -q .; then
+        verify_fail "Partlabel '${label}' aus /etc/fstab existiert nicht auf der Platte."
+    fi
+done
+
+mountpoint -q /mnt/boot || verify_fail "/boot ist nicht gemountet."
+sudo test -f /mnt/boot/EFI/systemd/systemd-bootx64.efi \
+    || verify_fail "systemd-boot (systemd-bootx64.efi) fehlt auf der ESP."
+sudo sh -c 'ls /mnt/boot/loader/entries/*.conf >/dev/null 2>&1' \
+    || verify_fail "Keine Boot-Eintraege auf der ESP (/boot/loader/entries)."
+
+avail_mb=$(sudo df -Pm /mnt 2>/dev/null | awk 'NR==2 {print $4}')
+[ "${avail_mb:-0}" -gt 1024 ] || verify_fail "Wenig Platz auf / (${avail_mb:-?} MB frei)."
+
+if [ "${VERIFY_FAIL}" -ne 0 ]; then
+    echo ""
+    warn "=========================================================="
+    warn "  VERIFIKATION FEHLGESCHLAGEN (${VERIFY_FAIL} Punkt(e))"
+    warn "  NICHT REBOOTEN - bitte ein Foto dieses Bildschirms schicken."
+    warn "=========================================================="
+    error "Installation unvollstaendig - Abbruch vor dem Reboot."
+fi
+info "Verifikation OK - System ist bootfaehig."
+
 # --- SCHRITT 7: Rechte & Git-Setup ---
 info "Bereite Zielsystem vor (Rechte & Git)..."
 
