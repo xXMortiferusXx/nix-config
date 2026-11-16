@@ -359,6 +359,15 @@ info "Bereite Festplatte vor (löse bestehende Sperren)..."
 sudo umount -R /mnt 2>/dev/null || true
 sudo swapoff -a 2>/dev/null || true
 
+# Partitionen des Ziel-Laufwerks EINZELN lösen. `umount -R /mnt` reicht nicht,
+# wenn eine alte ESP/root noch an anderer Stelle gemountet ist (z. B. /boot oder
+# /media/...). Eine gemountete Partition kann disko NICHT formatieren -> die
+# alte Partitionstabelle und die alten Daten bleiben bestehen, und Altlasten
+# werden mit der neuen Installation vermischt.
+while read -r mnt; do
+    [ -n "$mnt" ] && sudo umount "$mnt" 2>/dev/null || true
+done < <(lsblk -rno MOUNTPOINT "$DISK_DEVICE" 2>/dev/null)
+
 # Alte/ungueltige Partitionstabellen vorab entfernen. Verhindert, dass sgdisk
 # bei einem Hybrid-MBR/GPT ("Found invalid GPT and valid MBR") die Umwandlung
 # verweigert. Erste + letzte 16 MiB nullen (GPT-Backup sitzt am Disk-Ende).
@@ -411,6 +420,20 @@ sudo nix --experimental-features "nix-command flakes" \
     run github:nix-community/disko -- \
     --mode destroy,format,mount \
     "$TEMP_DISKO_CONFIG"
+
+# --- FORMATIERUNGS-KONTROLLE ---
+# Nach einer echten Formatierung ist /mnt LEER (nur lost+found) und die ESP
+# (/mnt/boot) leer. Liegt dort noch etwas, wurde die Platte NICHT sauber
+# formatiert (Partition noch gemountet, disko übersprungen, falsches Laufwerk).
+# Dann lieber laut abbrechen als Altlasten mit dem neuen System zu vermischen
+# und später in ein kaputtes System zu booten.
+root_leftover=$(sudo ls -A /mnt 2>/dev/null | grep -v '^lost+found$' | head -n1)
+[ -z "$root_leftover" ] || error "Platte wurde NICHT sauber formatiert: /mnt enthält noch '${root_leftover}' (Altlasten). Bitte erneut starten – tritt es wieder auf, Platte prüfen/tauschen."
+
+if mountpoint -q /mnt/boot; then
+    boot_leftover=$(sudo ls -A /mnt/boot 2>/dev/null | head -n1)
+    [ -z "$boot_leftover" ] || error "ESP wurde NICHT sauber formatiert: /mnt/boot enthält noch '${boot_leftover}' (alte Boot-Einträge). Abbruch."
+fi
 
 # --- TEMPORÄRER SWAP GEGEN OOM (nur für die Installation) ---
 # Die disko-Configs haben KEINEN dauerhaften Swap (System läuft ZRAM-only).
