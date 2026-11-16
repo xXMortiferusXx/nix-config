@@ -193,10 +193,12 @@
           "key": "{$1}├ 󰂯  BT Radio  ",
           "format": "{5}"
         },
+        // {14} = Band in GHz, {13} = Kanalbreite in MHz, {12} = Kanal,
+        // {7} = Signalqualitaet, {10} = Verschluesselung
         {
           "type": "wifi",
           "key": "{$2}├   WiFi      ",
-          "format": "{4} - {7} - {13} GHz - {10}",
+          "format": "{4} - {7} - {14} GHz ({13} MHz) - {10}",
           "showErrors": "never"
         },
         {
