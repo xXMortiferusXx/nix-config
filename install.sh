@@ -437,12 +437,19 @@ sudo nix --experimental-features "nix-command flakes" \
     "$TEMP_DISKO_CONFIG"
 
 # --- FORMATIERUNGS-KONTROLLE ---
-# Nach einer echten Formatierung ist /mnt LEER (nur lost+found) und die ESP
-# (/mnt/boot) leer. Liegt dort noch etwas, wurde die Platte NICHT sauber
-# formatiert (Partition noch gemountet, disko übersprungen, falsches Laufwerk).
-# Dann lieber laut abbrechen als Altlasten mit dem neuen System zu vermischen
-# und später in ein kaputtes System zu booten.
-root_leftover=$(sudo ls -A /mnt 2>/dev/null | grep -v '^lost+found$' | head -n1)
+# Nach einer echten Formatierung enthält /mnt NUR lost+found (ext4) und die
+# Mountpoint-Verzeichnisse weiterer Partitionen (hier "boot" für die ESP).
+# Alles andere ist ein Altlast aus einer nicht sauber formatierten Platte
+# (Partition noch gemountet, disko übersprungen, falsches Laufwerk). Dann
+# lieber laut abbrechen als Altlasten mit dem neuen System zu vermischen.
+# Die Mountpoint-Verzeichnisse werden aus findmnt abgeleitet, damit die Prüfung
+# bei Hosts mit /home-/var-Partitionen nicht fälschlich anschlägt. lost+found
+# ist immer dabei, damit die Filter-Liste nie leer ist.
+legit_dirs="lost+found
+$(findmnt -rno TARGET --submounts /mnt 2>/dev/null | sed -n 's#^/mnt/\([^/]*\).*#\1#p' | sort -u)"
+root_leftover=$(sudo ls -A /mnt 2>/dev/null \
+    | grep -vFxf <(printf '%s\n' "$legit_dirs") \
+    | head -n1)
 [ -z "$root_leftover" ] || error "Platte wurde NICHT sauber formatiert: /mnt enthält noch '${root_leftover}' (Altlasten). Bitte erneut starten – tritt es wieder auf, Platte prüfen/tauschen."
 
 if mountpoint -q /mnt/boot; then
