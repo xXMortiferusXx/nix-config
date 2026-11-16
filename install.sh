@@ -414,11 +414,16 @@ EOF
 
 info "Partitioniere und mounte ${DISK_DEVICE}..."
 
+# `--yes-wipe-all-disks`: disko hat einen eigenen interaktiven Prompt
+# ("Type 'yes' to continue"). Das Skript hat die Lösch-Bestätigung ("ja/NEIN")
+# aber bereits abgefragt -> Doppel-Prompt vermeiden. Ohne den Schalter tippt
+# man schnell "ja" statt "yes" und disko bricht ab, obwohl alles korrekt war.
 sudo nix --experimental-features "nix-command flakes" \
     --option download-buffer-size 268435456 \
     --option connect-timeout 20 \
     run github:nix-community/disko -- \
     --mode destroy,format,mount \
+    --yes-wipe-all-disks \
     "$TEMP_DISKO_CONFIG"
 
 # --- FORMATIERUNGS-KONTROLLE ---
