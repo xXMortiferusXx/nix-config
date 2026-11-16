@@ -257,10 +257,16 @@ setup_swap() {
     [ "$swap_mb" -gt 16384 ] && swap_mb=16384
 
     info "Lege temporäres Swapfile an (${swap_mb}MB, nur für die Installation)..."
-    sudo truncate -s "${swap_mb}M" "$SWAPFILE"
+    # Vollständig reservieren: truncate erzeugt eine sparse Datei, und swapon
+    # lehnt Dateien mit Löchern ab ("swapfile has holes") -> es wurde nie Swap aktiv.
+    sudo touch "$SWAPFILE"
     sudo chmod 600 "$SWAPFILE"
+    if ! sudo fallocate -l "${swap_mb}M" "$SWAPFILE" 2>/dev/null; then
+        sudo dd if=/dev/zero of="$SWAPFILE" bs=1M count="$swap_mb" status=none
+    fi
     sudo mkswap "$SWAPFILE" >/dev/null
-    sudo swapon "$SWAPFILE" || { warn "Swapfile konnte nicht aktiviert werden — weiter ohne Swap (OOM-Risiko)"; sudo rm -f "$SWAPFILE"; }
+    sudo swapon "$SWAPFILE" && info "Swap aktiv (${swap_mb}MB)." \
+        || { warn "Swapfile konnte nicht aktiviert werden — weiter ohne Swap (OOM-Risiko)"; sudo rm -f "$SWAPFILE"; }
 }
 
 setup_swap
@@ -315,20 +321,48 @@ sudo nixos-install --flake "/mnt/etc/nixos#$HOSTNAME" \
     --no-root-passwd --no-channel-copy
 
 # --- WLAN-VERBINDUNGEN VOM LIVE-SYSTEM ÜBERNEHMEN ---
-info "Kopiere NetworkManager-Verbindungen vom Live-System..."
-if [ -d /etc/NetworkManager/system-connections ]; then
-    CONNECTIONS=$(ls /etc/NetworkManager/system-connections/*.nmconnection 2>/dev/null || true)
-    if [ -n "$CONNECTIONS" ]; then
+# Die Verzeichnisse gehören root (Modus 700). Das Skript läuft als normaler User,
+# daher alle Lesezugriffe über sudo. Vorher hat ein `ls` ohne sudo still nichts
+# gefunden -> WLAN wurde nie übernommen.
+# Zwei Quellen: NetworkManager (*.nmconnection) und iwd (/var/lib/iwd, falls
+# per iwctl verbunden wurde). nex nutzt NM mit iwd-Backend, legt also beides ab.
+info "Kopiere WLAN-Verbindungen vom Live-System..."
+WLAN_COUNT=0
+
+NM_SRC=/etc/NetworkManager/system-connections
+if sudo test -d "$NM_SRC"; then
+    NM_FILES=$(sudo sh -c "ls $NM_SRC/*.nmconnection 2>/dev/null" || true)
+    if [ -n "$NM_FILES" ]; then
         sudo mkdir -p /mnt/etc/NetworkManager/system-connections
-        sudo cp /etc/NetworkManager/system-connections/*.nmconnection /mnt/etc/NetworkManager/system-connections/
+        for f in $NM_FILES; do
+            sudo cp "$f" /mnt/etc/NetworkManager/system-connections/
+            WLAN_COUNT=$((WLAN_COUNT + 1))
+        done
         sudo chown -R root:root /mnt/etc/NetworkManager/system-connections/
+        sudo chmod 700 /mnt/etc/NetworkManager/system-connections
         sudo chmod 600 /mnt/etc/NetworkManager/system-connections/*.nmconnection 2>/dev/null || true
-        info "WLAN-Verbindung(en) erfolgreich kopiert."
-    else
-        warn "Keine .nmconnection-Dateien im Live-System gefunden."
     fi
+fi
+
+IWD_SRC=/var/lib/iwd
+if sudo test -d "$IWD_SRC"; then
+    IWD_FILES=$(sudo sh -c "ls $IWD_SRC/*.psk $IWD_SRC/*.open $IWD_SRC/*.8021x 2>/dev/null" || true)
+    if [ -n "$IWD_FILES" ]; then
+        sudo mkdir -p /mnt/var/lib/iwd
+        for f in $IWD_FILES; do
+            sudo cp "$f" /mnt/var/lib/iwd/
+            WLAN_COUNT=$((WLAN_COUNT + 1))
+        done
+        sudo chown -R root:root /mnt/var/lib/iwd
+        sudo chmod 700 /mnt/var/lib/iwd
+        sudo chmod 600 /mnt/var/lib/iwd/* 2>/dev/null || true
+    fi
+fi
+
+if [ "${WLAN_COUNT}" -gt 0 ]; then
+    info "WLAN-Profile übernommen: ${WLAN_COUNT}"
 else
-    warn "NetworkManager system-connections Verzeichnis nicht gefunden."
+    warn "Keine WLAN-Profile im Live-System gefunden (NM oder iwd). WLAN nach dem Boot neu einrichten."
 fi
 
 # --- SCHRITT 6b: Verifikation VOR dem Reboot ---
@@ -367,6 +401,20 @@ sudo sh -c 'ls /mnt/boot/loader/entries/*.conf >/dev/null 2>&1' \
 
 avail_mb=$(sudo df -Pm /mnt 2>/dev/null | awk 'NR==2 {print $4}')
 [ "${avail_mb:-0}" -gt 1024 ] || verify_fail "Wenig Platz auf / (${avail_mb:-?} MB frei)."
+
+# Rechte: Home des Users muss existieren und ihm gehören, Secrets nur root-lesbar.
+if ! sudo test -d "/mnt/home/$USERNAME"; then
+    info "Lege /home/$USERNAME im Zielsystem an (fehlte nach nixos-install)..."
+    sudo nixos-enter --root /mnt -c "install -d -m 700 -o $USERNAME -g users /home/$USERNAME" \
+        || verify_fail "Konnte /home/$USERNAME nicht anlegen."
+fi
+home_owner=$(sudo stat -c '%U' "/mnt/home/$USERNAME" 2>/dev/null || echo "fehlt")
+[ "$home_owner" = "$USERNAME" ] || verify_fail "/home/$USERNAME fehlt oder gehoert nicht $USERNAME (ist: $home_owner)."
+for f in /mnt/etc/NetworkManager/system-connections/*.nmconnection /mnt/var/lib/iwd/*; do
+    [ -e "$f" ] || continue
+    mode=$(sudo stat -c '%a' "$f" 2>/dev/null)
+    [ "$mode" = "600" ] || verify_fail "WLAN-Datei $(basename "$f") hat Modus $mode statt 600."
+done
 
 if [ "${VERIFY_FAIL}" -ne 0 ]; then
     echo ""
