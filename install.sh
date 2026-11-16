@@ -378,7 +378,18 @@ done < <(lsblk -rno MOUNTPOINT "$DISK_DEVICE" 2>/dev/null)
 # zuerst die Partitionstabelle, verschwinden die alten /dev/sdXN-Geräte, disko
 # kann deren Superblocks nicht mehr entfernen, und `mkfs` wird beim Neuanlegen
 # STILL übersprungen -> alte Daten/ESP-Einträge bleiben "darunter" bestehen.
+#
+# LVM/RAID VORHER deaktivieren: Nutzt das alte System (z. B. Mint) LVM, liegt
+# die eigentliche root (mit /bin, /etc, ...) in einem Volume, nicht direkt auf
+# der Partition. Ohne Deaktivierung bleibt dieses Volume gemappt und dessen
+# Daten überleben die Neuinstallation.
 info "Bereinige alte Partitionen und Partitionstabelle auf ${DISK_DEVICE}..."
+if command -v vgchange >/dev/null 2>&1; then
+    sudo vgchange -a n 2>/dev/null || true   # alle LVM-Volumegruppen deaktivieren
+fi
+if command -v mdadm >/dev/null 2>&1; then
+    sudo mdadm --stop --scan 2>/dev/null || true   # Software-RAIDs stoppen
+fi
 for part in $(lsblk -rno NAME "$DISK_DEVICE" 2>/dev/null | tail -n +2); do
     sudo wipefs -a -f "/dev/$part" 2>/dev/null || true
 done
