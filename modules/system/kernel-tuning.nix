@@ -90,14 +90,17 @@
     systemd.user.settings.Manager.DefaultLimitCORESoft = "0";
 
     systemd.settings.Manager = {
-      DefaultTimeoutStartSec = "15s";
-      DefaultTimeoutStopSec = "10s";
+      # 15s war zu aggressiv: auf alter Hardware (langsame Platte, viele Geräte)
+      # werden systemd-udevd/journald sonst im Start abgeschossen und im Kreis
+      # neu gestartet -> Boot scheitert mit einer Kaskade von "Failed to start".
+      DefaultTimeoutStartSec = "60s";
+      DefaultTimeoutStopSec = "30s";
       DefaultLimitNOFILE = "2048:2097152";
     };
 
     systemd.user.settings.Manager = {
-      DefaultTimeoutStartSec = "15s";
-      DefaultTimeoutStopSec = "10s";
+      DefaultTimeoutStartSec = "60s";
+      DefaultTimeoutStopSec = "30s";
       DefaultLimitNOFILE = "1024:1048576";
     };
 
