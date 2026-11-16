@@ -15,6 +15,18 @@ info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
+# Notausgang: `set -e` beendet das Skript bei jedem unerwarteten Exit-Code.
+# Ohne diesen Trap passiert das VOLLKOMMEN STILL - das Skript ist einfach weg
+# und man denkt, es sei fertig. Der Trap macht jeden Abbruch laut und nennt die
+# Zeile, damit ein Fehler im Feld diagnostizierbar ist.
+on_error() {
+    local rc=$?
+    echo
+    echo -e "${RED}[FATAL]${NC} Unerwarteter Abbruch in ${BASH_SOURCE[0]}:${1} (Exit-Code ${rc})."
+    echo -e "${RED}[FATAL]${NC} Das System ist NICHT fertig installiert. Bitte die letzten Zeilen oben prüfen."
+}
+trap 'on_error ${LINENO}' ERR
+
 # --- INSTALLATIONS-DNS ---
 # Die Live-Sitzung nutzt bewusst öffentliche Resolver. Ein vom Router
 # vorgegebener DNS (Fritzbox-Filter, Pi-hole, Rebind-Schutz) soll die
@@ -463,14 +475,18 @@ sudo nix --experimental-features "nix-command flakes" \
 # bei Hosts mit /home-/var-Partitionen nicht fälschlich anschlägt. lost+found
 # ist immer dabei, damit die Filter-Liste nie leer ist.
 legit_dirs="lost+found
-$(findmnt -rno TARGET --submounts /mnt 2>/dev/null | sed -n 's#^/mnt/\([^/]*\).*#\1#p' | sort -u)"
+$(findmnt -rno TARGET --submounts /mnt 2>/dev/null | sed -n 's#^/mnt/\([^/]*\).*#\1#p' | sort -u || true)"
+# WICHTIG: `|| true` ist hier PFLICHT. Ist alles sauber formatiert, findet grep
+# KEINE Zeile -> grep liefert Exit-Code 1 -> `set -e` beendet das Skript still
+# (und `head` kann grep zusaetzlich per SIGPIPE abwuergen). Beides ist hier ein
+# GUTES Ergebnis (nichts uebrig) und darf kein Abbruch sein.
 root_leftover=$(sudo ls -A /mnt 2>/dev/null \
     | grep -vFxf <(printf '%s\n' "$legit_dirs") \
-    | head -n1)
+    | head -n1 || true)
 [ -z "$root_leftover" ] || error "Platte wurde NICHT sauber formatiert: /mnt enthält noch '${root_leftover}' (Altlasten). Bitte erneut starten – tritt es wieder auf, Platte prüfen/tauschen."
 
 if mountpoint -q /mnt/boot; then
-    boot_leftover=$(sudo ls -A /mnt/boot 2>/dev/null | head -n1)
+    boot_leftover=$(sudo ls -A /mnt/boot 2>/dev/null | head -n1 || true)
     [ -z "$boot_leftover" ] || error "ESP wurde NICHT sauber formatiert: /mnt/boot enthält noch '${boot_leftover}' (alte Boot-Einträge). Abbruch."
 fi
 
@@ -620,7 +636,7 @@ verify_fail() {
     VERIFY_FAIL=$((VERIFY_FAIL + 1))
 }
 
-store_count=$(sudo find /mnt/nix/store -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+store_count=$(sudo find /mnt/nix/store -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l || true)
 info "Store-Pfade: ${store_count}"
 [ "${store_count}" -gt 1500 ] || verify_fail "Store wirkt unvollstaendig (nur ${store_count} Pfade)."
 
@@ -632,7 +648,7 @@ sudo sh -c 'ls /mnt/nix/store/*-systemd-*/lib/systemd/systemd-udevd >/dev/null 2
 sudo sh -c 'ls /mnt/nix/store/*-systemd-*/lib/systemd/systemd-journald >/dev/null 2>&1' \
     || verify_fail "systemd-journald fehlt im Store."
 
-fstab_labels=$(sudo awk '$1 ~ /^\/dev\/disk\/by-partlabel\// {sub(".*/", "", $1); print $1}' /mnt/etc/fstab 2>/dev/null | sort -u)
+fstab_labels=$(sudo awk '$1 ~ /^\/dev\/disk\/by-partlabel\// {sub(".*/", "", $1); print $1}' /mnt/etc/fstab 2>/dev/null | sort -u || true)
 for label in $fstab_labels; do
     if ! sudo blkid -t "PARTLABEL=${label}" -o device 2>/dev/null | grep -q .; then
         verify_fail "Partlabel '${label}' aus /etc/fstab existiert nicht auf der Platte."
@@ -645,7 +661,7 @@ sudo test -f /mnt/boot/EFI/systemd/systemd-bootx64.efi \
 sudo sh -c 'ls /mnt/boot/loader/entries/*.conf >/dev/null 2>&1' \
     || verify_fail "Keine Boot-Eintraege auf der ESP (/boot/loader/entries)."
 
-avail_mb=$(sudo df -Pm /mnt 2>/dev/null | awk 'NR==2 {print $4}')
+avail_mb=$(sudo df -Pm /mnt 2>/dev/null | awk 'NR==2 {print $4}' || true)
 [ "${avail_mb:-0}" -gt 1024 ] || verify_fail "Wenig Platz auf / (${avail_mb:-?} MB frei)."
 
 # Rechte: Home des Users muss existieren und ihm gehoeren.
@@ -673,7 +689,7 @@ fi
 
 for f in /mnt/etc/NetworkManager/system-connections/*.nmconnection /mnt/var/lib/iwd/*; do
     [ -e "$f" ] || continue
-    mode=$(sudo stat -c '%a' "$f" 2>/dev/null)
+    mode=$(sudo stat -c '%a' "$f" 2>/dev/null || true)
     [ "$mode" = "600" ] || verify_fail "WLAN-Datei $(basename "$f") hat Modus $mode statt 600."
 done
 
