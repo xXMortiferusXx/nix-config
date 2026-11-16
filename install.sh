@@ -3,6 +3,9 @@ set -euo pipefail
 
 # --- KONFIGURATION ---
 REPO_URL="https://github.com/xXMortiferusXx/nix-config.git"
+# Wird beim Start mit ausgegeben (zusammen mit der sha256 des Skripts), damit man
+# auf Fotos sofort erkennt, ob wirklich die aktuelle Fassung gelaufen ist.
+SCRIPT_VERSION="2026-11-16.4"
 # ---------------------
 
 # Farben für bessere Lesbarkeit
@@ -220,6 +223,11 @@ info "UEFI-Modus erkannt."
 echo "=========================================================="
 echo "  Mortiferus NixOS Multi-Host Installer"
 echo "=========================================================="
+# Version + Prüfsumme des laufenden Skripts ausgeben. Damit ist bei jedem Foto
+# eindeutig erkennbar, WELCHE Fassung gelaufen ist - ein alter Download (oder
+# eine Kopie auf dem Stick) sieht sonst exakt wie der neue Installer aus.
+echo "  Skript: ${SCRIPT_VERSION}  (sha256: $(sha256sum "$0" 2>/dev/null | cut -c1-12))"
+echo "=========================================================="
 echo ""
 echo "Welches System soll installiert werden?"
 echo "  1) nex (Haupt-PC / mortiferus)"
@@ -408,8 +416,18 @@ fi
 if command -v zpool >/dev/null 2>&1; then
     sudo zpool export -a 2>/dev/null || true   # ZFS-Pools exportieren
 fi
+
+# WICHTIG: Die Ergebnisse werden NICHT stillschweigend ignoriert. Ein
+# fehlgeschlagenes `wipefs` (klassisch: "Device or resource busy", weil die alte
+# Partition noch gemountet ist) würde sonst unbemerkt bleiben - der ext4-Super-
+# block der alten root überlebt, disko überspringt mkfs, und die Altlasten (z.B.
+# /bin) landen wieder in der neuen Installation. Genau das ist passiert.
+wipe_failed=0
 for part in $(lsblk -rno NAME "$DISK_DEVICE" 2>/dev/null | tail -n +2); do
-    sudo wipefs -a -f "/dev/$part" 2>/dev/null || true
+    if ! sudo wipefs -a -f "/dev/$part" 2>/dev/null; then
+        warn "Signaturen auf /dev/${part} konnten NICHT entfernt werden (evtl. noch gemountet)."
+        wipe_failed=1
+    fi
 done
 sudo wipefs -a -f "$DISK_DEVICE" 2>/dev/null || true
 sudo dd if=/dev/zero of="$DISK_DEVICE" bs=1M count=16 status=none conv=fsync 2>/dev/null || true
@@ -418,6 +436,20 @@ if [ "$DISK_END_MB" -gt 16 ]; then
     sudo dd if=/dev/zero of="$DISK_DEVICE" bs=1M count=16 seek="$DISK_END_MB" status=none conv=fsync 2>/dev/null || true
 fi
 sudo blockdev --rereadpt "$DISK_DEVICE" 2>/dev/null || true
+
+# KONTROLLE VOR DEM FORMATIEREN: Nach dem Wipe darf `blkid` auf dem Laufwerk
+# KEINE Signatur mehr finden. Bleibt etwas übrig, würde disko `mkfs` still
+# überspringen und die alte Installation "darunter" weiterleben. Deshalb hier
+# hart abbrechen - mit Gerät und Signatur in der Meldung.
+still_there=$(sudo blkid "${DISK_DEVICE}"* 2>/dev/null || true)
+if [ -n "$still_there" ]; then
+    error "Vorbereitung fehlgeschlagen - auf ${DISK_DEVICE} sind noch Dateisystem-Signaturen vorhanden:
+${still_there}
+disko wuerde die Formatierung ueberspringen und Altlasten uebernehmen.
+Abhilfe: Platte in einem anderen Rechner/Adapter pruefen oder abklemmen und erneut starten."
+fi
+[ "$wipe_failed" -eq 0 ] || warn "Trotz Warnungen ist jetzt nichts mehr nachweisbar - fahre fort."
+info "Laufwerk ist leer - disko formatiert jetzt garantiert neu."
 
 # UEFI-Eintraege liegen im NVRAM des Mainboards, nicht auf der Platte. Wipe und
 # Neuinstallation loeschen sie NICHT -> sonst sammeln sich bei jeder Installation
