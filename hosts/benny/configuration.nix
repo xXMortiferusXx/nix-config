@@ -24,7 +24,7 @@ in
       ../../modules/hardware/power-benny.nix
       ../../modules/hardware/audio-gamedac.nix
       ../../modules/programs/gaming/benny.nix
-      ../../modules/services/flatpak-benny.nix
+      ../../modules/services/flatpak.nix
       ../../modules/users/benny.nix
       ../../modules/home/benny
       ./config-mounts.nix

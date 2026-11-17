@@ -32,7 +32,7 @@ Referenz: `umbriel.md` (Format/Versionstracking). Host-Muster: `hosts/nex`, `hos
 
 ### Implementiert (alle Dateien angelegt, `nix build`-Toplevel verifiziert Exit 0)
 - Module: `modules/hardware/amdgpu.nix`, `modules/system/boot-lion.nix`, `modules/system/environment-lion.nix`,
-  `modules/users/lion.nix`, `modules/services/flatpak-lion.nix`, `modules/programs/gaming/lion.nix` (Steam/Gamescope/Skripte/udev, **ohne sunshine**), `modules/programs/gaming/udev.nix` (aus default.nix extrahiert; Controller-Regel `ID_INPUT_JOYSTICK` → `LIBINPUT_IGNORE_DEVICE`).
+  `modules/users/lion.nix`, `modules/services/flatpak.nix`, `modules/programs/gaming/lion.nix` (Steam/Gamescope/Skripte/udev, **ohne sunshine**), `modules/programs/gaming/udev.nix` (aus default.nix extrahiert; Controller-Regel `ID_INPUT_JOYSTICK` → `LIBINPUT_IGNORE_DEVICE`).
 - Host: `hosts/lion-pc/` komplett (hardware-configuration.nix, disk-config.nix, config-mounts.nix, configuration.nix).
   - config-mounts: gtk-3.0/gtk-4.0/umbriel/nvim/qt5ct/qt6ct/xsettingsd (ohne pipewire/HRIR — nex-headset-spezifisch).
   - `security.sudo.wheelNeedsPassword = lib.mkForce true;` (Override common) — Bazaar passwordlos via Polkit-Regel, Eskalation blockiert.
@@ -221,7 +221,7 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 
 - [x] **Bazaar/Flatpak-Setup UMSETZEN** (Konzept entschieden, 2026-09): Bazaar = nixpkgs-Package
 (`pkgs.bazaar`, wird per `nixos-rebuild` mitgeupdatet) + Flatpak-Infrastruktur + Flathub deklarativ
-(`modules/services/flatpak-lion.nix`). lion installiert eigenständig über Bazaar; seine **Flatpak-Apps**
+(`modules/services/flatpak.nix`). lion installiert eigenständig über Bazaar; seine **Flatpak-Apps**
 (Roblox=Sober, etc.) aktualisiert Bazaar selbst (Auto-Update, sobald eine Sitzung läuft).
 **Scope gelöst:** kein `--user`-Scope — Flatpak-Polkit-Regel für wheel (polkit.nix) macht systemweite
 Installation passwordlos; sudo-Trennschicht (Passwort) bleibt als Eskalationsblockade.

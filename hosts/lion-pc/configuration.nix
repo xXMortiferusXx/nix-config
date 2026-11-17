@@ -15,7 +15,7 @@
       ../../modules/hardware/power-lion.nix
       ../../modules/hardware/xbox-controller.nix
       ../../modules/programs/gaming/lion.nix
-      ../../modules/services/flatpak-lion.nix
+      ../../modules/services/flatpak.nix
       ../../modules/users/lion.nix
       ../../modules/home/lion
       ./config-mounts.nix

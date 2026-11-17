@@ -1,6 +1,8 @@
-# Flatpak-Infrastruktur + Bazaar-App-Store (nur für lion-pc)
+# Flatpak-Infrastruktur + Bazaar-App-Store (benny, lion-pc)
 # Flathub-Remote deklarativ; Updates macht Bazaar selbst (Auto-Update).
 # Polkit-Regel (modules/desktop/polkit.nix) erlaubt wheel-Installation passwordlos.
+# Ein Modul für beide Hosts - die Hosts unterscheiden sich hier nicht.
+# nex/styx importieren es bewusst nicht (kein Flatpak dort).
 { config, pkgs, lib, ... }:
 
 let
