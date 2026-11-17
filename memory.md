@@ -1051,13 +1051,21 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
 
 ### QEMU-Testumgebung
 - `test-installer.sh`: QEMU-VM mit 2 virtuellen NVMe-Disks + NixOS ISO
-  - `./test-installer.sh iso` — baut ISO und bootet VM fuer Installer-Test
+  - `./test-installer.sh iso` — bootet die Installer-ISO (baut nur bei Aenderungen;
+    `nix build` liefert bei unveraenderter Config sofort denselben Store-Pfad)
+  - `./test-installer.sh iso <datei.iso>` — bootet genau diese ISO-Datei
   - `./test-installer.sh vm` — baut Test-Host direkt
   - ISO wird als `packages.installer-iso` im Flake gebaut
+  - OVMF fehlt im Store? `test-installer.sh` baut dann `nixpkgs#OVMF.fd`
+    (Code+VARS aus demselben Paket - gemischte Versionen booten nicht)
   - Dasselbe ISO ist der **Installations-Stick**: `modules/iso/installer.nix`
     liefert den Befehl `install-nixos`, der die aktuelle `install.sh` aus
     `main` holt (Fallback: die beim Bauen eingebettete Fassung), Version +
-    SHA256 anzeigt und sie per sudo startet - kein langer curl-Befehl mehr.
+    SHA256 anzeigt und sie startet - kein langer curl-Befehl mehr.
+  - **Nicht** per sudo starten: `install.sh` macht seine 78 root-Aufrufe
+    selbst per sudo und bricht als root bewusst ab ("Bitte das Skript NICHT
+    als root ausführen"). `install-nixos` entspricht `./install.sh`.
+  - Konsole: `de-latin1`, Hilfezeile nennt `nmtui` (WLAN) und `install-nixos`
   - USB schreiben: `nix build .#installer-iso` →
     `sudo dd if=result/iso/nixos-install-*.iso of=/dev/sdX bs=4M status=progress conv=fsync`
 - `hosts/test/configuration.nix`: minimaler NixOS-Host (kein Desktop, kein Home-Manager) fuer schnelle Builds

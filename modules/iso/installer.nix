@@ -6,8 +6,9 @@
 # Netz zum Repo brauchbar (installiert wird ohnehin nur mit Netz).
 #
 # Basis: nixpkgs installation-cd-minimal (Autologin als `nixos`, wheel,
-# passwortloses sudo). `install-nixos` hebt sich per sudo selbst auf root,
-# wenn es nicht schon als root läuft.
+# passwortloses sudo). `install-nixos` startet install.sh GENAU WIE VON HAND
+# (`./install.sh`) als angemeldeten User - das Skript macht seine root-Aufrufe
+# selbst per sudo und bricht ab, wenn es als root laeuft.
 { config, pkgs, lib, ... }:
 
 let
@@ -33,16 +34,20 @@ let
     echo "SHA256: $(${pkgs.coreutils}/bin/sha256sum "$tmp" | ${pkgs.coreutils}/bin/cut -d' ' -f1)"
     echo
 
-    # Live-ISO meldet als `nixos` an (wheel, passwortloses sudo) - das Skript
-    # erwartet root, wie bei `curl ... | sudo bash`.
-    if [ "$(${pkgs.coreutils}/bin/id -u)" -ne 0 ]; then
-      exec ${pkgs.sudo}/bin/sudo -- ${pkgs.bash}/bin/bash "$tmp" "$@"
-    fi
+    # install.sh macht seine root-Aufrufe SELBST per sudo (78 Stellen) und
+    # bricht bewusst ab, wenn es als root gestartet wird:
+    #   "Bitte das Skript NICHT als root ausführen (sudo wird automatisch verwendet)."
+    # Also hier genau wie von Hand `./install.sh` - ohne sudo, als der
+    # angemeldete User. Ein vorangestelltes sudo würde das Skript sofort
+    # abbrechen lassen.
     exec ${pkgs.bash}/bin/bash "$tmp" "$@"
   '';
 in
 {
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # Deutsche Tastatur in der Live-Konsole (Login, nmtui, install.sh).
+  console.keyMap = lib.mkForce "de-latin1";
 
   # Sprechender Dateiname: nixos-install-<label>-<system>.iso
   image.baseName = lib.mkForce
@@ -57,11 +62,13 @@ in
     installNixos
   ];
 
-  # Statt der Standard-Hilfe direkt den Einstiegspunkt zeigen.
+  # Statt der Standard-Hilfe direkt die beiden noetigen Schritte zeigen.
   services.getty.helpLine = lib.mkForce ''
+    WLAN einrichten:        nmtui
     Installation starten:   install-nixos
 
-    Der Befehl holt die aktuelle install.sh aus dem Repo (Fallback: die im ISO
-    eingebettete Fassung) und zeigt vor dem Start Version und SHA256 an.
+    install-nixos holt die aktuelle install.sh aus dem Repo (Fallback: die im
+    ISO eingebettete Fassung) und zeigt vor dem Start Version und SHA256 an.
+    Netz ist Pflicht - ohne Verbindung laeuft die Installation nicht.
   '';
 }
