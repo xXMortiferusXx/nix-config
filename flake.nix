@@ -143,16 +143,14 @@
         ];
       };
 
-      # Installer-ISO fuer QEMU-Tests
+      # Installer-ISO fuer Neuinstallationen (USB) und QEMU-Tests.
+      # Enthaelt `install-nixos`: holt/staretet die aktuelle install.sh.
       packages.${system}.installer-iso = let
         iso = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [
             "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-            ({ pkgs, ... }: {
-              nix.settings.experimental-features = [ "nix-command" "flakes" ];
-              environment.systemPackages = with pkgs; [ git curl wget vim parted ];
-            })
+            ./modules/iso/installer.nix
           ];
         };
       in iso.config.system.build.isoImage;

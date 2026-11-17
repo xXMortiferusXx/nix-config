@@ -118,7 +118,7 @@ if [ "$MODE" = "iso" ]; then
         ISO_PATH=$(cat "$ISO_CACHE")
         info "ISO aus Cache: $ISO_PATH"
     else
-        info "Baue NixOS minimal ISO (flakes + git + curl)..."
+        info "Baue Installer-ISO (install-nixos, flakes, git, curl)..."
         ISO_RESULT=$(cd /etc/nixos && nix build .#installer-iso --no-link --print-out-paths 2>&1 | tail -1)
 
         if [ -z "$ISO_RESULT" ] || [ ! -d "$ISO_RESULT" ]; then
@@ -129,14 +129,6 @@ if [ "$MODE" = "iso" ]; then
 
         if [ -z "$ISO_PATH" ] || [ ! -f "$ISO_PATH" ]; then
             error "ISO-Datei nicht im Build-Ergebnis gefunden: $ISO_RESULT"
-        fi
-
-        echo "$ISO_PATH" > "$ISO_CACHE"
-        info "ISO gebaut: $ISO_PATH"
-    fi
-
-        if [ -z "$ISO_PATH" ] || [ ! -f "$ISO_PATH" ]; then
-            error "ISO-Build fehlgeschlagen."
         fi
 
         echo "$ISO_PATH" > "$ISO_CACHE"
@@ -155,7 +147,7 @@ if [ "$MODE" = "iso" ]; then
 
     info "Starte QEMU (ISO-Modus)..."
     info "Inside VM: lsblk zeigt /dev/nvme0n1 + /dev/nvme1n1"
-    info "Inside VM: install.sh starten fuer vollstaendigen Installer-Test"
+    info "Inside VM: install-nixos starten (holt install.sh, zeigt Version+SHA256)"
     info "SSH: ssh -p ${SSH_PORT} root@localhost (nach Install)"
     echo ""
 

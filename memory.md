@@ -1054,6 +1054,12 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
   - `./test-installer.sh iso` — baut ISO und bootet VM fuer Installer-Test
   - `./test-installer.sh vm` — baut Test-Host direkt
   - ISO wird als `packages.installer-iso` im Flake gebaut
+  - Dasselbe ISO ist der **Installations-Stick**: `modules/iso/installer.nix`
+    liefert den Befehl `install-nixos`, der die aktuelle `install.sh` aus
+    `main` holt (Fallback: die beim Bauen eingebettete Fassung), Version +
+    SHA256 anzeigt und sie per sudo startet - kein langer curl-Befehl mehr.
+  - USB schreiben: `nix build .#installer-iso` →
+    `sudo dd if=result/iso/nixos-install-*.iso of=/dev/sdX bs=4M status=progress conv=fsync`
 - `hosts/test/configuration.nix`: minimaler NixOS-Host (kein Desktop, kein Home-Manager) fuer schnelle Builds
 
 ### Installer-Swap (temporaer, nur fuer die Installation)
