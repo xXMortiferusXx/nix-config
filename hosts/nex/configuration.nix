@@ -16,6 +16,7 @@
       ../../modules/hardware/audio-gc7.nix
       ../../modules/programs/gaming
       ../../modules/programs/cachyos-tools.nix
+      ../../modules/programs/ausweis.nix
       ../../modules/programs/zink-run.nix
       ../../modules/users/mortiferus.nix
       ../../modules/home/mortiferus
