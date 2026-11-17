@@ -458,6 +458,25 @@
     (Boosteroid empfiehlt offiziell Chrome/Edge; VA-API-Flags für die HD 2500).
 - **Falls weiter ruckelt**: Boosteroid-Konto AV1 aus, Bitrate/FPS nicht hochdrehen
   (Default), ggf. 30 FPS; danach Provider/Support mit Zeitstempeln.
+- **In-App-Update (2026-11-17)**: Der Client hat einen eigenen Updater
+  (`_startupUpdateCheck`, Menue `CHECK FOR UPDATES`, Kanaele Stable/Latest).
+  Er entpackt ein neues `Boosteroid` und kopiert es per `pkexec cp -a` auf
+  `$APP_DIR/Boosteroid` – also auf unseren Wrapper. Die Kopie ist eine echte
+  ELF mit der Tar-Zeit (`cp -a`), deshalb erkennt `launcher.sh` sie per
+  ELF-Magic (**nicht** mtime), uebernimmt sie als `Boosteroid.bin` und setzt
+  Interpreter + RPATH der Nix-Binary (Upstream erwartet
+  `/lib64/ld-linux-x86-64.so.2` und hat keinen RPATH – sonst startet sie auf
+  NixOS nicht). Ein neues Nix-Paket (Marker != Store-Pfad) hat Vorrang.
+  Zusaetzlich biegt der Launcher die client-eigenen Shortcuts
+  (`Exec=$APP_DIR/Boosteroid`) auf den Nix-Wrapper um, sonst wuerde ein Start
+  nach dem Update an der ungepatchten ELF haengen.
+  Der Client kann sich nach dem Update nicht selbst neu starten (die frische
+  ELF hat noch keinen Nix-Interpreter) – einmal neu starten, dann laeuft die
+  neue Version.
+- **Polkit-Agent**: kommt von noctalia selbst (`[shell] polkit_agent = true`,
+  `libpolkit-agent-1`, `/org/noctalia/PolkitAuthenticationAgent`) – kein
+  `polkit-gnome`/`hyprpolkitagent` noetig. Damit laeuft auch der
+  pkexec-Dialog des Boosteroid-Updaters.
 
 ### ASUS RT-AXE7800: Ping-Spikes + Download-Einbruch bei Volllast (2026-08-13, Ursache ungeklaert)
 - **Problem**: Vollgas-Download über WLAN (1 Gbit) führt zu Ping-Explosionen (3000ms+) zum Router und Download bricht ein
@@ -1072,6 +1091,24 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
   - USB schreiben: `nix build .#installer-iso` →
     `sudo dd if=result/iso/nixos-install-*.iso of=/dev/sdX bs=4M status=progress conv=fsync`
 - `hosts/test/configuration.nix`: minimaler NixOS-Host (kein Desktop, kein Home-Manager) fuer schnelle Builds
+
+### Was der QEMU-Test beweist - und was nicht
+- **Bewiesen**: `install.sh` laeuft Ende-zu-Ende (disko-Wipe, mount, clone,
+  `nixos-install`, Passwoerter via `passwd`, Bootloader) und das installierte
+  System bootet danach (sshd/systemd im Zielsystem erreichbar).
+- **Nicht bewiesen**: grafischer Login/Desktop. QEMU nutzt ohne `-vga`/`-device`
+  die Standard-`std`-VGA (bochs-drm). Da fehlt der Render-Node / GLES2, das
+  wlroots-Compositor-Paket (`umbriel`) stirbt dann mit
+  "Job for umbriel.service failed". Das ist ein **VM-Hardware-Artefakt**, kein
+  Config-Fehler: Bennys i915 (HD 2500) hat DRM + GL und laeuft mit derselben
+  Config.
+- Wenn der Desktop im VM getestet werden soll: `-device virtio-vga-gl
+  -display gtk,gl=on` (virgl) ergaenzen - der Gast laedt `virtio_gpu` selbst.
+- Logs aus der laufenden Test-VM gehen ohne VT-Umschalten:
+  `ssh -p 2222 benny@localhost` (Passwort aus der Installation;
+  `PasswordAuthentication=false`, aber `KbdInteractiveAuthentication=true`+PAM).
+- Nach dem Test `./test-installer.sh clean` - die Platten belegen real
+  mehrere GB (sparse, waechst mit den Installationen).
 
 ### Installer-Swap (temporaer, nur fuer die Installation)
 - `install.sh` legt ein **temporaeres Swapfile** auf `/mnt/.install-swapfile` an (2x RAM, max 16G), aktiviert es per `swapon` und entfernt es via `trap cleanup_swap EXIT` nach der Installation wieder

@@ -22,6 +22,7 @@
 , libXi
 , libXfixes
 , numactl
+, patchelf
 , pcre2
 , systemd
 , wayland
@@ -100,8 +101,11 @@ stdenv.mkDerivation (finalAttrs: {
     # Launcher kopiert die Binary in ein beschreibbares Verzeichnis (Log/Config
     # landen sonst im read-only Store) und startet sie von dort.
     install -Dm755 ${./launcher.sh} $out/libexec/boosteroid
+    substituteInPlace $out/libexec/boosteroid \
+      --replace-fail '@PATCHELF@' '${patchelf}/bin/patchelf'
     makeWrapper $out/libexec/boosteroid $out/bin/boosteroid \
       --set BOOSTEROID_BIN "$out/opt/boosteroid/Boosteroid" \
+      --set BOOSTEROID_LAUNCHER "$out/bin/boosteroid" \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath runtimeLibs}" \
       --prefix LIBVA_DRIVERS_PATH : "/run/opengl-driver/lib/dri"
     runHook postInstall
