@@ -1,5 +1,5 @@
 # Flatpak-Infrastruktur + Bazaar-App-Store (benny)
-# Flathub-Remote deklarativ + systemd-Timer für Auto-Updates.
+# Flathub-Remote deklarativ; Updates macht Bazaar selbst (Auto-Update).
 { config, pkgs, lib, ... }:
 
 let
@@ -35,7 +35,7 @@ in
     # modules/desktop/polkit.nix).
     #
     # Ausgabe wird eingefangen: beim ersten Anlegen warnt flatpak, dass es die
-    # Metadaten nicht aktualisieren kann - das erledigt der Update-Timer.
+    # Metadaten nicht aktualisieren kann - das erledigt Bazaar selbst.
     # Echte Fehler werden weiterhin sichtbar gemeldet.
     if ! flatpak_add_out=$(${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists \
           --system flathub ${flathubRepo} 2>&1); then
@@ -43,22 +43,29 @@ in
     fi
   '';
 
-  systemd.services.flatpak-update = {
-    description = "Flatpak application updates";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.flatpak}/bin/flatpak update --noninteractive --assumeyes";
+  # Updates macht Bazaar (Hersteller-Weg) - kein eigener root-Timer mehr.
+  #
+  # 1) `auto-update` ist im GSettings-Schema standardmäßig false, also
+  #    systemweit vorbelegen. Der Wert gilt als Vorgabe und lässt sich im
+  #    Bazaar-Fenster weiterhin pro User umstellen.
+  programs.dconf.profiles.user.databases = [{
+    settings."io/github/kolunmi/Bazaar" = {
+      auto-update = true;
     };
-  };
+  }];
 
-  systemd.timers.flatpak-update = {
-    description = "Weekly Flatpak update";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "Mon,Fri 00:00";
-      Persistent = true;
+  # 2) Der Daemon startet sonst nur auf D-Bus-Anfrage (Bazaar-Fenster oder
+  #    GNOME-Suche) - dann gäbe es keine Hintergrund-Updates. Unit aus dem
+  #    Bazaar-Paket, nur zusätzlich an die grafische Sitzung gehängt.
+  #    Bazaar prüft danach täglich (mit zufälligem Stunden-Offset).
+  systemd.user.services."io.github.kolunmi.Bazaar" = {
+    description = "Bazaar Service";
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "dbus";
+      BusName = "io.github.kolunmi.Bazaar";
+      ExecStart = "${pkgs.bazaar}/bin/bazaar-daemon --no-window";
     };
   };
 }

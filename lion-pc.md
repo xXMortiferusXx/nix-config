@@ -189,9 +189,11 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 
 ### Auto-Update (der eigentliche "eigenständig updaten"-Punkt)
 - Bazaar selbst updated sich über `nixos-rebuild` (nixpkgs-Package).
-- Die **Flatpak-Apps, die lion installiert (Roblox=sober, etc.) aktualisieren sich NICHT von alleine.**
-  → **systemd-Timer `flatpak-update` deklarativ** einrichten (regelmäßig `flatpak update`), damit
-  lions Spiele/Apps eigenständig up-to-date bleiben.
+- Die **Flatpak-Apps, die lion installiert (Roblox=sober, etc.)**, aktualisiert **Bazaar selbst**:
+  `auto-update=true` ist im GSettings-Schema standardmäßig `false` und wird deshalb per
+  dconf-Systemdatenbank vorbelegt; zusätzlich startet `io.github.kolunmi.Bazaar` (bazaar-daemon)
+  mit `graphical-session.target`. Kein root-Timer mehr — genau ein Update-Besitzer (Hersteller-Weg).
+  Voraussetzung: eine grafische Sitzung, in der der Daemon läuft (bei lion/benny der Normalfall).
 
 ### Flatpak-Infrastruktur (Basis für Bazaar + Roblox)
 - Flatpak ist aktuell **NIRGENDS** im Repo aktiviert → für lion-pc deklarativ:
@@ -219,8 +221,8 @@ gerät — reduziert GTT-Spillover/Stutter (z. B. Cyberpunk: GTT 1.37 GB → 650
 
 - [x] **Bazaar/Flatpak-Setup UMSETZEN** (Konzept entschieden, 2026-09): Bazaar = nixpkgs-Package
 (`pkgs.bazaar`, wird per `nixos-rebuild` mitgeupdatet) + Flatpak-Infrastruktur + Flathub deklarativ
-(`modules/system/flatpak-lion.nix`). lion installiert eigenständig über Bazaar; seine **Flatpak-Apps**
-(Roblox=Sober, etc.) aktualisiert der deklarative `flatpak-update`-systemd-Timer.
+(`modules/services/flatpak-lion.nix`). lion installiert eigenständig über Bazaar; seine **Flatpak-Apps**
+(Roblox=Sober, etc.) aktualisiert Bazaar selbst (Auto-Update, sobald eine Sitzung läuft).
 **Scope gelöst:** kein `--user`-Scope — Flatpak-Polkit-Regel für wheel (polkit.nix) macht systemweite
 Installation passwordlos; sudo-Trennschicht (Passwort) bleibt als Eskalationsblockade.
 **Erwartung:** Bazaar zeigt ganzes Flathub (kein Altersfilter).
