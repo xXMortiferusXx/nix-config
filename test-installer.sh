@@ -27,9 +27,11 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 MODE="${1:-iso}"
 
 usage() {
-    echo "Usage: $0 [iso|vm|clean]"
+    echo "Usage: $0 [iso [ISO-DATEI] | vm | clean]"
     echo ""
-    echo "  iso   - Baut NixOS ISO und bootet mit 2 NVMe Disks (Installer-Test)"
+    echo "  iso [ISO-DATEI] - bootet die Installer-ISO mit 2 NVMe Disks"
+    echo "                    ohne Pfad: nimmt/aktualisiert die ISO aus dem Flake"
+    echo "                    mit Pfad:  bootet genau diese Datei"
     echo "  vm    - Baut und bootet den Test-Host direkt (Config-Test)"
     echo "  clean - Loescht alle temporaeren QEMU-Dateien (${VM_DIR})"
     echo ""
@@ -52,14 +54,26 @@ case "$MODE" in
     *)   usage ;;
 esac
 
-# OVMF Firmware finden (UEFI)
+# OVMF Firmware finden (UEFI). Fehlt sie im Store, aus nixpkgs holen -
+# sonst scheitert der ISO-Test, obwohl qemu selbst per nix nachgeladen wird.
 info "Suche OVMF Firmware..."
-OVMF_CODE=$(find /nix/store -path "*/FV/OVMF_CODE.fd" -type f 2>/dev/null | head -1 || true)
-OVMF_VARS=$(find /nix/store -path "*/FV/OVMF_VARS.fd" -type f 2>/dev/null | head -1 || true)
+OVMF_CODE=$(find /nix/store -maxdepth 3 -path "*/OVMF*/FV/OVMF_CODE.fd" -type f 2>/dev/null | head -1 || true)
 
 if [ -z "$OVMF_CODE" ]; then
-    error "OVMF_CODE.fd nicht gefunden."
+    info "OVMF nicht im Store - baue nixpkgs#OVMF.fd..."
+    OVMF_STORE=$(cd /etc/nixos && nix build 'nixpkgs#OVMF.fd' --no-link --print-out-paths 2>/dev/null | tail -1 || true)
+    if [ -n "$OVMF_STORE" ] && [ -f "${OVMF_STORE}/FV/OVMF_CODE.fd" ]; then
+        OVMF_CODE="${OVMF_STORE}/FV/OVMF_CODE.fd"
+    fi
 fi
+
+if [ -z "$OVMF_CODE" ]; then
+    error "OVMF_CODE.fd nicht gefunden (auch nicht baubar)."
+fi
+
+# VARS immer aus demselben Paket wie CODE (Versions-Mismatch = kein Boot).
+OVMF_VARS="$(dirname "$(dirname "$OVMF_CODE")")/FV/OVMF_VARS.fd"
+[ -f "$OVMF_VARS" ] || OVMF_VARS=""
 info "OVMF CODE: $OVMF_CODE"
 [ -n "$OVMF_VARS" ] && info "OVMF VARS: $OVMF_VARS"
 
@@ -111,14 +125,19 @@ QEMU_ARGS+=(
 )
 
 if [ "$MODE" = "iso" ]; then
-    # --- ISO-Modus: NixOS ISO bauen und booten ---
-    ISO_CACHE="${VM_DIR}/iso-path"
+    # --- ISO-Modus: ISO booten (bauen nur, wenn nicht schon im Store) ---
+    # Optional als 2. Argument: eine vorhandene ISO-Datei, z.B. das Ergebnis
+    # eines eigenen `nix build .#installer-iso` (result/iso/*.iso).
+    ISO_PATH="${2:-}"
 
-    if [ -f "$ISO_CACHE" ] && [ -f "$(cat "$ISO_CACHE" 2>/dev/null)" ]; then
-        ISO_PATH=$(cat "$ISO_CACHE")
-        info "ISO aus Cache: $ISO_PATH"
+    if [ -n "$ISO_PATH" ]; then
+        [ -f "$ISO_PATH" ] || error "ISO-Datei nicht gefunden: $ISO_PATH"
+        info "ISO (uebergeben): $ISO_PATH"
     else
-        info "Baue Installer-ISO (install-nixos, flakes, git, curl)..."
+        # Bewusst KEIN Pfad-Cache: `nix build` liefert bei unveraenderter
+        # Konfiguration sofort denselben Store-Pfad (kein Neubau), nach einer
+        # Aenderung aber garantiert die neue ISO. Ein Cache wuerde veralten.
+        info "Ermittle Installer-ISO (baut nur bei Aenderungen)..."
         ISO_RESULT=$(cd /etc/nixos && nix build .#installer-iso --no-link --print-out-paths 2>&1 | tail -1)
 
         if [ -z "$ISO_RESULT" ] || [ ! -d "$ISO_RESULT" ]; then
@@ -131,8 +150,7 @@ if [ "$MODE" = "iso" ]; then
             error "ISO-Datei nicht im Build-Ergebnis gefunden: $ISO_RESULT"
         fi
 
-        echo "$ISO_PATH" > "$ISO_CACHE"
-        info "ISO gebaut: $ISO_PATH"
+        info "ISO: $ISO_PATH"
     fi
 
     QEMU_ARGS+=(-cdrom "$ISO_PATH")
