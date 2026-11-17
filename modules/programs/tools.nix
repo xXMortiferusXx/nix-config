@@ -399,10 +399,18 @@ PYEOF
   # Haelt pkgs/boosteroid/pin.json aktuell. Upstream liefert eine unversionierte
   # Tar; sobald sich der Inhalt aendert, wuerde `fetchurl` mit Hash-Mismatch
   # scheitern (also auch eine Neuinstallation). Deshalb: billiger HEAD-Vergleich
-  # ueber ETag, nur bei Aenderung Download + Datum/SRI-Hash, danach einmal bauen.
+  # ueber ETag, nur bei Aenderung Download + Datum/SRI-Hash, danach eine
+  # Strukturpruefung der Tar (kein Build noetig - es wird nichts kompiliert,
+  # das Paket patcht nur Interpreter/RPATH). `--build` macht die volle Probe.
   # Nur auf dem Pflege-Host mit git-Identitaet (nex) – andere Hosts brechen ab.
   boosteroidTrack = pkgs.writeShellScriptBin "boosteroid-track" ''
     set -u
+    do_build=0
+    for a in "$@"; do
+      case "$a" in
+        --build) do_build=1 ;;
+      esac
+    done
     ${uiLib}
     repo=/etc/nixos
     json=$repo/pkgs/boosteroid/pin.json
@@ -412,6 +420,7 @@ PYEOF
     curl=${pkgs.curl}/bin/curl
     tar=${pkgs.gnutar}/bin/tar
     datebin=${pkgs.coreutils}/bin/date
+    statbin=${pkgs.coreutils}/bin/stat
     nixbin=${pkgs.nix}/bin/nix
 
     ui_title "Boosteroid-Client"
@@ -466,12 +475,24 @@ PYEOF
       exit 0
     fi
 
-    if ! $tar xf "$tmp/pkg.tar" -C "$tmp" || [ ! -f "$tmp/Boosteroid" ]; then
-      ui_err "Tar enthaelt kein Boosteroid · Pin unveraendert"
+    listing=$($tar tf "$tmp/pkg.tar" | sed 's|^\./||')
+    count=$(printf '%s\n' "$listing" | grep -c . || true)
+    if [ "$count" -ne 1 ] || [ "$listing" != "Boosteroid" ]; then
+      ui_err "Tar-Aufbau unerwartet ($count Eintraege) · Pin unveraendert"
+      exit 1
+    fi
+
+    $tar xf "$tmp/pkg.tar" -C "$tmp" || { ui_err "Tar nicht lesbar · Pin unveraendert"; exit 1; }
+    magic=$(head -c 4 "$tmp/Boosteroid" 2>/dev/null | od -An -tx1 | tr -d ' \n')
+    machine=$(od -An -tx1 -j 18 -N 2 "$tmp/Boosteroid" 2>/dev/null | tr -d ' \n')
+    bsize=$($statbin -c %s "$tmp/Boosteroid" 2>/dev/null || echo 0)
+    if [ "$magic" != "7f454c46" ] || [ "$machine" != "3e00" ] || [ "''${bsize:-0}" -lt 50000000 ]; then
+      ui_err "Binary unerwartet (kein x86-64-ELF oder zu klein) · Pin unveraendert"
       exit 1
     fi
     new_date=$($datebin -r "$tmp/Boosteroid" +%F 2>/dev/null || $datebin +%F)
     ui_kv "Neu" "$new_date"
+    ui_ok "Struktur ok · $((bsize / 1048576)) MB"
 
     cp "$json" "$json.bak"
     $jq -n --arg date "$new_date" --arg etag "$etag" --argjson size "''${size:-0}" \
@@ -480,13 +501,15 @@ PYEOF
       && mv "$json.tmp" "$json" \
       || { mv "$json.bak" "$json"; ui_err "JSON schreiben fehlgeschlagen"; exit 1; }
 
-    ui_step "Bau pruefen"
-    if ! ( cd "$repo" && NIXPKGS_ALLOW_UNFREE=1 $nixbin build --impure --no-link \
-             --expr "let f = builtins.getFlake \"path:$repo\"; p = f.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}; in p.callPackage $repo/pkgs/boosteroid { }" \
-             >/dev/null 2>&1 ); then
-      mv "$json.bak" "$json"
-      ui_err "Paket baut nicht · Pin zurueckgenommen"
-      exit 1
+    if [ "$do_build" = 1 ]; then
+      ui_step "Bau pruefen (--build)"
+      if ! ( cd "$repo" && NIXPKGS_ALLOW_UNFREE=1 $nixbin build --impure --no-link \
+               --expr "let f = builtins.getFlake \"path:$repo\"; p = f.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}; in p.callPackage $repo/pkgs/boosteroid { }" \
+               >/dev/null 2>&1 ); then
+        mv "$json.bak" "$json"
+        ui_err "Paket baut nicht · Pin zurueckgenommen"
+        exit 1
+      fi
     fi
     rm -f "$json.bak"
 

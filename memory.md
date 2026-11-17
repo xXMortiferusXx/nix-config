@@ -482,10 +482,12 @@
   Upstream liefert eine **unversionierte** Tar: stimmt der Hash nicht mehr,
   scheitert `fetchurl` mit Hash-Mismatch – also auch eine Neuinstallation.
   `boosteroid-track` macht deshalb nur einen HEAD (ETag-Vergleich, ~0,2 s),
-  laedt nur bei Aenderung (122 MB), rechnet den SRI-Hash, schreibt Datum+Hash
-  und **baut das Paket einmal** als Pruefung; bei Fehler wird der alte Pin
-  zurueckgenommen. Laeuft in `nix-check` automatisch (bricht auf Hosts ohne
-  git-Identitaet ab, also nur nex) und wird mitcommittet.
+  laedt nur bei Aenderung (122 MB), rechnet den SRI-Hash und prueft die
+  **Struktur** der Tar (genau ein File `Boosteroid`, x86-64-ELF, > 50 MB) –
+  kein Build noetig, es wird nichts kompiliert. `--build` macht die volle
+  Probe (dann liegt das Paket im Store, GC raeumt es wieder). Bei Fehler wird
+  der alte Pin zurueckgenommen. Laeuft in `nix-check` automatisch (bricht auf
+  Hosts ohne git-Identitaet ab, also nur nex) und wird mitcommittet.
   Der Client kann per In-App-Update neuer sein als der Pin – das ist ok; der
   Pin ist die Basis fuer Neuinstallationen.
 
