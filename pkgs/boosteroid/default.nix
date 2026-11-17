@@ -35,6 +35,11 @@
 }:
 
 let
+  # Gepflegt von `boosteroid-track`: Upstream liefert eine unversionierte Tar,
+  # deren Inhalt sich mit jedem Release aendert. `date` = Datum der Binary,
+  # `hash` = SRI der Tar, `etag`/`size` fuer den guenstigen "unveraendert"-Check.
+  pin = builtins.fromJSON (builtins.readFile ./pin.json);
+
   runtimeLibs = [
     alsa-lib
     dbus
@@ -63,12 +68,12 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "boosteroid";
-  # Upstream liefert eine unversionierte Datei; Datum der Auslieferung als Version.
-  version = "unstable-2026-09-30";
+  # Upstream liefert eine unversionierte Datei; Datum der Binary als Version.
+  version = "unstable-${pin.date}";
 
   src = fetchurl {
     url = "https://boosteroid.com/linux/installer/boosteroid_portable.tar";
-    hash = "sha256-R4s3nA9YyaNovO04Dv9svq7Z/y9JyRLIFfL4TVFkjqo=";
+    hash = pin.hash;
     # Der Server antwortet ohne Browser-UA mit 403.
     curlOptsList = [ "-A" "Mozilla/5.0" ];
   };

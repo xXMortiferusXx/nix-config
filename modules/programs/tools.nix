@@ -8,7 +8,8 @@ let
   # Was der Auto-Commit in nix-check anfassen darf (bewusst nicht `git add -A`,
   # damit eigene Arbeit und settings.toml unberuehrt bleiben).
   commitPaths = [ "flake.lock" ]
-    ++ lib.optional nvidiaHost "modules/hardware/nvidia-driver.json";
+    ++ lib.optional nvidiaHost "modules/hardware/nvidia-driver.json"
+    ++ [ "pkgs/boosteroid/pin.json" ];
 
   # Gemeinsames Terminal-Design fuer alle Nix-Tools. Farben/Symbole nur bei TTY
   # (und nicht bei NO_COLOR/TERM=dumb), damit Pipes/Logs sauber bleiben.
@@ -395,6 +396,104 @@ PYEOF
     ui_info "Bau/Pruefung: nix-check"
   '';
 
+  # Haelt pkgs/boosteroid/pin.json aktuell. Upstream liefert eine unversionierte
+  # Tar; sobald sich der Inhalt aendert, wuerde `fetchurl` mit Hash-Mismatch
+  # scheitern (also auch eine Neuinstallation). Deshalb: billiger HEAD-Vergleich
+  # ueber ETag, nur bei Aenderung Download + Datum/SRI-Hash, danach einmal bauen.
+  # Nur auf dem Pflege-Host mit git-Identitaet (nex) – andere Hosts brechen ab.
+  boosteroidTrack = pkgs.writeShellScriptBin "boosteroid-track" ''
+    set -u
+    ${uiLib}
+    repo=/etc/nixos
+    json=$repo/pkgs/boosteroid/pin.json
+    url=https://boosteroid.com/linux/installer/boosteroid_portable.tar
+    ua=Mozilla/5.0
+    jq=${pkgs.jq}/bin/jq
+    curl=${pkgs.curl}/bin/curl
+    tar=${pkgs.gnutar}/bin/tar
+    datebin=${pkgs.coreutils}/bin/date
+    nixbin=${pkgs.nix}/bin/nix
+
+    ui_title "Boosteroid-Client"
+
+    if [ ! -f "$json" ]; then
+      ui_err "$json fehlt"
+      exit 1
+    fi
+    if [ -z "$(git -C "$repo" config user.email 2>/dev/null || true)" ]; then
+      ui_info "keine git-Identitaet · nur auf nex"
+      exit 0
+    fi
+
+    cur=$($jq -r '.date // "?"' "$json")
+    cur_etag=$($jq -r '.etag // ""' "$json")
+    ui_kv "Pin" "$cur"
+
+    if ! hdr=$($curl -fsSIL -A "$ua" --max-time 25 "$url" 2>/dev/null); then
+      ui_warn "Upstream nicht erreichbar · Pin unveraendert"
+      exit 0
+    fi
+    hdr=$(printf '%s\n' "$hdr" | tr -d '\r')
+    etag=$(printf '%s\n' "$hdr" | sed -n 's/^[Ee][Tt][Aa][Gg]: *//p' | tail -1)
+    size=$(printf '%s\n' "$hdr" | sed -n 's/^[Cc]ontent-[Ll]ength: *//p' | tail -1)
+    mtime=$(printf '%s\n' "$hdr" | sed -n 's/^[Ll]ast-[Mm]odified: *//p' | tail -1)
+
+    if [ -n "$etag" ] && [ "$etag" = "$cur_etag" ]; then
+      ui_ok "$cur · aktuell"
+      exit 0
+    fi
+    ui_kv "Upstream" "''${mtime:-unbekannt}"
+    ui_step "Download + Pruefung"
+
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    if ! $curl -fsSL -A "$ua" --max-time 900 -o "$tmp/pkg.tar" "$url"; then
+      ui_err "Download fehlgeschlagen · Pin unveraendert"
+      exit 1
+    fi
+    old_hash=$($jq -r '.hash' "$json")
+    new_hash=$($nixbin hash file --type sha256 --sri "$tmp/pkg.tar" 2>/dev/null) || new_hash=""
+    if [ -z "$new_hash" ]; then
+      ui_err "Hash fehlgeschlagen · Pin unveraendert"
+      exit 1
+    fi
+
+    if [ "$new_hash" = "$old_hash" ]; then
+      $jq --arg etag "$etag" --argjson size "''${size:-0}" \
+        '.etag = $etag | .size = $size' "$json" > "$json.tmp" \
+        && mv "$json.tmp" "$json"
+      ui_ok "Inhalt unveraendert · nur ETag nachgezogen"
+      exit 0
+    fi
+
+    if ! $tar xf "$tmp/pkg.tar" -C "$tmp" || [ ! -f "$tmp/Boosteroid" ]; then
+      ui_err "Tar enthaelt kein Boosteroid · Pin unveraendert"
+      exit 1
+    fi
+    new_date=$($datebin -r "$tmp/Boosteroid" +%F 2>/dev/null || $datebin +%F)
+    ui_kv "Neu" "$new_date"
+
+    cp "$json" "$json.bak"
+    $jq -n --arg date "$new_date" --arg etag "$etag" --argjson size "''${size:-0}" \
+      --arg hash "$new_hash" \
+      '{date: $date, etag: $etag, size: $size, hash: $hash}' > "$json.tmp" \
+      && mv "$json.tmp" "$json" \
+      || { mv "$json.bak" "$json"; ui_err "JSON schreiben fehlgeschlagen"; exit 1; }
+
+    ui_step "Bau pruefen"
+    if ! ( cd "$repo" && NIXPKGS_ALLOW_UNFREE=1 $nixbin build --impure --no-link \
+             --expr "let f = builtins.getFlake \"path:$repo\"; p = f.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}; in p.callPackage $repo/pkgs/boosteroid { }" \
+             >/dev/null 2>&1 ); then
+      mv "$json.bak" "$json"
+      ui_err "Paket baut nicht · Pin zurueckgenommen"
+      exit 1
+    fi
+    rm -f "$json.bak"
+
+    ui_ok "$new_date eingetragen"
+    ui_info "Commit folgt mit nix-check"
+  '';
+
   # Update + Build testen, OHNE bei Fehlern einen kaputten flake.lock zu hinterlassen.
   # Erfolg: neuer Lock bleibt stehen, Lock + Treiber-Pin werden committet/gepusht.
   # Fehler: alter Lock (und ggf. Pin) wird restauriert, die Version wird blockiert.
@@ -414,8 +513,10 @@ PYEOF
 
     backup=$(mktemp)
     json_backup=$(mktemp)
-    trap 'rm -f "$backup" "$json_backup"' EXIT
+    pin_backup=$(mktemp)
+    trap 'rm -f "$backup" "$json_backup" "$pin_backup"' EXIT
     cp "$repo/flake.lock" "$backup"
+    cp "$repo/pkgs/boosteroid/pin.json" "$pin_backup"
     ${lib.optionalString nvidiaHost ''
     json=$repo/modules/hardware/nvidia-driver.json
     cp "$json" "$json_backup"
@@ -432,6 +533,9 @@ PYEOF
     ui_step "nvidia-track"
     ${nvidiaTrack}/bin/nvidia-track || ui_warn "nvidia-track fehlgeschlagen · Pin unverändert"
     ''}
+
+    ui_step "boosteroid-track"
+    ${boosteroidTrack}/bin/boosteroid-track || ui_warn "boosteroid-track fehlgeschlagen · Pin unverändert"
 
     ui_step "flake update"
     if ! (cd "$repo" && nix flake update); then
@@ -473,6 +577,8 @@ PYEOF
       ''}
       ui_err "Build fehlgeschlagen"
       ui_info "flake.lock zurückgesetzt · System unangetastet"
+      cp "$pin_backup" "$repo/pkgs/boosteroid/pin.json"
+      ui_info "boosteroid-Pin zurückgesetzt"
       ui_info "Vollständiger Trace: nix-check --trace"
       exit 1
     fi
@@ -539,6 +645,7 @@ in
     ookla-speedtest
     scx.full
   ] ++ [ nixCheck nixRebootCheck nixosUpdate nixSync audioRate micCheck ]
+    ++ [ boosteroidTrack ]
     ++ lib.optional nvidiaHost nvidiaTrack;
 
   programs.fish.shellAliases = {
