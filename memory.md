@@ -1055,6 +1055,9 @@ Status: `modules/desktop/thunar.nix` aktiv (importiert in `system/common.nix`)
     `nix build` liefert bei unveraenderter Config sofort denselben Store-Pfad)
   - `./test-installer.sh iso <datei.iso>` — bootet genau diese ISO-Datei
   - `./test-installer.sh vm` — baut Test-Host direkt
+  - Disk-Groesse: `DISK_SIZE` (Default 80G pro NVMe, sparse). 20G waren fuer
+    eine volle Desktop-Installation zu knapp. Bestehende Images werden nicht
+    vergroessert - nach Aenderung einmal `./test-installer.sh clean`.
   - ISO wird als `packages.installer-iso` im Flake gebaut
   - OVMF fehlt im Store? `test-installer.sh` baut dann `nixpkgs#OVMF.fd`
     (Code+VARS aus demselben Paket - gemischte Versionen booten nicht)

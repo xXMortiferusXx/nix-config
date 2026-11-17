@@ -7,10 +7,13 @@ set -euo pipefail
 
 # --- KONFIGURATION ---
 VM_NAME="nixos-test"
-DISK_SIZE="20G"
-RAM="4G"
-CPUS="2"
-SSH_PORT="2222"
+# Pro virtuelle NVMe. Die Images sind sparse (truncate) - auf der Platte landet
+# nur, was wirklich geschrieben wird. 20G waren fuer eine volle Desktop-
+# Installation (KDE, flatpak-Basis, Home-Manager) zu knapp.
+DISK_SIZE="${DISK_SIZE:-80G}"
+RAM="${RAM:-4G}"
+CPUS="${CPUS:-2}"
+SSH_PORT="${SSH_PORT:-2222}"
 VM_DIR="/tmp/${VM_NAME}"
 # ---------------------
 
@@ -35,6 +38,10 @@ usage() {
     echo "  vm    - Baut und bootet den Test-Host direkt (Config-Test)"
     echo "  clean - Loescht alle temporaeren QEMU-Dateien (${VM_DIR})"
     echo ""
+    echo "  Disk-Groesse pro NVMe: ${DISK_SIZE}  (DISK_SIZE=120G $0 iso)"
+    echo "  Nach Aenderung der Groesse einmal '$0 clean' - bestehende Images"
+    echo "  werden NICHT vergroessert."
+    echo ""
     exit 1
 }
 
@@ -43,9 +50,12 @@ case "$MODE" in
     vm)  ;;
     clean)
         if [ -d "$VM_DIR" ]; then
-            info "Loesche ${VM_DIR}..."
+            FREED=$(du -sh "$VM_DIR" 2>/dev/null | cut -f1)
+            info "Loesche ${VM_DIR} (${FREED:-?} auf der Platte belegt)..."
             rm -rf "$VM_DIR"
-            info "Aufgeraeumt."
+            info "Aufgeraeumt. Entfernt wurden: NVMe-Images, OVMF_VARS-Kopie"
+            info "und der alte ISO-Pfad-Cache. Das ISO selbst liegt im"
+            info "Nix-Store und wird von der Nix-GC (nix-gc.timer) aufgeraeumt."
         else
             info "Nichts aufzuraeumen (${VM_DIR} existiert nicht)."
         fi
@@ -104,6 +114,21 @@ if [ ! -f "$DISK1" ]; then
     info "Erstelle virtuelle NVMe Disk 1 (${DISK_SIZE})..."
     truncate -s "$DISK_SIZE" "$DISK1"
 fi
+
+# Bestehende Images NICHT automatisch vergroessern - das aendert nur die
+# Dateigroesse, nicht die Partitionstabelle darin. Lieber deutlich sagen.
+check_disk_size() {
+    local f=$1 want have
+    want=$(numfmt --from=iec "$DISK_SIZE" 2>/dev/null || echo 0)
+    [ "$want" -gt 0 ] || return 0
+    have=$(stat -c %s "$f")
+    if [ "$have" -lt "$want" ]; then
+        warn "$(basename "$f") ist nur $(numfmt --to=iec "$have") gross (gewuenscht ${DISK_SIZE})."
+        warn "Bestehende Images werden nicht vergroessert - vorher '$0 clean' ausfuehren."
+    fi
+}
+check_disk_size "$DISK0"
+check_disk_size "$DISK1"
 
 # QEMU-Basisargumente
 QEMU_ARGS=(
