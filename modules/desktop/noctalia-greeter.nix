@@ -14,6 +14,20 @@
     [appearance]
     # Passwort-Maskierung: "default" (gefuellte Kreise) oder "random" (zufaellige Symbole/Glyphs)
     password_style = "random"
+
+    # Uhr gross und ruhig; Datum ausgeschrieben statt %x (Locale ist de_DE).
+    # Position/Schrift kommen aus dem Sync (noctalia), Groessen sind logical px.
+    [clock]
+    time_format = "%H:%M"
+    time_font_size = 64
+    date_format = "%A, %d. %B"
+    date_font_size = 16
+
+    # Hintergrund leicht weichzeichnen und in Richtung Palette-Surface aufhellen:
+    # die duenne Datumszeile war auf dem unruhigen Wallpaper schlecht lesbar.
+    [appearance.wallpaper]
+    blur = 0.25
+    tint = 0.35
   '';
 
   systemd.tmpfiles.settings."10-noctalia-greeter" = {

@@ -620,6 +620,11 @@
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
+- **Uhr (2026-11-21)**: `[clock]` in `greeter.toml` – `time_font_size`/`date_font_size`
+  gibt es erst ab Greeter **1.7.1** (1.7.0 ignoriert sie). Datum ausgeschrieben
+  (`%A, %d. %B`, Locale ist de_DE). Gegen schlecht lesbaren schwarzen Text auf
+  unruhigem Wallpaper: `[appearance.wallpaper] blur` + `tint` (tint mischt in
+  Richtung `surface` der Palette, hier also aufhellen).
 
 ## Umbriel (Wayland-Compositor, seit 2026-08-30)
 
