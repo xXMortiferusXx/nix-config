@@ -71,7 +71,11 @@ in
   hardware.nvidia = {
     modesetting.enable = true;
     nvidiaSettings = true;
-    open = true;
+    # A/B-Test 2026-11-22: geschlossene statt offene Kernelmodule (620er
+    # Bugreports sind fast alle mit nvidia-open). Auf Ampere sind beide
+    # gleichwertig; einziger Unterschied ist powerManagement.kernelSuspendNotifier
+    # (gibt es nur mit offenen Modulen, Default faellt damit auf false).
+    open = false;
     package = nvidiaPackage;
 
     powerManagement.enable = true;
