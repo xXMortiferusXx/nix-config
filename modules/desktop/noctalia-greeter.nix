@@ -15,19 +15,15 @@
     # Passwort-Maskierung: "default" (gefuellte Kreise) oder "random" (zufaellige Symbole/Glyphs)
     password_style = "random"
 
-    # Uhr gross und ruhig; Datum ausgeschrieben statt %x (Locale ist de_DE).
-    # Position/Schrift kommen aus dem Sync (noctalia), Groessen sind logical px.
-    [clock]
-    time_format = "%H:%M"
-    time_font_size = 64
-    date_format = "%A, %d. %B"
-    date_font_size = 16
-
-    # Hintergrund leicht weichzeichnen und in Richtung Palette-Surface aufhellen:
-    # die duenne Datumszeile war auf dem unruhigen Wallpaper schlecht lesbar.
-    [appearance.wallpaper]
-    blur = 0.25
-    tint = 0.35
+    # Keine Uhr im Greeter (bewusst):
+    # Die Uhrfarbe ist immer on_surface der Shell-Palette (Light-Mode -> #1B1B1B,
+    # also schwarz) und der Greeter kann weder Farbe, Schatten noch einen eigenen
+    # Hintergrund setzen. Auf einem Foto ist sie damit unlesbar.
+    # Die einzige Gegenmassnahme waere ein starker Wallpaper-Tint - der zerstoert
+    # aber genau das, was den Login ausmacht (schoenes Hintergrundbild).
+    # Der Lockscreen (Noctalia Shell) kann die Uhr voll gestalten und bleibt dafuer da.
+    # Wichtig: blur/tint auch NICHT setzen. Bei per-Monitor-Wallpapern aus dem Sync
+    # (eDP-1/eDP-2) wuerden globale Werte ohnehin ignoriert; das Bild bleibt roh.
   '';
 
   systemd.tmpfiles.settings."10-noctalia-greeter" = {

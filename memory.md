@@ -620,11 +620,16 @@
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
-- **Uhr (2026-11-21)**: `[clock]` in `greeter.toml` – `time_font_size`/`date_font_size`
-  gibt es erst ab Greeter **1.7.1** (1.7.0 ignoriert sie). Datum ausgeschrieben
-  (`%A, %d. %B`, Locale ist de_DE). Gegen schlecht lesbaren schwarzen Text auf
-  unruhigem Wallpaper: `[appearance.wallpaper] blur` + `tint` (tint mischt in
-  Richtung `surface` der Palette, hier also aufhellen).
+- **Uhr im Greeter: bewusst entfernt (2026-11-22)**. Grund: die Uhrfarbe ist
+  immer `on_surface` der Shell-Palette; bei `theme.mode = "light"` also
+  `#1B1B1B`. Der Greeter kann weder Farbe noch Schatten noch einen eigenen
+  Hintergrund setzen -> auf einem Foto unlesbar. Ein starker Wallpaper-Tint
+  waere die einzige Rettung, zerstoert aber das Login-Bild. Die Uhr bleibt dem
+  Lockscreen (Noctalia Shell) vorbehalten, der sie voll gestalten kann.
+  Nebenwissen: `wallpaperForOutput()` nimmt bei vorhandenem per-Monitor-Eintrag
+  (Sync schreibt `[appearance.wallpapers.eDP-1/2]`) NUR diesen – globale
+  `[appearance.wallpaper] blur/tint` greifen dort nicht. `*_font_size` gibt es
+  erst ab Greeter 1.7.1.
 
 ## Umbriel (Wayland-Compositor, seit 2026-08-30)
 
