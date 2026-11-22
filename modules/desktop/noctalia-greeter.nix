@@ -15,7 +15,8 @@
     # Passwort-Maskierung: "default" (gefuellte Kreise) oder "random" (zufaellige Symbole/Glyphs)
     password_style = "random"
 
-    # Keine Uhr im Greeter (bewusst):
+    # Keine Uhr im Greeter (bewusst). Achtung: [clock] wegzulassen reicht NICHT,
+    # der Default ist enabled = true.
     # Die Uhrfarbe ist immer on_surface der Shell-Palette (Light-Mode -> #1B1B1B,
     # also schwarz) und der Greeter kann weder Farbe, Schatten noch einen eigenen
     # Hintergrund setzen. Auf einem Foto ist sie damit unlesbar.
@@ -24,6 +25,9 @@
     # Der Lockscreen (Noctalia Shell) kann die Uhr voll gestalten und bleibt dafuer da.
     # Wichtig: blur/tint auch NICHT setzen. Bei per-Monitor-Wallpapern aus dem Sync
     # (eDP-1/eDP-2) wuerden globale Werte ohnehin ignoriert; das Bild bleibt roh.
+
+    [clock]
+    enabled = false
   '';
 
   systemd.tmpfiles.settings."10-noctalia-greeter" = {

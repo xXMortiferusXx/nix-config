@@ -620,9 +620,10 @@
 - **Cursor-Theme**: Greeter braucht Cursor-Theme **systemweit** installiert (nicht nur Home-Manager), da er vor User-Session läuft
   - `bibata-cursors` + `XCURSOR_THEME/XCURSOR_SIZE/XCURSOR_PATH` in `desktop/desktop.nix` (shared, beide Hosts via `common.nix`)
   - Steam-Override hat eigene `extraEnv` für die FHS-Umgebung
-- **Uhr im Greeter: bewusst entfernt (2026-11-22)**. Grund: die Uhrfarbe ist
-  immer `on_surface` der Shell-Palette; bei `theme.mode = "light"` also
-  `#1B1B1B`. Der Greeter kann weder Farbe noch Schatten noch einen eigenen
+- **Uhr im Greeter: bewusst entfernt (2026-11-22)**. `[clock] enabled = false`
+  ist Pflicht – den Block wegzulassen reicht nicht, Default ist `true`.
+  Grund: die Uhrfarbe ist immer `on_surface` der Shell-Palette; bei
+  `theme.mode = "light"` also `#1B1B1B`. Der Greeter kann weder Farbe noch Schatten noch einen eigenen
   Hintergrund setzen -> auf einem Foto unlesbar. Ein starker Wallpaper-Tint
   waere die einzige Rettung, zerstoert aber das Login-Bild. Die Uhr bleibt dem
   Lockscreen (Noctalia Shell) vorbehalten, der sie voll gestalten kann.
