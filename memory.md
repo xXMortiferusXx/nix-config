@@ -14,9 +14,9 @@
   - nice/ionice/sched/oom automatisch pro Prozess (Game=LowLatency_RT, Chat, Service, etc.)
   - `GameMode` entfernt (CachyOS: "GameMode + ananicy-cpp = bad idea")
 - `system/boot-common.nix` – importiert kernel-tuning + tmpfiles für `/var/lib/nixos`
-- `system/boot-nex.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), scx_bpfland aktuell deaktiviert (pur getestet), **keine AMD-iGPU-Parameter** (NVIDIA-only)
-- `system/boot-styx.nix` – Zen-Kernel (`pkgs.linuxPackages_zen`, seit 2026-09-08, vorher `linuxPackages_latest`)
-- `system/boot-lion.nix` – **CachyOS-Kernel** (`pkgs.cachyosKernels.linuxPackages-cachyos-latest`, Default-Branch master, seit 2026-09-19), AMD-PStates aktiv, ZRAM 100%
+- `system/boot-nex.nix` – `pkgs.linuxPackages_latest` (CachyOS-Kernel 11/2026 entfernt), **keine AMD-iGPU-Parameter** (NVIDIA-only)
+- `system/boot-styx.nix` – `pkgs.linuxPackages_latest` (wie alle Hosts)
+- `system/boot-lion.nix` – `pkgs.linuxPackages_latest` (CachyOS-Kernel 11/2026 entfernt), AMD-PStates aktiv, ZRAM 100%
 
 ### Desktop
 - `desktop/desktop.nix` – shared desktop config (reduziert)
@@ -929,45 +929,24 @@
 - `systemctl --user status noctalia discord steam udiskie polychromatic-tray`
 
 ## Kernel
-- **nex + lion-pc**: `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest` — auf **nex am 2026-09-26 reaktiviert** (Kernel `linux-cachyos-latest-7.2.7`)
-- **styx + test**: weiter `pkgs.linuxPackages_zen`
-- **Input** `nix-cachyos-kernel` (`github:xddxdd/nix-cachyos-kernel`, **keine Branch-Pin** → Default-Branch `master`):
-  - Warum master statt `release`: release-Branch ist **veraltet** (`444d135`, 09-12 = Kernel 7.2.4); master (`b4e1f53`, 09-19) = `7.2.6` (Hydra-Eval 1801, hydra.lantian.pub/eval/1801)
-  - Kein Branch-Pin → folgt automatisch den neuen Auto-Update-Ständen. Update: `nix flake update nix-cachyos-kernel`
-- **Binary-Cache** `attic.xuyh0120.win/lantian` wieder aktiv (`modules/system/nix-settings.nix`): Kernel + Komponenten substituierbar (narinfo 200) → **kein langer Lokal-Build**
-  - Cache ist privat gehostet und kann kurzzeitig langsam/unerreichbar sein (einmal NAR-Download failed) → Retry oder `--fallback`
-- CachyOS-Kernel liefert den **`adios`-Scheduler** (udev-Regel `queue/scheduler="adios"` in `kernel-tuning.nix`)
-- **2026-09-26: Scheduler kernel-abhängig gemacht.** `kernel-tuning.nix` wird ueber `boot-common.nix` von **allen** Hosts importiert, aber `adios` gibt es **nur im CachyOS-Kernel**. Deshalb neue Option `tuning.ioScheduler` (Default `kyber`):
-  - **nex** (`boot-nex.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel)
-  - **lion-pc** (`boot-lion.nix`) → `tuning.ioScheduler = "adios"` (CachyOS-Kernel, seit jeher)
-  - **styx** bleibt beim Default `kyber` — läuft auf `linuxPackages_zen`, dort existiert `adios` nicht.
-  - Nach dem Umbau liegt der gesamte Konfigurationsteil des Moduls unter `config = { … }`, weil ein Modul mit `options.*` diese Gruppierung verlangt.
-- **Regel-Logik (wichtig fuer kuenftige HDD):** `ATTR{queue/scheduler}="x"` ist eine **Zuweisung**, keine Pruefung. Die Trennung SSD/HDD entsteht allein durch die echten Vergleiche `ATTR{queue/rotational}=="0"` bzw. `=="1"`:
-  - NVMe → `adios` (NVMe ist immer non-rotational, deshalb ohne rotational-Test)
-  - `sd*`/`mmcblk*` mit `rotational=0` (SSD) → `adios`
-  - `sd*` mit `rotational=1` (**HDD**) → `bfq`
-  - Eine HDD kann Regel 3 nicht matchen (`rotational=="0"` schlaegt fehl) und landet in Regel 4. **Sauber erkannt, kein Konflikt.**
-- **`bfq` fest auf lion geladen** (`boot.kernelModules = [ "bfq" ]`): `bfq` ist ein Modul (`bfq.ko.xz`) und haengt sonst am Autoload-Alias `bfq-iosched`, der beim Anstecken asynchron und unzuverlaessig sein kann. Auf lion (Desktop) ist eine SATA-HDD realistisch, deshalb deterministisch. **nex/styx ohne `bfq`:** nex kann keine HDD aufnehmen (Notebook), styx laeuft auf dem Zen-Kernel.
-- Stand auf lion-pc (per SSH geprueft 2026-09-26): Kernel `7.2.7-cachyos`, `adios`-Modul vorhanden (`Adaptive Deadline I/O Scheduler`), aber aktiv war noch **`kyber`** — lion hatte schlicht die alte Generation gebootet. `sda`/`sdb` sind dort `rotational=0` (SSD), fallen also unter die adios-Regel.
-- `scx_bpfland` **deaktiviert** — Kernel wird pur getestet
-- Historie: nex + lion-pc CachyOS (seit 08-20) → 09-08 Zen (`build-Zeit`, CachyOS musste bei neuer Hardware von Source bauen) → **09-19 CachyOS master** (attic-Cache vorhanden, kein Build mehr nötig)
+- **Alle Hosts**: `boot.kernelPackages = pkgs.linuxPackages_latest` (aktuell 7.3.5). **Kein CachyOS-Kernel mehr.**
+- **CachyOS-Kernel entfernt (Commit `5fcda18`)**: weder `xddxdd/nix-cachyos-kernel` noch `chaotic-nyx` liefen
+  zuverlaessig (Quellen/Caches) — und lokal einen Kernel bauen kommt nicht in Frage. Der Performance-Gewinn war
+  den Aufwand nicht wert. NixOS hat keinen offiziellen CachyOS-Support; es war immer ein Fremd-Flake.
+- `tuning.ioScheduler` (`kernel-tuning.nix`, Default `kyber`) gilt fuer alle Hosts. `adios` gibt es nur im
+  CachyOS-Kernel -> die Option steht ueberall auf dem Default, keine Host-Overrides mehr.
+- `bfq` bleibt auf lion fest geladen (HDD-Fall), unabhaengig vom Kernel.
+- udev-Regeln (`kernel-tuning.nix`): `ATTR{queue/scheduler}=` ist eine Zuweisung, keine Pruefung — die
+  Unterscheidung kommt aus `ATTR{queue/rotational}`: NVMe/SSD (`0`) -> `tuning.ioScheduler` (Default `kyber`),
+  HDD (`1`) -> `bfq`.
+- Historie: zen -> CachyOS (08-09/2026) -> zen (22.09.) -> CachyOS master (26.09.) -> **entfernt (11/2026)**.
 
-#### Verifikation nach Neustart (2026-09-26) — alles gruen
-- Kernel laeuft: `7.2.7-cachyos`; Scheduler `none mq-deadline kyber [adios]` (**adios aktiv**, Modul `builtin, Adaptive Deadline I/O Scheduler`).
-- **NVIDIA 615.71.09 laeuft auf dem CachyOS-Kernel fehlerfrei** — genau der Punkt, der am 22.09. den Build scheitern liess.
-- PRIME-Hybrid intakt: `nvidia-offload vulkaninfo` -> nur `NVIDIA GeForce RTX 3070 Laptop GPU`; dGPU-VRAM 13 MiB (Display an iGPU).
-- Dynamic Boost: `nvidia-powerd` active.
-- Workspaces 4 auf `eDP-2`, `bit depth: 10`, **0 failed units**.
-### nex: CachyOS-Kernel am 2026-09-26 REAKTIVIERT (war 2026-09-22 deaktiviert)
-- **Deaktivierungsgrund A (TATSACHE, am 22.09. verifiziert):** NVIDIA 615 hat am `__to_hwgpio`-Patch des damaligen CachyOS-Kernels **wirklich nicht gebaut** — der Build ist gescheitert. Der Patch ist im heutigen CachyOS-Kernel **nicht mehr enthalten** (eigener Patch ist nur noch `randstruct-provide-seed-5.19.patch`).
-- **Deaktivierungsgrund B (TATSACHE, am 22.09. verifiziert):** `linuxPackages_cachyos` verlangte `nvidia_cachyos 610.57.04` — ein **echter Treiber-Downgrade** 615 → 610. Das ist inzwischen **nicht mehr der Fall**: der gepinnte CachyOS-Kernel 7.2.7 liefert exakt dieselbe Standard-Derivation **nvidia-x11-615.71.09** (gleicher `drvPath` `/nix/store/g3ils57q…-nvidia-x11-615.71.09.drv`) wie `linuxPackages_latest`.
-- **Ergebnis:** beide Blocker entfallen → Kernel reaktiviert, kein Treiberverlust.
-- Kernel-Auflösung: `7.2.7` (CachyOS) gegen `7.2.8` (`linuxPackages_latest`) — inhaltlich ein Zwillingssatz, der Gewinn liegt in den CachyOS-Patches.
-- `adios` I/O-Scheduler in `kernel-tuning.nix` von `kyber` zurück auf **`adios`** (existiert nur im CachyOS-Kernel; `bfq` für rotierende Platten bleibt).
-- **Wichtig bei Rückfall auf `linuxPackages_latest`:** dort gibt es kein `adios`; die udev-Regel bleibt dann still wirkungslos und der Kernel nimmt seinen Default.
-- Build verifiziert: 19 Derivationen, Kernel+Initrd aus dem Cache (23 MiB), `dry-build` OK.
-- **Rückfallweg bei Nicht-Start:** im systemd-boot-Menü die vorherige Generation wählen (der `linux-switch`-Alias hilft hier nicht, da anderer Kernel).
-- `smallPkgs` aus `nvidia.nix` entfernt, nutzt jetzt `pkgs.mesa`
+#### Historie CachyOS-Kernel (2026-09) — nur noch Archivwissen
+- Kurzzeitig auf nex/lion aktiv (`7.2.7-cachyos`, `adios`-Scheduler, NVIDIA 615 lief darauf). Damals geloest:
+  `__to_hwgpio`-Patch (Build) und erzwungener Treiber-Downgrade auf 610 — beides mit dem Entfernen obsolet.
+- Endgueltiges Aus: unzuverlaessige Quellen/Caches (xddxdd + chaotic-nyx), kein lokaler Kernel-Build.
+- Lehre daraus: fremde Kernel-Pakete in NixOS = Fremd-Flake + fremder Cache. Fuer Tag-0-Kernel ist eine
+  Distro mit vorgebauten Paketen (Arch/CachyOS) der passendere Ort.
 - **nex NVIDIA-only** (2026-08-12, bis 2026-09-26):
   - `amdgpu.dcfeaturemask`, `amdgpu.dcdebugmask`, `nvidia.NVreg_DynamicPowerManagement` entfernt
   - `boot-nex.nix` mit PRIME-Parametern wurde in `064b604` mit ins Archiv verschoben
