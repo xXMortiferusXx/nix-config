@@ -397,7 +397,7 @@
 
 ## Bekannte Probleme
 
-### NVIDIA nvidia-powerd/nvidia-smi: SIGSEGV durch patchelf-LOAD-Overlap (2026-10-20)
+### NVIDIA nvidia-powerd/nvidia-smi: SIGSEGV durch patchelf-LOAD-Overlap (2026-10-20, geloest 2026-11-23)
 - **Problem**: Nach dem Update auf patchelf **0.19.2** (nixpkgs `09063bd`) crashen die
   gepatchten NVIDIA-Executables (`nvidia-powerd`, `nvidia-smi -L`/`-q`) mit SIGSEGV in
   `dl_main`, bevor `main()` läuft. glibc 2.44 und nvidia 615.78.08 waren vorher schon
@@ -415,8 +415,13 @@
   kopiert die Executables aus `origBin/` und patcht sie **rpath zuerst, dann interpreter**
   neu. Betrifft nur NVIDIA, kein World-Rebuild. Verifiziert: `nvidia-powerd` exit 0,
   `nvidia-smi -L` zeigt die GPU.
-- **Entfernen**, sobald nixpkgs patchelf > 0.19.2 (mit #672) hat — dann `nvidiaPackage`-
-  Override raus. Test ohne Switch:
+- **ERLEDIGT 2026-11-23**: nixpkgs ist von sich aus auf **0.15.2 zurueckgerollt**
+  (`patchelf` in master und nixos-unstable), der Overlap-Bug kann also nicht mehr
+  auftreten. Der `postFixup`-Override ist aus `nvidia-prime.nix` **entfernt**.
+  Verifiziert am frisch gebauten Paket (0.15.2, ohne Override): `nvidia-smi -L`
+  zeigt die GPU, `nvidia-smi --query-gpu` liefert 620.73.04, `nvidia-powerd` und
+  `nvidia-debugdump` exit 0. Kuenftig geht nixpkgs auf >= 0.19.3 (mit #672).
+  Alter Test-Befehl (weiterhin praktisch):
   ```bash
   BIN=$(nix eval --raw '.#nixosConfigurations.nex.config.hardware.nvidia.package.bin')
   env -i "$BIN/bin/nvidia-smi" -L

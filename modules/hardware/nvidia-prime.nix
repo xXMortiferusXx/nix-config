@@ -24,21 +24,10 @@ let
   usePin = lib.versionOlder nixLatest.version pin.version;
   driverSource = if usePin then "pin" else "nixpkgs";
 
-  # patchelf 0.19.2 erzeugt bei "interpreter zuerst, dann rpath" ein
-  # ueberlappendes RW-LOAD (patchelf#672/#674) -> glibc 2.44 SIGSEGV in
-  # dl_main. Die Executables aus der unveraenderten origBin mit rpath zuerst
-  # neu patchen; betrifft nur NVIDIA.
-  nvidiaPackage = (if usePin then pinned else nixLatest).overrideAttrs (old: {
-    postFixup = (old.postFixup or "") + ''
-      for i in nvidia-cuda-mps-control nvidia-cuda-mps-server nvidia-smi nvidia-debugdump nvidia-powerd; do
-        if [ -e "$bin/origBin/$i" ]; then
-          cp "$bin/origBin/$i" "$bin/bin/$i"
-          patchelf --set-rpath "$out/lib:$libPath" "$bin/bin/$i"
-          patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$bin/bin/$i"
-        fi
-      done
-    '';
-  });
+  # Der fruehere patchelf-Workaround (LOAD-Overlap mit 0.19.2, patchelf#672/#674,
+  # SIGSEGV in nvidia-smi/nvidia-powerd) ist raus: nixpkgs ist wieder auf 0.15.2
+  # zurueckgerollt und wird kuenftig direkt auf >= 0.19.3 (mit #672) gehen.
+  nvidiaPackage = if usePin then pinned else nixLatest;
 in
 {
   hardware.enableRedistributableFirmware = true;
