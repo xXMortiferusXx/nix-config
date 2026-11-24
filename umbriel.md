@@ -4,6 +4,19 @@ Zweck: Die Umbriel-Entwicklung im Blick behalten, damit die Config nach jedem
 Update wieder auf den aktuellen Stand gebracht wird (die Doku/Features sind dem
 Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 
+## Upstream-Stand (2026-11-24)
+
+- Upstream `main` = `cachix` = `a909081a934a` (revCount 1672, Version `0.1.0`).
+- **NixOS-Pin** ist weiterhin `2572005` (15.11., revCount 1581) → **91 Commits
+  hinter Upstream**. Arch (`umbriel-git`) läuft bereits auf `a909081`.
+- `umbriel config validate` gegen `a909081`: `config: ok` (gleiche Config).
+- Neu seit `2572005`: **Global Shortcuts Portal** (`global_shortcuts`),
+  Scratchpad Show/Hide/Pin/Stay-up/Modal, Action `spawn-floating`,
+  `window_rule.border_effect_unfocused`, Config-Diagnostik/
+  unknown-match-key-Fix.
+- **Keine Breaking Changes** für unsere Config, keine Migration. Zum
+  Nachziehen: `nix flake update`, `switch`, Login-Neustart.
+
 ## Gepinnter Stand
 - Quelle: **direkt vom Umbriel-Flake**, Branch **`cachix`**
   (`git+https://github.com/noctalia-dev/umbriel?ref=cachix`) statt nixpkgs — der
@@ -220,8 +233,19 @@ Build oft voraus). Grundlagen siehe `memory.md` (Umbriel).
 | Tab-Gruppe verschieben (Mod+Drag / Overview-Karte) | `b0afa068`, `eb9f426a` | verhalten (Tabs), kein Config-Key |
 | Managed Sessions raeumen beim Launcher-Ende auf | `42278452` | verhalten (automatisch, Gaming) |
 | Xwayland: passive Utility-Fenster ohne Tastaturfokus | `a70596db` | verhalten (automatisch) |
+| `global_shortcuts` | Global Shortcuts Portal (Registry/Freigabe/IPC) | verfügbar, nicht konfiguriert (automatisch) |
+| Scratchpad Show/Hide/Pin (#842/#891/#892) | Show/Hide auf einer Taste, Pinnen, Stay-up/Modal | verfügbar, nicht genutzt (bestehendes `scratchpad-toggle default` bleibt) |
+| Action `spawn-floating` | App direkt als Floating-Fenster starten | verfügbar, nicht gebunden |
+| `window_rule.border_effect_unfocused` | Unfokussierten Border-Effekt pro Fenster steuern | verfügbar, nicht genutzt (keine `[effects]`) |
 
 ## Zuletzt gecheckt
+- **2026-11-24** (`2572005`/1581 → `a909081`/1672, **91 Commits**): Upstream
+  `main`/`cachix` = `a909081`; Arch läuft bereits darauf, `umbriel config
+  validate` = `config: ok`. Neue Features: Global Shortcuts Portal,
+  Scratchpad Show/Hide/Pin/Stay-up/Modal, `spawn-floating`,
+  `border_effect_unfocused`, Config-Diagnostik/unknown-match-Fix. **Keine
+  Breaking Changes**, keine Config-Migration. NixOS-Pin noch `2572005`;
+  Update via `nix flake update` + `switch` + Login-Neustart.
 - **2026-11-15** (`0c1f1255`/1566 → `e4ecd92a`/1580): **14 Commits, 1 Breaking Change**.
   `umbriel config validate` = `config: ok` auf allen 4 Hosts (mortiferus/backbone/lion/benny)
   gegen das neue Binary (`0.1.0 (e4ecd92)`). Schema: **keine Keys neu/entfernt**, aber
